@@ -110,6 +110,17 @@ Used to crawl a URL and all accessible subpages. This submits a crawl job and re
 
 </CodeGroup>
 
+
+
+#### Response
+
+The response will be different depending on the status of the crawl. For not completed or large responses exceeding 10MB, a `next` URL parameter is provided. You must request this URL to retrieve the next 10MB of data. If the `next` parameter is absent, it indicates the end of the crawl data.
+
+<CodeGroup>
+  <CheckCrawlJobOutputScraping />
+  <CheckCrawlJobOutputCompleted />
+</CodeGroup>
+
 If you're using cURL or `async crawl` functions on SDKs, this will return an `ID` where you can use to check the status of the crawl.
 
 <CrawlAsyncOutput />
@@ -126,15 +137,6 @@ Used to check the status of a crawl job and get its result.
 <CheckCrawlJobRust />
 <CheckCrawlJobCURL />
 
-</CodeGroup>
-
-#### Response
-
-The response will be different depending on the status of the crawl. For not completed or large responses exceeding 10MB, a `next` URL parameter is provided. You must request this URL to retrieve the next 10MB of data. If the `next` parameter is absent, it indicates the end of the crawl data.
-
-<CodeGroup>
-  <CheckCrawlJobOutputScraping />
-  <CheckCrawlJobOutputCompleted />
 </CodeGroup>
 
 ## Scraping
