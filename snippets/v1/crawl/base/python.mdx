@@ -4,10 +4,10 @@ from firecrawl import FirecrawlApp, ScrapeOptions
 app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
 
 # Crawl a website:
-crawl_status = app.crawl_url(
+crawl_result = app.crawl_url(
   'https://firecrawl.dev', 
   limit=10, 
   scrape_options=ScrapeOptions(formats=['markdown', 'html']),
 )
-print(crawl_status)
+print(crawl_result)
 ```

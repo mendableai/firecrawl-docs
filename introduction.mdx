@@ -80,11 +80,8 @@ To use the API, you need to sign up on [Firecrawl](https://firecrawl.dev) and ge
 
 You can find all of Firecrawl's capabilities and how to use them in our [documentation](https://docs.firecrawl.dev)
 
-## Crawling
 
-Used to crawl a URL and all accessible subpages. This submits a crawl job and returns a job ID to check the status of the crawl.
-
-### Installation
+## Installing Firecrawl
 
 <CodeGroup>
 
@@ -97,6 +94,37 @@ Used to crawl a URL and all accessible subpages. This submits a crawl job and re
   <InstallationRust />
 
 </CodeGroup>
+
+## Scraping
+
+To scrape a single URL, use the `scrape_url` method. It takes the URL as a parameter and returns the scraped data as a dictionary.
+
+<CodeGroup>
+
+  <ScrapePython />
+
+  <ScrapeNode />
+
+  <ScrapeGo />
+
+  <ScrapeRust />
+
+  <ScrapeCURL />
+
+</CodeGroup>
+
+### Response
+
+SDKs will return the data object directly. cURL will return the payload exactly as shown below.
+
+<ScrapeResponse />
+
+
+## Crawling
+
+Used to crawl a URL and all accessible subpages. This submits a crawl job and returns a job ID to check the status of the crawl.
+
+
 
 ### Usage
 
@@ -137,29 +165,7 @@ The response will be different depending on the status of the crawl. For not com
   <CheckCrawlJobOutputCompleted />
 </CodeGroup>
 
-## Scraping
 
-To scrape a single URL, use the `scrape_url` method. It takes the URL as a parameter and returns the scraped data as a dictionary.
-
-<CodeGroup>
-
-  <ScrapePython />
-
-  <ScrapeNode />
-
-  <ScrapeGo />
-
-  <ScrapeRust />
-
-  <ScrapeCURL />
-
-</CodeGroup>
-
-### Response
-
-SDKs will return the data object directly. cURL will return the payload exactly as shown below.
-
-<ScrapeResponse />
 
 ## Extraction
 
