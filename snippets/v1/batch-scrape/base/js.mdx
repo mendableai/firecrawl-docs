@@ -1,0 +1,22 @@
+```js Node
+import FirecrawlApp, { ScrapeResponse } from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Scrape multiple websites (synchronous):
+const batchScrapeResult = await app.batchScrapeUrls(['firecrawl.dev', 'mendable.ai'], { formats: ['markdown', 'html'] });
+
+if (!batchScrapeResult.success) {
+  throw new Error(`Failed to scrape: ${batchScrapeResult.error}`)
+}
+// Output all the results of the batch scrape:
+console.log(batchScrapeResult)
+
+// Or, you can use the asynchronous method:
+const batchScrapeJob = await app.asyncBulkScrapeUrls(['firecrawl.dev', 'mendable.ai'], { formats: ['markdown', 'html'] });
+console.log(batchScrapeJob)
+
+// (async) You can then use the job ID to check the status of the batch scrape:
+const batchScrapeStatus = await app.checkBatchScrapeStatus(batchScrapeJob.id);
+console.log(batchScrapeStatus)
+```

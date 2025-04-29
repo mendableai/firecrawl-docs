@@ -1,0 +1,57 @@
+---
+title: "Scrape, Analyze, and Visualize Airbnb Data with Firecrawl and E2B"
+description: "Here is how to run this example yourself"
+og:title: "Scrape, Analyze, and Visualize Airbnb Data with Firecrawl and E2B"
+og:description: "Here is how to run this example yourself"
+---
+
+> Note: this example is using [v0 version of the Firecrawl API](/v0/introduction). You can install the 0.0.20 version for the Python SDK or the 0.0.36 for the Node SDK.
+
+> [GitHub repository (https://github.com/e2b-dev/e2b-cookbook) ](https://github.com/e2b-dev/e2b-cookbook/tree/main/examples/scrape-and-analyze-airbnb-data-with-firecrawl)
+
+This example demonstrates how to scrape Airbnb data and analyze it using [Firecrawl](https://www.firecrawl.dev/) and the [Code Interpreter SDK](https://github.com/e2b-dev/code-interpreter) from E2B.
+
+We won't write any of the analysis code and instead we will have Anthropic's AI write it for us. We will use E2B's Code Interpreter SDK to safely run the code and get the results.
+
+<img
+  className="block"
+  src="/images/airbnb_prices_chart.png"
+  alt="Scrape and Analyze Airbnb Data with Firecrawl and E2B"
+/>
+
+## Prerequisites
+
+- Node.js installed on your machine
+- An E2B API key
+- A Firecrawl API key
+- A Anthropic API key
+
+## Setup & run
+
+### 1. Clone the repository
+
+Here is the [GitHub repository](https://github.com/e2b-dev/e2b-cookbook/tree/main/examples/scrape-and-analyze-airbnb-data-with-firecrawl) for this example.
+
+```
+git clone https://github.com/e2b-dev/e2b-cookbook.git
+cd e2b-cookbook/examples/scrape-and-analyze-airbnb-data-with-firecrawl
+```
+
+### 2. Install dependencies
+
+```
+npm install
+```
+
+### 3. Set up `.env`
+
+1. Copy `.env.template` to `.env`
+2. Get [E2B API key](https://e2b.dev/docs/getting-started/api-key)
+3. Get [Firecrawl API key](https://firecrawl.dev)
+4. Get [Anthropic API key](https://anthropic.com)
+
+### 4. Run the example
+
+```
+npm run start
+```

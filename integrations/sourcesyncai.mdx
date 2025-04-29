@@ -1,0 +1,326 @@
+---
+title: 'SourceSync.ai'
+description: 'Firecrawl integrates with SourceSync.ai for web scraping capabilities.'
+og:title: "SourceSync.ai | Firecrawl"
+og:description: "Firecrawl integrates with SourceSync.ai for web scraping capabilities."
+---
+
+[SourceSync.ai](https://sourcesync.ai) is a Retrieval Augmented Generation as a Service platform that helps you build AI applications with your own data. This guide explains how to use Firecrawl with SourceSync.ai for web scraping capabilities.
+
+## Setup
+
+1. First, obtain your Firecrawl API key from your [Firecrawl dashboard](https://www.firecrawl.dev/app)
+
+2. Configure your SourceSync.ai namespace to use Firecrawl as the web scraping provider:
+
+<CodeGroup>
+
+```bash cURL
+curl -X PATCH https://api.sourcesync.ai/v1/namespaces/YOUR_NAMESPACE_ID \
+  -H "Authorization: Bearer YOUR_SOURCE_SYNC_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "webScraperConfig": {
+      "provider": "FIRECRAWL",
+      "apiKey": "YOUR_FIRECRAWL_API_KEY"
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch(
+  'https://api.sourcesync.ai/v1/namespaces/YOUR_NAMESPACE_ID',
+  {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${SOURCE_SYNC_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      webScraperConfig: {
+        provider: 'FIRECRAWL',
+        apiKey: 'YOUR_FIRECRAWL_API_KEY',
+      },
+    }),
+  }
+)
+```
+
+```python Python
+import requests
+
+response = requests.patch(
+    'https://api.sourcesync.ai/v1/namespaces/YOUR_NAMESPACE_ID',
+    headers={
+        'Authorization': f'Bearer {SOURCE_SYNC_API_KEY}',
+        'Content-Type': 'application/json',
+    },
+    json={
+        'webScraperConfig': {
+            'provider': 'FIRECRAWL',
+            'apiKey': 'YOUR_FIRECRAWL_API_KEY',
+        },
+    },
+)
+```
+
+</CodeGroup>
+
+## Usage
+
+Once configured, you can use SourceSync.ai's web scraping endpoints with Firecrawl's capabilities. Here are the main ingestion methods:
+
+### URL List Ingestion
+
+Scrape specific URLs:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.sourcesync.ai/v1/ingest/urls \
+  -H "Authorization: Bearer YOUR_SOURCE_SYNC_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "namespaceId": "YOUR_NAMESPACE_ID",
+    "ingestConfig": {
+      "source": "URLS_LIST",
+      "config": {
+        "urls": [
+          "https://example.com/page1",
+          "https://example.com/page2"
+        ],
+        "scrapeOptions": {
+          "includeSelectors": ["article", "main"],
+          "excludeSelectors": [".navigation", ".footer"]
+        }
+      }
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.sourcesync.ai/v1/ingest/urls', {
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${SOURCE_SYNC_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    namespaceId: 'YOUR_NAMESPACE_ID',
+    ingestConfig: {
+      source: 'URLS_LIST',
+      config: {
+        urls: ['https://example.com/page1', 'https://example.com/page2'],
+        scrapeOptions: {
+          includeSelectors: ['article', 'main'],
+          excludeSelectors: ['.navigation', '.footer'],
+        },
+      },
+    },
+  }),
+})
+```
+
+```python Python
+response = requests.post(
+    'https://api.sourcesync.ai/v1/ingest/urls',
+    headers={
+        'Authorization': f'Bearer {SOURCE_SYNC_API_KEY}',
+        'Content-Type': 'application/json',
+    },
+    json={
+        'namespaceId': 'YOUR_NAMESPACE_ID',
+        'ingestConfig': {
+            'source': 'URLS_LIST',
+            'config': {
+                'urls': ['https://example.com/page1', 'https://example.com/page2'],
+                'scrapeOptions': {
+                    'includeSelectors': ['article', 'main'],
+                    'excludeSelectors': ['.navigation', '.footer'],
+                },
+            },
+        },
+    },
+)
+```
+
+</CodeGroup>
+
+### Website Crawling
+
+Crawl an entire website with custom rules:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.sourcesync.ai/v1/ingest/website \
+  -H "Authorization: Bearer YOUR_SOURCE_SYNC_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "namespaceId": "YOUR_NAMESPACE_ID",
+    "ingestConfig": {
+      "source": "WEBSITE",
+      "config": {
+        "url": "https://example.com",
+        "maxDepth": 3,
+        "maxLinks": 100,
+        "includePaths": ["/docs", "/blog"],
+        "excludePaths": ["/admin"],
+        "scrapeOptions": {
+          "includeSelectors": ["article", "main"],
+          "excludeSelectors": [".navigation", ".footer"]
+        }
+      }
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.sourcesync.ai/v1/ingest/website', {
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${SOURCE_SYNC_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    namespaceId: 'YOUR_NAMESPACE_ID',
+    ingestConfig: {
+      source: 'WEBSITE',
+      config: {
+        url: 'https://example.com',
+        maxDepth: 3,
+        maxLinks: 100,
+        includePaths: ['/docs', '/blog'],
+        excludePaths: ['/admin'],
+        scrapeOptions: {
+          includeSelectors: ['article', 'main'],
+          excludeSelectors: ['.navigation', '.footer'],
+        },
+      },
+    },
+  }),
+})
+```
+
+```python Python
+response = requests.post(
+    'https://api.sourcesync.ai/v1/ingest/website',
+    headers={
+        'Authorization': f'Bearer {SOURCE_SYNC_API_KEY}',
+        'Content-Type': 'application/json',
+    },
+    json={
+        'namespaceId': 'YOUR_NAMESPACE_ID',
+        'ingestConfig': {
+            'source': 'WEBSITE',
+            'config': {
+                'url': 'https://example.com',
+                'maxDepth': 3,
+                'maxLinks': 100,
+                'includePaths': ['/docs', '/blog'],
+                'excludePaths': ['/admin'],
+                'scrapeOptions': {
+                    'includeSelectors': ['article', 'main'],
+                    'excludeSelectors': ['.navigation', '.footer'],
+                },
+            },
+        },
+    },
+)
+```
+
+</CodeGroup>
+
+### Sitemap Processing
+
+Process all URLs from a sitemap:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://api.sourcesync.ai/v1/ingest/sitemap \
+  -H "Authorization: Bearer YOUR_SOURCE_SYNC_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "namespaceId": "YOUR_NAMESPACE_ID",
+    "ingestConfig": {
+      "source": "SITEMAP",
+      "config": {
+        "url": "https://example.com/sitemap.xml",
+        "scrapeOptions": {
+          "includeSelectors": ["article", "main"],
+          "excludeSelectors": [".navigation", ".footer"]
+        }
+      }
+    }
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.sourcesync.ai/v1/ingest/sitemap', {
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${SOURCE_SYNC_API_KEY}`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    namespaceId: 'YOUR_NAMESPACE_ID',
+    ingestConfig: {
+      source: 'SITEMAP',
+      config: {
+        url: 'https://example.com/sitemap.xml',
+        scrapeOptions: {
+          includeSelectors: ['article', 'main'],
+          excludeSelectors: ['.navigation', '.footer'],
+        },
+      },
+    },
+  }),
+})
+```
+
+```python Python
+response = requests.post(
+    'https://api.sourcesync.ai/v1/ingest/sitemap',
+    headers={
+        'Authorization': f'Bearer {SOURCE_SYNC_API_KEY}',
+        'Content-Type': 'application/json',
+    },
+    json={
+        'namespaceId': 'YOUR_NAMESPACE_ID',
+        'ingestConfig': {
+            'source': 'SITEMAP',
+            'config': {
+                'url': 'https://example.com/sitemap.xml',
+                'scrapeOptions': {
+                    'includeSelectors': ['article', 'main'],
+                    'excludeSelectors': ['.navigation', '.footer'],
+                },
+            },
+        },
+    },
+)
+```
+
+</CodeGroup>
+
+## Features
+
+When using Firecrawl with SourceSync.ai, you get access to:
+
+- JavaScript rendering support
+- Automatic rate limiting
+- CSS selector-based content extraction
+- Recursive crawling with depth control
+- Sitemap processing
+
+## Resources
+
+- [SourceSync.ai Documentation](https://sourcesync.ai)
+- [Web Scraping Guide](https://sourcesync.ai/web-scraping)
+- [API Reference](https://sourcesync.ai/api-reference/data-ingestion#ingest-urls)
+
+For additional support:
+
+- Email: [support@sourcesync.ai](mailto:support@sourcesync.ai)
+- Discord: [Join our community](https://discord.gg/Fx3GnFKnRT)

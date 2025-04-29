@@ -1,0 +1,19 @@
+```js Node
+import { z } from "zod";
+
+// Define schema to extract contents into
+const schema = z.object({
+  company_mission: z.string(),
+});
+
+const scrapeResult = await app.extract([], {
+  prompt: "Extract the company mission from Firecrawl's website.",
+  schema: schema
+});
+
+if (!scrapeResult.success) {
+  throw new Error(`Failed to scrape: ${scrapeResult.error}`)
+}
+
+console.log(scrapeResult.data);
+```

@@ -1,0 +1,64 @@
+---
+title: 'Rust'
+description: 'Firecrawl Rust SDK is a library to help you easily scrape and crawl websites, and output the data in a format ready for use with language models (LLMs).'
+icon: 'rust'
+og:title: "Rust SDK | Firecrawl"
+og:description: "Firecrawl Rust SDK is a library to help you easily scrape and crawl websites, and output the data in a format ready for use with language models (LLMs)."
+---
+
+import InstallationRust from '/snippets/v1/installation/rust.mdx'
+import ScrapeAndCrawlRustExample from '/snippets/v1/scrape-and-crawl/rust.mdx'
+import ScrapeRustShort from '/snippets/v1/scrape/short/rust.mdx'
+import CrawlRustShort from '/snippets/v1/crawl/short/rust.mdx'
+import CrawlAsyncRustShort from '/snippets/v1/crawl-async/short/rust.mdx'
+import MapRustShort from '/snippets/v1/map/short/rust.mdx'
+import LLMExtractRust from '/snippets/v1/llm-extract/base/rust.mdx'
+
+## Installation
+
+To install the Firecrawl Rust SDK, add the following to your `Cargo.toml`:
+
+<InstallationRust />
+
+## Usage
+
+First, you need to obtain an API key from [firecrawl.dev](https://firecrawl.dev). Then, you need to initialize the `FirecrawlApp`. From there, you can access functions like `FirecrawlApp::scrape_url`, which let you use our API.
+
+Here's an example of how to use the SDK in Rust:
+
+<ScrapeAndCrawlRustExample />
+
+### Scraping a URL
+
+To scrape a single URL, use the `scrape_url` method. It takes the URL as a parameter and returns the scraped data as a `Document`.
+
+<ScrapeRustShort />
+
+### Scraping with Extract
+
+With Extract, you can easily extract structured data from any URL. You need to specify your schema in the JSON Schema format, using the `serde_json::json!` macro.
+
+<LLMExtractRust />
+
+### Crawling a Website
+
+To crawl a website, use the `crawl_url` method. This will wait for the crawl to complete, which may take a long time based on your starting URL and your options.
+
+<CrawlRustShort />
+
+#### Crawling asynchronously
+
+To crawl without waiting for the result, use the `crawl_url_async` method. It takes the same parameters, but it returns a `CrawlAsyncRespone` struct, containing the crawl's ID. You can use that ID with the `check_crawl_status` method to check the status at any time. Do note that completed crawls are deleted after 24 hours.
+
+<CrawlAsyncRustShort />
+
+### Map a URL
+
+Map all associated links from a starting URL.
+
+<MapRustShort />
+
+## Error Handling
+
+The SDK handles errors returned by the Firecrawl API and by our dependencies, and combines them into the `FirecrawlError` enum, implementing `Error`, `Debug` and `Display`. All of our methods return a `Result<T, FirecrawlError>`.
+

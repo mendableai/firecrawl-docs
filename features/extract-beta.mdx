@@ -1,0 +1,110 @@
+---
+title: 'Extract'
+description: 'Extract structured data from pages using LLMs'
+og:title: "Extract | Firecrawl"
+og:description: "Extract structured data from pages using LLMs"
+---
+
+import ExtractCURL from "/snippets/v1/extract/base/curl.mdx";
+import ExtractPython from "/snippets/v1/extract/base/python.mdx";
+import ExtractNode from "/snippets/v1/extract/base/js.mdx";
+import ExtractOutput from "/snippets/v1/extract/base/output.mdx";
+import ExtractNoSchemaCURL from "/snippets/v1/extract/no-schema/curl.mdx";
+import ExtractNoSchemaOutput from "/snippets/v1/extract/no-schema/output.mdx";
+import CheckExtractJobCURL from "/snippets/v1/extract/status/curl.mdx";
+import ExtractStatusPending from "/snippets/v1/extract/status/pending.mdx";
+import ExtractStatusAsync from "/snippets/v1/extract/async-response/async.mdx";
+import ExtractStatusDone from "/snippets/v1/extract/status/completed.mdx";
+
+## Introducing /extract (Beta)
+
+<Warning>
+ [Please use the new /extract Open Beta docs by clicking here 🔥](/features/extract)
+</Warning>
+
+Extract structured data from a single, multiple URLs, or entire websites using Large Language Models (LLMs). Our new `/extract` endpoint allows you to:
+- Extract structured data from full websites at once
+- Connect or build data enrichment applications that need structured data from websites
+- Develop AI applications that need clean data from multiple websites
+
+## Considerations
+
+The `/extract` endpoint provides flexible data extraction with customizable schemas. Results can be improved through prompt tuning. It is currently in beta and we welcome your feedback.
+
+## Extracting Data
+
+### /extract endpoint
+
+Used to extract structured data from entire websites.
+
+When specifying URLs, you can append `/*` to the URL to extract information from the entire website path rather than just a single page. 
+
+For example, `https://firecrawl.dev/*` will attempt to extract data from all pages on the firecrawl.dev domain. The `/*` is still in under testing so please let us know if you have any issues by emailing help@firecrawl.dev.
+
+### Usage
+<CodeGroup>
+
+<ExtractPython />
+<ExtractNode />
+<ExtractCURL />
+
+</CodeGroup>
+
+For more details about the parameters, refer to the [API Reference](https://docs.firecrawl.dev/api-reference/endpoint/extract).
+
+### Response (sdks)
+
+<ExtractOutput />
+
+### Response (async or not using sdks)
+<ExtractStatusAsync />
+
+
+### Checking extract status
+
+You can use the `/extract/ID` endpoint to check the status of an extract job.
+
+
+
+<Note>This endpoint only works for extract jobs that are in progress or extract jobs that have completed recently (within the last 24 hours). </Note>
+
+<CodeGroup>
+
+<CheckExtractJobCURL />
+
+</CodeGroup>
+
+#### Pending Response
+Extract jobs can have one of the following states:
+- `completed`: The extract job has finished successfully.
+- `processing`: The extract job is still in progress.
+- `failed`: The extract job encountered an error and did not complete.
+- `cancelled`: The extract job was cancelled by the user.
+
+<ExtractStatusPending />
+
+#### Completed Response
+
+<ExtractStatusDone />
+
+
+
+### Extracting without schema
+
+You can now extract without a schema by just passing a `prompt` to the endpoint. The LLM chooses the structure of the data.
+
+<CodeGroup>
+
+<ExtractNoSchemaCURL />
+
+</CodeGroup>
+
+
+### Improving Results with Web Search & External Links
+
+If you want to improve the results of the extraction, you can pass an `enableWebSearch` parameter to the endpoint. This will allow it to attempt to find the data from external links - outside the scope of the provided URLs.
+
+
+### Billing
+
+While `/extract` is in beta, we are charging 5 credits per URL scraped used to form the final response. This is to prevent abuse. This will be changed in the future.

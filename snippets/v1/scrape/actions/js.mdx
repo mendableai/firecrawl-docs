@@ -1,0 +1,25 @@
+```js Node
+import FirecrawlApp, { ScrapeResponse } from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Scrape a website:
+const scrapeResult = await app.scrapeUrl('firecrawl.dev', { formats: ['markdown', 'html'], actions: [
+    { type: "wait", milliseconds: 2000 },
+    { type: "click", selector: "textarea[title=\"Search\"]" },
+    { type: "wait", milliseconds: 2000 },
+    { type: "write", text: "firecrawl" },
+    { type: "wait", milliseconds: 2000 },
+    { type: "press", key: "ENTER" },
+    { type: "wait", milliseconds: 3000 },
+    { type: "click", selector: "h3" },
+    { type: "scrape" },
+    {"type": "screenshot"}
+] }) as ScrapeResponse;
+
+if (!scrapeResult.success) {
+  throw new Error(`Failed to scrape: ${scrapeResult.error}`)
+}
+
+console.log(scrapeResult)
+```

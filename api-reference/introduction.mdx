@@ -1,0 +1,71 @@
+---
+title: 'Introduction'
+description: 'Firecrawl API Reference'
+---
+
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Scrape" icon="markdown" href="/api-reference/endpoint/scrape" color="FF713C">
+    Extract content from any webpage in markdown or json format.
+  </Card>
+  <Card title="Crawl" icon="spider" href="/api-reference/endpoint/crawl-post" color="FF713C">
+    Crawl entire websites, extract their content and metadata.
+  </Card>
+  <Card title="Map" icon="map" href="/api-reference/endpoint/map" color="FF713C">
+    Get a complete list of URLs from any website quickly and reliably.
+  </Card>
+  <Card title="Extract" icon="barcode-read" href="/api-reference/endpoint/extract" color="FF713C">
+    Extract structured data from entire webpages using natural language.
+  </Card>
+  <Card title="Search" icon="magnifying-glass" href="/api-reference/endpoint/search" color="FF713C">
+    Search the web and get full page content in any format.
+  </Card>
+  
+  {/* <Card title="Deep Research" icon="brain-circuit" href="/api-reference/endpoint/deep-research" color="FF713C">
+    AI-powered web research that autonomously explores and synthesizes information.
+  </Card> */}
+</CardGroup>
+
+
+## Base URL
+
+All requests contain the following base URL:
+
+```bash
+https://api.firecrawl.dev 
+```
+
+
+## Authentication
+
+For authentication, it's required to include an Authorization header. The header should contain `Bearer fc-123456789`, where `fc-123456789` represents your API Key.
+
+```bash
+Authorization: Bearer fc-123456789
+```
+​
+
+## Response codes
+Firecrawl employs conventional HTTP status codes to signify the outcome of your requests.
+
+Typically, 2xx HTTP status codes denote success, 4xx codes represent failures related to the user, and 5xx codes signal infrastructure problems.
+
+Status | Description
+--- | ---
+200 | Request was successful.
+400 | Verify the correctness of the parameters.
+401 | The API key was not provided.
+402 | Payment required
+404 | The requested resource could not be located.
+429 | The rate limit has been surpassed.
+5xx | Signifies a server error with Firecrawl.
+
+Refer to the Error Codes section for a detailed explanation of all potential API errors.
+
+​
+## Rate limit
+The Firecrawl API has a rate limit to ensure the stability and reliability of the service. The rate limit is applied to all endpoints and is based on the number of requests made within a specific time frame.
+
+When you exceed the rate limit, you will receive a 429 response code.

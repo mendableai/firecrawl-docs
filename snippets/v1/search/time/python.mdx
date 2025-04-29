@@ -1,0 +1,18 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+# Initialize the client with your API key
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Search for results from the past week
+search_result = app.search(
+    "latest web scraping techniques",
+    limit=5,
+    tbs="qdr:w"  # qdr:w = past week
+)
+
+# Process the results
+for result in search_result.data:
+    print(f"Title: {result.title}")
+    print(f"URL: {result.url}") 
+```

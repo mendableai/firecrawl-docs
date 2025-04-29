@@ -1,0 +1,12 @@
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v1/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "firecrawl web scraping",
+    "limit": 3,
+    "scrapeOptions": {
+      "formats": ["markdown", "links"]
+    }
+  }'
+``` 

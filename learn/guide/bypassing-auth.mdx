@@ -1,0 +1,131 @@
+---
+title: "Scraping behind authentication"
+description: "Learn how to bypass authentication on a website by forwading cookies."
+og:title: "Scraping behind authentication | Firecrawl"
+og:description: "Learn how to bypass authentication on a website by forwading cookies."
+---
+
+> Note: this example is using [v0 version of the Firecrawl API](/v0/introduction). You can install the 0.0.20 version for the Python SDK or the 0.0.36 for the Node SDK.
+
+
+With Firecrawl, you can send cookies in headers to bypass authentication on a website. This can be useful when you need to scrape content from a website that requires you to be logged in.
+
+### Example
+
+To bypass authentication, you need to include the `headers` parameter in your request and set the `Cookies` header with the appropriate cookie values that you can grab from your browser's cookies. If you need help grabbing cookies, take a look at this article: [Grabbing cookies](https://cookie-script.com/documentation/how-to-check-cookies-on-chrome-and-firefox)
+
+<CodeGroup>
+
+```bash Python
+pip install firecrawl-py
+```
+
+```bash JavaScript
+npm install @mendable/firecrawl-js
+```
+
+```bash Go
+go get github.com/mendableai/firecrawl-go
+```
+
+</CodeGroup>
+
+### Usage
+ 
+<CodeGroup>
+
+```python Python
+from firecrawl import FirecrawlApp
+
+app = FirecrawlApp(api_key="YOUR_API_KEY")
+
+app.scrape_url("https://docs.firecrawl.dev", {
+  pageOptions:{
+    headers:{
+      "Cookie": "cookie1=value1; cookie2=value2"
+    }
+  }
+})
+```
+
+```javascript JavaScript
+import { FirecrawlApp } from 'firecrawl-js';
+
+const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
+
+app.scrapeUrl('https://docs.firecrawl.dev', {
+  pageOptions:{
+    headers:{
+      "Cookie": "cookie1=value1; cookie2=value2"
+    }
+  }
+});
+```
+
+```go Go
+import (
+  "fmt"
+  "log"
+
+  "github.com/mendableai/firecrawl-go"
+)
+
+func main() {
+  // Initialize the FirecrawlApp with your API key
+  app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
+  if err != nil {
+    log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+  }
+
+  params := map[string]any{
+    "pageOptions": map[string]any{
+      "headers": map[string]any{
+        "Cookie": "cookie1=value1; cookie2=value2"
+      }
+    },
+  }
+  scrapedData, err := app.ScrapeURL("docs.firecrawl.dev", params)
+  if err != nil {
+    log.Fatalf("Error occurred while scraping: %v", err)
+  }
+  fmt.Println(scrapedData)
+}
+```
+
+```rust Rust
+use firecrawl::FirecrawlApp;
+
+#[tokio::main]
+async fn main() {
+    let api_key = "YOUR_API_KEY";
+    let api_url = "https://api.firecrawl.dev";
+    let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
+
+    let scrape_params = json!({
+        "pageOptions": {
+            "headers": {
+                "Cookie": "cookie1=value1; cookie2=value2"
+            }
+        }
+    });
+
+    let scrape_result = app.scrape_url("https://docs.firecrawl.dev", Some(scrape_params)).await;
+    match scrape_result {
+        Ok(data) => println!("Scrape Result:\n{}", data),
+        Err(e) => eprintln!("Scrape failed: {}", e),
+    }
+}
+```
+
+```curl cURL
+curl -X POST https://api.firecrawl.dev/v0/scrape \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://example.com",
+      "headers": {
+        "Cookie": "cookie1=value1; cookie2=value2"
+      }
+    }'
+```
+</CodeGroup>

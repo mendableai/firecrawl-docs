@@ -1,0 +1,394 @@
+---
+title: "Advanced Scraping Guide"
+description: "Learn how to improve your Firecrawl scraping with advanced options."
+og:title: "Advanced Scraping Guide | Firecrawl"
+og:description: "Learn how to improve your Firecrawl scraping with advanced options."
+---
+
+This guide will walk you through the different endpoints of Firecrawl and how to use them fully with all its parameters.
+
+## Basic scraping with Firecrawl (/scrape)
+
+To scrape a single page and get clean markdown content, you can use the `/scrape` endpoint.
+
+<CodeGroup>
+
+```python Python
+# pip install firecrawl-py
+
+from firecrawl import FirecrawlApp
+
+app = FirecrawlApp(api_key="YOUR_API_KEY")
+
+content = app.scrape_url("https://docs.firecrawl.dev")
+```
+
+```JavaScript JavaScript
+// npm install @mendable/firecrawl-js
+
+import { FirecrawlApp } from 'firecrawl-js';
+
+const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
+
+const content = await app.scrapeUrl('https://docs.firecrawl.dev');
+```
+
+```go Go
+// go get github.com/mendableai/firecrawl-go
+
+import (
+  "fmt"
+  "log"
+
+  "github.com/mendableai/firecrawl-go"
+)
+
+func main() {
+  app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
+  if err != nil {
+    log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+  }
+
+  content, err := app.ScrapeURL("docs.firecrawl.dev", nil)
+  if err != nil {
+    log.Fatalf("Failed)
+  }
+}
+```
+
+```rust Rust
+// Install the firecrawl_rs crate with Cargo
+
+use firecrawl_rs::FirecrawlApp;
+#[tokio::main]
+async fn main() {
+  // Initialize the FirecrawlApp with the API key
+  let api_key = "YOUR_API_KEY";
+  let api_url = "https://api.firecrawl.dev";
+  let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
+
+  let scrape_result = app.scrape_url("https://docs.firecrawl.dev", None).await;
+  match scrape_result {
+    Ok(data) => println!("Scrape Result:\n{}", data["markdown"]),
+    Err(e) => eprintln!("Scrape failed: {}", e),
+  }
+}
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v0/scrape \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://docs.firecrawl.dev"
+    }'
+```
+
+</CodeGroup>
+
+## Scraping pdfs
+
+**Firecrawl supports scraping pdfs by default.** You can use the `/scrape` endpoint to scrape a pdf link and get the text content of the pdf. You can disable this by setting `pageOptions.parsePDF` to `false`.
+
+## Page Options
+
+When using the `/scrape` endpoint, you can customize the scraping behavior with the `pageOptions` parameter. Here are the available options:
+
+### Getting cleaner content with `onlyMainContent`
+
+- **Type**: `boolean`
+- **Description**: Only return the main content of the page, excluding headers, navigation bars, footers, etc.
+- **Default**: `false`
+
+### Getting the HTML with `includeHtml`
+
+- **Type**: `boolean`
+- **Description**: Include the HTML version content of the page. This will add an `html` key in the response.
+- **Default**: `false`
+
+### Getting the raw HTML with `includeRawHtml`
+
+- **Type**: `boolean`
+- **Description**: Include the raw HTML content of the page. This will add an `rawHtml` key in the response.
+- **Default**: `false`
+
+### Getting a screenshot of the page with `screenshot`
+
+- **Type**: `boolean`
+- **Decription**: Include a screenshot of the top of the page that you are scraping.
+- **Default**: `false`
+
+### Waiting for the page to load with `waitFor`
+
+- **Type**: `integer`
+- **Description**: To be used only as a last resort. Wait for a specified amount of milliseconds for the page to load before fetching content.
+- **Default**: `0`
+
+
+### Example Usage
+
+```bash
+curl -X POST https://api.firecrawl.dev/v0/scrape \
+    -H '
+    Content-Type: application/json' \
+    -H 'Authorization : Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://docs.firecrawl.dev",
+      "pageOptions": {
+        "onlyMainContent": true,
+        "includeHtml": true,
+        "includeRawHtml":true,
+        "screenshot": true,
+        "waitFor": 5000
+      }
+    }'
+```
+
+In this example, the scraper will:
+
+- Return only the main content of the page.
+- Include the raw HTML content in the response in the `html` key.
+- Wait for 5000 milliseconds (5 seconds) for the page to load before fetching the content.
+
+Here is the API Reference for it: [Scrape Endpoint Documentation](https://docs.firecrawl.dev/api-reference/endpoint/scrape)
+
+## Extractor Options
+
+When using the `/scrape` endpoint, you can specify options for **extracting structured information** from the page content using the `extractorOptions` parameter. Here are the available options:
+
+### mode
+
+- **Type**: `string`
+- **Enum**: `["llm-extraction", "llm-extraction-from-raw-html"]`
+- **Description**: The extraction mode to use.
+
+  - `llm-extraction`: Extracts information from the cleaned and parsed content.
+  - `llm-extraction-from-raw-html`: Extracts information directly from the raw HTML.
+
+- **Type**: `string`
+- **Description**: A prompt describing what information to extract from the page.
+
+### extractionSchema
+
+- **Type**: `object`
+- **Description**: The schema for the data to be extracted. This defines the structure of the extracted data.
+
+### Example Usage
+
+```bash
+curl -X POST https://api.firecrawl.dev/v0/scrape \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://docs.firecrawl.dev/",
+      "extractorOptions": {
+        "mode": "llm-extraction",
+        "extractionPrompt": "Based on the information on the page, extract the information from the schema. ",
+        "extractionSchema": {
+          "type": "object",
+          "properties": {
+            "company_mission": {
+                      "type": "string"
+            },
+            "supports_sso": {
+                      "type": "boolean"
+            },
+            "is_open_source": {
+                      "type": "boolean"
+            },
+            "is_in_yc": {
+                      "type": "boolean"
+            }
+          },
+          "required": [
+            "company_mission",
+            "supports_sso",
+            "is_open_source",
+            "is_in_yc"
+          ]
+        }
+      }
+    }'
+```
+
+```json
+{
+  "success": true,
+  "data": {
+    "content": "Raw Content",
+    "metadata": {
+      "title": "Mendable",
+      "description": "Mendable allows you to easily build AI chat applications. Ingest, customize, then deploy with one line of code anywhere you want. Brought to you by SideGuide",
+      "robots": "follow, index",
+      "ogTitle": "Mendable",
+      "ogDescription": "Mendable allows you to easily build AI chat applications. Ingest, customize, then deploy with one line of code anywhere you want. Brought to you by SideGuide",
+      "ogUrl": "https://docs.firecrawl.dev/",
+      "ogImage": "https://docs.firecrawl.dev/mendable_new_og1.png",
+      "ogLocaleAlternate": [],
+      "ogSiteName": "Mendable",
+      "sourceURL": "https://docs.firecrawl.dev/"
+    },
+    "llm_extraction": {
+      "company_mission": "Train a secure AI on your technical resources that answers customer and employee questions so your team doesn't have to",
+      "supports_sso": true,
+      "is_open_source": false,
+      "is_in_yc": true
+    }
+  }
+}
+```
+
+## Adjusting Timeout
+
+You can adjust the timeout for the scraping process using the `timeout` parameter in milliseconds.
+
+### Example Usage
+
+```bash
+curl -X POST https://api.firecrawl.dev/v0/scrape \
+    -H '
+    Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://docs.firecrawl.dev",
+      "timeout": 50000
+    }'
+```
+
+## Crawling Multiple Pages
+
+To crawl multiple pages, you can use the `/crawl` endpoint. This endpoint allows you to specify a base URL you want to crawl and all accessible subpages will be crawled.
+
+```bash
+curl -X POST https://api.firecrawl.dev/v0/crawl \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://docs.firecrawl.dev"
+    }'
+```
+
+Returns a jobId
+
+```json
+{ "jobId": "1234-5678-9101" }
+```
+
+### Check Crawl Job
+
+Used to check the status of a crawl job and get its result.
+
+```bash
+curl -X GET https://api.firecrawl.dev/v0/crawl/status/1234-5678-9101 \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+
+### Crawler Options
+
+When using the `/crawl` endpoint, you can customize the crawling behavior with the `crawlerOptions` parameter. Here are the available options:
+
+#### `includes`
+
+- **Type**: `array`
+- **Description**: URL patterns to include in the crawl. Only URLs matching these patterns will be crawled.
+- **Example**: `["/blog/*", "/products/*"]`
+
+#### `excludes`
+
+- **Type**: `array`
+- **Description**: URL patterns to exclude from the crawl. URLs matching these patterns will be skipped.
+- **Example**: `["/admin/*", "/login/*"]`
+
+#### `returnOnlyUrls`
+
+- **Type**: `boolean`
+- **Description**: If set to `true`, the response will only include a list of URLs instead of the full document data.
+- **Default**: `false`
+
+#### `maxDepth`
+
+- **Type**: `integer`
+- **Description**: Maximum depth to crawl relative to the entered URL. A maxDepth of 0 scrapes only the entered URL. A maxDepth of 1 scrapes the entered URL and all pages one level deep. A maxDepth of 2 scrapes the entered URL and all pages up to two levels deep. Higher values follow the same pattern.
+- **Example**: `2`
+
+#### `mode`
+
+- **Type**: `string`
+- **Enum**: `["default", "fast"]`
+- **Description**: The crawling mode to use. `fast` mode crawls websites without a sitemap 4x faster but may be less accurate and is not recommended for heavily JavaScript-rendered websites.
+- **Default**: `default`
+
+#### `limit`
+
+- **Type**: `integer`
+- **Description**: Maximum number of pages to crawl.
+- **Default**: `10000`
+
+### Example Usage
+
+```bash
+curl -X POST https://api.firecrawl.dev/v0/crawl \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization : Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://docs.firecrawl.dev",
+      "crawlerOptions": {
+        "includes": ["/blog/*", "/products/*"],
+        "excludes": ["/admin/*", "/login/*"],
+        "returnOnlyUrls": false,
+        "maxDepth": 2,
+        "mode": "fast",
+        "limit": 1000
+      }
+    }'
+```
+
+In this example, the crawler will:
+
+- Only crawl URLs that match the patterns `/blog/*` and `/products/*`.
+- Skip URLs that match the patterns `/admin/*` and `/login/*`.
+- Return the full document data for each page.
+- Crawl up to a maximum depth of 2.
+- Use the fast crawling mode.
+- Crawl a maximum of 1000 pages.
+
+## Page Options + Crawler Options
+
+You can combine the `pageOptions` and `crawlerOptions` parameters to customize both the full crawling behavior.
+
+### Example Usage
+
+```bash
+curl -X POST https://api.firecrawl.dev/v0/crawl \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://docs.firecrawl.dev",
+      "pageOptions": {
+        "onlyMainContent": true,
+        "includeHtml": true,
+        "includeRawHtml": true,
+        "screenshot": true,
+        "waitFor": 5000
+      },
+      "crawlerOptions": {
+        "includes": ["/blog/*", "/products/*"],
+        "maxDepth": 2,
+        "mode": "fast",
+      }
+    }'
+```
+
+In this example, the crawler will:
+
+- Return only the main content for each page.
+- Include the raw HTML content for each page.
+- Wait for 5000 milliseconds for each page to load before fetching its content.
+- Only crawl URLs that match the patterns `/blog/*` and `/products/*`.
+- Crawl up to a maximum depth of 2.
+- Use the fast crawling mode.
+
+## Extractor Options + Crawler Options
+
+Coming soon...

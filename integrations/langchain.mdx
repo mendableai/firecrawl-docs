@@ -1,0 +1,75 @@
+---
+title: 'Langchain'
+description: 'Firecrawl integrates with Langchain as a document loader.'
+og:title: "Langchain | Firecrawl"
+og:description: "Firecrawl integrates with Langchain as a document loader."
+---
+
+> Note: this integration is still using [v0 version of the Firecrawl API](/v0/introduction). You can install the 0.0.20 version for the Python SDK or the 0.0.36 for the Node SDK.
+
+## Installation
+
+```bash
+pip install firecrawl-py==0.0.20
+```
+
+
+
+## Usage
+You will need to get your own API key. See https://firecrawl.dev
+
+```python
+from langchain_community.document_loaders import FireCrawlLoader
+
+loader = FireCrawlLoader(
+    api_key="YOUR_API_KEY", url="https://firecrawl.dev", mode="crawl"
+)
+
+docs = loader.load()
+```
+
+### Modes
+Scrape: Scrape single url and return the markdown.
+Crawl: Crawl the url and all accessible sub pages and return the markdown for each one.
+
+```python
+loader = FireCrawlLoader(
+    api_key="YOUR_API_KEY",
+    url="https://firecrawl.dev",
+    mode="scrape",
+)
+
+data = loader.load()
+```
+
+
+
+### Crawler Options
+You can also pass params to the loader. This is a dictionary of options to pass to the crawler. See the FireCrawl API documentation for more information.
+
+
+## Langchain JS
+
+To use it in Langchain JS, you can install it via npm:
+
+```bash
+npm install @mendableai/firecrawl-js
+```
+
+Then, you can use it like this:
+
+```typescript
+import { FireCrawlLoader } from "langchain/document_loaders/web/firecrawl";
+
+const loader = new FireCrawlLoader({
+  url: "https://firecrawl.dev", // The URL to scrape
+  apiKey: process.env.FIRECRAWL_API_KEY, // Optional, defaults to `FIRECRAWL_API_KEY` in your env.
+  mode: "scrape", // The mode to run the crawler in. Can be "scrape" for single urls or "crawl" for all accessible subpages
+  params: {
+    // optional parameters based on Firecrawl API docs
+    // For API documentation, visit https://docs.firecrawl.dev
+  },
+});
+
+const docs = await loader.load();
+```

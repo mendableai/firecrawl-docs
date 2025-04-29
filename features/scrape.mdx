@@ -1,0 +1,258 @@
+---
+title: "Scrape"
+description: "Turn any url into clean data"
+og:title: "Scrape | Firecrawl"
+og:description: "Turn any url into clean data"
+---
+
+import InstallationPython from "/snippets/v1/installation/python.mdx";
+import InstallationNode from "/snippets/v1/installation/js.mdx";
+import InstallationGo from "/snippets/v1/installation/go.mdx";
+import InstallationRust from "/snippets/v1/installation/rust.mdx";
+import ScrapePython from "/snippets/v1/scrape/base/python.mdx";
+import ScrapeNode from "/snippets/v1/scrape/base/js.mdx";
+import ScrapeGo from "/snippets/v1/scrape/base/go.mdx";
+import ScrapeRust from "/snippets/v1/scrape/base/rust.mdx";
+import ScrapeCURL from "/snippets/v1/scrape/base/curl.mdx";
+import ScrapeResponse from "/snippets/v1/scrape/base/output.mdx";
+import ExtractCURL from "/snippets/v1/llm-extract/base/curl.mdx";
+import ExtractPython from "/snippets/v1/llm-extract/base/python.mdx";
+import ExtractNode from "/snippets/v1/llm-extract/base/js.mdx";
+import ExtractOutput from "/snippets/v1/llm-extract/base/output.mdx";
+import ExtractNoSchemaCURL from "/snippets/v1/llm-extract/no-schema/curl.mdx";
+import ExtractNoSchemaOutput from "/snippets/v1/llm-extract/no-schema/output.mdx";
+import ScrapeActionsPython from "/snippets/v1/scrape/actions/python.mdx";
+import ScrapeActionsNode from "/snippets/v1/scrape/actions/js.mdx";
+import ScrapeActionsCURL from "/snippets/v1/scrape/actions/curl.mdx";
+import ScrapeActionsOutput from "/snippets/v1/scrape/actions/output.mdx";
+import BatchScrapePython from "/snippets/v1/batch-scrape/base/python.mdx";
+import BatchScrapeNode from "/snippets/v1/batch-scrape/base/js.mdx";
+import BatchScrapeCURL from "/snippets/v1/batch-scrape/base/curl.mdx";
+import BatchScrapeOutput from "/snippets/v1/batch-scrape/base/output.mdx";
+import BatchScrapeAsyncOutput from "/snippets/v1/batch-scrape/base/async-output.mdx";
+import ScrapeLocationPython from "/snippets/v1/scrape/location/python.mdx";
+import ScrapeLocationNode from "/snippets/v1/scrape/location/js.mdx";
+import ScrapeLocationCURL from "/snippets/v1/scrape/location/curl.mdx";
+
+Firecrawl converts web pages into markdown, ideal for LLM applications.
+
+- It manages complexities: proxies, caching, rate limits, js-blocked content
+- Handles dynamic content: dynamic websites, js-rendered sites, PDFs, images
+- Outputs clean markdown, structured data, screenshots or html.
+
+For details, see the [Scrape Endpoint API Reference](https://docs.firecrawl.dev/api-reference/endpoint/scrape).
+
+
+## Scraping a URL with Firecrawl
+
+### /scrape endpoint
+
+Used to scrape a URL and get its content.
+
+### Installation 
+
+<CodeGroup>
+
+  <InstallationPython />
+
+  <InstallationNode />
+
+  <InstallationGo />
+  
+  <InstallationRust />
+
+</CodeGroup>
+
+### Usage
+
+<CodeGroup>
+
+  <ScrapePython />
+
+  <ScrapeNode />
+
+  <ScrapeGo />
+
+  <ScrapeRust />
+
+  <ScrapeCURL />
+
+</CodeGroup>
+
+For more details about the parameters, refer to the [API Reference](https://docs.firecrawl.dev/api-reference/endpoint/scrape).
+
+### Response
+
+SDKs will return the data object directly. cURL will return the payload exactly as shown below.
+
+<ScrapeResponse />
+
+## Scrape Formats
+
+You can now choose what formats you want your output in. You can specify multiple output formats. Supported formats are:
+
+- Markdown (markdown)
+- HTML (html)
+- Raw HTML (rawHtml) (with no modifications)
+- Screenshot (screenshot or screenshot@fullPage)
+- Links (links)
+- JSON (json) - structured output
+
+Output keys will match the format you choose.
+
+## Extract structured data
+
+### /scrape (with json) endpoint
+
+Used to extract structured data from scraped pages.
+
+<CodeGroup>
+
+<ExtractPython />
+<ExtractNode />
+<ExtractCURL />
+
+</CodeGroup>
+
+Output:
+
+<ExtractOutput />
+
+### Extracting without schema (New)
+
+You can now extract without a schema by just passing a `prompt` to the endpoint. The llm chooses the structure of the data.
+
+<CodeGroup>
+
+<ExtractNoSchemaCURL />
+
+</CodeGroup>
+
+Output:
+
+<ExtractNoSchemaOutput />
+
+### Extract object
+
+The `extract` object accepts the following parameters:
+
+- `schema`: The schema to use for the extraction.
+- `systemPrompt`: The system prompt to use for the extraction.
+- `prompt`: The prompt to use for the extraction without a schema.
+
+
+
+## Interacting with the page with Actions
+
+Firecrawl allows you to perform various actions on a web page before scraping its content. This is particularly useful for interacting with dynamic content, navigating through pages, or accessing content that requires user interaction.
+
+Here is an example of how to use actions to navigate to google.com, search for Firecrawl, click on the first result, and take a screenshot.
+
+It is important to almost always use the `wait` action before/after executing other actions to give enough time for the page to load.
+
+### Example
+<CodeGroup>
+
+<ScrapeActionsPython />
+<ScrapeActionsNode /> 
+<ScrapeActionsCURL />
+
+</CodeGroup>
+### Output
+
+<CodeGroup>
+
+<ScrapeActionsOutput />
+
+
+</CodeGroup>
+For more details about the actions parameters, refer to the [API Reference](https://docs.firecrawl.dev/api-reference/endpoint/scrape).
+
+## Location and Language
+
+Specify country and preferred languages to get relevant content based on your target location and language preferences.
+
+### How it works
+
+When you specify the location settings, Firecrawl will use an appropriate proxy if available and emulate the corresponding language and timezone settings. By default, the location is set to 'US' if not specified.
+
+### Usage
+
+To use the location and language settings, include the `location` object in your request body with the following properties:
+
+- `country`: ISO 3166-1 alpha-2 country code (e.g., 'US', 'AU', 'DE', 'JP'). Defaults to 'US'.
+- `languages`: An array of preferred languages and locales for the request in order of priority. Defaults to the language of the specified location.
+
+<CodeGroup>
+<ScrapeLocationPython />
+<ScrapeLocationNode />
+<ScrapeLocationCURL />
+</CodeGroup>
+
+## Batch scraping multiple URLs
+
+You can now batch scrape multiple URLs at the same time. It takes the starting URLs and optional parameters as arguments. The params argument allows you to specify additional options for the batch scrape job, such as the output formats.
+
+### How it works
+
+It is very similar to how the `/crawl` endpoint works. It submits a batch scrape job and returns a job ID to check the status of the batch scrape. 
+
+The sdk provides 2 methods, synchronous and asynchronous. The synchronous method will return the results of the batch scrape job, while the asynchronous method will return a job ID that you can use to check the status of the batch scrape.
+
+### Usage
+
+<CodeGroup>
+
+<BatchScrapePython />
+<BatchScrapeNode />
+<BatchScrapeCURL />
+
+</CodeGroup>
+
+### Response
+
+If you’re using the sync methods from the SDKs, it will return the results of the batch scrape job. Otherwise, it will return a job ID that you can use to check the status of the batch scrape.
+
+#### Synchronous
+
+<BatchScrapeOutput />
+
+#### Asynchronous
+
+You can then use the job ID to check the status of the batch scrape by calling the `/batch/scrape/{id}` endpoint. This endpoint is meant to be used while the job is still running or right after it has completed **as batch scrape jobs expire after 24 hours**.
+
+<BatchScrapeAsyncOutput />
+
+## Using FIRE-1 with Scrape
+
+You can use the FIRE-1 agent with the `/scrape` endpoint to apply intelligent navigation before scraping the final content.
+
+Activating FIRE-1 is straightforward. Simply include an `agent` object in your scrape or extract API request:
+
+```json
+"agent": {
+  "model": "FIRE-1",
+  "prompt": "Your detailed navigation instructions here."
+}
+```
+
+*Note:* The `prompt` field is required for scrape requests, instructing FIRE-1 precisely how to interact with the webpage.
+
+### Example Usage with Scrape Endpoint
+
+Here's a quick example using FIRE-1 with the scrape endpoint to get the companies on the consumer space from Y Combinator:
+
+```bash
+curl -X POST https://api.firecrawl.dev/v1/scrape \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -d '{
+    "url": "https://ycombinator.com/companies",
+    "formats": ["markdown"],
+    "agent": {
+      "model": "FIRE-1",
+      "prompt": "Get W22 companies on the consumer space by clicking the respective buttons"
+    }
+  }'
+```
+

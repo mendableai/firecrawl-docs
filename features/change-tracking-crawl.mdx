@@ -1,0 +1,91 @@
+---
+title: 'Change Tracking with Crawl'
+description: 'Track changes across your entire website, including new, removed, and hidden pages'
+og:title: "Change Tracking with Crawl | Firecrawl"
+sidebarTitle: "Change Tracking with Crawl (New)"
+og:description: "Track changes across your entire website, including new, removed, and hidden pages"
+---
+
+Change tracking becomes even more powerful when combined with crawling. While change tracking on individual pages shows you content changes, using it with crawl lets you monitor your entire website structure - showing new pages, removed pages, and pages that have become hidden.
+
+## Basic Usage
+
+To enable change tracking during a crawl, include it in the `formats` array of your `scrapeOptions`:
+
+```typescript
+// JavaScript/TypeScript
+const app = new FirecrawlApp({ apiKey: 'your-api-key' });
+const result = await app.crawl('https://example.com', {
+  scrapeOptions: {
+    formats: ['markdown', 'changeTracking']
+  }
+});
+```
+
+```python
+# Python
+app = FirecrawlApp(api_key='your-api-key')
+result = app.crawl('https://firecrawl.dev', {
+    'scrapeOptions': {
+        'formats': ['markdown', 'changeTracking']
+    }
+})
+```
+
+```json
+{
+  "success": true,
+  "status": "completed",
+  "completed": 2,
+  "total": 2,
+  "creditsUsed": 2,
+  "expiresAt": "2025-04-14T18:44:13.000Z",
+  "data": [
+    {
+      "markdown": "# Turn websites into LLM-ready data\n\nPower your AI apps with clean data crawled from any website...",
+      "metadata": {},
+      "changeTracking": {
+        "previousScrapeAt": "2025-04-10T12:00:00Z",
+        "changeStatus": "changed",
+        "visibility": "visible"
+      }
+    },
+    {
+      "markdown": "## Flexible Pricing\n\nStart for free, then scale as you grow...",
+      "metadata": {},
+      "changeTracking": {
+        "previousScrapeAt": "2025-04-10T12:00:00Z",
+        "changeStatus": "changed",
+        "visibility": "visible"
+      }
+    }
+  ]
+}
+```
+
+## Understanding Change Status
+
+When using change tracking with crawl, the `changeStatus` field becomes especially valuable:
+
+- `new`: A page that didn't exist in your previous crawl
+- `same`: A page that exists and hasn't changed since your last crawl
+- `changed`: A page that exists but has been modified since your last crawl
+- `removed`: A page that existed in your previous crawl but is no longer found
+
+## Page Visibility
+
+The `visibility` field helps you understand how pages are discovered:
+
+- `visible`: The page is discoverable through links or the sitemap
+- `hidden`: The page still exists but is no longer linked or in the sitemap
+
+This is particularly useful for:
+- Detecting orphaned content
+- Finding pages accidentally removed from navigation
+- Monitoring site structure changes
+- Identifying content that should be re-linked or removed
+
+## Full Diff Support
+
+For detailed change tracking with diffs, you can use the same options as described in the [Change Tracking for Scrape](/features/change-tracking) documentation.
+

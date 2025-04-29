@@ -1,0 +1,157 @@
+---
+title: "Scrape"
+description: "Turn any url into clean data"
+icon: "markdown"
+og:title: "Scrape | Firecrawl"
+og:description: "Turn any url into clean data"
+---
+
+## Scraping with Firecrawl
+
+Firecrawl converts web pages into markdown, ideal for LLM applications. Here's why:
+
+1. **Complexities Managed:**
+   Handles proxies, caching, rate limits, and JavaScript-blocked content for smooth scraping.
+
+2. **Dynamic Content:**
+   Gathers data from JavaScript-rendered websites, pdfs, images etc.
+
+3. **Markdown or Structured data conversion:**
+   Converts collected data into clean markdown or structured output, perfect for LLM processing or any other task.
+
+For more details, refer to the [Scrape Endpoint API Reference](https://docs.firecrawl.dev/api-reference/endpoint/scrape).
+
+
+## Scrape a URL
+
+### /scrape endpoint
+
+Used to scrape a URL and get its content.
+
+### Installation 
+
+<CodeGroup>
+
+```bash Python
+pip install firecrawl-py
+```
+
+```bash JavaScript
+npm install @mendable/firecrawl-js
+```
+
+```go Go
+go get github.com/mendableai/firecrawl-go
+```
+
+```toml Rust
+# Add this to your Cargo.toml
+[dependencies]
+firecrawl = "^0.1"
+tokio = { version = "^1", features = ["full"] }
+serde = { version = "^1.0", features = ["derive"] }
+serde_json = "^1.0"
+uuid = { version = "^1.10", features = ["v4"] }
+
+[build-dependencies]
+tokio = { version = "1", features = ["full"] }
+```
+
+</CodeGroup>
+
+### Usage
+
+<CodeGroup>
+
+```python Python
+from firecrawl import FirecrawlApp
+
+app = FirecrawlApp(api_key="YOUR_API_KEY")
+
+content = app.scrape_url("https://mendable.ai")
+```
+
+```JavaScript JavaScript
+import { FirecrawlApp } from 'firecrawl-js';
+
+const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
+
+const content = await app.scrapeUrl('https://mendable.ai');
+```
+
+```go Go
+import (
+  "fmt"
+  "log"
+
+  "github.com/mendableai/firecrawl-go"
+)
+
+func main() {
+  app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
+  if err != nil {
+    log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+  }
+
+  content, err := app.ScrapeURL("mendable.ai", nil)
+  if err != nil {
+    log.Fatalf("Failed to scrape URL: %v", err)
+  }
+  fmt.Println(content)
+}
+```
+
+```rust Rust
+use firecrawl::FirecrawlApp;
+
+#[tokio::main]
+async fn main() {
+    // Initialize the FirecrawlApp with the API key
+    let api_key = "YOUR_API_KEY";
+    let api_url = "https://api.firecrawl.dev";
+    let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
+
+    // Scrape the URL
+    let scrape_result = app.scrape_url("https://mendable.ai", None).await;
+
+    // Print the scrape result
+  match scrape_result {
+    Ok(data) => println!("Scrape Result:\n{}", data["markdown"]),
+    Err(e) => eprintln!("Scrape failed: {}", e),
+  }
+}
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v0/scrape \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://mendable.ai"
+    }'
+```
+
+</CodeGroup>
+
+### Response
+
+SDKs will return the data object directly. cURL will return the payload exactly as shown below.
+
+```json
+{
+  "success": true,
+  "data": {
+    "content": "Raw Content ",
+    "markdown": "# Markdown Content",
+    "provider": "web-scraper",
+    "metadata": {
+      "title": "Mendable | AI for CX and Sales",
+      "description": "AI for CX and Sales",
+      "language": null,
+      "sourceURL": "https://www.mendable.ai/"
+    }
+  }
+}
+```
+
+

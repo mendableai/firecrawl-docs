@@ -1,0 +1,12 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+# Initialize the FirecrawlApp with your API key
+
+app = FirecrawlApp(api_key='your_api_key')
+
+data = app.extract([
+'https://nextbase.com/dash-cams/622gw-dash-cam'
+], prompt="Extract details about the best dash cams including prices, features, pros/cons and reviews.", enable_web_search=True)
+print(data)
+```

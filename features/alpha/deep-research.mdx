@@ -1,0 +1,133 @@
+---
+title: "Deep Research"
+description: Research API that allows you to build deep research into your own applications"
+og:title: "Deep Research | Firecrawl"
+og:description: "AI-powered deep research and analysis"
+sidebarTitle: "Deep Research API"
+---
+
+import DeepResearchCURL from "/snippets/v1/deep-research/base/curl.mdx";
+import DeepResearchPython from "/snippets/v1/deep-research/base/python.mdx";
+import DeepResearchNode from "/snippets/v1/deep-research/base/js.mdx";
+import DeepResearchOutput from "/snippets/v1/deep-research/base/output.mdx";
+import CheckStatusCURL from "/snippets/v1/deep-research/status/curl.mdx";
+import CheckStatusPython from "/snippets/v1/deep-research/status/python.mdx";
+import CheckStatusNode from "/snippets/v1/deep-research/status/js.mdx";
+import StatusPending from "/snippets/v1/deep-research/status/pending.mdx";
+import StatusCompleted from "/snippets/v1/deep-research/status/completed.mdx";
+
+## Introducing Deep Research (Alpha)
+
+The `/deep-research` endpoint enables AI-powered deep research and analysis on any topic. Simply provide a research query, and Firecrawl will autonomously explore the web, gather relevant information, and synthesize findings into comprehensive insights.
+
+## Building with Deep Research
+
+Deep Research works by:
+1. Analyzing your query to identify key research areas
+2. Iteratively searching and exploring relevant web content
+3. Synthesizing information from multiple sources
+4. Providing structured findings with source attribution
+
+Firecrawl provides structured results that enable you to build powerful applications:
+
+- **Activities**: Detailed timeline of research steps and findings
+- **Sources**: Curated list of relevant URLs with titles and descriptions 
+- **Final Analysis**: Comprehensive synthesis of key insights and conclusions
+- **Progress Tracking**: Real-time status updates on research depth and completion
+
+### Example Usage
+
+<CodeGroup>
+
+<DeepResearchPython />
+<DeepResearchNode />
+<DeepResearchCURL />
+
+</CodeGroup>
+
+**Key Parameters:**
+
+- **query**: The research topic or question you want to investigate
+- **maxDepth** (Optional): Maximum number of research iterations (1-10, default: 7)
+- **timeLimit** (Optional): Time limit in seconds (30-300, default: 270)
+- **maxUrls** (Optional): Maximum number of URLs to analyze (1-1000, default: 20)
+
+See [API Reference](/api-reference/endpoint/deep-research) for more details.
+
+### Response
+
+<DeepResearchOutput />
+
+## Monitoring Research Progress
+
+Deep Research jobs run asynchronously. You can monitor progress and receive real-time updates:
+
+<CodeGroup>
+
+<CheckStatusPython />
+<CheckStatusNode />
+<CheckStatusCURL />
+
+</CodeGroup>
+
+
+### Research Activities
+
+The data response includes:
+
+- **activities**: List of research activities with the following properties:
+- `type`: Type of activity ('search', 'extract', 'analyze', 'reasoning', 'synthesis', 'thought')
+- `status`: Activity status ('processing', 'complete', 'error')
+- `message`: Description of the activity or finding
+- `timestamp`: ISO timestamp of when the activity occurred
+- `depth`: Current research depth level
+- **sources**: Referenced URLs with titles and descriptions
+- `title`: Title of the source
+- `description`: Description of the source
+- `url`: URL of the source
+- `icon`: Icon of the source
+- **finalAnalysis**: Comprehensive analysis (when completed)
+
+### Status Examples
+
+
+#### In Progress
+
+<StatusPending />
+
+#### Completed
+
+<StatusCompleted />
+
+### JSON Output
+
+You can now specify the JSON output format by setting the `formats` parameter to `json`. Set the `jsonOptions` parameter to specify the schema for the JSON output.
+
+### Customize even further
+
+You can also specify a `systemPrompt` and an `analysisPrompt` to customize the agentic process and the final analysis, respectively.
+
+
+## Models
+
+While in Alpha we use a combination of small models to explore the web and synthesize information. That way we can keep the cost low and the research fast. But this can result in the synthesis not being very long and detailed. If you'd like us to offer more powerful models, let us know at [help@firecrawl.dev](mailto:help@firecrawl.dev).
+
+## Known Limitations (Alpha)
+
+1. **Research Scope**  
+Best suited for topics with publicly available information. May not access paywalled or private content.
+
+2. **Time Constraints**  
+Research jobs are limited to 10 minutes maximum to ensure reasonable response times.
+
+3. **Source Verification**  
+While sources are provided, manual verification of critical information is recommended.
+
+4. **Alpha State**  
+As an Alpha feature, the research methodology and output format may evolve based on feedback.
+
+## Billing and Usage
+
+Billing is done based on the number of `urls` analyzed. Each `url` is 1 credit. You can specify the max number of urls to analyze with the `maxUrls` parameter.
+
+Have feedback or need help? Email [help@firecrawl.dev](mailto:help@firecrawl.dev).

@@ -1,0 +1,71 @@
+---
+title: "LLMs.txt Status"
+openapi: "v1-openapi GET /llmstxt/{id}"
+---
+
+Get the status and results of an LLMs.txt generation job. This endpoint allows you to check if the generation is complete and retrieve the generated content.
+
+### Response Structure
+
+The response includes:
+
+- **success**: Boolean indicating if the request was successful
+- **status**: Current status of the generation job:
+
+  - `processing`: Job is still running
+  - `completed`: Job finished successfully
+  - `failed`: Job encountered an error
+
+- **data**: Generated content (when status is `completed`):
+
+  - `llmstxt`: The generated LLMs.txt content
+  - `llmsfulltxt`: Full text content (if showFullText was true)
+
+- **expiresAt**: ISO timestamp indicating when the results will expire
+
+### Status Examples
+
+1. **Processing Status**
+
+   ```json
+   {
+     "success": true,
+     "status": "processing",
+     "data": {
+       "llmstxt": "# Firecrawl.dev llms.txt\n\n- [Web Data Extraction Tool](https://www.firecrawl.dev/)...",
+       "llmsfulltxt": "# Firecrawl.dev llms-full.txt\n\n"
+     },
+     "expiresAt": "2025-03-03T23:19:18.000Z"
+   }
+   ```
+
+2. **Completed Status**
+   ```json
+   {
+     "success": true,
+     "status": "completed",
+     "data": {
+       "llmstxt": "# http://firecrawl.dev llms.txt\n\n- [Web Data Extraction Tool](https://www.firecrawl.dev/): Transform websites into clean, LLM-ready data effortlessly.\n- [Flexible Web Scraping Pricing](https://www.firecrawl.dev/pricing): Flexible pricing plans for web scraping and data extraction.",
+       "llmsfulltxt": "# http://firecrawl.dev llms-full.txt\n\n## Web Data Extraction Tool\nIntroducing /extract - Get web data with a prompt..."
+     },
+     "expiresAt": "2025-03-03T22:45:50.000Z"
+   }
+   ```
+
+### Error Handling
+
+If the generation job fails or cannot be found, you'll receive an appropriate error response:
+
+```json
+{
+  "success": false,
+  "error": "LLMs.txt generation job not found"
+}
+```
+
+### Polling Recommendations
+
+1. Poll every 2-3 seconds initially
+2. Increase interval if still processing after 30 seconds
+3. Stop polling if status is `completed` or `failed`
+4. Implement exponential backoff to avoid rate limits

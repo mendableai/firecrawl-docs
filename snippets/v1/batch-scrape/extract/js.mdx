@@ -1,0 +1,43 @@
+```js Node
+import FirecrawlApp, { ScrapeResponse } from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Define schema to extract contents into
+const schema = {
+  type: "object",
+  properties: {
+    title: { type: "string" },
+    description: { type: "string" }
+  },
+  required: ["title", "description"]
+};
+
+// Scrape multiple websites (synchronous):
+const batchScrapeResult = await app.batchScrapeUrls(['https://docs.firecrawl.dev', 'https://docs.firecrawl.dev/sdks/overview'], { 
+  formats: ['extract'],
+  extract: {
+    prompt: "Extract the title and description from the page.",
+    schema: schema
+  }
+});
+
+if (!batchScrapeResult.success) {
+  throw new Error(`Failed to scrape: ${batchScrapeResult.error}`)
+}
+// Output all the results of the batch scrape:
+console.log(batchScrapeResult)
+
+// Or, you can use the asynchronous method:
+const batchScrapeJob = await app.asyncBulkScrapeUrls(['https://docs.firecrawl.dev', 'https://docs.firecrawl.dev/sdks/overview'], { 
+  formats: ['extract'],
+  extract: {
+    prompt: "Extract the title and description from the page.",
+    schema: schema
+  }
+});
+console.log(batchScrapeJob)
+
+// (async) You can then use the job ID to check the status of the batch scrape:
+const batchScrapeStatus = await app.checkBatchScrapeStatus(batchScrapeJob.id);
+console.log(batchScrapeStatus)

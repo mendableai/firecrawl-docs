@@ -1,0 +1,13 @@
+```rust Rust
+let crawl_id = app.crawl_url_async("https://mendable.ai", None).await?.id;
+
+// ... later ...
+
+let status = app.check_crawl_status(crawl_id).await?;
+
+if status.status == CrawlStatusTypes::Completed {
+    println!("Crawl is done: {:#?}", status.data);
+} else {
+    // ... wait some more ...
+}
+```

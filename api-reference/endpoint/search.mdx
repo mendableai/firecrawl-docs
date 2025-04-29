@@ -1,0 +1,22 @@
+---
+title: 'Search'
+openapi: 'v1-openapi POST /search'
+---
+
+The search endpoint combines web search (SERP) with Firecrawl's scraping capabilities to return full page content for any query.
+
+Include `scrapeOptions` with `formats: ["markdown"]` to get complete markdown content for each search result otherwise you will default to getting the SERP results (url, title, description).
+
+## Supported query operators
+We support a variety of query operators that allow you to filter your searches better.
+
+| Operator | Functionality | Examples |
+---|-|-|
+| `""` | Non-fuzzy matches a string of text | `"Firecrawl"`
+| `-` | Excludes certain keywords or negates other operators | `-bad`, `-site:firecrawl.dev`
+| `site:` | Only returns results from a specified website | `site:firecrawl.dev`
+| `inurl:` | Only returns results that include a word in the URL | `inurl:firecrawl`
+| `allinurl:` | Only returns results that include multiple words in the URL | `allinurl:git firecrawl`
+| `intitle:` | Only returns results that include a word in the title of the page | `intitle:Firecrawl`
+| `allintitle:` | Only returns results that include multiple words in the title of the page | `allintitle:firecrawl playground`
+| `related:` | Only returns results that are related to a specific domain | `related:firecrawl.dev`

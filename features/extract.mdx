@@ -1,0 +1,217 @@
+---
+title: "Extract"
+description: "Extract structured data from pages using LLMs"
+og:title: "Extract | Firecrawl"
+og:description: "Extract structured data from pages using LLMs"
+icon: "barcode-read"
+sidebarTitle: "Extract"
+---
+
+import ExtractCURL from "/snippets/v1/extract/base/curl.mdx";
+import ExtractPython from "/snippets/v1/extract/base/python.mdx";
+import ExtractNode from "/snippets/v1/extract/base/js.mdx";
+import ExtractOutput from "/snippets/v1/extract/base/output.mdx";
+import ExtractNoSchemaCURL from "/snippets/v1/extract/no-schema/curl.mdx";
+import ExtractNoSchemaPython from "/snippets/v1/extract/no-schema/python.mdx";
+import ExtractNoSchemaJS from "/snippets/v1/extract/no-schema/js.mdx";
+import ExtractNoSchemaOutput from "/snippets/v1/extract/no-schema/output.mdx";
+import ExtractWebSearchPython from "/snippets/v1/extract/websearch/python.mdx";
+import ExtractWebSearchJS from "/snippets/v1/extract/websearch/js.mdx";
+import ExtractWebSearchCURL from "/snippets/v1/extract/websearch/curl.mdx";
+import ExtractWebSearchOutput from "/snippets/v1/extract/websearch/output.mdx";
+import CheckExtractJobCURL from "/snippets/v1/extract/status/curl.mdx";
+import CheckExtractJobJS from "/snippets/v1/extract/status/js.mdx";
+import CheckExtractJobPython from "/snippets/v1/extract/status/python.mdx";
+import ExtractStatusPending from "/snippets/v1/extract/status/pending.mdx";
+import ExtractStatusAsync from "/snippets/v1/extract/async-response/async.mdx";
+import ExtractStatusDone from "/snippets/v1/extract/status/completed.mdx";
+import ExtractWithoutURLsPython from "/snippets/v1/extract/without-urls/python.mdx";
+import ExtractWithoutURLsJS from "/snippets/v1/extract/without-urls/js.mdx";
+import ExtractWithoutURLsCURL from "/snippets/v1/extract/without-urls/curl.mdx";
+
+## Introducing `/extract` (Open Beta)
+
+The `/extract` endpoint simplifies collecting structured data from any number of URLs or entire domains. Provide a list of URLs, optionally with wildcards (e.g., `example.com/*`), and a prompt or schema describing the information you want. Firecrawl handles the details of crawling, parsing, and collating large or small datasets.
+
+## Using `/extract`
+
+You can extract structured data from one or multiple URLs, including wildcards:
+
+- **Single Page**  
+  Example: `https://firecrawl.dev/some-page`
+- **Multiple Pages / Full Domain**  
+  Example: `https://firecrawl.dev/*`
+
+When you use `/*`, Firecrawl will automatically crawl and parse all URLs it can discover in that domain, then extract the requested data. This feature is experimental; email [help@firecrawl.dev](mailto:help@firecrawl.dev) if you have issues.
+
+### Example Usage
+
+<CodeGroup>
+
+<ExtractPython />
+<ExtractNode />
+<ExtractCURL />
+
+</CodeGroup>
+
+**Key Parameters:**
+
+- **urls**: An array of one or more URLs. Supports wildcards (`/*`) for broader crawling.
+- **prompt** (Optional unless no schema): A natural language prompt describing the data you want or specifying how you want that data structured.
+- **schema** (Optional unless no prompt): A more rigid structure if you already know the JSON layout.
+- **enableWebSearch** (Optional): When `true`, extraction can follow links outside the specified domain.
+
+See [API Reference](https://docs.firecrawl.dev/api-reference/endpoint/extract) for more details.
+
+### Response (sdks)
+
+<ExtractOutput />
+
+## Asynchronous Extraction & Status Checking
+
+When you submit an extraction job—either directly via the API or through the SDK's asynchronous methods—you'll receive a Job ID. You can use this ID to:
+
+- Check Job Status: Send a request to the /extract/{ID} endpoint to see if the job is still running or has finished.
+- Automatically Poll (Default SDK Behavior): If you use the default extract method (Python/Node), the SDK automatically polls this endpoint for you and returns the final results once the job completes.
+- Manually Poll (Async SDK Methods): If you use the asynchronous methods—async_extract (Python) or asyncExtract (Node)—the SDK immediately returns a Job ID that you can track. Use get_extract_status (Python) or getExtractStatus (Node) to check the job's progress on your own schedule.
+
+<Note>
+  This endpoint only works for jobs in progress or recently completed (within 24
+  hours).
+</Note>
+
+Below are code examples for checking an extraction job's status using Python, Node.js, and cURL:
+
+<CodeGroup>
+
+<CheckExtractJobPython />
+<CheckExtractJobJS />
+<CheckExtractJobCURL />
+
+</CodeGroup>
+
+### Possible States
+
+- **completed**: The extraction finished successfully.
+- **processing**: Firecrawl is still processing your request.
+- **failed**: An error occurred; data was not fully extracted.
+- **cancelled**: The job was cancelled by the user.
+
+#### Pending Example
+
+<ExtractStatusPending />
+
+#### Completed Example
+
+<ExtractStatusDone />
+
+## Extracting without a Schema
+
+If you prefer not to define a strict structure, you can simply provide a `prompt`. The underlying model will choose a structure for you, which can be useful for more exploratory or flexible requests.
+
+<CodeGroup>
+
+<ExtractNoSchemaPython />
+<ExtractNoSchemaJS />
+<ExtractNoSchemaCURL />
+
+</CodeGroup>
+
+<ExtractNoSchemaOutput />
+
+## Improving Results with Web Search
+
+Setting `enableWebSearch = true` in your request will expand the crawl beyond the provided URL set. This can capture supporting or related information from linked pages.
+
+Here's an example that extracts information about dash cams, enriching the results with data from related pages:
+
+<CodeGroup>
+
+<ExtractWebSearchPython />
+<ExtractWebSearchJS />
+<ExtractWebSearchCURL />
+
+</CodeGroup>
+
+### Example Response with Web Search
+
+<ExtractWebSearchOutput />
+
+The response includes additional context gathered from related pages, providing more comprehensive and accurate information.
+
+
+## Extracting without URLs
+
+The `/extract` endpoint now supports extracting structured data using a prompt without needing specific URLs. This is useful for research or when exact URLs are unknown. Currently in Alpha.
+
+<CodeGroup>
+
+<ExtractWithoutURLsPython />
+<ExtractWithoutURLsJS />
+<ExtractWithoutURLsCURL />
+
+</CodeGroup>
+
+
+## Known Limitations (Beta)
+
+1. **Large-Scale Site Coverage**  
+   Full coverage of massive sites (e.g., "all products on Amazon") in a single request is not yet supported.
+
+2. **Complex Logical Queries**  
+   Requests like "find every post from 2025" may not reliably return all expected data. More advanced query capabilities are in progress.
+
+3. **Occasional Inconsistencies**  
+   Results might differ across runs, particularly for very large or dynamic sites. Usually it captures core details, but some variation is possible.
+
+4. **Beta State**  
+   Since `/extract` is still in Beta, features and performance will continue to evolve. We welcome bug reports and feedback to help us improve.
+
+
+
+## Using FIRE-1
+
+FIRE-1 is an AI agent that enhances Firecrawl's scraping capabilities. It can controls browser actions and navigates complex website structures to enable comprehensive data extraction beyond traditional scraping methods.
+
+You can leverage the FIRE-1 agent with the `/v1/extract` endpoint for complex extraction tasks that require navigation across multiple pages or interaction with elements.
+
+**Example (cURL):**
+
+```bash
+curl -X POST https://api.firecrawl.dev/v1/extract \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "urls": ["https://example-forum.com/topic/123"],
+      "prompt": "Extract all user comments from this forum thread.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "comments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "author": {"type": "string"},
+                "comment_text": {"type": "string"}
+              },
+              "required": ["author", "comment_text"]
+            }
+          }
+        },
+        "required": ["comments"]
+      },
+      "agent": {
+        "model": "FIRE-1"
+      }
+    }'
+```
+
+> FIRE-1 is already live and available under preview.
+
+
+## Billing and Usage Tracking
+
+You can check our the pricing for /extract on the [Extract landing page pricing page](https://www.firecrawl.dev/extract#pricing) and monitor usage via the [Extract page on the dashboard](https://www.firecrawl.dev/app/extract).
+
+Have feedback or need help? Email [help@firecrawl.dev](mailto:help@firecrawl.dev).

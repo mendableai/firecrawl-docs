@@ -1,0 +1,27 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+app = FirecrawlApp(
+    api_key="fc-YOUR_API_KEY"
+)
+
+# Start an extraction job first
+extract_job = app.async_extract([
+    'https://docs.firecrawl.dev/*', 
+    'https://firecrawl.dev/'
+], prompt="Extract the company mission and features from these pages.")
+
+# Get the status of the extraction job
+job_status = app.get_extract_status(extract_job.id)
+
+print(job_status)
+# Example output:
+# id=None
+# status='completed'
+# expiresAt=datetime.datetime(...)
+# success=True
+# data=[{ ... }]
+# error=None
+# warning=None
+# sources=None
+```

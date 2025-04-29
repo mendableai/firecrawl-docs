@@ -1,0 +1,81 @@
+---
+title: 'FIRE-1 Agent'
+sidebarTitle: 'FIRE-1'
+description: 'AI agent that enables intelligent navigation and interaction with web pages'
+og:title: "FIRE-1 AI Agent | Firecrawl"
+og:description: "FIRE-1 is an AI agent that enables intelligent navigation and interaction with web pages"
+icon: "robot"
+---
+
+import ScrapeFire1Python from "/snippets/v1/scrape/agent-f1/python.mdx";
+import ScrapeFire1Node from "/snippets/v1/scrape/agent-f1/js.mdx";
+import ScrapeFire1CURL from "/snippets/v1/scrape/agent-f1/curl.mdx";
+import ExtractFire1Python from "/snippets/v1/extract/agent-f1/python.mdx";
+import ExtractFire1Node from "/snippets/v1/extract/agent-f1/js.mdx";
+import ExtractFire1CURL from "/snippets/v1/extract/agent-f1/curl.mdx";
+
+FIRE-1 is an AI agent that enhances Firecrawl's scraping capabilities. It can controls browser actions and navigates complex website structures to enable comprehensive data extraction beyond traditional scraping methods.
+
+### What FIRE-1 Can Do:
+- Plan and take actions to uncover data
+- Interact with buttons, links, inputs, and dynamic elements.
+- Get mulitple pages of data that require pagination, multiple steps, etc.
+
+
+
+## How to Enable FIRE-1
+
+Activating FIRE-1 is straightforward. Simply include an `agent` object in your scrape API request:
+
+```json
+"agent": {
+  "model": "FIRE-1",
+  "prompt": "Your detailed navigation instructions here."
+}
+```
+
+*Note:* The `prompt` field is required for scrape requests, instructing FIRE-1 precisely how to interact with the webpage. For `/extract` it will use the prompt provided in the `prompt` parameter on the body of the request so you can omit the above `agent.prompt` field.
+
+
+
+## Example Usage with Scrape Endpoint
+
+Here's a quick example using FIRE-1 with the scrape endpoint to get the companies on the consumer space from Y Combinator:
+
+<CodeGroup>
+
+<ScrapeFire1Python />
+<ScrapeFire1Node />
+<ScrapeFire1CURL />
+
+</CodeGroup>
+
+In this scenario, FIRE-1 intelligently clicks the W22 button, the Consumer space button and scrapes the companies.
+
+
+## Using FIRE-1 with the Extract Endpoint
+
+Similarly, you can leverage the FIRE-1 agent with the `/v1/extract` endpoint for complex extraction tasks that require navigation across multiple pages or interaction with elements.
+
+**Example:**
+
+<CodeGroup>
+
+<ExtractFire1Python />
+<ExtractFire1Node />
+<ExtractFire1CURL />
+
+</CodeGroup>
+
+> FIRE-1 is already live and available under preview.
+
+## Billing
+
+During this experimental phase:
+* `/scrape`: 150 credits 
+* `/extract`: See our [token calculator](https://www.firecrawl.dev/pricing?extract-pricing=true#token-calculator). Around 8x the cost of non-agent extract.
+
+## Rate limits
+
+* `/scrape`: 10 requests per minute
+* `/extract`: 10 requests per minute

@@ -1,0 +1,9 @@
+```go Go
+// Map a website
+mapResult, err := app.MapUrl("https://firecrawl.dev", nil)
+if err != nil {
+  log.Fatalf("Failed to map URL: %v", err)
+}
+
+fmt.Println(mapResult)
+```

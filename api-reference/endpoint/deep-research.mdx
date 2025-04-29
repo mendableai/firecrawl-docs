@@ -1,0 +1,45 @@
+---
+title: 'Deep Research'
+openapi: 'v1-openapi POST /deep-research'
+---
+
+The Deep Research endpoint enables AI-powered deep research and analysis on any topic. Simply provide a research query, and Firecrawl will autonomously explore the web, gather relevant information, and synthesize findings into comprehensive insights.
+
+Looking for the status endpoint? Check out the [Deep Research Status](/api-reference/endpoint/deep-research-get) endpoint.
+
+### Response Structure
+
+The response includes:
+
+- **activities**: List of research activities with:
+  - `type`: Activity type ('search', 'extract', 'analyze', 'reasoning', 'synthesis', 'thought')
+  - `status`: Status ('processing', 'complete', 'error')
+  - `message`: Description of activity/finding
+  - `timestamp`: ISO timestamp
+  - `depth`: Research depth level
+
+- **sources**: Referenced URLs with:
+  - `title`: Source title
+  - `description`: Source description
+  - `url`: Source URL
+  - `icon`: Source favicon
+
+- **finalAnalysis**: Comprehensive analysis (when completed)
+- **status**: Overall status ('processing', 'completed', 'failed')
+- **currentDepth**: Current research depth
+- **maxDepth**: Maximum research depth
+- **totalUrls**: Number of URLs analyzed
+- **expiresAt**: ISO timestamp when results expire
+
+### Limitations
+
+1. Best suited for topics with publicly available information
+2. Research jobs limited to 10 minutes maximum
+3. Manual verification recommended for critical information
+4. Alpha feature - methodology and output may evolve
+
+### Billing
+
+Billing is based on number of URLs analyzed:
+- Each URL = 1 credit
+- Control usage with `maxUrls` parameter

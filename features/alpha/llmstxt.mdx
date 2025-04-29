@@ -1,0 +1,90 @@
+---
+title: "Generate LLMs.txt with an API"
+description: "Generate LLMs.txt files from any website for LLM training and analysis"
+og:title: "LLMs.txt Generator | Firecrawl"
+og:description: "Transform websites into clean, LLM-ready text files"
+icon: "file-text"
+sidebarTitle: "Generate with API"
+---
+
+import GenerateLLMsTxtCURL from "/snippets/v1/generatellmstxt/base/curl.mdx";
+import GenerateLLMsTxtPython from "/snippets/v1/generatellmstxt/base/python.mdx";
+import GenerateLLMsTxtNode from "/snippets/v1/generatellmstxt/base/js.mdx";
+import CheckStatusCURL from "/snippets/v1/generatellmstxt/status/curl.mdx";
+import CheckStatusPython from "/snippets/v1/generatellmstxt/status/python.mdx";
+import CheckStatusNode from "/snippets/v1/generatellmstxt/status/js.mdx";
+import StatusPending from "/snippets/v1/generatellmstxt/status/pending.mdx";
+import StatusCompleted from "/snippets/v1/generatellmstxt/status/completed.mdx";
+
+## Introducing LLMs.txt Generator Endpoint (Alpha) 📃
+
+The `/llmstxt` endpoint allows you to transform any website into clean, [LLM-ready text files](https://www.firecrawl.dev/blog/How-to-Create-an-llms-txt-File-for-Any-Website). Simply provide a URL, and Firecrawl will crawl the site and generate both `llms.txt` and `llms-full.txt` files that can be used for training or analysis with any LLM.
+
+## How It Works
+
+The LLMs.txt Generator:
+1. Crawls the provided website URL and its linked pages
+2. Extracts clean, meaningful text content
+3. Generates two formats:
+   - `llms.txt`: Concise summaries and key information
+   - `llms-full.txt`: Complete text content with more detail
+
+### Example Usage
+
+<CodeGroup>
+
+<GenerateLLMsTxtPython />
+<GenerateLLMsTxtNode />
+<GenerateLLMsTxtCURL />
+
+</CodeGroup>
+
+**Key Parameters:**
+
+- **url**: The website URL to generate LLMs.txt files from
+- **maxUrls** (Optional): Maximum number of pages to crawl (1-100, default: 10)
+- **showFullText** (Optional): Generate llms-full.txt in addition to llms.txt (default: false)
+
+See [API Reference](/api-reference/endpoint/llmstxt) for more details.
+
+## Checking Generation Status
+
+LLMs.txt generation runs asynchronously. Make the aync call and monitor the status with:
+
+<CodeGroup>
+
+<CheckStatusPython />
+<CheckStatusNode />
+<CheckStatusCURL />
+
+</CodeGroup>
+
+### Status Examples
+
+#### In Progress
+
+<StatusPending />
+
+#### Completed
+
+<StatusCompleted />
+
+## Known Limitations (Alpha)
+
+1. **Access Restrictions**  
+Only publicly accessible pages can be processed. Login-protected or paywalled content is not supported.
+
+2. **Site Size**  
+We are only are allowing processing for up to 5000 URLs during the alpha stage.
+
+3. **Alpha State**  
+As an Alpha feature, the output format and processing may evolve based on feedback.
+
+## Billing and Usage
+
+Billing is based on the number of URLs processed:
+
+- Base cost: 1 credit per URL processed
+- Control URL costs with `maxUrls` parameter
+
+Have feedback or need help? Email [help@firecrawl.dev](mailto:help@firecrawl.dev).

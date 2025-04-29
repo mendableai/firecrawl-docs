@@ -1,0 +1,31 @@
+```js Node
+import FirecrawlApp from "@mendable/firecrawl-js";
+import { z } from "zod";
+
+const app = new FirecrawlApp({
+  apiKey: "fc-YOUR_API_KEY"
+});
+
+// Define schema to extract contents into
+const schema = z.object({
+  company_mission: z.string(),
+  supports_sso: z.boolean(),
+  is_open_source: z.boolean(),
+  is_in_yc: z.boolean()
+});
+
+const scrapeResult = await app.extract([
+  'https://docs.firecrawl.dev/*', 
+  'https://firecrawl.dev/', 
+  'https://www.ycombinator.com/companies/'
+], {
+  prompt: "Extract the company mission, whether it supports SSO, whether it is open source, and whether it is in Y Combinator from the page.",
+  schema: schema
+});
+
+if (!scrapeResult.success) {
+  throw new Error(`Failed to scrape: ${scrapeResult.error}`)
+}
+
+console.log(scrapeResult.data);
+```

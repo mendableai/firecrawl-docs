@@ -1,0 +1,23 @@
+```js Node
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+// Initialize the client with your API key
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Search and scrape content
+app.search("firecrawl web scraping", {
+  limit: 3,
+  scrapeOptions: {
+    formats: ["markdown", "links"]
+  }
+})
+.then(searchResult => {
+  // Process the results
+  searchResult.data.forEach(result => {
+    console.log(`Title: ${result.title}`);
+    console.log(`URL: ${result.url}`);
+    console.log(`Content: ${result.markdown?.substring(0, 150)}...`);
+    console.log(`Links: ${(result.links || []).slice(0, 3).join(', ')}...`);
+  });
+}); 
+```

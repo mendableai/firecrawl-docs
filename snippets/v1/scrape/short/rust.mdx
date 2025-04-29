@@ -1,0 +1,13 @@
+```rust Rust
+let options = ScrapeOptions {
+    formats vec! [ ScrapeFormats::Markdown, ScrapeFormats::HTML ].into(),
+    ..Default::default()
+};
+
+let scrape_result = app.scrape_url("https://firecrawl.dev", options).await;
+
+match scrape_result {
+    Ok(data) => println!("Scrape Result:\n{}", data.markdown.unwrap()),
+    Err(e) => eprintln!("Map failed: {}", e),
+}
+```

@@ -1,0 +1,95 @@
+---
+title: 'Map'
+description: 'Input a website and get all the urls on the website - extremely fast'
+og:title: "Map | Firecrawl"
+og:description: "Go from a single url to a map of the entire website"
+icon: "map"
+version: "v1"
+sidebarTitle: "Map"
+---
+
+import InstallationPython from "/snippets/v1/installation/python.mdx";
+import InstallationJavaScript from "/snippets/v1/installation/js.mdx";
+import InstallationGo from "/snippets/v1/installation/go.mdx";
+import InstallationRust from "/snippets/v1/installation/rust.mdx";
+import MapPython from "/snippets/v1/map/base/python.mdx";
+import MapJavaScript from "/snippets/v1/map/base/js.mdx";
+import MapGo from "/snippets/v1/map/base/go.mdx";
+import MapRust from "/snippets/v1/map/base/rust.mdx";
+import MapCURL from "/snippets/v1/map/base/curl.mdx";
+import MapResponse from "/snippets/v1/map/base/output.mdx";
+
+## Introducing /map
+
+The easiest way to go from a single url to a map of the entire website. This is extremely useful for:
+- When you need to prompt the end-user to choose which links to scrape
+- Need to quickly know the links on a website
+- Need to scrape pages of a website that are related to a specific topic (use the `search` parameter)
+- Only need to scrape specific pages of a website
+
+## Alpha Considerations
+
+This endpoint prioritizes speed, so it may not capture all website links. We are working on improvements. Feedback and suggestions are very welcome.
+
+
+## Mapping
+
+### /map endpoint
+
+Used to map a URL and get urls of the website. This returns most links present on the website.
+
+
+### Installation 
+
+<CodeGroup>
+
+<InstallationPython />
+<InstallationJavaScript />
+<InstallationGo />
+<InstallationRust />
+
+</CodeGroup>
+
+### Usage
+
+<CodeGroup>
+
+<MapPython />
+<MapJavaScript />
+<MapGo />
+<MapRust />
+<MapCURL />
+
+</CodeGroup>
+
+### Response
+
+SDKs will return the data object directly. cURL will return the payload exactly as shown below.
+
+<MapResponse />
+
+#### Map with search
+
+Map with `search` param allows you to search for specific urls inside a website.
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v1/map \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://firecrawl.dev",
+      "search": "docs"
+    }'
+```
+
+Response will be an ordered list from the most relevant to the least relevant.
+
+```json
+{
+  "status": "success",
+  "links": [
+    "https://docs.firecrawl.dev",
+    "https://docs.firecrawl.dev/sdks/python",
+    "https://docs.firecrawl.dev/learn/rag-llama3",
+  ]
+}

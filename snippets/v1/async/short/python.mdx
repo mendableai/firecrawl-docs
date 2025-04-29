@@ -1,0 +1,15 @@
+```python Python
+from firecrawl import AsyncFirecrawlApp
+
+app = AsyncFirecrawlApp(api_key="YOUR_API_KEY")
+
+# Async Scrape
+async def example_scrape():
+  scrape_result = await app.scrape_url(url="https://example.com")
+  print(scrape_result)
+
+# Async Crawl
+async def example_crawl():
+  crawl_result = await app.crawl_url(url="https://example.com")
+  print(crawl_result)
+```

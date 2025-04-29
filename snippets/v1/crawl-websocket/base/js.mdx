@@ -1,0 +1,15 @@
+```js Node
+const watch = await app.crawlUrlAndWatch('mendable.ai', { excludePaths: ['blog/*'], limit: 5});
+
+watch.addEventListener("document", doc => {
+  console.log("DOC", doc.detail);
+});
+
+watch.addEventListener("error", err => {
+  console.error("ERR", err.detail.error);
+});
+
+watch.addEventListener("done", state => {
+  console.log("DONE", state.detail.status);
+});
+```

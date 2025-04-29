@@ -1,0 +1,273 @@
+---
+title: Welcome to V1
+description: "Firecrawl allows you to turn entire websites into LLM-ready markdown"
+og:title: "Welcome to V1 | Firecrawl"
+og:description: "Firecrawl allows you to turn entire websites into LLM-ready markdown"
+---
+
+import InstallationPython from "/snippets/v1/installation/python.mdx";
+import InstallationNode from "/snippets/v1/installation/js.mdx";
+import InstallationGo from "/snippets/v1/installation/go.mdx";
+import InstallationRust from "/snippets/v1/installation/rust.mdx";
+import ScrapePython from "/snippets/v1/scrape/base/python.mdx";
+import ScrapeNode from "/snippets/v1/scrape/base/js.mdx";
+import ScrapeGo from "/snippets/v1/scrape/base/go.mdx";
+import ScrapeRust from "/snippets/v1/scrape/base/rust.mdx";
+import ScrapeCURL from "/snippets/v1/scrape/base/curl.mdx";
+import ScrapeResponse from "/snippets/v1/scrape/base/output.mdx";
+import MapPython from "/snippets/v1/map/base/python.mdx";
+import MapJavaScript from "/snippets/v1/map/base/js.mdx";
+import MapGo from "/snippets/v1/map/base/go.mdx";
+import MapRust from "/snippets/v1/map/base/rust.mdx";
+import MapCURL from "/snippets/v1/map/base/curl.mdx";
+import MapResponse from "/snippets/v1/map/base/output.mdx";
+import CrawlWebSocketPythonBase from "/snippets/v1/crawl-websocket/base/python.mdx";
+import CrawlWebSocketNodeBase from "/snippets/v1/crawl-websocket/base/js.mdx";
+import ExtractCURL from "/snippets/v1/llm-extract/base/curl.mdx";
+import ExtractPython from "/snippets/v1/llm-extract/base/python.mdx";
+import ExtractNode from "/snippets/v1/llm-extract/base/js.mdx";
+import ExtractOutput from "/snippets/v1/llm-extract/base/output.mdx";
+import ExtractNoSchemaCURL from "/snippets/v1/llm-extract/no-schema/curl.mdx";
+import ExtractNoSchemaOutput from "/snippets/v1/llm-extract/no-schema/output.mdx";
+import CrawlWebhookCURL from "/snippets/v1/crawl-webhook/base/curl.mdx";
+
+
+Firecrawl V1 is here! With that we introduce a more reliable and developer friendly API.
+
+Here is what's new:
+
+- Output Formats for `/scrape`. Choose what formats you want your output in.
+- New [`/map` endpoint](/features/map) for getting most of the URLs of a webpage.
+- Developer friendly API for `/crawl/{id}` status.
+- 2x Rate Limits for all plans.
+- [Go SDK](/sdks/go) and [Rust SDK](/sdks/rust)
+- Teams support
+- API Key Management in the dashboard.
+- `onlyMainContent` is now default to `true`.
+- `/crawl` webhooks and websocket support.
+
+
+## Scrape Formats
+
+You can now choose what formats you want your output in. You can specify multiple output formats. Supported formats are:
+
+- Markdown (markdown)
+- HTML (html)
+- Raw HTML (rawHtml) (with no modifications)
+- Screenshot (screenshot or screenshot@fullPage)
+- Links (links)
+- Extract (extract) - structured output
+
+Output keys will match the format you choose.
+
+<CodeGroup>
+
+  <ScrapePython />
+
+  <ScrapeNode />
+
+  <ScrapeGo />
+
+  <ScrapeRust />
+
+  <ScrapeCURL />
+
+</CodeGroup>
+
+### Response
+
+SDKs will return the data object directly. cURL will return the payload exactly as shown below.
+
+<ScrapeResponse />
+
+## Introducing /map (Alpha)
+
+The easiest way to go from a single url to a map of the entire website.
+
+### Usage
+
+<CodeGroup>
+
+<MapPython />
+<MapJavaScript />
+<MapGo />
+<MapRust />
+<MapCURL />
+
+</CodeGroup>
+
+### Response
+
+SDKs will return the data object directly. cURL will return the payload exactly as shown below.
+
+<MapResponse />
+
+## WebSockets
+
+To crawl a website with WebSockets, use the `Crawl URL and Watch` method.
+
+<CodeGroup>
+
+<CrawlWebSocketPythonBase />
+<CrawlWebSocketNodeBase />
+
+</CodeGroup>
+
+## Extract format
+
+LLM extraction is now available in v1 under the `extract` format. To extract structured from a page, you can pass a schema to the endpoint or just provide a prompt.
+
+<CodeGroup>
+
+<ExtractPython />
+<ExtractNode />
+<ExtractCURL />
+
+</CodeGroup>
+
+Output:
+
+<ExtractOutput />
+
+### Extracting without schema (New)
+
+You can now extract without a schema by just passing a `prompt` to the endpoint. The llm chooses the structure of the data.
+
+<CodeGroup>
+
+<ExtractNoSchemaCURL />
+
+</CodeGroup>
+
+Output:
+
+<ExtractNoSchemaOutput />
+
+## New Crawl Webhook
+
+You can now pass a `webhook` parameter to the `/crawl` endpoint. This will send a POST request to the URL you specify when the crawl is started, updated and completed.
+
+The webhook will now trigger for every page crawled and not just the whole result at the end.
+
+<CrawlWebhookCURL />
+
+### Webhook Events
+
+There are now 4 types of events:
+
+- `crawl.started` - Triggered when the crawl is started.
+- `crawl.page` - Triggered for every page crawled.
+- `crawl.completed` - Triggered when the crawl is completed to let you know it's done.
+- `crawl.failed` - Triggered when the crawl fails.
+
+### Webhook Response
+
+- `success` - If the webhook was successful in crawling the page correctly.
+- `type` - The type of event that occurred.
+- `id` - The ID of the crawl.
+- `data` - The data that was scraped (Array). This will only be non empty on `crawl.page` and will contain 1 item if the page was scraped successfully. The response is the same as the `/scrape` endpoint.
+- `error` - If the webhook failed, this will contain the error message.
+
+## Migrating from V0
+
+> ⚠️ **Deprecation Notice**: V0 endpoints will be deprecated on April 1st, 2025. Please migrate to V1 endpoints before then to ensure uninterrupted service.
+
+
+
+
+## /scrape endpoint
+
+The updated `/scrape` endpoint has been redesigned for enhanced reliability and ease of use. The structure of the new `/scrape` request body is as follows:
+
+```json
+{
+  "url": "<string>",
+  "formats": ["markdown", "html", "rawHtml", "links", "screenshot", "json"],
+  "includeTags": ["<string>"],
+  "excludeTags": ["<string>"],
+  "headers": { "<key>": "<value>" },
+  "waitFor": 123,
+  "timeout": 123
+}
+```
+
+### Formats
+
+You can now choose what formats you want your output in. You can specify multiple output formats. Supported formats are:
+
+- Markdown (markdown)
+- HTML (html)
+- Raw HTML (rawHtml) (with no modifications)
+- Screenshot (screenshot or screenshot@fullPage)
+- Links (links)
+- JSON (json)
+
+By default, the output will be include only the markdown format.
+
+### Details on the new request body
+
+The table below outlines the changes to the request body parameters for the `/scrape` endpoint in V1.
+
+| Parameter | Change | Description |
+| --------- | ------ | ----------- |
+| `onlyIncludeTags` | Moved and Renamed | Moved to root level. And renamed to `includeTags`. |
+| `removeTags` | Moved and Renamed | Moved to root level. And renamed to `excludeTags`. |
+| `onlyMainContent`| Moved | Moved to root level. `true` by default. |
+| `waitFor`| Moved | Moved to root level. |
+| `headers`| Moved | Moved to root level. |
+| `parsePDF`| Moved | Moved to root level. |
+| `extractorOptions`| No Change ||
+| `timeout`| No Change ||
+| `pageOptions` | Removed | No need for `pageOptions` parameter. The scrape options were moved to root level. |
+| `replaceAllPathsWithAbsolutePaths` | Removed | `replaceAllPathsWithAbsolutePaths` is not needed anymore. Every path is now default to absolute path. |
+| `includeHtml`| Removed | add `"html"` to `formats` instead. |
+| `includeRawHtml`| Removed | add `"rawHtml"` to `formats` instead. |
+| `screenshot`| Removed | add `"screenshot"` to `formats` instead. |
+| `fullPageScreenshot`| Removed | add `"screenshot@fullPage"` to `formats` instead. |
+| `extractorOptions` | Removed | Use `"extract"` format instead with `extract` object. |
+
+The new `extract` format is described in the [llm-extract](/features/extract) section.
+
+## /crawl endpoint
+
+We've also updated the `/crawl` endpoint on `v1`. Check out the improved body request below:
+
+```json
+{
+  "url": "<string>",
+  "excludePaths": ["<string>"],
+  "includePaths": ["<string>"],
+  "maxDepth": 2,
+  "ignoreSitemap": true,
+  "limit": 10,
+  "allowBackwardLinks": true,
+  "allowExternalLinks": true,
+  "scrapeOptions": {
+    // same options as in /scrape
+    "formats": ["markdown", "html", "rawHtml", "screenshot", "links"],
+    "headers": { "<key>": "<value>" },
+    "includeTags": ["<string>"],
+    "excludeTags": ["<string>"],
+    "onlyMainContent": true,
+    "waitFor": 123
+  }
+}
+```
+
+
+### Details on the new request body
+
+The table below outlines the changes to the request body parameters for the `/crawl` endpoint in V1.
+
+| Parameter | Change | Description |
+| --------- | ------ | ----------- |
+| `pageOptions` | Renamed | Renamed to `scrapeOptions`. |
+| `includes` | Moved and Renamed | Moved to root level. Renamed to `includePaths`. |
+| `excludes` | Moved and Renamed | Moved to root level. Renamed to `excludePaths`. |
+| `allowBackwardCrawling` | Moved and Renamed | Moved to root level. Renamed to `allowBackwardLinks`. |
+| `allowExternalLinks` | Moved | Moved to root level. |
+| `maxDepth` | Moved | Moved to root level. |
+| `ignoreSitemap` | Moved | Moved to root level. |
+| `limit` | Moved | Moved to root level. |
+| `crawlerOptions` | Removed | No need for `crawlerOptions` parameter. The crawl options were moved to root level. |
+| `timeout` | Removed | Use `timeout` in `scrapeOptions` instead. |

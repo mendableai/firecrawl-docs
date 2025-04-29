@@ -1,0 +1,78 @@
+---
+title: 'Change tracking (Beta)'
+description: 'Firecrawl can track changes between the current page and a previous version, and tell you if it updated or not'
+og:title: "Change tracking (Beta) | Firecrawl"
+icon: "code-changeTracking"
+og:description: "Firecrawl can track changes between the current page and a previous version, and tell you if it updated or not"
+---
+
+# This document is outdated
+Here is the new version: [Change Tracking (New)](/features/change-tracking)
+
+---
+
+# Old version
+
+Using the new `changeTracking` format, you can monitor changes on a website.
+
+The `changeTracking` format returns the following fields in the response:
+- `previousScrapeAt`: The timestamp of the previous scrape that the current page is being changeTrackingd against. (`null` if no previous scrape)
+- `changeStatus`: The result of the comparison between the two page versions
+    - `new`: This page did not exist or was not discovered before. (usually has a `null` `previousScrapeAt`)
+    - `same`: This page's content has not changed since the last scrape.
+    - `changed`: This page's content has changed since the last scrape.
+    - `removed`: This page was removed since the last scrape.
+- `visibility`: The visibility of the current page/URL.
+    - `visible`: This page is visible, meaning that its URL was discovered through an organic route (through links on other visible pages or the sitemap).
+    - `hidden`: This page is not visible, meaning that its URL was discovered through memory from previous crawls of the same URL.
+
+Some good to know facts:
+- The scrapes are always compared via their markdown response.
+    - The `markdown` format must also be specified when using the `changeTracking` format. Other formats may also be specified in addition.
+    - The comparison algorithm is resistant to changes in whitespace and content order. iframe source URLs are currently ignored for resistance against captchas and antibots with randomized URLs.
+- Previous scrapes to compare against are currently only matched on the source URL, the team ID, and the `markdown` format, and not on any other scrape or crawl options.
+    - For an effective comparison, the input URL should be exactly the same as the previous request for the same content. This is a limitation we are working hard to bypass.
+    - Crawling the same URLs with different `includePaths`/`excludePaths` will have inconsistencies when using `changeTracking`.
+    - Scraping the same URLs with different `includeTags`/`excludeTags`/`onlyMainContent` will have inconsistencies when using `changeTracking`.
+    - Compared pages will also be compared against previous scrapes that only have the `markdown` format without the `changeTracking` format.
+    - Comparisons are scoped to your team. If you scrape a URL for the first time with your API key, its `changeStatus` will always be `new`, even if other Firecrawl users have scraped it before.
+- While in Beta, it is recommended to monitor the `warning` field of the resulting document, and to handle the `changeTracking` object potentially missing from the response. We will be monitoring the system to ensure this happens as little as possible.
+    - This may occur when our database lookup to find the previous scrape to compare against times out. We will be monitoring this situation and we will push improvements and optimizations before the feature officially launches.
+- We currently do not return a diff of the actual changed page content.
+    - We do not know what the optimal format for this would be. If you want to have the diff, you probably know what format you want the diff to be in. Please reach out at [mogery@firecrawl.com](mailto:mogery@firecrawl.com), and we'll add it!
+
+## Examples
+
+### Scrape
+
+```json
+{
+    "url": "https://firecrawl.dev",
+    "formats": ["markdown", "changeTracking"]
+}
+```
+
+```json
+{
+  "success": true,
+  "data": {
+    "markdown": "...",
+    "metadata": {...},
+    "changeTracking": {
+      "previousScrapeAt": "2025-03-30T15:07:17.543071+00:00",
+      "changeStatus": "same",
+      "visibility": "visible"
+    }
+  }
+}
+```
+
+### Crawl
+```json
+{
+    "url": "https://firecrawl.dev",
+    "scrapeOptions": {
+        "formats": ["markdown", "changeTracking"]
+    }
+}
+```

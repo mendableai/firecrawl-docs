@@ -1,0 +1,18 @@
+```js Node
+import FirecrawlApp from 'firecrawl';
+
+// Initialize the client
+const firecrawl = new FirecrawlApp({ apiKey: 'your_api_key' });
+
+// Check research status
+const status = await firecrawl.checkDeepResearchStatus('job_id');
+
+// Print current progress
+console.log(`Status: ${status.status}`);
+console.log(`Progress: ${status.currentDepth}/${status.maxDepth} iterations`);
+
+if (status.status === 'completed') {
+  console.log(`Final Analysis: ${status.data.finalAnalysis}`);
+  console.log(`Sources found: ${status.data.sources.length}`);
+} 
+```

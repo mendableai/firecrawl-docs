@@ -1,0 +1,19 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+# Initialize the client with your API key
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Search in German (Germany)
+search_result = app.search(
+    "web scraping tools",
+    limit=5,
+    lang="de",
+    country="de"
+)
+
+# Process the results
+for result in search_result.data:
+    print(f"Title: {result.title}")
+    print(f"URL: {result.url}") 
+```

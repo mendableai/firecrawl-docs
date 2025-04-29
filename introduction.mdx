@@ -1,0 +1,421 @@
+---
+title: Quickstart
+description: "Firecrawl allows you to turn entire websites into LLM-ready markdown"
+og:title: "Quickstart | Firecrawl"
+og:description: "Firecrawl allows you to turn entire websites into LLM-ready markdown"
+---
+
+import InstallationPython from "/snippets/v1/installation/python.mdx";
+import InstallationNode from "/snippets/v1/installation/js.mdx";
+import InstallationGo from "/snippets/v1/installation/go.mdx";
+import InstallationRust from "/snippets/v1/installation/rust.mdx";
+import ScrapePython from "/snippets/v1/scrape/base/python.mdx";
+import ScrapeNode from "/snippets/v1/scrape/base/js.mdx";
+import ScrapeGo from "/snippets/v1/scrape/base/go.mdx";
+import ScrapeRust from "/snippets/v1/scrape/base/rust.mdx";
+import ScrapeCURL from "/snippets/v1/scrape/base/curl.mdx";
+import ScrapeResponse from "/snippets/v1/scrape/base/output.mdx";
+import CrawlPython from "/snippets/v1/crawl/base/python.mdx";
+import CrawlNode from "/snippets/v1/crawl/base/js.mdx";
+import CrawlGo from "/snippets/v1/crawl/base/go.mdx";
+import CrawlRust from "/snippets/v1/crawl/base/rust.mdx";
+import CrawlCURL from "/snippets/v1/crawl/base/curl.mdx";
+import CrawlAsyncOutput from "/snippets/v1/crawl-async/base/output.mdx";
+import CheckCrawlJobPython from "/snippets/v1/crawl-status/short/python.mdx";
+import CheckCrawlJobNode from "/snippets/v1/crawl-status/short/js.mdx";
+import CheckCrawlJobGo from "/snippets/v1/crawl-status/short/go.mdx";
+import CheckCrawlJobRust from "/snippets/v1/crawl-status/short/rust.mdx";
+import CheckCrawlJobCURL from "/snippets/v1/crawl-status/short/curl.mdx";
+import CheckCrawlJobOutputScraping from "/snippets/v1/crawl-status/base/output-scraping.mdx";
+import CheckCrawlJobOutputCompleted from "/snippets/v1/crawl-status/base/output-completed.mdx";
+import ExtractCURL from "/snippets/v1/llm-extract/base/curl.mdx";
+import ExtractPython from "/snippets/v1/llm-extract/base/python.mdx";
+import ExtractNode from "/snippets/v1/llm-extract/base/js.mdx";
+import ExtractOutput from "/snippets/v1/llm-extract/base/output.mdx";
+import ExtractNoSchemaCURL from "/snippets/v1/llm-extract/no-schema/curl.mdx";
+import ExtractNoSchemaOutput from "/snippets/v1/llm-extract/no-schema/output.mdx";
+import ScrapeActionsPython from "/snippets/v1/scrape/actions/python.mdx";
+import ScrapeActionsNode from "/snippets/v1/scrape/actions/js.mdx";
+import ScrapeActionsCURL from "/snippets/v1/scrape/actions/curl.mdx";
+import ScrapeActionsOutput from "/snippets/v1/scrape/actions/output.mdx";
+
+<img className="block" src="/images/hero.png" alt="Hero Light" />
+
+## Welcome to Firecrawl
+
+[Firecrawl](https://firecrawl.dev?ref=github) is an API service that takes a URL, crawls it, and converts it into clean markdown. We crawl all accessible subpages and give you clean markdown for each. No sitemap required.
+
+## How to use it?
+
+We provide an easy to use API with our hosted version. You can find the playground and documentation [here](https://firecrawl.dev/playground). You can also self host the backend if you'd like.
+
+Check out the following resources to get started:
+- [x] **API**: [Documentation](https://docs.firecrawl.dev/api-reference/introduction)
+- [x] **SDKs**: [Python](https://docs.firecrawl.dev/sdks/python), [Node](https://docs.firecrawl.dev/sdks/node), [Go](https://docs.firecrawl.dev/sdks/go), [Rust](https://docs.firecrawl.dev/sdks/rust)
+- [x] **LLM Frameworks**: [Langchain (python)](https://python.langchain.com/docs/integrations/document_loaders/firecrawl/), [Langchain (js)](https://js.langchain.com/docs/integrations/document_loaders/web_loaders/firecrawl), [Llama Index](https://docs.llamaindex.ai/en/latest/examples/data_connectors/WebPageDemo/#using-firecrawl-reader), [Crew.ai](https://docs.crewai.com/), [Composio](https://composio.dev/tools/firecrawl/all), [PraisonAI](https://docs.praison.ai/firecrawl/), [Superinterface](https://superinterface.ai/docs/assistants/functions/firecrawl), [Vectorize](https://docs.vectorize.io/integrations/source-connectors/firecrawl)
+- [x] **Low-code Frameworks**: [Dify](https://dify.ai/blog/dify-ai-blog-integrated-with-firecrawl), [Langflow](https://docs.langflow.org/), [Flowise AI](https://docs.flowiseai.com/integrations/langchain/document-loaders/firecrawl), [Cargo](https://docs.getcargo.io/integration/firecrawl), [Pipedream](https://pipedream.com/apps/firecrawl/)
+- [x] **Others**: [Zapier](https://zapier.com/apps/firecrawl/integrations), [Pabbly Connect](https://www.pabbly.com/connect/integrations/firecrawl/)
+- [ ] Want an SDK or Integration? Let us know by opening an issue.
+
+**Self-host:** To self-host refer to guide [here](/contributing/self-host).
+
+### API Key
+
+To use the API, you need to sign up on [Firecrawl](https://firecrawl.dev) and get an API key.
+
+### Features
+
+- [**Scrape**](#scraping): scrapes a URL and get its content in LLM-ready format (markdown, structured data via [LLM Extract](#extraction), screenshot, html)
+- [**Crawl**](#crawling): scrapes all the URLs of a web page and return content in LLM-ready format
+- [**Map**](/features/map): input a website and get all the website urls - extremely fast
+- [**Extract**](/features/extract): get structured data from single page, multiple pages or entire websites with AI.
+
+### Powerful Capabilities
+- **LLM-ready formats**: markdown, structured data, screenshot, HTML, links, metadata
+- **The hard stuff**: proxies, anti-bot mechanisms, dynamic content (js-rendered), output parsing, orchestration
+- **Customizability**: exclude tags, crawl behind auth walls with custom headers, max crawl depth, etc...
+- **Media parsing**: pdfs, docx, images.
+- **Reliability first**: designed to get the data you need - no matter how hard it is.
+- **Actions**: click, scroll, input, wait and more before extracting data
+
+You can find all of Firecrawl's capabilities and how to use them in our [documentation](https://docs.firecrawl.dev)
+
+## Crawling
+
+Used to crawl a URL and all accessible subpages. This submits a crawl job and returns a job ID to check the status of the crawl.
+
+### Installation
+
+<CodeGroup>
+
+  <InstallationPython />
+
+  <InstallationNode />
+
+  <InstallationGo />
+  
+  <InstallationRust />
+
+</CodeGroup>
+
+### Usage
+
+<CodeGroup>
+
+<CrawlPython />
+<CrawlNode />
+<CrawlGo />
+<CrawlRust />
+<CrawlCURL />
+
+</CodeGroup>
+
+If you're using cURL or `async crawl` functions on SDKs, this will return an `ID` where you can use to check the status of the crawl.
+
+<CrawlAsyncOutput />
+
+### Check Crawl Job
+
+Used to check the status of a crawl job and get its result.
+
+<CodeGroup>
+
+<CheckCrawlJobPython />
+<CheckCrawlJobNode />
+<CheckCrawlJobGo />
+<CheckCrawlJobRust />
+<CheckCrawlJobCURL />
+
+</CodeGroup>
+
+#### Response
+
+The response will be different depending on the status of the crawl. For not completed or large responses exceeding 10MB, a `next` URL parameter is provided. You must request this URL to retrieve the next 10MB of data. If the `next` parameter is absent, it indicates the end of the crawl data.
+
+<CodeGroup>
+  <CheckCrawlJobOutputScraping />
+  <CheckCrawlJobOutputCompleted />
+</CodeGroup>
+
+## Scraping
+
+To scrape a single URL, use the `scrape_url` method. It takes the URL as a parameter and returns the scraped data as a dictionary.
+
+<CodeGroup>
+
+  <ScrapePython />
+
+  <ScrapeNode />
+
+  <ScrapeGo />
+
+  <ScrapeRust />
+
+  <ScrapeCURL />
+
+</CodeGroup>
+
+### Response
+
+SDKs will return the data object directly. cURL will return the payload exactly as shown below.
+
+<ScrapeResponse />
+
+## Extraction
+
+With LLM extraction, you can easily extract structured data from any URL. We support pydantic schemas to make it easier for you too. Here is how you to use it:
+
+v1 is only supported on node, python and cURL at this time.
+
+<CodeGroup>
+
+<ExtractPython />
+<ExtractNode />
+<ExtractCURL />
+
+</CodeGroup>
+
+Output:
+
+<ExtractOutput />
+
+### Extracting without schema (New)
+
+You can now extract without a schema by just passing a `prompt` to the endpoint. The llm chooses the structure of the data.
+
+<CodeGroup>
+
+<ExtractNoSchemaCURL />
+
+</CodeGroup>
+
+Output:
+
+<ExtractNoSchemaOutput />
+
+### Extraction (v0)
+
+<CodeGroup>
+```python Python
+
+app = FirecrawlApp(version="v0")
+
+class ArticleSchema(BaseModel):
+    title: str
+    points: int 
+    by: str
+    commentsURL: str
+
+class TopArticlesSchema(BaseModel):
+top: List[ArticleSchema] = Field(..., max_items=5, description="Top 5 stories")
+
+data = app.scrape_url('https://news.ycombinator.com', {
+'extractorOptions': {
+'extractionSchema': TopArticlesSchema.model_json_schema(),
+'mode': 'llm-extraction'
+},
+'pageOptions':{
+'onlyMainContent': True
+}
+})
+print(data["llm_extraction"])
+```
+
+```js JavaScript
+import FirecrawlApp from "@mendable/firecrawl-js";
+import { z } from "zod";
+
+const app = new FirecrawlApp<"v0">({
+  apiKey: "fc-YOUR_API_KEY",
+  version: "v0",
+});
+
+// Define schema to extract contents into
+const schema = z.object({
+  top: z
+    .array(
+      z.object({
+        title: z.string(),
+        points: z.number(),
+        by: z.string(),
+        commentsURL: z.string(),
+      })
+    )
+    .length(5)
+    .describe("Top 5 stories on Hacker News"),
+});
+
+const scrapeResult = await app.scrapeUrl("https://news.ycombinator.com", {
+  extractorOptions: { extractionSchema: schema },
+});
+
+console.log(scrapeResult.data["llm_extraction"]);
+```
+
+```go Go
+import (
+  "fmt"
+  "log"
+
+  "github.com/mendableai/firecrawl-go"
+)
+
+app, err := NewFirecrawlApp(TEST_API_KEY, API_URL)
+if err != nil {
+  log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+}
+
+params := map[string]any{
+  "extractorOptions": ExtractorOptions{
+    Mode:             "llm-extraction",
+    ExtractionPrompt: "Based on the information on the page, find what the company's mission is and whether it supports SSO, and whether it is open source",
+    ExtractionSchema: map[string]any{
+      "type": "object",
+      "properties": map[string]any{
+        "company_mission": map[string]string{"type": "string"},
+        "supports_sso":    map[string]string{"type": "boolean"},
+        "is_open_source":  map[string]string{"type": "boolean"},
+      },
+      "required": []string{"company_mission", "supports_sso", "is_open_source"},
+    },
+  },
+}
+
+scrapeResult, err := app.ScrapeURL("https://news.ycombinator.com", params)
+if err != nil {
+  log.Fatalf("Failed to scrape URL: %v", err)
+}
+fmt.Println(scrapeResult.LLMExtraction)
+```
+
+```rust Rust
+use firecrawl::FirecrawlApp;
+
+#[tokio::main]
+async fn main() {
+    // Initialize the FirecrawlApp with the API key
+    let api_key = "YOUR_API_KEY";
+    let api_url = "https://api.firecrawl.dev";
+    let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
+
+    // Define schema to extract contents into
+    let json_schema = json!({
+        "type": "object",
+        "properties": {
+            "top": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": {"type": "string"},
+                        "points": {"type": "number"},
+                        "by": {"type": "string"},
+                        "commentsURL": {"type": "string"}
+                    },
+                    "required": ["title", "points", "by", "commentsURL"]
+                },
+                "minItems": 5,
+                "maxItems": 5,
+                "description": "Top 5 stories on Hacker News"
+            }
+        },
+        "required": ["top"]
+    });
+
+    let llm_extraction_params = json!({
+        "extractorOptions": {
+            "extractionSchema": json_schema,
+            "mode": "llm-extraction"
+        },
+        "pageOptions": {
+            "onlyMainContent": true
+        }
+    });
+
+    let llm_extraction_result = app
+        .scrape_url("https://news.ycombinator.com", Some(llm_extraction_params))
+        .await;
+    match llm_extraction_result {
+        Ok(data) => println!("LLM Extraction Result:\n{}", data["llm_extraction"]),
+        Err(e) => eprintln!("LLM Extraction failed: {}", e),
+    }
+}
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v0/scrape \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://docs.firecrawl.dev/",
+      "extractorOptions": {
+        "mode": "llm-extraction",
+        "extractionPrompt": "Based on the information on the page, extract the information from the schema. ",
+        "extractionSchema": {
+          "type": "object",
+          "properties": {
+            "company_mission": {
+                      "type": "string"
+            },
+            "supports_sso": {
+                      "type": "boolean"
+            },
+            "is_open_source": {
+                      "type": "boolean"
+            },
+            "is_in_yc": {
+                      "type": "boolean"
+            }
+          },
+          "required": [
+            "company_mission",
+            "supports_sso",
+            "is_open_source",
+            "is_in_yc"
+          ]
+        }
+      }
+    }'
+```
+
+</CodeGroup>
+
+## Interacting with the page with Actions
+
+Firecrawl allows you to perform various actions on a web page before scraping its content. This is particularly useful for interacting with dynamic content, navigating through pages, or accessing content that requires user interaction.
+
+Here is an example of how to use actions to navigate to google.com, search for Firecrawl, click on the first result, and take a screenshot.
+
+It is important to almost always use the `wait` action before/after executing other actions to give enough time for the page to load.
+### Example
+
+<CodeGroup>
+
+<ScrapeActionsPython />
+<ScrapeActionsNode /> 
+<ScrapeActionsCURL />
+
+</CodeGroup>
+
+### Output
+
+<CodeGroup>
+
+<ScrapeActionsOutput />
+
+</CodeGroup>
+
+## Open Source vs Cloud
+
+Firecrawl is open source available under the [AGPL-3.0 license](https://github.com/mendableai/firecrawl/blob/main/LICENSE).
+
+To deliver the best possible product, we offer a hosted version of Firecrawl alongside our open-source offering. The cloud solution allows us to continuously innovate and maintain a high-quality, sustainable service for all users.
+
+Firecrawl Cloud is available at [firecrawl.dev](https://firecrawl.dev) and offers a range of features that are not available in the open source version:
+
+![Firecrawl Cloud vs Open Source](./images/open-source-cloud.png)
+
+## Contributing
+
+We love contributions! Please read our [contributing guide](https://github.com/mendableai/firecrawl/blob/main/CONTRIBUTING.md) before submitting a pull request.
+

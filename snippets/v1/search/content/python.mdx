@@ -1,0 +1,20 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+# Initialize the client with your API key
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Search and scrape content
+search_result = app.search(
+    "firecrawl web scraping",
+    limit=3,
+    scrape_options={"formats": ["markdown", "links"]}
+)
+
+# Process the results
+for result in search_result.data:
+    print(f"Title: {result.title}")
+    print(f"URL: {result.url}")
+    print(f"Content: {result.markdown[:150]}...")  # first 150 chars
+    print(f"Links: {', '.join(result.links[:3])}...")  # first 3 links
+``` 

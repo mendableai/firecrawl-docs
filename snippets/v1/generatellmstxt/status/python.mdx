@@ -1,0 +1,26 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+# Initialize the client
+firecrawl = FirecrawlApp(api_key="your_api_key")
+
+# Create async job
+job = firecrawl.async_generate_llms_text(
+    url="https://example.com",
+)
+
+if job.success:
+    job_id = job.id
+
+# Check LLMs.txt generation status
+status = firecrawl.check_generate_llms_text_status("job_id")
+
+# Print current status
+print(f"Status: {status.status}")
+
+if status.status == 'completed':
+    print("LLMs.txt Content:", status.data.llmstxt)
+    if 'llmsfulltxt' in status.data:
+        print("Full Text Content:", status.data.llmsfulltxt)
+    print(f"Processed URLs: {len(status.data.processed_urls)}")
+```

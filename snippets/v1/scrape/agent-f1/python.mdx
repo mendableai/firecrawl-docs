@@ -1,0 +1,16 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Scrape a website:
+scrape_result = app.scrape_url('firecrawl.dev',
+  formats=['markdown', 'html'],
+  agent={
+    'model': 'FIRE-1',
+    'prompt': 'Navigate through the product listings by clicking the \'Next Page\' button until disabled. Scrape each page.'
+  }
+)
+
+print(scrape_result)
+```

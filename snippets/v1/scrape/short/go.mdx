@@ -1,0 +1,11 @@
+```go Go
+// Scrape a website
+scrapeResult, err := app.ScrapeUrl("https://firecrawl.dev", map[string]any{
+  "formats": []string{"markdown", "html"},
+})
+if err != nil {
+  log.Fatalf("Failed to scrape URL: %v", err)
+}
+
+fmt.Println(scrapeResult)
+```

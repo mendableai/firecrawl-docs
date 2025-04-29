@@ -1,0 +1,86 @@
+---
+title: 'Node'
+description: 'Firecrawl Node SDK is a wrapper around the Firecrawl API to help you easily turn websites into markdown.'
+icon: 'node'
+og:title: "Node SDK | Firecrawl"
+og:description: "Firecrawl Node SDK is a wrapper around the Firecrawl API to help you easily turn websites into markdown."
+---
+
+import InstallationNode from '/snippets/v1/installation/js.mdx'
+import ScrapeAndCrawlExampleNode from '/snippets/v1/scrape-and-crawl/js.mdx'
+import ScrapeNodeShort from '/snippets/v1/scrape/short/js.mdx'
+import CrawlNodeShort from '/snippets/v1/crawl/short/js.mdx'
+import CrawlAsyncNodeShort from '/snippets/v1/crawl-async/short/js.mdx'
+import CheckCrawlStatusNodeShort from '/snippets/v1/crawl-status/short/js.mdx'
+import CancelCrawlNodeShort from '/snippets/v1/crawl-delete/short/js.mdx'
+import MapNodeShort from '/snippets/v1/map/short/js.mdx'
+import ExtractNodeShort from '/snippets/v1/extract/short/js.mdx'
+import CrawlWebSocketNodeBase from '/snippets/v1/crawl-websocket/base/js.mdx'
+
+## Installation
+
+To install the Firecrawl Node SDK, you can use npm:
+
+<InstallationNode />
+
+## Usage
+
+1. Get an API key from [firecrawl.dev](https://firecrawl.dev)
+2. Set the API key as an environment variable named `FIRECRAWL_API_KEY` or pass it as a parameter to the `FirecrawlApp` class.
+
+
+Here's an example of how to use the SDK with error handling:
+
+<ScrapeAndCrawlExampleNode />
+
+### Scraping a URL
+
+To scrape a single URL with error handling, use the `scrapeUrl` method. It takes the URL as a parameter and returns the scraped data as a dictionary.
+
+<ScrapeNodeShort />
+
+### Crawling a Website
+
+To crawl a website with error handling, use the `crawlUrl` method. It takes the starting URL and optional parameters as arguments. The `params` argument allows you to specify additional options for the crawl job, such as the maximum number of pages to crawl, allowed domains, and the output format.
+
+<CrawlNodeShort />
+
+### Asynchronous Crawling
+
+To crawl a website asynchronously, use the `crawlUrlAsync` method. It returns the crawl `ID` which you can use to check the status of the crawl job. It takes the starting URL and optional parameters as arguments. The `params` argument allows you to specify additional options for the crawl job, such as the maximum number of pages to crawl, allowed domains, and the output format.
+
+<CrawlAsyncNodeShort />
+
+### Checking Crawl Status
+
+To check the status of a crawl job with error handling, use the `checkCrawlStatus` method. It takes the `ID` as a parameter and returns the current status of the crawl job.
+
+<CheckCrawlStatusNodeShort />
+
+### Cancelling a Crawl
+
+To cancel an asynchronous crawl job, use the `cancelCrawl` method. It takes the job ID of the asynchronous crawl as a parameter and returns the cancellation status.
+
+<CancelCrawlNodeShort />
+
+### Mapping a Website
+
+To map a website with error handling, use the `mapUrl` method. It takes the starting URL as a parameter and returns the mapped data as a dictionary.
+
+<MapNodeShort />
+
+{/* ### Extracting Structured Data from Websites
+
+To extract structured data from websites with error handling, use the `extractUrl` method. It takes the starting URL as a parameter and returns the extracted data as a dictionary.
+
+<ExtractNodeShort /> */}
+
+### Crawling a Website with WebSockets
+
+To crawl a website with WebSockets, use the `crawlUrlAndWatch` method. It takes the starting URL and optional parameters as arguments. The `params` argument allows you to specify additional options for the crawl job, such as the maximum number of pages to crawl, allowed domains, and the output format.
+
+<CrawlWebSocketNodeBase />
+
+## Error Handling
+
+The SDK handles errors returned by the Firecrawl API and raises appropriate exceptions. If an error occurs during a request, an exception will be raised with a descriptive error message. The examples above demonstrate how to handle these errors using `try/catch` blocks.

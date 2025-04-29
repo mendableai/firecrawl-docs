@@ -1,0 +1,41 @@
+```rust Rust
+use firecrawl::{crawl::{CrawlOptions, CrawlScrapeOptions, CrawlScrapeFormats}, FirecrawlApp, scrape::{ScrapeOptions, ScrapeFormats}};
+
+#[tokio::main]
+async fn main() {
+    // Initialize the FirecrawlApp with the API key
+    let app = FirecrawlApp::new("fc-YOUR_API_KEY").expect("Failed to initialize FirecrawlApp");
+
+    // Scrape a URL
+    let options = ScrapeOptions {
+        formats vec! [ ScrapeFormats::Markdown, ScrapeFormats::HTML ].into(),
+        ..Default::default()
+    };
+
+    let scrape_result = app.scrape_url("https://firecrawl.dev", options).await;
+
+    match scrape_result {
+        Ok(data) => println!("Scrape Result:\n{}", data.markdown.unwrap()),
+        Err(e) => eprintln!("Map failed: {}", e),
+    }
+
+    // Crawl a website
+    let crawl_options = CrawlOptions {
+        scrape_options: CrawlScrapeOptions {
+            formats: vec![ CrawlScrapeFormats::Markdown, CrawlScrapeFormats::HTML ].into(),
+            ..Default::default()
+        }.into(),
+        limit: 100.into(),
+        ..Default::default()
+    };
+
+    let crawl_result = app
+        .crawl_url("https://mendable.ai", crawl_options)
+        .await;
+
+    match crawl_result {
+        Ok(data) => println!("Crawl Result (used {} credits):\n{:#?}", data.credits_used, data.data),
+        Err(e) => eprintln!("Crawl failed: {}", e),
+    }
+}
+```

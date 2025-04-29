@@ -1,0 +1,36 @@
+```js Node
+import FirecrawlApp, { ExtractResponse } from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Extract from a website using schema and prompt:
+const extractResult = await app.extract(['https://example-forum.com/topic/123'], {
+  prompt: "Extract all user comments from this forum thread.",
+  schema: {
+    type: "object",
+    properties: {
+      comments: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            author: {type: "string"},
+            comment_text: {type: "string"}
+          },
+          required: ["author", "comment_text"]
+        }
+      }
+    },
+    required: ["comments"]
+  },
+  agent: {
+    model: 'FIRE-1'
+  }
+}) as ExtractResponse;
+
+if (!extractResult.success) {
+  throw new Error(`Failed to extract: ${extractResult.error}`)
+}
+
+console.log(extractResult)
+```

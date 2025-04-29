@@ -1,0 +1,195 @@
+---
+title: 'Crawl'
+description: 'Firecrawl can recursively search through a urls subdomains, and gather the content'
+og:title: "Crawl | Firecrawl"
+og:description: "Firecrawl can recursively search through a urls subdomains, and gather the content"
+---
+
+import InstallationPython from "/snippets/v1/installation/python.mdx";
+import InstallationNode from "/snippets/v1/installation/js.mdx";
+import InstallationGo from "/snippets/v1/installation/go.mdx";
+import InstallationRust from "/snippets/v1/installation/rust.mdx";
+import CrawlPython from "/snippets/v1/crawl/base/python.mdx";
+import CrawlNode from "/snippets/v1/crawl/base/js.mdx";
+import CrawlGo from "/snippets/v1/crawl/base/go.mdx";
+import CrawlRust from "/snippets/v1/crawl/base/rust.mdx";
+import CrawlCURL from "/snippets/v1/crawl/base/curl.mdx";
+import AsyncCrawlOutput from "/snippets/v1/crawl-async/base/output.mdx";
+import CheckCrawlJobPython from "/snippets/v1/crawl-status/short/python.mdx";
+import CheckCrawlJobNode from "/snippets/v1/crawl-status/short/js.mdx";
+import CheckCrawlJobGo from "/snippets/v1/crawl-status/short/go.mdx";
+import CheckCrawlJobRust from "/snippets/v1/crawl-status/short/rust.mdx";
+import CheckCrawlJobCURL from "/snippets/v1/crawl-status/short/curl.mdx";
+import CheckCrawlJobOutputScraping from "/snippets/v1/crawl-status/base/output-scraping.mdx";
+import CheckCrawlJobOutputCompleted from "/snippets/v1/crawl-status/base/output-completed.mdx";
+import CrawlWebSocketPython from "/snippets/v1/crawl-websocket/base/python.mdx";
+import CrawlWebSocketNode from "/snippets/v1/crawl-websocket/base/js.mdx";
+import CrawlWebhookCURL from "/snippets/v1/crawl-webhook/base/curl.mdx";
+import PythonCrawlExample from "/snippets/v1/crawl/sdk-example/python.mdx";
+import NodeCrawlExample from "/snippets/v1/crawl/sdk-example/js.mdx";
+import PythonCrawlExampleResponse from "/snippets/v1/crawl/sdk-example/python-response.mdx";
+import NodeCrawlExampleResponse from "/snippets/v1/crawl/sdk-example/js-response.mdx";
+
+Firecrawl thoroughly crawls websites, ensuring comprehensive data extraction while bypassing any web blocker mechanisms. Here's how it works:
+
+1. **URL Analysis:**
+   Begins with a specified URL, identifying links by looking at the sitemap and then crawling the website. If no sitemap is found, it will crawl the website following the links.
+
+2. **Recursive Traversal:**
+   Recursively follows each link to uncover all subpages.
+
+3. **Content Scraping:**
+   Gathers content from every visited page while handling any complexities like JavaScript rendering or rate limits.
+
+4. **Result Compilation:**
+   Converts collected data into clean markdown or structured output, perfect for LLM processing or any other task.
+
+This method guarantees an exhaustive crawl and data collection from any starting URL.
+
+
+## Crawling
+
+
+### /crawl endpoint
+
+Used to crawl a URL and all accessible subpages. This submits a crawl job and returns a job ID to check the status of the crawl.
+
+
+<Warning>By default - Crawl will ignore sublinks of a page if they aren't children of the url you provide. So, the website.com/other-parent/blog-1 wouldn't be returned if you crawled website.com/blogs/. If you want website.com/other-parent/blog-1, use the `allowBackwardLinks` parameter</Warning>
+
+
+### Installation 
+
+<CodeGroup>
+
+<InstallationPython />
+<InstallationNode />
+<InstallationGo />
+<InstallationRust />
+
+</CodeGroup>
+
+### Usage
+
+<CodeGroup>
+
+<CrawlPython />
+<CrawlNode />
+<CrawlGo />
+<CrawlRust />
+<CrawlCURL />
+
+</CodeGroup>
+
+### API Response
+
+If you're using cURL or `async crawl` functions on SDKs, this will return an `ID` where you can use to check the status of the crawl.
+
+<Note>If you're using the SDK, check the SDK response section [below](#sdk-response).</Note>
+
+<AsyncCrawlOutput />
+
+### Check Crawl Job
+
+Used to check the status of a crawl job and get its result.
+
+<Note>This endpoint only works for crawls that are in progress or crawls that have completed recently. </Note>
+
+
+<CodeGroup>
+
+<CheckCrawlJobPython />
+<CheckCrawlJobNode />
+<CheckCrawlJobGo />
+<CheckCrawlJobRust />
+<CheckCrawlJobCURL />
+
+</CodeGroup>
+
+#### Response Handling
+
+The response varies based on the crawl's status.
+
+For not completed or large responses exceeding 10MB, a `next` URL parameter is provided. You must request this URL to retrieve the next 10MB of data. If the `next` parameter is absent, it indicates the end of the crawl data.
+
+The skip parameter sets the maximum number of results returned for each chunk of results returned. 
+
+<Info>
+The skip and next parameter are only relavent when hitting the api directly. If you're using the SDK, we handle this for you and will return all the results at once.
+</Info>
+
+
+<CodeGroup>
+  <CheckCrawlJobOutputScraping />
+  <CheckCrawlJobOutputCompleted />
+</CodeGroup>
+
+### SDK Response
+
+The SDK provides two ways to crawl URLs:
+
+1. **Synchronous Crawling** (`crawl_url`/`crawlUrl`):
+   - Waits for the crawl to complete and returns the full response
+   - Handles pagination automatically
+   - Recommended for most use cases
+
+<CodeGroup>
+  <PythonCrawlExample />
+  <NodeCrawlExample />
+</CodeGroup>
+
+The response includes the crawl status and all scraped data:
+
+<CodeGroup>
+  <PythonCrawlExampleResponse />
+  <NodeCrawlExampleResponse />
+</CodeGroup>
+
+2. **Asynchronous Crawling** (`async_crawl_url`/`asyncCrawlUrl`):
+   - Returns immediately with a crawl ID
+   - Allows manual status checking
+   - Useful for long-running crawls or custom polling logic
+
+<CodeGroup>
+  <AsyncCrawlPython />
+  <AsyncCrawlNode />
+</CodeGroup>
+
+## Crawl WebSocket
+
+Firecrawl's WebSocket-based method, `Crawl URL and Watch`, enables real-time data extraction and monitoring. Start a crawl with a URL and customize it with options like page limits, allowed domains, and output formats, ideal for immediate data processing needs.
+
+<CodeGroup>
+  <CrawlWebSocketPython />
+  <CrawlWebSocketNode />
+</CodeGroup>
+
+## Crawl Webhook
+
+You can now pass a `webhook` parameter to the `/crawl` endpoint. This will send a POST request to the URL you specify when the crawl is started, updated and completed.
+
+The webhook will now trigger for every page crawled and not just the whole result at the end.
+
+<CrawlWebhookCURL />
+
+### Webhook Events
+
+There are now 4 types of events:
+
+- `crawl.started` - Triggered when the crawl is started.
+- `crawl.page` - Triggered for every page crawled.
+- `crawl.completed` - Triggered when the crawl is completed to let you know it's done (Beta)**
+- `crawl.failed` - Triggered when the crawl fails.
+
+### Webhook Response
+
+- `success` - If the webhook was successful in crawling the page correctly.
+- `type` - The type of event that occurred.
+- `id` - The ID of the crawl.
+- `data` - The data that was scraped (Array). This will only be non empty on `crawl.page` and will contain 1 item if the page was scraped successfully. The response is the same as the `/scrape` endpoint.
+- `error` - If the webhook failed, this will contain the error message.
+
+**Beta consideration
+
+- There is a very tiny chance that the `crawl.completed` event may be triggered while the final `crawl.page` events are still being processed. We're working on a fix for this.
+

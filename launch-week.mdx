@@ -1,0 +1,130 @@
+---
+title: Launch Week III (New)
+description: "Check out what's new coming to Firecrawl in Launch Week III (April 14 - 20th)"
+og:title: "Launch Week III | Firecrawl"
+og:description: "Check out what's new coming to Firecrawl in Launch Week III (April 14 - 20th)"
+---
+## Day 7 – Integration Day
+![Firecrawl Integrations!](/images/launch-week/lw3-d7-1.webp)
+### Overview
+For the final day of Launch Week III, we’re rolling out new and updated integrations that make it easier to connect Firecrawl to the tools and platforms you already use.
+
+From automation platforms to AI pipelines, Firecrawl now integrates with 20+ services, giving you a faster path from web data to workflow execution.
+
+### Key Integration Updates
+- **Discord Bot:** Trigger scrapes and receive structured results right inside your server. [Learn more](https://github.com/mendableai/firecrawl-discord-bot)
+- **Make Integration:** Visually build workflows powered by Firecrawl's scraping and extraction. [Learn more](https://www.make.com/en/integrations/firecrawl)
+- **n8n Integration:** Connect Firecrawl to custom automation flows. [Learn more](https://n8n.io/)
+- **Langflow:** Seamlessly embed Firecrawl agents into Langflow pipelines. [Learn more](https://docs.langflow.org/)
+- **LlamaIndex:** Use Firecrawl with LlamaIndex to enrich and retrieve data intelligently. [Learn more](https://www.llamaindex.ai/)
+- **Dify:** Integrate Firecrawl with Dify to automate AI workflows. [Learn more](https://dify.ai/)
+
+More integrations are on the way — and if there’s one you’re missing, we’d love to hear about it.
+
+## Day 6 – Firecrawl MCP
+![Firecrawl MCP!](/images/launch-week/lw3-d6-1.webp)
+### Overview
+Today we’re launching a major upgrade to our Firecrawl MCP server, our implementation of the Model Context Protocol for LLM-connected scraping workflows.
+
+This release brings FIRE-1 agent support to the MCP, letting you unlock data hidden behind interaction barriers like logins and buttons — all via scrape and extract endpoints. 
+
+We’re also introducing Server-Sent Events (SSE) support for local use, making setup and real-time integration easier than ever.
+
+These updates make it simpler to stream web data into LLM pipelines, with intelligent agents handling the heavy lifting.
+
+### Key Features
+* FIRE-1 Support: Use the web action agent via MCP’s scrape and extract endpoints.
+* Interaction-Aware: Automatically navigates complex web barriers.
+* SSE Support: Stream output in real time — locally or from our hosted MCP server.
+* Plug-and-Play: Minimal setup needed for integration with your stack.
+
+## Day 5 – Developer Day
+![Dev Day](/images/launch-week/lw3-d5-1.webp)
+
+### Overview
+Today is all about developers. We’re rolling out upgrades that make building with Firecrawl smoother and more scalable — whether you’re working in Python, Rust, or your favorite editor.
+
+We’ve introduced a fully async Python SDK with named params and return types, powerful new features in the Rust SDK, expanded team support on every plan, and a brand new Firecrawl Dark Theme for VSCode and compatible editors.
+![Python Named Params](/images/launch-week/lw3-d5-3.webp)
+### Key Features
+- **Major Python SDK Improvements**: Named params, return types, and Async added to our Python SDK
+- **Rust SDK Upgrades**: Batch scraping, job cancellation, llms.txt generation, smarter search.
+- **Firecrawl Dark Theme**: A sleek new theme for VSCode, Cursor, and Windsurf. Download it here.
+- **QoL Improvements**: Plenty of small but meaningful changes to improve dev experience like no more team caps. All plans now include up to 20 seats.
+
+## Day 4 – LLMstxt.new  
+![LLMs.txt Main](/images/launch-week/lw3-d4-1.webp)
+
+### Overview  
+Today we’re announcing [http://llmstxt.new](http://llmstxt.new) — the fastest way to turn any website into a clean, consolidated text file for LLMs.
+
+Just add `llmstxt.new/` in front of any URL, and you’ll get back a plain `.txt` file, optimized for AI training and inference. No boilerplate, no noise — just useful content.
+
+Built on top of Firecrawl, this tool makes it effortless to prepare real-world web content for use in LLM pipelines.
+
+![LLMs.txt Generator Interface](/images/launch-week/lw3-d4-2.webp)
+
+### Key Features  
+- **Instant Usage**: Just add `llmstxt.new/` before any URL.  
+- **Two Outputs**: `llms.txt` for concise summaries, `llms-full.txt` for full content.  
+- **API Friendly**: Call via `http://llmstxt.new/{YOUR_URL}` or with a Firecrawl API key for full output.  
+- **LLM-Ready Format**: Designed for both training and inference contexts.  
+
+## Day 3 – /extract v2  
+![Extract v2 Main](/images/launch-week/lw3-d3-l.webp)
+
+### Overview  
+Today we’re launching **/extract v2**, a major upgrade to our extraction system — powered by the FIRE-1 agent.
+
+With full support for **pagination, multi-step flows, and dynamic interactions**, extract v2 goes way beyond what we shipped back in January. It’s also now possible to extract data **without a URL**, using a built-in search layer to find the content you’re after.
+
+We’ve rebuilt the internals from the ground up — improved models, better architecture, and significantly better performance across our internal benchmarks.
+
+![Extract v2 in action](/images/launch-week/lw3-d3-2.webp)
+
+### Key Features  
+- **FIRE-1 Integration**: Automatically handles page actions, navigation, and interaction.  
+- **Multi-Page Extraction**: Extract data across paginated or step-based flows.  
+- **No URL Required**: Use built-in search to extract content without a direct link.  
+- **Improved Accuracy**: New models and architecture mean better, faster results.  
+
+## Day 2 - FIRE-1 Agent
+![FIRE-1 Agent Visualization](/images/launch-week/lw3d2-1.webp)
+
+### Overview
+Meet **FIRE-1**, Firecrawl's first AI Agent built to take web scraping to the next level. With intelligent navigation and interaction capabilities, FIRE-1 can go far beyond traditional scraping methods.
+
+From handling pagination to interacting with dynamic site elements like buttons and links, FIRE-1 allows for powerful, context-aware scraping and extraction workflows.
+![FIRE-1 Agent Visualization](/images/launch-week/lw3-d2-4.webp)
+### Key Features
+- **Smart Navigation**: Move through paginated or multi-step content automatically.
+- **Dynamic Interaction**: Click buttons, follow links, and interact with JavaScript-rendered components.
+
+
+## Day 1 - Change Tracking
+![Change Tracking Main](/images/launch-week/lw3d1.webp)
+
+
+### Overview
+Change tracking is a powerful feature that allows you to monitor and detect changes in web content over time. It is available in both the JavaScript and Python SDKs.
+![Change Tracking](/images/launch-week/lw3d12.webp)
+### Key Features
+- **Detect Changes**: Identify if a webpage has changed since the last scrape.
+- **View Specific Changes**: Access detailed information about what has changed between scrapes.
+- **Structured Data**: Receive structured data about the changes.
+- **Visibility Control**: Manage the visibility of changes on your website.
+
+Using the `changeTracking` format, you can effectively monitor changes on a website and receive comprehensive information about the timestamp of the previous scrape, the result of the comparison between the two page versions, and the visibility of the current page/URL.
+
+
+
+## Day 0 - Firecrawl Editor Theme
+![Firecrawl Editor Theme](/images/launch-week/lw3d0.webp)
+### Overview
+We're excited to release our official Firecrawl Editor Theme! Available now for most editors including Cursor, Windsurf, and more.
+
+### Key Features
+The Firecrawl Editor Theme provides a clean, focused coding experience for everyone. Our color palette emphasizes readability while maintaining the Firecrawl brand identity.
+
+### Download
+You can download the editor theme on the VS Code Marketplace [here](https://firecrawl.link/lw3-editor-theme).

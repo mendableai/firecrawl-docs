@@ -1,0 +1,29 @@
+```js Node
+import FirecrawlApp from 'firecrawl';
+
+// Initialize the client
+const firecrawl = new FirecrawlApp({ apiKey: 'your_api_key' });
+
+// Define research parameters
+const params = {
+  maxDepth: 5,  // Number of research iterations
+  timeLimit: 180,  // Time limit in seconds
+  maxUrls: 15  // Maximum URLs to analyze
+};
+
+// Start research with real-time updates
+const onActivity = (activity) => {
+  console.log(`[${activity.type}] ${activity.message}`);
+};
+
+// Run deep research
+const results = await firecrawl.deepResearch(
+  'What are the latest developments in quantum computing?',
+  params,
+  onActivity
+);
+
+// Access research findings
+console.log(`Final Analysis: ${results.data.finalAnalysis}`);
+console.log(`Sources: ${results.data.sources.length} references`); 
+```

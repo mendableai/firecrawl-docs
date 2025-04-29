@@ -1,0 +1,15 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+# Initialize the client with your API key
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Perform a basic search
+search_result = app.search("firecrawl web scraping", limit=5)
+
+# Print the search results
+for result in search_result.data:
+    print(f"Title: {result.title}")
+    print(f"URL: {result.url}")
+    print(f"Description: {result.description}") 
+```

@@ -1,0 +1,20 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+# Initialize the client
+firecrawl = FirecrawlApp(api_key="your_api_key")
+
+# Generate LLMs.txt with polling
+results = firecrawl.generate_llms_text(
+    url="https://example.com",
+    max_urls=2,
+    show_full_text=True
+)
+
+# Access generation results
+if results.success:
+    print(f"Status: {results.status}")
+    print(f"Generated Data: {results.data}")
+else:
+    print(f"Error: {results.error}")
+```

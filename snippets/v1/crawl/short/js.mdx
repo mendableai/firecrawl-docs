@@ -1,0 +1,14 @@
+```js Node
+const crawlResponse = await app.crawlUrl('https://firecrawl.dev', {
+  limit: 100,
+  scrapeOptions: {
+    formats: ['markdown', 'html'],
+  }
+})
+
+if (!crawlResponse.success) {
+  throw new Error(`Failed to crawl: ${crawlResponse.error}`)
+}
+
+console.log(crawlResponse)
+```

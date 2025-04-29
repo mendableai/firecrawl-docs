@@ -1,0 +1,18 @@
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v1/extract \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "urls": ["https://firecrawl.dev/*"],
+      "prompt": "Extract the company mission from the page.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "company_mission": {
+            "type": "string"
+          }
+        },
+        "required": ["company_mission"]
+      }
+    }'
+```

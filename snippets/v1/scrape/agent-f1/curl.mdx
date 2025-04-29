@@ -1,0 +1,13 @@
+```bash curl
+curl -X POST https://api.firecrawl.dev/v1/scrape \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -d '{
+    "url": "https://example.com/products?page=1",
+    "formats": ["markdown"],
+    "agent": {
+      "model": "FIRE-1",
+      "prompt": "Navigate through the product listings by clicking the \'Next Page\' button until disabled. Scrape each page."
+    }
+  }'
+```

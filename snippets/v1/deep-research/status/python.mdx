@@ -1,0 +1,18 @@
+
+```python Python
+from firecrawl import FirecrawlApp
+
+# Initialize the client
+firecrawl = FirecrawlApp(api_key="your_api_key")
+
+# Check research status
+status = firecrawl.check_deep_research_status("job_id")
+
+# Print current progress
+print(f"Status: {status.status}")
+print(f"Progress: {status.current_depth}/{status.max_depth} iterations")
+
+if status.status == 'completed':
+    print(f"Final Analysis: {status.data.final_analysis}")
+    print(f"Sources found: {len(status.data.sources)}") 
+```

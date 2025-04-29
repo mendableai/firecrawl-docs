@@ -1,0 +1,76 @@
+---
+title: "Batch Scrape"
+description: "Batch scrape multiple URLs"
+og:title: "Batch Scrape | Firecrawl"
+og:description: "Batch scrape multiple URLs"
+---
+
+import BatchScrapePython from "/snippets/v1/batch-scrape/base/python.mdx";
+import BatchScrapeNode from "/snippets/v1/batch-scrape/base/js.mdx";
+import BatchScrapeCURL from "/snippets/v1/batch-scrape/base/curl.mdx";
+import BatchScrapeOutput from "/snippets/v1/batch-scrape/base/output.mdx";
+import BatchScrapeAsyncOutput from "/snippets/v1/batch-scrape/base/async-output.mdx";
+import BatchScrapeExtractPython from "/snippets/v1/batch-scrape/extract/python.mdx";
+import BatchScrapeExtractNode from "/snippets/v1/batch-scrape/extract/js.mdx";
+import BatchScrapeExtractCURL from "/snippets/v1/batch-scrape/extract/curl.mdx";
+import BatchScrapeExtractOutput from "/snippets/v1/batch-scrape/extract/output.mdx";
+import BatchScrapeExtractAsyncOutput from "/snippets/v1/batch-scrape/extract/async-output.mdx";
+
+## Batch scraping multiple URLs
+
+You can now batch scrape multiple URLs at the same time. It takes the starting URLs and optional parameters as arguments. The params argument allows you to specify additional options for the batch scrape job, such as the output formats.
+
+### How it works
+
+It is very similar to how the `/crawl` endpoint works. It submits a batch scrape job and returns a job ID to check the status of the batch scrape. 
+
+The sdk provides 2 methods, synchronous and asynchronous. The synchronous method will return the results of the batch scrape job, while the asynchronous method will return a job ID that you can use to check the status of the batch scrape.
+
+### Usage
+
+<CodeGroup>
+
+<BatchScrapePython />
+<BatchScrapeNode />
+<BatchScrapeCURL />
+
+</CodeGroup>
+
+### Response
+
+If you’re using the sync methods from the SDKs, it will return the results of the batch scrape job. Otherwise, it will return a job ID that you can use to check the status of the batch scrape.
+
+#### Synchronous
+
+<BatchScrapeOutput />
+
+#### Asynchronous
+
+You can then use the job ID to check the status of the batch scrape by calling the `/batch/scrape/{id}` endpoint. This endpoint is meant to be used while the job is still running or right after it has completed **as batch scrape jobs expire after 24 hours**.
+
+<BatchScrapeAsyncOutput />
+
+## Batch scrape with extraction
+
+You can also use the batch scrape endpoint to extract structured data from the pages. This is useful if you want to get the same structured data from a list of URLs.
+
+<CodeGroup>
+
+<BatchScrapeExtractPython />
+<BatchScrapeExtractNode />
+<BatchScrapeExtractCURL />
+
+</CodeGroup>
+
+### Response
+#### Synchronous
+
+<BatchScrapeExtractOutput />
+
+
+#### Asynchronous
+
+<BatchScrapeExtractAsyncOutput />
+
+
+

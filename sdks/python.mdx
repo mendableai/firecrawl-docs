@@ -1,0 +1,96 @@
+---
+title: 'Python'
+description: 'Firecrawl Python SDK is a wrapper around the Firecrawl API to help you easily turn websites into markdown.'
+icon: 'python'
+og:title: "Python SDK | Firecrawl"
+og:description: "Firecrawl Python SDK is a wrapper around the Firecrawl API to help you easily turn websites into markdown."
+---
+
+import InstallationPython from '/snippets/v1/installation/python.mdx'
+import ScrapePythonShort from '/snippets/v1/scrape/short/python.mdx'
+import CrawlPythonShort from '/snippets/v1/crawl/short/python.mdx'
+import CheckCrawlStatusPythonShort from '/snippets/v1/crawl-status/short/python.mdx'
+import CrawlAsyncPythonShort from '/snippets/v1/crawl-async/short/python.mdx'
+import CancelCrawlPythonShort from '/snippets/v1/crawl-delete/short/python.mdx'
+import MapPythonShort from '/snippets/v1/map/short/python.mdx'
+import ExtractPythonShort from '/snippets/v1/extract/short/python.mdx'
+import ScrapeAndCrawlExamplePython from '/snippets/v1/scrape-and-crawl/python.mdx'
+import CrawlWebSocketPythonBase from '/snippets/v1/crawl-websocket/base/python.mdx'
+import AsyncPythonShort from '/snippets/v1/async/short/python.mdx'
+
+## Installation
+
+To install the Firecrawl Python SDK, you can use pip:
+
+<InstallationPython />
+
+## Usage
+
+1. Get an API key from [firecrawl.dev](https://firecrawl.dev)
+2. Set the API key as an environment variable named `FIRECRAWL_API_KEY` or pass it as a parameter to the `FirecrawlApp` class.
+
+
+Here's an example of how to use the SDK:
+
+<ScrapeAndCrawlExamplePython />
+
+### Scraping a URL
+
+To scrape a single URL, use the `scrape_url` method. It takes the URL as a parameter and returns the scraped data as a dictionary.
+
+<ScrapePythonShort />
+
+### Crawling a Website
+
+To crawl a website, use the `crawl_url` method. It takes the starting URL and optional parameters as arguments. The `params` argument allows you to specify additional options for the crawl job, such as the maximum number of pages to crawl, allowed domains, and the output format.
+
+<CrawlPythonShort />
+
+### Asynchronous Crawling
+
+<Tip>Looking for async operations? Check out the [Async Class](#async-class) section below.</Tip>
+
+To crawl a website asynchronously, use the `crawl_url_async` method. It returns the crawl `ID` which you can use to check the status of the crawl job. It takes the starting URL and optional parameters as arguments. The `params` argument allows you to specify additional options for the crawl job, such as the maximum number of pages to crawl, allowed domains, and the output format.
+
+<CrawlAsyncPythonShort />
+
+
+### Checking Crawl Status
+
+To check the status of a crawl job, use the `check_crawl_status` method. It takes the job ID as a parameter and returns the current status of the crawl job.
+
+<CheckCrawlStatusPythonShort />
+
+### Cancelling a Crawl
+
+To cancel an asynchronous crawl job, use the `cancel_crawl` method. It takes the job ID of the asynchronous crawl as a parameter and returns the cancellation status.
+
+<CancelCrawlPythonShort />
+
+### Map a Website
+
+Use `map_url` to generate a list of URLs from a website. The `params` argument let you customize the mapping process, including options to exclude subdomains or to utilize the sitemap.
+
+<MapPythonShort />
+
+{/* ### Extracting Structured Data from Websites
+
+To extract structured data from websites, use the `extract` method. It takes the URLs to extract data from, a prompt, and a schema as arguments. The schema is a Pydantic model that defines the structure of the extracted data.
+
+<ExtractPythonShort /> */}
+
+### Crawling a Website with WebSockets
+
+To crawl a website with WebSockets, use the `crawl_url_and_watch` method. It takes the starting URL and optional parameters as arguments. The `params` argument allows you to specify additional options for the crawl job, such as the maximum number of pages to crawl, allowed domains, and the output format.
+
+<CrawlWebSocketPythonBase />
+
+## Error Handling
+
+The SDK handles errors returned by the Firecrawl API and raises appropriate exceptions. If an error occurs during a request, an exception will be raised with a descriptive error message.
+
+## Async Class
+
+For async operations, you can use the `AsyncFirecrawlApp` class. Its methods are the same as the `FirecrawlApp` class, but they don't block the main thread.
+
+<AsyncPythonShort />

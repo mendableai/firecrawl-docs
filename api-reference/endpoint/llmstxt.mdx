@@ -1,0 +1,57 @@
+---
+title: "Generate LLMs.txt"
+openapi: "v1-openapi POST /llmstxt"
+---
+
+The LLMs.txt generation endpoint creates LLMs.txt and LLMs-full.txt files for any website. These files provide a structured, LLM-friendly format of the website's content, making it easier for language models to understand and process the information.
+
+Looking for the status endpoint? Check out the [LLMs.txt Status](/api-reference/endpoint/llmstxt-get) endpoint.
+
+### Response Structure
+
+The response includes:
+
+- **success**: Boolean indicating if the request was successful
+- **id**: Unique identifier for the generation job
+
+### Output Format
+
+1. **LLMs.txt**
+
+   - Concise, structured summary of the website
+   - Contains key links and descriptions
+   - Formatted in markdown for easy parsing
+   - Example:
+
+     ```markdown
+     # http://example.com llms.txt
+
+     - [Page Title](https://example.com/page): Brief description
+     - [Another Page](https://example.com/another): Another description
+     ```
+
+2. **LLMs-full.txt** (when showFullText is true)
+
+   - Contains full content of processed pages
+   - Maintains hierarchical structure
+   - Includes more detailed information
+   - Example:
+
+     ```markdown
+     # http://example.com llms-full.txt
+
+     ## Page Title
+
+     Full content of the page...
+
+     ## Another Page
+
+     More detailed content...
+     ```
+
+### Billing
+Billing is based on API calls and URLs processed:
+
+- Base cost: 1 credit per API call
+- Additional: 1 credit per URL processed
+- Control URL costs with `maxUrls` parameter

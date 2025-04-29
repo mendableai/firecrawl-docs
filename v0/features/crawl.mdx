@@ -1,0 +1,226 @@
+---
+title: 'Crawl'
+description: 'Firecrawl can recursively search through a urls subdomains, and gather the content'
+icon: 'spider'
+og:title: "Crawl | Firecrawl"
+og:description: "Firecrawl can recursively search through a urls subdomains, and gather the content"
+---
+
+Firecrawl thoroughly crawls websites, ensuring comprehensive data extraction while bypassing any web blocker mechanisms. Here's how it works:
+
+1. **URL Analysis:**
+   Begins with a specified URL, identifying links by looking at the sitemap and then crawling the website. If no sitemap is found, it will crawl the website following the links.
+
+2. **Recursive Traversal:**
+   Recursively follows each link to uncover all subpages.
+
+3. **Content Scraping:**
+   Gathers content from every visited page while handling any complexities like JavaScript rendering or rate limits.
+
+4. **Result Compilation:**
+   Converts collected data into clean markdown or structured output, perfect for LLM processing or any other task.
+
+This method guarantees an exhaustive crawl and data collection from any starting URL.
+
+
+## Crawling
+
+### /crawl endpoint
+
+Used to crawl a URL and all accessible subpages. This submits a crawl job and returns a job ID to check the status of the crawl.
+
+
+### Installation 
+
+<CodeGroup>
+
+```bash Python
+pip install firecrawl-py
+```
+
+```bash JavaScript
+npm install @mendable/firecrawl-js
+```
+
+```go Go
+go get github.com/mendableai/firecrawl-go
+```
+
+```toml Rust
+# add the following to your Cargo.toml
+
+[dependencies]
+firecrawl = "^0.1"
+tokio = { version = "^1", features = ["full"] }
+serde = { version = "^1.0", features = ["derive"] }
+serde_json = "^1.0"
+uuid = { version = "^1.10", features = ["v4"] }
+
+[build-dependencies]
+tokio = { version = "1", features = ["full"] }
+```
+
+</CodeGroup>
+
+### Usage
+
+<CodeGroup>
+
+```python Python
+from firecrawl import FirecrawlApp
+
+app = FirecrawlApp(api_key="YOUR_API_KEY")
+
+crawl_result = app.crawl_url('mendable.ai', {'crawlerOptions': {'excludes': ['blog/*']}})
+
+# Get the markdown
+for result in crawl_result:
+    print(result['markdown'])
+```
+
+```js JavaScript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+// Initialize the FirecrawlApp with your API key
+const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
+
+// Crawl a website
+const crawlResult = await app.crawlUrl('mendable.ai', { crawlerOptions: { excludes: ['blog/*'] } });
+
+// Log the markdown
+console.log(crawlResult.map(result => result.markdown));
+```
+
+```go Go
+import (
+  "fmt"
+  "log"
+
+  "github.com/mendableai/firecrawl-go"
+)
+
+func main() {
+  app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
+  if err != nil {
+    log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+  }
+
+  crawlResult, err := app.CrawlURL("mendable.ai", nil)
+  if err != nil {
+    log.Fatalf("Failed to crawl URL: %v", err)
+  }
+
+  fmt.Println(crawlResult)
+}
+```
+
+```rust Rust
+use firecrawl::FirecrawlApp;
+
+#[tokio::main]
+async fn main() {
+  // Initialize the FirecrawlApp with the API key
+  let api_key = "YOUR_API_KEY";
+  let api_url = "https://api.firecrawl.dev";
+  let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
+
+  // Crawl the URL
+  let crawl_params = json!({
+    "crawlerOptions": {
+        "excludes": ["blog/*"]
+    }
+  });
+
+  let crawl_result = app
+      .crawl_url("https://example.com", Some(crawl_params), true, 2, None)
+      .await;
+
+  // Print the crawl result
+  match crawl_result {
+      Ok(data) => println!("Crawl Result:\n{}", data),
+      Err(e) => eprintln!("Crawl failed: {}", e),
+  }
+}
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v0/crawl \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "url": "https://mendable.ai"
+    }'
+```
+
+</CodeGroup>
+
+### Job ID Response
+
+If you are not using the sdk or prefer to use webhook or a different polling method, you can set the `wait_until_done` to `false`. 
+This will return a jobId.
+
+For cURL, /crawl will always return a jobId where you can use to check the status of the crawl.
+
+```json
+{ "jobId": "1234-5678-9101" }
+```
+
+### Check Crawl Job
+
+Used to check the status of a crawl job and get its result.
+<CodeGroup>
+
+```python Python
+status = app.check_crawl_status(job_id)
+```
+
+```js JavaScript
+const status = await app.checkCrawlStatus(jobId);
+```
+
+```go Go
+status, err := app.CheckCrawlStatus(jobId)
+if err != nil {
+  log.Fatalf("Failed to check crawl status: %v", err)
+}
+```
+
+```rust Rust
+let status = match app.check_crawl_status(jobId).await {
+    Ok(status) => status,
+    Err(e) => panic!("Failed to check crawl status: {:?}", e),
+};
+
+println!("Crawl Status: {:?}", status);
+```
+
+```bash cURL
+curl -X GET https://api.firecrawl.dev/v0/crawl/status/1234-5678-9101 \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+
+</CodeGroup>
+
+#### Response
+
+```json
+{
+  "status": "completed",
+  "current": 22,
+  "total": 22,
+  "data": [
+    {
+      "content": "Raw Content ",
+      "markdown": "# Markdown Content",
+      "provider": "web-scraper",
+      "metadata": {
+        "title": "Mendable | AI for CX and Sales",
+        "description": "AI for CX and Sales",
+        "language": null,
+        "sourceURL": "https://www.mendable.ai/"
+      }
+    }
+  ]
+}
+```

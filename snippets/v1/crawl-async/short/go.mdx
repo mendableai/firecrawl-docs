@@ -1,0 +1,7 @@
+```go Go
+crawlStatus, err := app.AsyncCrawlUrl("https://firecrawl.dev", nil, nil)
+if err != nil {
+  log.Fatalf("Failed to send crawl request: %v", err)
+}
+fmt.Println(crawlStatus) 
+```

@@ -1,0 +1,23 @@
+```python Python
+from pydantic import BaseModel
+
+class ExtractSchema(BaseModel):
+    company_mission: str
+
+# Define the URLs to extract data from
+urls = [
+    'https://firecrawl.dev/*'
+]
+
+# Define the prompt for extraction
+prompt = 'Extract the company mission from the page.'
+
+# Perform the extraction
+scrape_result = app.extract(urls, prompt=prompt, schema=ExtractSchema.model_json_schema())
+
+# Check if the extraction was successful
+if not scrape_result.success:
+    raise Exception(f"Failed to scrape: {scrape_result.error}")
+
+# Print the extracted data
+print(scrape_result.data)

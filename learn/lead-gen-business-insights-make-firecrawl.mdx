@@ -1,0 +1,202 @@
+---
+title: "Using LLM Extraction for Customer Insights"
+description: "Using LLM Extraction for Insights and Lead Generation using Make and Firecrawl."
+og:title: "Using LLM Extraction for Customer Insights | Firecrawl"
+og:description: "Using LLM Extraction for Insights and Lead Generation using Make and Firecrawl."
+---
+
+> Note: this example is using [v0 version of the Firecrawl API](/v0/introduction). You can install the 0.0.20 version for the Python SDK or the 0.0.36 for the Node SDK.
+
+### Introduction
+
+Understanding our customers - not just who they are, but what they do—is crucial to tailoring our products and services effectively. When running a self-serve motion, you have so many customers come in the door with little to no knowledge of them. The process of proactively understanding who these folks are has traditionally been time-intensive, involving manual data collection and analysis to gather actionable insights.
+
+However, with the power of LLMs and their capacity for advanced data extraction, we've automated this process. Using LLM extraction and analysis of customer data, LLM we’ve significantly reduced our workload, allowing us to understand and serve our customer base more effectively than ever before.
+
+If you have limited technical knowledge, you can build an automation that gets targeted information about your customers for the purposes of product direction and lead gen. Here’s how you can do this yourself with [Make](https://make.com/) and [Firecrawl](https://www.firecrawl.dev/).
+
+---
+
+### Overview of the Tools
+
+**Firecrawl**
+
+Firecrawl is a platform for scraping, search, and extraction. It allows you to take data from the web and translate it into LLM-legible markdown or structured data.
+
+When we want to get information about our customers, we can use Firecrawl’s LLM extraction functionality to specify the specific information we want from their websites.
+
+**Make.com (formerly Integromat)**
+
+Make is an automation platform that allows users to create customized workflows to connect various apps and services without needing deep technical knowledge. It uses a visual interface where users can drag and drop elements to design their automations.
+
+We can use Make to connect a spreadsheet of user data to Firecrawl, allowing us to do extraction with just a bit of JSON.
+
+### Setting Up the Scenario
+
+- Step-by-step guide on setting up the data extraction process.
+- **Connecting Google Sheets to Make.com**
+  - How user data is initially collected and stored.
+- **Configuring the HTTP Request in Make.com**
+  - Description of setting up API requests to Firecrawl.
+  - Purpose of these requests (e.g., extracting company information).
+
+### Preparing our Data
+
+Before we get started, we want to make sure we prepare our data for Firecrawl. In this case, I created a simple spreadsheet with imported users from our database. We want to take the email domains of our users and transform them into links using the https:// format:
+
+![](https://i.imgur.com/gssynZa.png)
+
+We also want to add some attributes that we’d like to know about these companies. For me, I want to understand a bit about the company, their industry, and their customers. I’ve set these in columns as:
+company_description
+company_type
+who_they_serve
+
+Now that we have our data prepared, we can start setting up our automation in Make!
+
+## Setting up our automation
+
+To get our automation running, we simply need to follow a three step process in Make. Here, we will choose three apps in our scenario:
+
+Google Sheets - Get range values
+HTTP - Make an API key auth request
+Google Sheets - Update a row
+
+We’ll also want to add the ignore flow control tool in case we run into any errors. This will keep the automation going.
+
+![](https://i.imgur.com/MdCWv30.png)
+
+This automation will allow us to extract a set of links from our spreadsheet, send them to Firecrawl for data extraction, then repopulate our spreadsheet with the desired info.
+
+Let’s start by configuring our first app. Our goal is to export all of the URLs so that we can send them to Firecrawl for extraction. Here is the configuration for pulling these URLs:
+
+![](https://i.imgur.com/WHa91kY.png)
+
+\*_Important_ - we want to make sure we start pulling data from the second row. If you include the header, you will eventually run into an error.
+
+---
+
+Great! Now that we have that configured, we want to prepare to set up our HTTP request. To do this, we will go to https://firecrawl.dev to sign up and get our API key (you can get started for free!). Once you sign up, you can go to https://firecrawl.dev/account to see your API key.
+
+We will be using Firecrawl’s Scrape Endpoint. This endpoint will allow us to pull information from a single URL, translate it into clean markdown, and use it to extract the data we need. I will be filling out all the necessary conditions in our Make HTTP request using the API reference in their documentation.
+
+Now in Make, I configure the API call using the documentation from Firecrawl. We will be using POST as the HTTP method and have two headers.
+
+```
+Header 1:
+Name: Authorization
+Value: Bearer your-API-key
+
+Header 2:
+Name: Content-Type
+Value: application/json
+```
+
+![](https://i.imgur.com/LJ8g142.png)
+We also want to set our body and content types. Here we will do:
+
+```
+Body type: Raw
+Content type: Json (application/json)
+```
+
+We will also click ‘yes’ for parsing our response. This will automatically parse our response into JSON.
+
+The request content is the main meat of what we want to achieve. Here is the request content we will use for this use case:
+
+```
+{
+  "url": "1. url(B)",
+
+"pageOptions": {
+    "onlyMainContent": true
+  },
+  "extractorOptions": {
+    "mode": "llm-extraction",
+    "extractionPrompt": "Extract the company description (in one sentence explain what the company does), company industry (software, services, AI, etc.) - this really should just be a tag with a couple keywords, and who they serve (who are their customers). If there is no clear information to answer the question, write 'no info'.",
+    "extractionSchema": {
+      "type": "object",
+      "properties": {
+        "company_description": {
+          "type": "string"
+        },
+        "company_industry": {
+          "type": "string"
+        },
+        "who_they_serve": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "company_description",
+        "company_industry",
+        "who_they_serve"
+      ]
+    }
+  }
+}
+```
+
+![](https://i.imgur.com/DrMc1g2.png)
+
+\*_Note_ the green field in the screenshot is a dynamic item that you can choose in the Make UI. Instead of `url (B)`, the block may be the first URL in your data.
+
+![](https://i.imgur.com/D4HCBNe.png)
+
+Fantastic! Now we have configured our HTTP request. Let’s test it to make sure everything is working as it should be. Click ‘run once’ in Make and we should be getting data back.
+
+![](https://i.imgur.com/QuQZs0U.png)
+
+When we run, let’s check our first operation. In the output, we should be getting a `status code: 200`, meaning that our API request was successful. In the output, click on data to make sure we got the data we needed.
+
+![](https://i.imgur.com/pm614VA.png)
+
+Our output looks successful! In the llm_extraction we are seeing the three attributes of data that we wanted from the website.
+
+\*_Note_ if you are getting a `500` error on your first operation and `200` responses on the subsequent ones, this may be because the operation is trying to be performed on the first row of your data (the header row). This will cause issues importing the data back into sheets! Make sure you start from the second row as mentioned before.
+
+Now that we know the HTTP request is working correctly, all that’s left is to take the outputted JSON from Firecrawl and put it back into our spreadsheet.
+
+---
+
+Now we need to take our extracted data and put it back into our spreadsheet. To do this, we will take the outputted JSON from our HTTP request and export the text into the relevant tables.
+
+Let’s start by connecting the same google sheet and specifying the Row Number criteria. Here we will just use the Make UI to choose ‘row number’
+
+![](https://i.imgur.com/BYpPabk.png)
+
+All that’s left is to specify which LLM extracted data goes into which column. Here, we can simply use the UI in Make to set this up.
+
+![](https://i.imgur.com/219tft2.png)
+
+That’s it, now it’s time to test our automation!
+
+---
+
+Let’s click `run once` on the Make UI and make sure everything is running smoothly. The automation should start iterating through link-by-link and populating our spreadsheet in real time.
+
+![](https://i.imgur.com/vU1CJlt.png)
+
+We have success! Using Make and Firecrawl, we have been able to extract specific information about our customers without the need of manually going to each of their websites.
+
+Looking at the data, we are starting to get a better understanding of our customers. However, we are not limited to these specific characteristics. If we want, we can customize our JSON and Extraction Prompt to find out other information about these companies.
+
+### Use Cases
+
+LLM extraction allows us to quickly get specific information from the web that’s relevant to our business. We can use these automations to do a variety of tasks.
+
+**Product:**
+Especially for self-serve companies, we can understand the trends in industries using our product. What are the top 2-3 industries using our tech and what are they using it for? This will allow us to make better product decisions by prioritizing the right customers to focus on.
+
+**Business Development:**
+By understanding who our users are, we can look for similar companies who could benefit from our product as well. By doing a similar automation, we can extract positive indicators from prospects that would benefit from our product.
+
+We can also use this data to generate better outreach emails that are more specific to the individual prospect.
+
+**Market Research:**
+Market research firms spend tons of time doing secondary research, especially in niche sectors. We can streamline data collection by automating the extraction and organization of data from diverse sources. This automation helps boost efficiency and scales with growing data needs, making it a valuable tool for strategic decision-making in fast-evolving industries.
+
+### Going a step further
+
+This was just a simple example of how we can use LLMs to extract relevant data from websites using a static spreadsheet. You can always make this more advanced by connecting this dynamically to your sign ups. Additionally, you could connect this to other tools to further accelerate your productivity. For example, using the extracted content to generate more personalized copy for prospecting.
+
+If you found this useful, feel free to let me know! I’d love to hear your feedback or learn about what you’re building. You can reach me at eric@mendable.ai. Good luck and happy building!

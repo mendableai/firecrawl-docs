@@ -1,0 +1,56 @@
+---
+title: "Dify"
+description: "Learn how to use Firecrawl on Dify"
+og:title: "Dify | Firecrawl"
+og:description: "Learn how to use Firecrawl on Dify"
+---
+
+## Sync Data from Websites for Dify workflows
+
+Firecrawl can be used inside of [Dify the LLM workflow builder](https://cloud.dify.ai/). This page introduces how to scrape data from a web page, parse it into Markdown, and import it into the Dify knowledge base using their Firecrawl integration.
+
+### Configuring Firecrawl
+
+First, you need to configure Firecrawl credentials in the Data Source section of the Settings page.
+
+<img
+  className="block"
+  src="/images/fc_dify_config.avif"
+  alt="Configure Firecrawl key"
+/>
+
+Log in to your Firecrawl account and get your API Key, and then enter and save it in Dify.
+
+<img
+  className="block"
+  src="/images/fc_dify_savekey.png"
+  alt="Save Firecrawl key"
+/>
+
+### Scrape target webpage
+
+Now comes the fun part, scraping and crawling. On the knowledge base creation page, select Sync from website and enter the URL to be scraped.
+
+<img
+  className="block"
+  src="/images/fc_dify_webscrape.webp"
+  alt="Scraping setup"
+/>
+
+The configuration options include: Whether to crawl sub-pages, Page crawling limit, Page scraping max depth, Excluded paths, Include only paths, and Content extraction scope. After completing the configuration, click Run to preview the parsed pages.
+
+<img
+  className="block"
+  src="/images/fc_dify_fcoptions.webp"
+  alt="Set Firecrawl configuration"
+/>
+
+### Review import results
+
+After importing the parsed text from the webpage, it is stored in the knowledge base documents. View the import results and click Add URL to continue importing new web pages.
+
+<img
+  className="block"
+  src="/images/fc_dify_results.webp"
+  alt="See results of the Firecrawl scrape"
+/>

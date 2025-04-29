@@ -1,0 +1,172 @@
+---
+title: "Search"
+description: "Make a serp request, and get all the content with a single API request"
+icon: "magnifying-glass"
+og:title: "Search | Firecrawl"
+og:description: "Make a serp request, and get all the content with a single API request"
+---
+
+## Searching the web and scraping the results with Firecrawl
+
+Firecrawl integrates its SERP (Search Engine Results Page) API with its robust scraping infrastructure to provide a seamless search and scrape functionality through a single endpoint. Here's why:
+
+1. **Unified Search Query:**
+   Users submit a search query via the SERP endpoint.
+
+2. **Automated Result Scraping:**
+   Firecrawl automatically processes the search results and utilizes its scraping capabilities to extract data from each result page.
+
+3. **Data Delivery:**
+   The scraped data from all result pages is compiled and delivered in a clean markdown - ready to use.
+
+This integration allows users to efficiently perform web searches and obtain comprehensive, scraped data from multiple sources with minimal effort.
+
+For more details, refer to the [Search Endpoint Documentation](https://docs.firecrawl.dev/api-reference/endpoint/search).
+
+## Search any query
+
+### /search endpoint
+
+Used to search the web, get the most relevant results, scrape each page and return the markdown.
+
+```bash
+curl -X POST https://api.firecrawl.dev/v0/search \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -d '{
+      "query": "firecrawl",
+      "pageOptions": {
+        "fetchPageContent": true // false for a fast serp api
+      }
+    }'
+```
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "url": "https://docs.firecrawl.dev",
+      "markdown": "# Markdown Content",
+      "provider": "web-scraper",
+      "metadata": {
+        "title": "Firecrawl | Scrape the web reliably for your LLMs",
+        "description": "AI for CX and Sales",
+        "language": null,
+        "sourceURL": "https://docs.firecrawl.dev/"
+      }
+    }
+  ]
+}
+```
+
+### With Python SDK
+
+#### Installing Python SDK
+
+```bash
+pip install firecrawl-py
+```
+
+#### Search a query
+
+```python
+from firecrawl import FirecrawlApp
+
+app = FirecrawlApp(api_key="YOUR_API_KEY")
+
+result = app.search(query="What is firecrawl?")
+```
+
+
+The response will be similar to the one shown in the curl command above.
+
+### With JavaScript SDK
+
+#### Installing JavaScript SDK
+
+```bash
+npm install @mendable/firecrawl-js
+```
+
+#### Search a query
+
+```javascript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+// Initialize the FirecrawlApp with your API key
+const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
+
+// Perform a search
+const result = await app.search('What is firecrawl?');
+```
+
+The response will be similar to the one shown in the curl command above.
+
+### With Go SDK
+
+#### Installing Go SDK
+
+```bash
+go get github.com/mendableai/firecrawl-go
+```
+
+#### Search a query
+
+```go
+import (
+  "fmt"
+  "log"
+
+  "github.com/mendableai/firecrawl-go"
+)
+
+func main() {
+  app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
+  if err != nil {
+      log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+  }
+
+  query := "What is firecrawl?"
+  searchResult, err := app.Search(query)
+  if err != nil {
+    log.Fatalf("Failed to search: %v", err)
+  }
+  fmt.Println(searchResult)
+}
+```
+
+### With Rust SDK
+
+#### Installing Rust SDK
+
+Add the following to your `Cargo.toml`:
+```toml
+[dependencies]
+firecrawl = "^0.1"
+tokio = { version = "^1", features = ["full"] }
+serde = { version = "^1.0", features = ["derive"] }
+serde_json = "^1.0"
+uuid = { version = "^1.10", features = ["v4"] }
+
+[build-dependencies]
+tokio = { version = "1", features = ["full"] }
+```
+
+#### Search a query
+
+```rust
+async fn main() {
+  let api_key = "YOUR_API_KEY";
+  let api_url = "https://api.firecrawl.dev";
+  let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
+
+  let query = "What is firecrawl?";
+  let search_result = app.search(query).await;
+
+  match search_result {
+    Ok(data) => println!("Search Result: {}", data),
+    Err(e) => eprintln!("Failed to search: {}", e),
+  }
+}
+```

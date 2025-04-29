@@ -1,0 +1,10 @@
+```go Go
+// Get crawl status
+crawlStatus, err := app.CheckCrawlStatus("<crawl_id>")
+
+if err != nil {
+  log.Fatalf("Failed to get crawl status: %v", err)
+}
+
+fmt.Println(crawlStatus)
+```

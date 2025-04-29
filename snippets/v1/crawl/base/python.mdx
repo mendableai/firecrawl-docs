@@ -1,0 +1,14 @@
+```python Python
+from firecrawl import FirecrawlApp, ScrapeOptions
+
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Crawl a website:
+crawl_status = app.crawl_url(
+  'https://firecrawl.dev', 
+  limit=100, 
+  scrape_options=ScrapeOptions(formats=['markdown', 'html']),
+  poll_interval=30
+)
+print(crawl_status)
+```

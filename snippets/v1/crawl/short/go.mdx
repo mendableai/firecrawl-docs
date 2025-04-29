@@ -1,0 +1,13 @@
+```go Go
+crawlStatus, err := app.CrawlUrl("https://firecrawl.dev", map[string]any{
+  "limit": 100,
+  "scrapeOptions": map[string]any{
+    "formats": []string{"markdown", "html"},
+  },
+})
+if err != nil {
+  log.Fatalf("Failed to send crawl request: %v", err)
+}
+
+fmt.Println(crawlStatus) 
+```
