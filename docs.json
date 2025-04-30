@@ -167,7 +167,8 @@
               {
                 "group": "Account Endpoints",
                 "pages": [
-                  "api-reference/endpoint/credit-usage"
+                  "api-reference/endpoint/credit-usage",
+                  "api-reference/endpoint/token-usage"
                 ]
               }
             ]
