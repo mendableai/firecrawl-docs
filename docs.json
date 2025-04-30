@@ -133,6 +133,7 @@
                   "api-reference/endpoint/scrape",
                   "api-reference/endpoint/batch-scrape",
                   "api-reference/endpoint/batch-scrape-get",
+                  "api-reference/endpoint/batch-scrape-delete",
                   "api-reference/endpoint/batch-scrape-get-errors"
                 ]
               },
