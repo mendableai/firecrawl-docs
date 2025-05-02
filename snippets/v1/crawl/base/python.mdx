@@ -7,6 +7,7 @@ app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
 crawl_result = app.crawl_url(
   'https://firecrawl.dev', 
   limit=10, 
+  delay=2,
   scrape_options=ScrapeOptions(formats=['markdown', 'html']),
 )
 print(crawl_result)

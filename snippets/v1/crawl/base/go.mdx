@@ -20,6 +20,7 @@ func main() {
 	// Crawl a website
 	crawlStatus, err := app.CrawlUrl("https://firecrawl.dev", map[string]any{
 		"limit": 100,
+		"delay": 2,
 		"scrapeOptions": map[string]any{
 			"formats": []string{"markdown", "html"},
 		},
