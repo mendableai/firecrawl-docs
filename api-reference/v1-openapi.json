@@ -782,7 +782,7 @@
                   },
                   "delay": {
                     "type": "number",
-                    "description": "Delay in seconds between crawl requests. This helps respect website rate limits."
+                    "description": "Delay in seconds between scrapes. This helps respect website rate limits."
                   },
                   "webhook": {
                     "type": "object",
