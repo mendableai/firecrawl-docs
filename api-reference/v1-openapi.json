@@ -780,6 +780,10 @@
                     "description": "Allows the crawler to follow links to external websites.",
                     "default": false
                   },
+                  "delay": {
+                    "type": "number",
+                    "description": "Delay in seconds between crawl requests. This helps respect website rate limits."
+                  },
                   "webhook": {
                     "type": "object",
                     "description": "A webhook specification object.",
