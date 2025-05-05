@@ -30,21 +30,14 @@ import NodeCrawlExample from "/snippets/v1/crawl/sdk-example/js.mdx";
 import PythonCrawlExampleResponse from "/snippets/v1/crawl/sdk-example/python-response.mdx";
 import NodeCrawlExampleResponse from "/snippets/v1/crawl/sdk-example/js-response.mdx";
 
-Firecrawl thoroughly crawls websites, ensuring comprehensive data extraction while bypassing any web blocker mechanisms. Here's how it works:
+Firecrawl efficiently crawls websites to extract comprehensive data while bypassing blockers. The process:
 
-1. **URL Analysis:**
-   Begins with a specified URL, identifying links by looking at the sitemap and then crawling the website. If no sitemap is found, it will crawl the website following the links.
+1. **URL Analysis:** Scans sitemap and crawls website to identify links
+2. **Traversal:** Recursively follows links to find all subpages
+3. **Scraping:** Extracts content from each page, handling JS and rate limits
+4. **Output:** Converts data to clean markdown or structured format
 
-2. **Recursive Traversal:**
-   Recursively follows each link to uncover all subpages.
-
-3. **Content Scraping:**
-   Gathers content from every visited page while handling any complexities like JavaScript rendering or rate limits.
-
-4. **Result Compilation:**
-   Converts collected data into clean markdown or structured output, perfect for LLM processing or any other task.
-
-This method guarantees an exhaustive crawl and data collection from any starting URL.
+This ensures thorough data collection from any starting URL.
 
 
 ## Crawling
