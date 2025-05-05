@@ -18,19 +18,19 @@ import ExtractNoSchemaOutput from "/snippets/v1/llm-extract/no-schema/output.mdx
 
 {/* <Warning>Scrape LLM Extract will be deprecated in future versions. Please use the new [Extract](/features/extract) endpoint.</Warning> */}
 
-Firecrawl leverages Large Language Models (LLMs) to efficiently extract structured data from web pages. Here's how:
+Firecrawl uses AI to get structured data from web pages in 3 steps:
 
-1. **Schema Definition:**
-   Define the URL to scrape and the desired data schema using JSON Schema (following OpenAI tool schema). This schema specifies the data structure you expect to extract from the page.
+1. **Set the Schema:**
+   Tell us what data you want by defining a JSON schema (using OpenAI's format) along with the webpage URL.
 
-2. **Scrape Endpoint:**
-   Pass the URL and the schema to the scrape endpoint. Documentation for this endpoint can be found here:
+2. **Make the Request:**
+   Send your URL and schema to our scrape endpoint. See how here:
    [Scrape Endpoint Documentation](https://docs.firecrawl.dev/api-reference/endpoint/scrape)
 
-3. **Structured Data Retrieval:**
-   Receive the scraped data in the structured format defined by your schema. You can then use this data as needed in your application or for further processing.
+3. **Get Your Data:**
+   Get back clean, structured data matching your schema that you can use right away.
 
-This method streamlines data extraction, reducing manual handling and enhancing efficiency.
+This makes getting web data in the format you need quick and easy.
 
 ## Extract structured data
 
