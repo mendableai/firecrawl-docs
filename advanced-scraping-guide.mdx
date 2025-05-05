@@ -430,6 +430,12 @@ When using the `/crawl` endpoint, you can customize the crawling behavior with r
 - **Description**: This option allows the crawler to follow links that point to external domains. Be careful with this option, as it can cause the crawl to stop only based only on the`limit` and `maxDepth` values.
 - **Default**: `false`
 
+### `delay`
+
+- **Type**: `number`
+- **Description**: Delay in seconds between scrapes. This helps respect website rate limits and prevent overwhelming the target website. If not provided, the crawler may use the robots.txt crawl delay if available.
+- **Default**: `undefined`
+
 #### scrapeOptions
 
 As part of the crawler options, you can also specify the `scrapeOptions` parameter. This parameter allows you to customize the scraping behavior for each page.
