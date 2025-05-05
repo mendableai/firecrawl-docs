@@ -12,8 +12,6 @@ import ProxyRetryPython from "/snippets/v1/scrape/proxy-retry/python.mdx";
 import ProxyRetryNode from "/snippets/v1/scrape/proxy-retry/js.mdx";
 import ProxyRetryCURL from "/snippets/v1/scrape/proxy-retry/curl.mdx";
 
-## Proxy Stealth Mode
-
 Firecrawl provides different proxy types to help you scrape websites with varying levels of anti-bot protection. The proxy type can be specified using the `proxy` parameter.
 
 ### Proxy Types
@@ -21,7 +19,7 @@ Firecrawl provides different proxy types to help you scrape websites with varyin
 Firecrawl supports two types of proxies:
 
 - **basic**: Proxies for scraping sites with none to basic anti-bot solutions. Fast and usually works.
-- **stealth**: Stealth proxies for scraping sites with advanced anti-bot solutions. Slower, but more reliable on certain sites. Starting May 8th, stealth costs 5 credits per request.
+- **stealth**: Stealth proxies for scraping sites with advanced anti-bot solutions. Slower, but more reliable on certain sites.
 
 If you do not specify a proxy, Firecrawl will automatically attempt to determine which one you need based on the target site.
 
@@ -56,5 +54,3 @@ A common pattern is to first try scraping with the default proxy settings, and t
 </CodeGroup>
 
 This approach allows you to optimize your credit usage by only using stealth mode when necessary.
-
-**Note:** Starting May 8th, stealth proxy requests cost 5 credits per request.
