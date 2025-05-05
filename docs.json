@@ -152,16 +152,16 @@
                 ]
               },
               {
+                "group": "Search Endpoints",
+                "pages": [
+                  "api-reference/endpoint/search"
+                ]
+              },
+              {
                 "group": "Extract Endpoints",
                 "pages": [
                   "api-reference/endpoint/extract",
                   "api-reference/endpoint/extract-get"
-                ]
-              },
-              {
-                "group": "Search Endpoints",
-                "pages": [
-                  "api-reference/endpoint/search"
                 ]
               },
               {
