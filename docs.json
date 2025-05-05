@@ -99,10 +99,16 @@
                 ]
               },
               {
-                "group": "SDKs",
+                "group": "Official",
                 "pages": [
                   "sdks/python",
-                  "sdks/node",
+                  "sdks/node"
+                  
+                ]
+              },
+              {
+                "group": "Community",
+                "pages": [
                   "sdks/go",
                   "sdks/rust"
                 ]
