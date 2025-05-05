@@ -2244,7 +2244,7 @@
           "proxy": {
             "type": "string",
             "enum": ["basic", "stealth"],
-            "description": "Specifies the type of proxy to use.\n\n - **basic**: Proxies for scraping sites with none to basic anti-bot solutions. Fast and usually works.\n - **stealth**: Stealth proxies for scraping sites with advanced anti-bot solutions. Slower, but more reliable on certain sites.\n\nIf you do not specify a proxy, Firecrawl will automatically attempt to determine which one you need based on the target site."
+            "description": "Specifies the type of proxy to use.\n\n - **basic**: Proxies for scraping sites with none to basic anti-bot solutions. Fast and usually works.\n - **stealth**: Stealth proxies for scraping sites with advanced anti-bot solutions. Slower, but more reliable on certain sites. Starting May 8th, stealth will cost 5 credits per request.\n\nIf you do not specify a proxy, Firecrawl will default to basic."
           },
           "changeTrackingOptions": {
             "type": "object",
