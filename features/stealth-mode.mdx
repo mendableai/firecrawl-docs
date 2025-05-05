@@ -1,0 +1,56 @@
+---
+title: "Stealth Mode"
+description: "Use stealth proxies for sites with advanced anti-bot solutions"
+og:title: "Stealth Mode | Firecrawl"
+og:description: "Use stealth proxies for sites with advanced anti-bot solutions"
+---
+
+import ProxyPython from "/snippets/v1/scrape/proxy/python.mdx";
+import ProxyNode from "/snippets/v1/scrape/proxy/js.mdx";
+import ProxyCURL from "/snippets/v1/scrape/proxy/curl.mdx";
+import ProxyRetryPython from "/snippets/v1/scrape/proxy-retry/python.mdx";
+import ProxyRetryNode from "/snippets/v1/scrape/proxy-retry/js.mdx";
+import ProxyRetryCURL from "/snippets/v1/scrape/proxy-retry/curl.mdx";
+
+Firecrawl provides different proxy types to help you scrape websites with varying levels of anti-bot protection. The proxy type can be specified using the `proxy` parameter.
+
+### Proxy Types
+
+Firecrawl supports two types of proxies:
+
+- **basic**: Proxies for scraping sites with none to basic anti-bot solutions. Fast and usually works.
+- **stealth**: Stealth proxies for scraping sites with advanced anti-bot solutions. Slower, but more reliable on certain sites.
+
+If you do not specify a proxy, Firecrawl will automatically attempt to determine which one you need based on the target site.
+
+### Using Stealth Mode
+
+When scraping websites with advanced anti-bot protection, you can use the stealth proxy mode to improve your success rate.
+
+<CodeGroup>
+
+<ProxyPython />
+
+<ProxyNode />
+
+<ProxyCURL />
+
+</CodeGroup>
+
+**Note:** Starting May 8th, stealth proxy requests cost 5 credits per request.
+
+## Using Stealth as a Retry Mechanism
+
+A common pattern is to first try scraping with the default proxy settings, and then retry with stealth mode if you encounter specific error status codes (401, 403, or 500) in the `metadata.pageStatusCode` field of the response.
+
+<CodeGroup>
+
+<ProxyRetryPython />
+
+<ProxyRetryNode />
+
+<ProxyRetryCURL />
+
+</CodeGroup>
+
+This approach allows you to optimize your credit usage by only using stealth mode when necessary.

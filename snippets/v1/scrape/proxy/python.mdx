@@ -1,0 +1,12 @@
+```python
+# pip install firecrawl-py
+
+from firecrawl import FirecrawlApp
+
+app = FirecrawlApp(api_key="YOUR_API_KEY")
+
+# Using stealth proxy for sites with advanced anti-bot solutions
+content = app.scrape_url("https://example.com", proxy="stealth")
+
+print(content["markdown"])
+```
