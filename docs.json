@@ -33,6 +33,7 @@
                     "icon": "markdown",
                     "pages": [
                       "features/scrape",
+                      "features/stealth-mode",
                       "features/batch-scrape",
                       "features/llm-extract",
                       "features/change-tracking"
