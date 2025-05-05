@@ -397,14 +397,14 @@ When using the `/crawl` endpoint, you can customize the crawling behavior with r
 #### `includePaths`
 
 - **Type**: `array`
-- **Description**: URL patterns to include in the crawl. Only URLs matching these patterns will be crawled.
-- **Example**: `["/blog/*", "/products/*"]`
+- **Description**: Regex patterns to include in the crawl. Only URLs matching these patterns will be crawled. For example, `^/blog/.*` will match any URL that starts with `/blog/`.
+- **Example**: `["^/blog/.*$", "^/docs/.*$"]`
 
 #### `excludePaths`
 
 - **Type**: `array`
-- **Description**: URL patterns to exclude from the crawl. URLs matching these patterns will be skipped.
-- **Example**: `["/admin/*", "/login/*"]`
+- **Description**: Regex patterns to exclude from the crawl. URLs matching these patterns will be skipped. For example, `^/admin/.*` will exclude any URL that starts with `/admin/`.
+- **Example**: `["^/admin/.*$", "^/private/.*$"]`
 
 #### `maxDepth`
 
@@ -448,8 +448,8 @@ curl -X POST https://api.firecrawl.dev/v1/crawl \
     -H 'Authorization : Bearer YOUR_API_KEY' \
     -d '{
       "url": "https://docs.firecrawl.dev",
-      "includePaths": ["/blog/*", "/products/*"],
-      "excludePaths": ["/admin/*", "/login/*"],
+      "includePaths": ["^/blog/.*$", "^/docs/.*$"],
+      "excludePaths": ["^/admin/.*$", "^/private/.*$"],
       "maxDepth": 2,
       "limit": 1000
     }'
@@ -457,8 +457,8 @@ curl -X POST https://api.firecrawl.dev/v1/crawl \
 
 In this example, the crawler will:
 
-- Only crawl URLs that match the patterns `/blog/*` and `/products/*`.
-- Skip URLs that match the patterns `/admin/*` and `/login/*`.
+- Only crawl URLs that match the patterns `^/blog/.*$` and `^/docs/.*$`.
+- Skip URLs that match the patterns `^/admin/.*$` and `^/private/.*$`.
 - Return the full document data for each page.
 - Crawl up to a maximum depth of 2.
 - Crawl a maximum of 1000 pages.

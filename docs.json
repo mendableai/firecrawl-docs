@@ -21,7 +21,6 @@
                 "pages": [
                   "introduction",
                   "launch-week",
-                  "v1-welcome",
                   "rate-limits",
                   "advanced-scraping-guide"
                 ]
