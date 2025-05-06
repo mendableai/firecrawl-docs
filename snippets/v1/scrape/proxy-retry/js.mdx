@@ -12,7 +12,7 @@ async function scrapeWithRetry(url) {
     const content = await app.scrapeUrl(url);
     
     // Check if we got an error status code
-    const statusCode = content?.metadata?.pageStatusCode;
+    const statusCode = content?.metadata?.statusCode;
     if ([401, 403, 500].includes(statusCode)) {
       console.log(`Got status code ${statusCode}, retrying with stealth proxy`);
       // Retry with stealth proxy

@@ -41,7 +41,7 @@ When scraping websites with advanced anti-bot protection, you can use the stealt
 
 ## Using Stealth as a Retry Mechanism
 
-A common pattern is to first try scraping with the default proxy settings, and then retry with stealth mode if you encounter specific error status codes (401, 403, or 500) in the `metadata.pageStatusCode` field of the response. These status codes can be indicative of the website blocking your request.
+A common pattern is to first try scraping with the default proxy settings, and then retry with stealth mode if you encounter specific error status codes (401, 403, or 500) in the `metadata.statusCode` field of the response. These status codes can be indicative of the website blocking your request.
 
 <CodeGroup>
 

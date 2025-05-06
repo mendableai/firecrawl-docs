@@ -10,7 +10,7 @@ try:
     content = app.scrape_url("https://example.com")
     
     # Check if we got an error status code
-    status_code = content.get("metadata", {}).get("pageStatusCode")
+    status_code = content.get("metadata", {}).get("statusCode")
     if status_code in [401, 403, 500]:
         print(f"Got status code {status_code}, retrying with stealth proxy")
         # Retry with stealth proxy

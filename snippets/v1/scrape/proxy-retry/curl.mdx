@@ -8,7 +8,7 @@ RESPONSE=$(curl -s -X POST https://api.firecrawl.dev/v1/scrape \
     }')
 
 # Extract status code from response
-STATUS_CODE=$(echo $RESPONSE | jq -r '.data.metadata.pageStatusCode')
+STATUS_CODE=$(echo $RESPONSE | jq -r '.data.metadata.statusCode')
 
 # Check if status code indicates we should retry with stealth
 if [[ "$STATUS_CODE" == "401" || "$STATUS_CODE" == "403" || "$STATUS_CODE" == "500" ]]; then
