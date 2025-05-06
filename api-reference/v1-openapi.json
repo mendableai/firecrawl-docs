@@ -931,7 +931,7 @@
                     "type": "integer",
                     "description": "Maximum number of links to return",
                     "default": 5000,
-                    "maximum": 5000
+                    "maximum": 30000
                   },
                   "timeout": {
                     "type": "integer",
