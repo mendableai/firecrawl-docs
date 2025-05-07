@@ -1,0 +1,60 @@
+---
+title: "Proxies"
+description: "Learn about proxy types, locations, and how Firecrawl selects proxies for your requests."
+og:title: "Proxies | Firecrawl"
+og:description: "Learn about proxy types, locations, and how Firecrawl selects proxies for your requests."
+---
+
+import LocationPython from "/snippets/v1/scrape/location/python.mdx";
+import LocationNode from "/snippets/v1/scrape/location/js.mdx";
+import LocationCURL from "/snippets/v1/scrape/location/curl.mdx";
+
+Firecrawl provides different proxy types to help you scrape websites with varying levels of anti-bot protection. The proxy type can be specified using the `proxy` parameter.
+
+## Location-Based Proxy Selection
+
+Firecrawl automatically selects the best proxy based on your specified or detected location. This helps optimize scraping performance and reliability. However, not all locations are currently supported. The following locations are available:
+
+| Country Code | Country Name         |
+|--------------|---------------------|
+| AE           | United Arab Emirates|
+| AU           | Australia           |
+| BR           | Brazil              |
+| CN           | China               |
+| DE           | Germany             |
+| GB           | United Kingdom      |
+| JP           | Japan               |
+| QA           | Qatar               |
+| TR           | Turkey              |
+| US           | United States       |
+
+<Warning>The list of supported proxy locations was last updated on May 7, 2025. Availability may change over time.</Warning>
+
+If you need proxies in a location not listed above, please [contact us](mailto:help@firecrawl.com) and let us know your requirements.
+
+If you do not specify a proxy or location, Firecrawl will automatically select the best option based on the target site and your request.
+
+## How to Specify Proxy Location
+
+You can request a specific proxy location by setting the `location.country` parameter in your request. For example, to use a Brazilian proxy, set `location.country` to `BR`.
+
+For full details, see the [API reference for `location.country`](http://localhost:3001/api-reference/endpoint/scrape#body-location-country).
+
+<CodeGroup>
+  <LocationPython />
+  <LocationNode />
+  <LocationCURL />
+</CodeGroup>
+
+<Info>If you request a country where a proxy is not available, Firecrawl will use the closest available region (EU or US) and set the browser location to your requested country.</Info>
+
+## Proxy Types
+
+Firecrawl supports two types of proxies:
+
+- **basic**: Proxies for scraping sites with none to basic anti-bot solutions. Fast and usually works.
+- **stealth**: Stealth proxies for scraping sites with advanced anti-bot solutions, or for sites that block regular proxies. Slower, but more reliable on certain sites. [Learn more about Stealth Mode →](/features/stealth-mode)
+
+---
+
+> **Note:** For detailed information on using stealth proxies, including credit costs and retry strategies, see the [Stealth Mode documentation](/features/stealth-mode).
