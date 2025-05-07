@@ -2250,10 +2250,13 @@
             "type": "object",
             "description": "Options for change tracking (Beta). Only applicable when 'changeTracking' is included in formats. The 'markdown' format must also be specified when using change tracking.",
             "properties": {
-              "mode": {
-                "type": "string",
-                "enum": ["git-diff", "json"],
-                "description": "The mode to use for change tracking. 'default' performs a basic comparison, 'git-diff' provides a detailed diff, and 'json' compares extracted JSON data."
+              "modes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["git-diff", "json"]
+                },
+                "description": "The mode to use for change tracking. 'git-diff' provides a detailed diff, and 'json' compares extracted JSON data."
               },
               "schema": {
                 "type": "object",
