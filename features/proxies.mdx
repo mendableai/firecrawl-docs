@@ -11,6 +11,8 @@ import LocationCURL from "/snippets/v1/scrape/location/curl.mdx";
 
 Firecrawl provides different proxy types to help you scrape websites with varying levels of anti-bot protection. The proxy type can be specified using the `proxy` parameter.
 
+> By default, Firecrawl routes all requests through proxies to help ensure reliability and access, even if you do not specify a proxy type or location.
+
 ## Location-Based Proxy Selection
 
 Firecrawl automatically selects the best proxy based on your specified or detected location. This helps optimize scraping performance and reliability. However, not all locations are currently supported. The following locations are available:
