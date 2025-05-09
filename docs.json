@@ -39,8 +39,8 @@
                       "features/batch-scrape",
                       "features/llm-extract",
                       "features/change-tracking",
-                      "features/stealth-mode"
-                      
+                      "features/stealth-mode",
+                      "features/proxies"
                     ]
                   },
                   {
