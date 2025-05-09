@@ -19,6 +19,9 @@ results = firecrawl.deep_research(
 )
 
 # Access research findings.
-print(f"Final Analysis: {results.data.final_analysis}")
-print(f"Sources: {len(results.data.sources)} references") 
+print(f"Final Analysis: {results['data']['finalAnalysis']}")
+
+print(f"Sources: {len(results['data']['sources'])} references")
+
+
 ```
