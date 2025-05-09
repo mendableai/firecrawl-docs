@@ -1,0 +1,38 @@
+{
+  "name": "firecrawl-openapi-tools",
+  "version": "0.1.0",
+  "description": "Tools for generating code snippets and documentation from Firecrawl's OpenAPI specification",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "firecrawl-openapi": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "generate-snippets": "ts-node src/cli.ts generate-snippets",
+    "generate-docs": "ts-node src/cli.ts generate-docs",
+    "test": "ts-node test/test-custom-generator.ts"
+  },
+  "keywords": [
+    "firecrawl",
+    "openapi",
+    "documentation",
+    "code-snippets"
+  ],
+  "author": "Firecrawl Team",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.15.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}
