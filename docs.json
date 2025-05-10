@@ -30,7 +30,7 @@
                 ]
               },
               {
-                "group": "Features",
+                "group": "Standard Features",
                 "pages": [
                   {
                     "group": "Scrape",
@@ -54,14 +54,14 @@
                     ]
                   },
                   "features/map",
-                  "features/search",
-                  "features/extract"
+                  "features/search"
                 ]
               },
               {
-                "group": "Agents",
+                "group": "Agentic Features",
                 "pages": [
-                    "agents/fire-1"
+                  "features/extract",
+                  "agents/fire-1"
                 ]
               },
               {
