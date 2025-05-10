@@ -23,6 +23,7 @@
                 "group": "Get Started",
                 "pages": [
                   "introduction",
+                  "mcp",
                   "launch-week",
                   "rate-limits",
                   "advanced-scraping-guide"
