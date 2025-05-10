@@ -13,8 +13,8 @@ search_result = app.search(
 
 # Process the results
 for result in search_result.data:
-    print(f"Title: {result.title}")
-    print(f"URL: {result.url}")
-    print(f"Content: {result.markdown[:150]}...")  # first 150 chars
-    print(f"Links: {', '.join(result.links[:3])}...")  # first 3 links
+    print(f"Title: {result['title']}")
+    print(f"URL: {result['url']}")
+    print(f"Content: {result['markdown'][:150]}...")  # first 150 chars
+    print(f"Links: {', '.join(result['links'][:3])}...")  # first 3 links
 ``` 

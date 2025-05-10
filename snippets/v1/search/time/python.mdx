@@ -13,6 +13,6 @@ search_result = app.search(
 
 # Process the results
 for result in search_result.data:
-    print(f"Title: {result.title}")
-    print(f"URL: {result.url}") 
+    print(f"Title: {result['title']}")
+    print(f"URL: {result['url']}") 
 ```
