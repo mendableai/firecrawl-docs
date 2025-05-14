@@ -19,7 +19,7 @@
     "/scrape": {
       "post": {
         "summary": "Scrape a single URL and optionally extract information using an LLM",
-        "operationId": "scrapeAndExtractFromUrl",
+        "operationId": "scrape",
         "tags": ["Scraping"],
         "security": [
           {
@@ -116,7 +116,7 @@
     "/batch/scrape": {
       "post": {
         "summary": "Scrape multiple URLs and optionally extract information using an LLM",
-        "operationId": "scrapeAndExtractFromUrls",
+        "operationId": "batchScrape",
         "tags": ["Scraping"],
         "security": [
           {
@@ -264,7 +264,7 @@
       ],
       "get": {
         "summary": "Get the status of a batch scrape job",
-        "operationId": "getBatchScrapeStatus",
+        "operationId": "getBatchScrape",
         "tags": ["Scraping"],
         "security": [
           {
@@ -496,7 +496,7 @@
       ],
       "get": {
         "summary": "Get the status of a crawl job",
-        "operationId": "getCrawlStatus",
+        "operationId": "getCrawl",
         "tags": ["Crawling"],
         "security": [
           {
@@ -713,7 +713,7 @@
     "/crawl": {
       "post": {
         "summary": "Crawl multiple URLs based on options",
-        "operationId": "crawlUrls",
+        "operationId": "crawl",
         "tags": ["Crawling"],
         "security": [
           {
@@ -889,7 +889,7 @@
     "/map": {
       "post": {
         "summary": "Map multiple URLs based on options",
-        "operationId": "mapUrls",
+        "operationId": "map",
         "tags": ["Mapping"],
         "security": [
           {
@@ -1008,7 +1008,7 @@
     "/extract": {
       "post": {
         "summary": "Extract structured data from pages using LLMs",
-        "operationId": "extractData",
+        "operationId": "extract",
         "tags": ["Extraction"],
         "security": [
           {
@@ -1139,7 +1139,7 @@
       ],
       "get": {
         "summary": "Get the status of an extract job",
-        "operationId": "getExtractStatus",
+        "operationId": "getExtract",
         "tags": ["Extraction"],
         "security": [
           {
@@ -1164,7 +1164,7 @@
     "/deep-research": {
       "post": {
         "summary": "Start a deep research operation on a query",
-        "operationId": "startDeepResearch",
+        "operationId": "deepResearch",
         "tags": ["Research"],
         "security": [
           {
@@ -1303,7 +1303,7 @@
       ],
       "get": {
         "summary": "Get the status and results of a deep research operation",
-        "operationId": "getDeepResearchStatus",
+        "operationId": "getDeepResearch",
         "tags": ["Research"],
         "security": [
           {
@@ -1589,7 +1589,7 @@
     "/search": {
       "post": {
         "summary": "Search and optionally scrape search results",
-        "operationId": "searchAndScrape",
+        "operationId": "search",
         "tags": ["Search"],
         "security": [
           {
@@ -1802,7 +1802,7 @@
     "/llmstxt": {
       "post": {
         "summary": "Generate LLMs.txt for a website",
-        "operationId": "generateLLMsTxt",
+        "operationId": "llmstxt",
         "tags": ["LLMs.txt"],
         "security": [
           {
@@ -1897,7 +1897,7 @@
       ],
       "get": {
         "summary": "Get the status and results of an LLMs.txt generation job",
-        "operationId": "getLLMsTxtStatus",
+        "operationId": "getLLMsTxt",
         "tags": ["LLMs.txt"],
         "security": [
           {
