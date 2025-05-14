@@ -20,7 +20,6 @@
       "post": {
         "summary": "Scrape a single URL and optionally extract information using an LLM",
         "operationId": "scrape",
-        "tags": ["Scraping"],
         "security": [
           {
             "bearerAuth": []
@@ -117,7 +116,6 @@
       "post": {
         "summary": "Scrape multiple URLs and optionally extract information using an LLM",
         "operationId": "batchScrape",
-        "tags": ["Scraping"],
         "security": [
           {
             "bearerAuth": []
@@ -265,7 +263,6 @@
       "get": {
         "summary": "Get the status of a batch scrape job",
         "operationId": "getBatchScrape",
-        "tags": ["Scraping"],
         "security": [
           {
             "bearerAuth": []
@@ -335,7 +332,6 @@
       "delete": {
         "summary": "Cancel a batch scrape job",
         "operationId": "cancelBatchScrape",
-        "tags": ["Scraping"],
         "security": [
           {
             "bearerAuth": []
@@ -413,7 +409,6 @@
       "get": {
         "summary": "Get the errors of a batch scrape job",
         "operationId": "getBatchScrapeErrors",
-        "tags": ["Scraping"],
         "security": [
           {
             "bearerAuth": []
@@ -497,7 +492,6 @@
       "get": {
         "summary": "Get the status of a crawl job",
         "operationId": "getCrawl",
-        "tags": ["Crawling"],
         "security": [
           {
             "bearerAuth": []
@@ -567,7 +561,6 @@
       "delete": {
         "summary": "Cancel a crawl job",
         "operationId": "cancelCrawl",
-        "tags": ["Crawling"],
         "security": [
           {
             "bearerAuth": []
@@ -642,7 +635,6 @@
       "get": {
         "summary": "Get the errors of a crawl job",
         "operationId": "getCrawlErrors",
-        "tags": ["Crawling"],
         "security": [
           {
             "bearerAuth": []
@@ -714,7 +706,6 @@
       "post": {
         "summary": "Crawl multiple URLs based on options",
         "operationId": "crawl",
-        "tags": ["Crawling"],
         "security": [
           {
             "bearerAuth": []
@@ -890,7 +881,6 @@
       "post": {
         "summary": "Map multiple URLs based on options",
         "operationId": "map",
-        "tags": ["Mapping"],
         "security": [
           {
             "bearerAuth": []
@@ -1009,7 +999,6 @@
       "post": {
         "summary": "Extract structured data from pages using LLMs",
         "operationId": "extract",
-        "tags": ["Extraction"],
         "security": [
           {
             "bearerAuth": []
@@ -1140,7 +1129,6 @@
       "get": {
         "summary": "Get the status of an extract job",
         "operationId": "getExtract",
-        "tags": ["Extraction"],
         "security": [
           {
             "bearerAuth": []
@@ -1165,7 +1153,6 @@
       "post": {
         "summary": "Start a deep research operation on a query",
         "operationId": "deepResearch",
-        "tags": ["Research"],
         "security": [
           {
             "bearerAuth": []
@@ -1304,7 +1291,6 @@
       "get": {
         "summary": "Get the status and results of a deep research operation",
         "operationId": "getDeepResearch",
-        "tags": ["Research"],
         "security": [
           {
             "bearerAuth": []
@@ -1430,7 +1416,6 @@
       "get": {
         "summary": "Get remaining credits for the authenticated team",
         "operationId": "getCreditUsage",
-        "tags": ["Billing"],
         "security": [
           {
             "bearerAuth": []
@@ -1510,7 +1495,6 @@
       "get": {
         "summary": "Get remaining tokens for the authenticated team (Extract only)",
         "operationId": "getTokenUsage",
-        "tags": ["Billing"],
         "security": [
           {
             "bearerAuth": []
@@ -1590,7 +1574,6 @@
       "post": {
         "summary": "Search and optionally scrape search results",
         "operationId": "search",
-        "tags": ["Search"],
         "security": [
           {
             "bearerAuth": []
@@ -1803,7 +1786,6 @@
       "post": {
         "summary": "Generate LLMs.txt for a website",
         "operationId": "llmstxt",
-        "tags": ["LLMs.txt"],
         "security": [
           {
             "bearerAuth": []
@@ -1898,7 +1880,6 @@
       "get": {
         "summary": "Get the status and results of an LLMs.txt generation job",
         "operationId": "getLLMsTxt",
-        "tags": ["LLMs.txt"],
         "security": [
           {
             "bearerAuth": []
