@@ -421,7 +421,13 @@ When using the `/crawl` endpoint, you can customize the crawling behavior with r
 #### `allowBackwardLinks`
 
 - **Type**: `boolean`
-- **Description**: This option permits the crawler to navigate to URLs that are higher in the directory structure than the base URL. For instance, if the base URL is `example.com/blog/topic`, enabling this option allows crawling to pages like `example.com/blog` or `example.com`, which are backward in the path hierarchy relative to the base URL.
+- **Description**: Allows the crawler to follow internal links to sibling or parent URLs, not just child paths.
+  - **false**: Only crawls deeper (child) URLs.
+    - e.g. /features/feature-1 → /features/feature-1/tips ✅
+    - Won't follow /pricing or / ❌
+  - **true**: Crawls any internal links, including siblings and parents.
+    - e.g. /features/feature-1 → /pricing, /, etc. ✅
+  - Use true for broader internal coverage beyond nested paths.
 - **Default**: `false`
 
 ### `allowExternalLinks`
