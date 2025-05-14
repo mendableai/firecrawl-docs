@@ -772,7 +772,7 @@
                   },
                   "allowBackwardLinks": {
                     "type": "boolean",
-                    "description": "Enables the crawler to navigate from a specific URL to previously linked pages.",
+                    "description": "Allows the crawler to follow internal links to sibling or parent URLs, not just child paths.\n\nfalse: Only crawls deeper (child) URLs.\n→ e.g. /features/feature-1 → /features/feature-1/tips ✅\n→ Won't follow /pricing or / ❌\n\ntrue: Crawls any internal links, including siblings and parents.\n→ e.g. /features/feature-1 → /pricing, /, etc. ✅\n\nUse true for broader internal coverage beyond nested paths.",
                     "default": false
                   },
                   "allowExternalLinks": {
