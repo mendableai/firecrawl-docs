@@ -7,6 +7,13 @@ The LLMs.txt generation endpoint creates LLMs.txt and LLMs-full.txt files for an
 
 Looking for the status endpoint? Check out the [LLMs.txt Status](/api-reference/endpoint/llmstxt-get) endpoint.
 
+### Request Parameters
+
+- **url** (required): The website URL to generate LLMs.txt files from
+- **maxUrls** (optional): Maximum number of pages to crawl (1-5000, default: 10)
+- **showFullText** (optional): Generate llms-full.txt in addition to llms.txt (default: false)
+- **cache** (optional): Whether to use cached content if available (default: true)
+
 ### Response Structure
 
 The response includes:

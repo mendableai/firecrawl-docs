@@ -8,6 +8,7 @@ const firecrawl = new FirecrawlApp({ apiKey: "your_api_key" });
 const params = {
   maxUrls: 2, // Maximum URLs to analyze
   showFullText: true, // Include full text in results
+  cache: true, // Use cached content if available
 };
 
 // Generate LLMs.txt with polling
