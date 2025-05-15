@@ -7,7 +7,7 @@ firecrawl = FirecrawlApp(api_key="your_api_key")
 
 # Start research with real-time updates
 def on_activity(activity):
-    print(f"[{activity.type}] {activity.message}")
+    print(f"[{activity['type']}] {activity['message']}")
 
 # Run deep research
 results = firecrawl.deep_research(
