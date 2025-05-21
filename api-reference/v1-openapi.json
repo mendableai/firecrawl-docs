@@ -1637,9 +1637,9 @@
                     "description": "Timeout in milliseconds",
                     "default": 60000
                   },
-                  "ignoreBlockedURLs": {
+                  "ignoreInvalidURLs": {
                     "type": "boolean",
-                    "description": "Excludes URLs from the search results that are blocked by other Firecrawl endpoints. This helps reduce errors if you are piping data from search into other Firecrawl API endpoints.",
+                    "description": "Excludes URLs from the search results that are invalid for other Firecrawl endpoints. This helps reduce errors if you are piping data from search into other Firecrawl API endpoints.",
                     "default": false
                   },
                   "scrapeOptions": {
