@@ -1036,18 +1036,7 @@
                   },
                   "schema": {
                     "type": "object",
-                    "description": "Schema to define the structure of the extracted data",
-                    "properties": {
-                      "property1": {
-                        "type": "string",
-                        "description": "Description of property1"
-                      },
-                      "property2": {
-                        "type": "integer",
-                        "description": "Description of property2"
-                      }
-                    },
-                    "required": ["property1", "property2"]
+                    "description": "Schema to define the structure of the extracted data. Must conform to [JSON Schema](https://json-schema.org/)."
                   },
                   "enableWebSearch": {
                     "type": "boolean",
@@ -1230,7 +1219,7 @@
                     "properties": {
                       "schema": {
                         "type": "object",
-                        "description": "The schema to use for the JSON output"
+                        "description": "The schema to use for the JSON output. Must conform to [JSON Schema](https://json-schema.org/)."
                       },
                       "systemPrompt": {
                         "type": "string",
@@ -2054,7 +2043,7 @@
             "properties": {
               "schema": {
                 "type": "object",
-                "description": "The schema to use for the extraction (Optional)"
+                "description": "The schema to use for the extraction (Optional). Must conform to [JSON Schema](https://json-schema.org/)."
               },
               "systemPrompt": {
                 "type": "string",
@@ -2270,7 +2259,7 @@
               },
               "schema": {
                 "type": "object",
-                "description": "Schema for JSON extraction when using 'json' mode. Defines the structure of data to extract and compare."
+                "description": "Schema for JSON extraction when using 'json' mode. Defines the structure of data to extract and compare. Must conform to [JSON Schema](https://json-schema.org/)."
               },
               "prompt": {
                 "type": "string",
