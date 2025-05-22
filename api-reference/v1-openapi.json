@@ -1071,6 +1071,11 @@
                   },
                   "scrapeOptions": {
                     "$ref": "#/components/schemas/ScrapeOptions"
+                  },
+                  "ignoreInvalidURLs": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If invalid URLs are specified in the urls array, they will be ignored. Instead of them failing the entire request, an extract using the remaining valid URLs will be performed, and the invalid URLs will be returned in the invalidURLs field of the response."
                   }
                 },
                 "required": ["urls"]
@@ -2717,6 +2722,14 @@
           },
           "id": {
             "type": "string"
+          },
+          "invalidURLs": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            },
+            "description": "If ignoreInvalidURLs is true, this is an array containing the invalid URLs that were specified in the request. If there were no invalid URLs, this will be an empty array. If ignoreInvalidURLs is false, this field will be undefined."
           }
         }
       },
