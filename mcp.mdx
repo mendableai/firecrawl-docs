@@ -6,7 +6,7 @@ og:description: "Firecrawl MCP servers allow you to use Firecrawl's API through 
 sidebarTitle: "MCP Server"
 ---
 
-A Model Context Protocol (MCP) server implementation that integrates [Firecrawl](https://github.com/mendableai/firecrawl) for web scraping capabilities.
+A Model Context Protocol (MCP) server implementation that integrates [Firecrawl](https://github.com/mendableai/firecrawl) for web scraping capabilities. Our MCP server is open-source and available on [GitHub](https://github.com/mendableai/firecrawl-mcp-server).
 
 
 ## Features
@@ -14,12 +14,21 @@ A Model Context Protocol (MCP) server implementation that integrates [Firecrawl]
 - Web scraping, crawling, and discovery
 - Search and content extraction
 - Deep research and batch scraping
-- Automatic retries and rate limiting
 - Cloud and self-hosted support
 - SSE support
 
 
 ## Installation
+
+You can either use our remote hosted URL or run the server locally.
+
+### Remote hosted URL
+
+```bash
+https://mcp.firecrawl.dev/{FIRECRAWL_API_KEY}/sse
+```
+
+> Get your API key from https://www.firecrawl.dev/app/api-keys
 
 ### Running with npx
 
