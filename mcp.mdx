@@ -107,7 +107,8 @@ Add this to your `./codeium/windsurf/model_config.json`:
 }
 ```
 
-### Running with SSE Local Mode
+
+### Running with SSE Mode
 
 To run the server using Server-Sent Events (SSE) locally instead of the default stdio transport:
 
@@ -115,7 +116,8 @@ To run the server using Server-Sent Events (SSE) locally instead of the default 
 env SSE_LOCAL=true FIRECRAWL_API_KEY=fc-YOUR_API_KEY npx -y firecrawl-mcp
 ```
 
-Use the url: http://localhost:3000/sse
+Use the url: http://localhost:3000/sse or https://mcp.firecrawl.dev/{FIRECRAWL_API_KEY}/sse
+
 
 ### Installing via Smithery (Legacy)
 
