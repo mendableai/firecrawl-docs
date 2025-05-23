@@ -1,0 +1,45 @@
+```javascript Node.js/Express
+const express = require('express');
+const app = express();
+
+app.post('/webhook', express.json(), (req, res) => {
+  const { success, type, id, data, metadata, error } = req.body;
+  
+  switch (type) {
+    case 'crawl.started':
+    case 'batch_scrape.started':
+      console.log(`${type.split('.')[0]} ${id} started`);
+      break;
+      
+    case 'crawl.page':
+    case 'batch_scrape.page':
+      if (success && data.length > 0) {
+        console.log(`Page scraped: ${data[0].metadata.sourceURL}`);
+        // Process the scraped page data
+        processScrapedPage(data[0]);
+      }
+      break;
+      
+    case 'crawl.completed':
+    case 'batch_scrape.completed':
+      console.log(`${type.split('.')[0]} ${id} completed successfully`);
+      break;
+      
+    case 'crawl.failed':
+    case 'batch_scrape.failed':
+      console.error(`${type.split('.')[0]} ${id} failed: ${error}`);
+      break;
+  }
+  
+  // Always respond with 200 to acknowledge receipt
+  res.status(200).send('OK');
+});
+
+function processScrapedPage(pageData) {
+  // Your processing logic here
+  console.log('Processing:', pageData.metadata.title);
+}
+
+app.listen(3000, () => {
+  console.log('Webhook server listening on port 3000');
+}); 

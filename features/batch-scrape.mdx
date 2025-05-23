@@ -15,6 +15,7 @@ import BatchScrapeExtractNode from "/snippets/v1/batch-scrape/extract/js.mdx";
 import BatchScrapeExtractCURL from "/snippets/v1/batch-scrape/extract/curl.mdx";
 import BatchScrapeExtractOutput from "/snippets/v1/batch-scrape/extract/output.mdx";
 import BatchScrapeExtractAsyncOutput from "/snippets/v1/batch-scrape/extract/async-output.mdx";
+import BatchScrapeWebhookCURL from "/snippets/v1/batch-scrape-webhook/base/curl.mdx";
 
 ## Batch scraping multiple URLs
 
@@ -38,7 +39,7 @@ The sdk provides 2 methods, synchronous and asynchronous. The synchronous method
 
 ### Response
 
-If you’re using the sync methods from the SDKs, it will return the results of the batch scrape job. Otherwise, it will return a job ID that you can use to check the status of the batch scrape.
+If you're using the sync methods from the SDKs, it will return the results of the batch scrape job. Otherwise, it will return a job ID that you can use to check the status of the batch scrape.
 
 #### Synchronous
 
@@ -67,10 +68,41 @@ You can also use the batch scrape endpoint to extract structured data from the p
 
 <BatchScrapeExtractOutput />
 
-
 #### Asynchronous
 
 <BatchScrapeExtractAsyncOutput />
+
+## Batch Scrape with Webhooks
+
+You can configure webhooks to receive real-time notifications as each URL in your batch is scraped. This allows you to process results immediately instead of waiting for the entire batch to complete.
+
+<BatchScrapeWebhookCURL />
+
+For comprehensive webhook documentation including event types, payload structure, and implementation examples, see the [Webhooks documentation](/features/webhooks).
+
+### Quick Reference
+
+**Event Types:**
+- `batch_scrape.started` - When the batch scrape begins
+- `batch_scrape.page` - For each URL successfully scraped  
+- `batch_scrape.completed` - When all URLs are processed
+- `batch_scrape.failed` - If the batch scrape encounters an error
+
+**Basic Payload:**
+```json
+{
+  "success": true,
+  "type": "batch_scrape.page",
+  "id": "batch-job-id",
+  "data": [...], // Page data for 'page' events
+  "metadata": {}, // Your custom metadata
+  "error": null
+}
+```
+
+<Note>
+For detailed webhook configuration, security best practices, and troubleshooting, visit the [Webhooks documentation](/features/webhooks).
+</Note>
 
 
 

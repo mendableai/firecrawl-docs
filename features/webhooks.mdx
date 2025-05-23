@@ -1,0 +1,171 @@
+---
+title: 'Webhooks'
+description: 'Real-time notifications for your Firecrawl operations'
+og:title: "Webhooks | Firecrawl"
+og:description: "Real-time notifications for your Firecrawl operations"
+---
+
+import CrawlWebhookCURL from "/snippets/v1/crawl-webhook/base/curl.mdx";
+import BatchScrapeWebhookCURL from "/snippets/v1/batch-scrape-webhook/base/curl.mdx";
+import WebhookConfigBasic from "/snippets/v1/webhook-config/basic/json.mdx";
+import WebhookEndpointJS from "/snippets/v1/webhook-endpoint/basic/js.mdx";
+import WebhookEndpointPython from "/snippets/v1/webhook-endpoint/basic/python.mdx";
+import WebhookPayloadStarted from "/snippets/v1/webhook-payload/started/json.mdx";
+import WebhookPayloadPage from "/snippets/v1/webhook-payload/page/json.mdx";
+import WebhookPayloadCompleted from "/snippets/v1/webhook-payload/completed/json.mdx";
+import WebhookPayloadFailed from "/snippets/v1/webhook-payload/failed/json.mdx";
+import WebhookErrorHandling from "/snippets/v1/webhook-error-handling/basic/js.mdx";
+
+Webhooks allow you to receive real-time notifications about your Firecrawl operations as they progress. Instead of polling for status updates, Firecrawl will automatically send HTTP POST requests to your specified endpoint when events occur.
+
+## Overview
+
+Webhooks are supported for:
+- **Crawl operations** - Get notified as pages are crawled and when crawls complete
+- **Batch scrape operations** - Receive updates for each URL scraped in a batch
+
+## Basic Configuration
+
+Configure webhooks by adding a `webhook` object to your request:
+
+<WebhookConfigBasic />
+
+### Configuration Options
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `url` | string | ✅ | Your webhook endpoint URL |
+| `headers` | object | ❌ | Custom headers to include in webhook requests |
+| `metadata` | object | ❌ | Custom data included in all webhook payloads |
+| `events` | array | ❌ | Event types to receive (default: all events) |
+
+## Event Types
+
+### Crawl Events
+
+| Event | Description | When Triggered |
+|-------|-------------|----------------|
+| `crawl.started` | Crawl job initiated | When crawl begins |
+| `crawl.page` | Individual page scraped | After each page is successfully scraped |
+| `crawl.completed` | Crawl finished successfully | When all pages are processed |
+| `crawl.failed` | Crawl encountered an error | When crawl fails or is cancelled |
+
+### Batch Scrape Events
+
+| Event | Description | When Triggered |
+|-------|-------------|----------------|
+| `batch_scrape.started` | Batch scrape job initiated | When batch scrape begins |
+| `batch_scrape.page` | Individual URL scraped | After each URL is successfully scraped |
+| `batch_scrape.completed` | Batch scrape finished | When all URLs are processed |
+| `batch_scrape.failed` | Batch scrape failed | When batch scrape fails or is cancelled |
+
+## Webhook Payload Structure
+
+All webhook payloads follow this structure:
+
+```json
+{
+  "success": true,
+  "type": "crawl.page",
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "data": [...],
+  "metadata": {
+    "user_id": "12345",
+    "project": "web-scraping"
+  },
+  "error": null,
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+### Payload Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | boolean | Whether the operation was successful |
+| `type` | string | Event type (e.g., `crawl.page`, `batch_scrape.completed`) |
+| `id` | string | Unique identifier for the crawl/batch scrape job |
+| `data` | array | Scraped content (populated for `page` events) |
+| `metadata` | object | Custom metadata from your webhook configuration |
+| `error` | string | Error message (present when `success` is `false`) |
+| `timestamp` | string | ISO 8601 timestamp of when the event occurred |
+
+## Examples
+
+### Crawl with Webhook
+
+<CrawlWebhookCURL />
+
+### Batch Scrape with Webhook
+
+<BatchScrapeWebhookCURL />
+
+### Webhook Endpoint Example
+
+Here's how to handle webhooks in your application:
+
+<CodeGroup>
+
+<WebhookEndpointJS />
+
+<WebhookEndpointPython />
+
+</CodeGroup>
+
+## Event-Specific Payloads
+
+### `started` Events
+
+<WebhookPayloadStarted />
+
+### `page` Events
+
+<WebhookPayloadPage />
+
+### `completed` Events
+
+<WebhookPayloadCompleted />
+
+### `failed` Events
+
+<WebhookPayloadFailed />
+
+## Monitoring and Debugging
+
+### Testing Your Webhook
+
+Use tools like [ngrok](https://ngrok.com) for local development:
+
+```bash
+# Expose local server
+ngrok http 3000
+
+# Use the ngrok URL in your webhook configuration
+# https://abc123.ngrok.io/webhook
+```
+
+### Webhook Logs
+
+Monitor webhook delivery in your application:
+
+```javascript
+app.post('/webhook', (req, res) => {
+  console.log('Webhook received:', {
+    timestamp: new Date().toISOString(),
+    type: req.body.type,
+    id: req.body.id,
+    success: req.body.success
+  });
+  
+  res.status(200).send('OK');
+});
+```
+
+## Common Issues
+
+### Webhook Not Receiving Events
+
+1. **Check URL accessibility** - Ensure your endpoint is publicly accessible
+2. **Verify HTTPS** - Webhook URLs must use HTTPS
+3. **Check firewall settings** - Allow incoming connections to your webhook port
+4. **Review event filters** - Ensure you're subscribed to the correct event types

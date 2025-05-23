@@ -1,0 +1,26 @@
+```javascript
+app.post('/webhook', async (req, res) => {
+  try {
+    await processWebhook(req.body);
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error('Webhook processing error:', error);
+    // Still acknowledge receipt to prevent retries
+    res.status(200).send('OK');
+  }
+});
+
+async function processWebhook(payload) {
+  const { success, type, id, data } = payload;
+  
+  // Your webhook processing logic here
+  if (type.includes('.page') && data.length > 0) {
+    // Process scraped page data
+    await saveToDatabase(data[0]);
+  }
+}
+
+async function saveToDatabase(pageData) {
+  // Example: save to database
+  console.log('Saving to database:', pageData.metadata.sourceURL);
+} 

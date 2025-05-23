@@ -41,7 +41,8 @@
                       "features/llm-extract",
                       "features/change-tracking",
                       "features/stealth-mode",
-                      "features/proxies"
+                      "features/proxies",
+                      "features/webhooks"
                     ]
                   },
                   {
@@ -50,7 +51,8 @@
                     "pages": [
                       "features/crawl",
                       "features/llm-extract",
-                      "features/change-tracking-crawl"
+                      "features/change-tracking-crawl",
+                      "features/webhooks"
                     ]
                   },
                   "features/map",
