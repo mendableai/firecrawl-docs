@@ -159,30 +159,33 @@ Firecrawl's WebSocket-based method, `Crawl URL and Watch`, enables real-time dat
 
 ## Crawl Webhook
 
-You can now pass a `webhook` parameter to the `/crawl` endpoint. This will send a POST request to the URL you specify when the crawl is started, updated and completed.
-
-The webhook will now trigger for every page crawled and not just the whole result at the end.
+You can configure webhooks to receive real-time notifications as your crawl progresses. This allows you to process pages as they're scraped instead of waiting for the entire crawl to complete.
 
 <CrawlWebhookCURL />
 
-### Webhook Events
+For comprehensive webhook documentation including event types, payload structure, and implementation examples, see the [Webhooks documentation](/features/webhooks).
 
-There are now 4 types of events:
+### Quick Reference
 
-- `crawl.started` - Triggered when the crawl is started.
-- `crawl.page` - Triggered for every page crawled.
-- `crawl.completed` - Triggered when the crawl is completed to let you know it's done (Beta)**
-- `crawl.failed` - Triggered when the crawl fails.
+**Event Types:**
+- `crawl.started` - When the crawl begins
+- `crawl.page` - For each page successfully scraped  
+- `crawl.completed` - When the crawl finishes
+- `crawl.failed` - If the crawl encounters an error
 
-### Webhook Response
+**Basic Payload:**
+```json
+{
+  "success": true,
+  "type": "crawl.page",
+  "id": "crawl-job-id",
+  "data": [...], // Page data for 'page' events
+  "metadata": {}, // Your custom metadata
+  "error": null
+}
+```
 
-- `success` - If the webhook was successful in crawling the page correctly.
-- `type` - The type of event that occurred.
-- `id` - The ID of the crawl.
-- `data` - The data that was scraped (Array). This will only be non empty on `crawl.page` and will contain 1 item if the page was scraped successfully. The response is the same as the `/scrape` endpoint.
-- `error` - If the webhook failed, this will contain the error message.
-
-**Beta consideration
-
-- There is a very tiny chance that the `crawl.completed` event may be triggered while the final `crawl.page` events are still being processed. We're working on a fix for this.
+<Note>
+For detailed webhook configuration, security best practices, and troubleshooting, visit the [Webhooks documentation](/features/webhooks).
+</Note>
 

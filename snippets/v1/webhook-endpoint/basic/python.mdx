@@ -1,0 +1,42 @@
+```python Python/Flask
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/webhook', methods=['POST'])
+def handle_webhook():
+    payload = request.get_json()
+    
+    success = payload.get('success')
+    event_type = payload.get('type')
+    job_id = payload.get('id')
+    data = payload.get('data', [])
+    metadata = payload.get('metadata', {})
+    error = payload.get('error')
+    
+    if event_type in ['crawl.started', 'batch_scrape.started']:
+        operation = event_type.split('.')[0]
+        print(f"{operation} {job_id} started")
+        
+    elif event_type in ['crawl.page', 'batch_scrape.page']:
+        if success and data:
+            page = data[0]
+            print(f"Page scraped: {page['metadata']['sourceURL']}")
+            process_scraped_page(page)
+            
+    elif event_type in ['crawl.completed', 'batch_scrape.completed']:
+        operation = event_type.split('.')[0]
+        print(f"{operation} {job_id} completed successfully")
+        
+    elif event_type in ['crawl.failed', 'batch_scrape.failed']:
+        operation = event_type.split('.')[0]
+        print(f"{operation} {job_id} failed: {error}")
+    
+    return jsonify({"status": "received"}), 200
+
+def process_scraped_page(page_data):
+    # Your processing logic here
+    print(f"Processing: {page_data['metadata']['title']}")
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=3000) 
