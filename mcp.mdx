@@ -181,6 +181,20 @@ Optionally, you can add it to a file called `.vscode/mcp.json` in your workspace
 }
 ```
 
+### Running on Claude Desktop
+
+Add this to the Claude config file:
+
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "url": "https://mcp.firecrawl.dev/{YOUR_API_KEY}/sse"
+    }
+  }
+}
+```
+
 ## Configuration
 
 ### Environment Variables
@@ -241,7 +255,7 @@ export FIRECRAWL_RETRY_MAX_ATTEMPTS=10
 export FIRECRAWL_RETRY_INITIAL_DELAY=500     # Start with faster retries
 ```
 
-### Usage with Claude Desktop
+### Custom configuration with Claude Desktop
 
 Add this to your `claude_desktop_config.json`:
 
