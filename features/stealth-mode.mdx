@@ -16,12 +16,13 @@ Firecrawl provides different proxy types to help you scrape websites with varyin
 
 ### Proxy Types
 
-Firecrawl supports two types of proxies:
+Firecrawl supports three types of proxies:
 
 - **basic**: Proxies for scraping sites with none to basic anti-bot solutions. Fast and usually works.
 - **stealth**: Stealth proxies for scraping sites with advanced anti-bot solutions. Slower, but more reliable on certain sites.
+- **auto**: Firecrawl will automatically retry scraping with stealth proxies if the basic proxy fails. If the retry with stealth is successful, 5 credits will be billed for the scrape. If the first attempt with basic is successful, only the regular cost will be billed.
 
-If you do not specify a proxy, Firecrawl will automatically attempt to determine which one you need based on the target site.
+If you do not specify a proxy, Firecrawl will default to basic.
 
 ### Using Stealth Mode
 
