@@ -1829,6 +1829,11 @@
                     "type": "boolean",
                     "description": "Include full text content in the response",
                     "default": false
+                  },
+                  "cache": {
+                    "type": "boolean",
+                    "description": "Whether to use cached content if available",
+                    "default": true
                   }
                 },
                 "required": ["url"]
