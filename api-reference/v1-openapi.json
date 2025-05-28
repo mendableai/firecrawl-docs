@@ -1651,7 +1651,7 @@
                             "links",
                             "screenshot",
                             "screenshot@fullPage",
-                            "extract"
+                            "json"
                           ]
                         },
                         "description": "Formats to include in the output",
@@ -2039,7 +2039,7 @@
           },
           "jsonOptions": {
             "type": "object",
-            "description": "Extract object",
+            "description": "JSON options object",
             "properties": {
               "schema": {
                 "type": "object",

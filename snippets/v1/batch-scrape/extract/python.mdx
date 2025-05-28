@@ -6,8 +6,8 @@ app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
 # Scrape multiple websites:
 batch_scrape_result = app.batch_scrape_urls(
     ['https://docs.firecrawl.dev', 'https://docs.firecrawl.dev/sdks/overview'], 
-    formats=['extract'],
-    extract={
+    formats=['json'],
+    jsonOptions={
         'prompt': 'Extract the title and description from the page.',
         'schema': {
             'type': 'object',
@@ -24,8 +24,8 @@ print(batch_scrape_result)
 # Or, you can use the asynchronous method:
 batch_scrape_job = app.async_batch_scrape_urls(
     ['https://docs.firecrawl.dev', 'https://docs.firecrawl.dev/sdks/overview'], 
-    formats=['extract'],
-    extract={
+    formats=['json'],
+    jsonOptions={
     'prompt': 'Extract the title and description from the page.',
     'schema': {
         'type': 'object',

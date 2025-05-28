@@ -56,7 +56,7 @@ You can now choose what formats you want your output in. You can specify multipl
 - Raw HTML (rawHtml) (with no modifications)
 - Screenshot (screenshot or screenshot@fullPage)
 - Links (links)
-- Extract (extract) - structured output
+- JSON (json) - structured output
 
 Output keys will match the format you choose.
 
@@ -113,9 +113,9 @@ To crawl a website with WebSockets, use the `Crawl URL and Watch` method.
 
 </CodeGroup>
 
-## Extract format
+## JSON format
 
-LLM extraction is now available in v1 under the `extract` format. To extract structured from a page, you can pass a schema to the endpoint or just provide a prompt.
+LLM extraction is now available in v1 under the `json` format. To extract structured from a page, you can pass a schema to the endpoint or just provide a prompt.
 
 <CodeGroup>
 
@@ -224,9 +224,9 @@ The table below outlines the changes to the request body parameters for the `/sc
 | `includeRawHtml`| Removed | add `"rawHtml"` to `formats` instead. |
 | `screenshot`| Removed | add `"screenshot"` to `formats` instead. |
 | `fullPageScreenshot`| Removed | add `"screenshot@fullPage"` to `formats` instead. |
-| `extractorOptions` | Removed | Use `"extract"` format instead with `extract` object. |
+| `extractorOptions` | Removed | Use `"json"` format instead with `jsonOptions` object. |
 
-The new `extract` format is described in the [llm-extract](/features/extract) section.
+The new `json` format is described in the [llm-extract](/features/extract) section.
 
 ## /crawl endpoint
 
