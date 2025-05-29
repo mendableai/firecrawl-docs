@@ -1,0 +1,109 @@
+{
+  "categories": [
+    {
+      "id": "billing-subscription",
+      "title": "Billing & Subscription",
+      "questions": [
+        {
+          "id": "annual-to-monthly",
+          "question": "How do I change from annual to monthly subscription?",
+          "answer": "You can change your subscription billing cycle in your account settings. Go to the billing section and select 'Change billing cycle'. Note that changes will take effect at the end of your current billing period."
+        },
+        {
+          "id": "credit-usage",
+          "question": "How are credits calculated per request?",
+          "answer": "Credits are calculated based on the endpoint used and the complexity of the request. Scraping typically uses 1 credit per page, crawling uses credits per page crawled, and extraction uses credits based on the number of pages processed and schema complexity."
+        },
+        {
+          "id": "credit-limits",
+          "question": "What are the credit limits for each plan?",
+          "answer": "Credit limits vary by plan. Free plans include a limited number of credits, while paid plans offer higher limits and the ability to purchase additional credits. Check your dashboard for your current usage and limits."
+        }
+      ]
+    },
+    {
+      "id": "technical-limits",
+      "title": "Technical Limits & Performance",
+      "questions": [
+        {
+          "id": "rate-limits",
+          "question": "What are the rate limits for different endpoints?",
+          "answer": "Rate limits vary by plan and endpoint: Free (10 scrape/min, 1 crawl/min), Hobby (100 scrape/min, 15 crawl/min), Standard (500 scrape/min, 50 crawl/min), Growth (5000 scrape/min, 250 crawl/min). Extract has separate limits ranging from 10/min (Free) to 1000/min (Pro)."
+        },
+        {
+          "id": "concurrent-browsers",
+          "question": "How many concurrent browsers can I use?",
+          "answer": "Concurrent browser limits by plan: Free (2), Hobby (5), Standard (50), Growth (100). This determines how many pages can be processed simultaneously."
+        },
+        {
+          "id": "timeout-errors",
+          "question": "What causes timeout and 403 errors?",
+          "answer": "Timeouts occur when pages take too long to load or when rate limits are exceeded. 403 errors typically indicate blocked access due to anti-bot measures, rate limiting, or website restrictions. Try reducing concurrency or adding delays between requests."
+        }
+      ]
+    },
+    {
+      "id": "features-usage",
+      "title": "Features & Usage",
+      "questions": [
+        {
+          "id": "extract-feature",
+          "question": "How does the Extract feature work and what are its limitations?",
+          "answer": "Extract uses AI to extract structured data from web pages using natural language prompts or schemas. It can process single pages or entire websites. Limitations include token usage, processing time for large sites, and accuracy depending on page content structure."
+        },
+        {
+          "id": "crawler-options",
+          "question": "What crawler options are available?",
+          "answer": "Crawler options include: excludePaths and includePaths for URL filtering, limit for maximum pages, maxDepth for crawl depth, ignoreSitemap to bypass sitemaps, and various page options like waitFor, timeout, and format selection."
+        },
+        {
+          "id": "scrape-vs-crawl",
+          "question": "What's the difference between scrape and crawl endpoints?",
+          "answer": "Scrape processes a single URL and returns its content immediately. Crawl processes multiple URLs from a website, following links and returning content for each page. Crawl jobs are asynchronous and require checking status for completion."
+        }
+      ]
+    },
+    {
+      "id": "website-support",
+      "title": "Website Support",
+      "questions": [
+        {
+          "id": "supported-websites",
+          "question": "Which websites are supported or not supported?",
+          "answer": "Firecrawl supports most public websites. Some limitations include sites with heavy anti-bot protection, sites requiring specific authentication, or sites with complex JavaScript that prevents content loading. Dynamic content and SPAs are generally supported."
+        },
+        {
+          "id": "website-access-request",
+          "question": "How do I request access to specific websites?",
+          "answer": "If you encounter issues with specific websites, contact support at hello@firecrawl.com with the URL and error details. We can help optimize scraping strategies or add specific website support."
+        },
+        {
+          "id": "website-not-supported-error",
+          "question": "What to do when getting 'website not supported' errors?",
+          "answer": "This error typically indicates anti-bot protection or access restrictions. Try using different user agents, adding delays, or contact support for assistance with specific websites."
+        }
+      ]
+    },
+    {
+      "id": "dashboard-activity",
+      "title": "Dashboard & Activity Logs",
+      "questions": [
+        {
+          "id": "activity-log-updates",
+          "question": "How often do activity logs update?",
+          "answer": "Activity logs typically update in real-time for ongoing operations and within a few minutes for completed jobs. Large crawl operations may take longer to appear in full detail."
+        },
+        {
+          "id": "dashboard-statistics",
+          "question": "How do I understand dashboard statistics?",
+          "answer": "Dashboard statistics show credit usage, success rates, error counts, and performance metrics. Credits used reflects total consumption, while success rate indicates the percentage of successful requests vs. failed ones."
+        },
+        {
+          "id": "dashboard-troubleshooting",
+          "question": "How to troubleshoot common dashboard issues?",
+          "answer": "Common issues include delayed data updates, missing jobs, or incorrect credit counts. Try refreshing the page, checking filters, or contact support if data appears inconsistent for more than 15 minutes."
+        }
+      ]
+    }
+  ]
+}
