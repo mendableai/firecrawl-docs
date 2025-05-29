@@ -1,0 +1,24 @@
+---
+title: "Frequently Asked Questions"
+description: "Common questions and answers about Firecrawl"
+og:title: "FAQ | Firecrawl"
+og:description: "Common questions and answers about Firecrawl"
+---
+
+import faqData from './faq/faq-data.json';
+
+# Frequently Asked Questions
+
+<Tabs>
+  {faqData.categories.map(category => (
+    <Tab title={category.title} key={category.id}>
+      <AccordionGroup>
+        {category.questions.map(faq => (
+          <Accordion title={faq.question} key={faq.id}>
+            {faq.answer}
+          </Accordion>
+        ))}
+      </AccordionGroup>
+    </Tab>
+  ))}
+</Tabs>
