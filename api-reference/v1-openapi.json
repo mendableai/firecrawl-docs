@@ -2037,6 +2037,11 @@
             "description": "Timeout in milliseconds for the request",
             "default": 30000
           },
+          "parsePDF": {
+            "type": "boolean",
+            "description": "Controls how PDF files are processed during scraping. When true, the PDF content is extracted and converted to markdown format, with billing based on the number of pages (1 credit per page). When false, the PDF file is returned in base64 encoding with a flat rate of 1 credit total.",
+            "default": true
+          },
           "jsonOptions": {
             "type": "object",
             "description": "JSON options object",
