@@ -137,6 +137,12 @@ When using the `/scrape` endpoint, you can customize the scraping behavior with 
 - **Description**: Set the maximum duration in milliseconds that the scraper will wait for the page to respond before aborting the operation.
 - **Default**: `30000` (30 seconds)
 
+### Parsing PDF files with `parsePDF`
+
+- **Type**: `boolean`
+- **Description**: Controls how PDF files are processed during scraping. When `true`, the PDF content is extracted and converted to markdown format, with billing based on the number of pages (1 credit per page). When `false`, the PDF file is returned in base64 encoding with a flat rate of 1 credit total.
+- **Default**: `true`
+
 ### Example Usage
 
 ```bash
@@ -151,7 +157,8 @@ curl -X POST https://api.firecrawl.dev/v1/scrape \
       "excludeTags": ["#ad", "#footer"],
       "onlyMainContent": false,
       "waitFor": 1000,
-      "timeout": 15000
+      "timeout": 15000,
+      "parsePDF": false
     }'
 ```
 
@@ -162,6 +169,7 @@ In this example, the scraper will:
 - The response will include only the HTML tags `<h1>`, `<p>`, `<a>`, and elements with the class `.main-content`, while excluding any elements with the IDs `#ad` and `#footer`.
 - Wait for 1000 milliseconds (1 second) for the page to load before fetching the content.
 - Set the maximum duration of the scrape request to 15000 milliseconds (15 seconds).
+- Return PDF files in base64 format instead of converting them to markdown.
 
 Here is the API Reference for it: [Scrape Endpoint Documentation](https://docs.firecrawl.dev/api-reference/endpoint/scrape)
 
