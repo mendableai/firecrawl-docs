@@ -238,9 +238,7 @@ app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
 search_result = app.search(
     "firecrawl features",
     limit=3,
-    scrape_options={
-        "formats": ["markdown", "html", "links", "screenshot"]
-    }
+    scrape_options=ScrapeOptions(formats=["markdown", "html", "links", "screenshot"])
 )
 ```
 
