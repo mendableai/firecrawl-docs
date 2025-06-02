@@ -2271,6 +2271,11 @@
                 "description": "Prompt to use for change tracking when using 'json' mode. If not provided, the default prompt will be used."
               }
             }
+          },
+          "dontStoreInCache": {
+            "type": "boolean",
+            "description": "If true, the page will not be stored in the Firecrawl index and cache. This is useful if your scraping activity may have data protection concerns. Using some parameters associated with sensitive scraping (actions, headers) will force this parameter to be true.",
+            "default": false
           }
         }
       },
