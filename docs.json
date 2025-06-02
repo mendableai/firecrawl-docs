@@ -67,27 +67,6 @@
                 ]
               },
               {
-                "group": "Alpha tools",
-                "pages": [
-                  {
-                    "group": "LLMs.txt API",
-                    "icon": "text",
-                    "pages": [
-                      "features/alpha/llmstxt",
-                      "features/alpha/llmstxt-npx"
-                    ]
-                  },
-                  {
-                    "group": "Deep Research API",
-                    "icon": "telescope",
-                    "pages": [
-                      "features/alpha/deep-research"
-                    ]
-                  }
-                ]
-              },
-              
-              {
                 "group": "Contributing",
                 "pages": [
                   "contributing/open-source-or-cloud",
