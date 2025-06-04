@@ -2269,6 +2269,12 @@
               "prompt": {
                 "type": "string",
                 "description": "Prompt to use for change tracking when using 'json' mode. If not provided, the default prompt will be used."
+              },
+              "tag": {
+                "type": "string",
+                "nullable": true,
+                "default": null,
+                "description": "Tag to use for change tracking. Tags can separate change tracking history into separate \"branches\", where change tracking with a specific tagwill only compare to scrapes made in the same tag. If not provided, the default tag (null) will be used."
               }
             }
           },
