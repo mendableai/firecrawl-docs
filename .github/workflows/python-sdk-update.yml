@@ -1,0 +1,37 @@
+name: Update Python SDK Documentation
+
+on:
+  repository_dispatch:
+    types: [python-sdk-updated]
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout docs repository
+        uses: actions/checkout@v3
+        
+      - name: Checkout firecrawl repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.event.client_payload.repository }}
+          ref: ${{ github.event.client_payload.ref }}
+          path: firecrawl-source
+          
+      - name: Copy updated OpenAPI file
+        run: |
+          cp firecrawl-source/apps/api/v1-openapi-with-examples.json ./api-specs/
+          
+      - name: Copy Python examples
+        run: |
+          cp -r firecrawl-source/apps/python-sdk/examples/ ./python-examples/
+          
+      - name: Commit and push updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          if ! git diff --staged --quiet; then
+            git commit -m "Update Python SDK documentation from ${{ github.event.client_payload.sha }}"
+            git push
+          fi
