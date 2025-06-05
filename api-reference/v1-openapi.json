@@ -936,6 +936,11 @@
                   "timeout": {
                     "type": "integer",
                     "description": "Timeout in milliseconds. There is no timeout by default."
+                  },
+                  "useIndex": {
+                    "type": "boolean",
+                    "description": "Allows /map to use the Firecrawl index to find known-good links. Forced to `false` when using `sitemapOnly`.",
+                    "default": true
                   }
                 },
                 "required": ["url"]
@@ -2012,6 +2017,11 @@
               "type": "string"
             },
             "description": "Tags to exclude from the output."
+          },
+          "maxAge": {
+            "type": "integer",
+            "description": "Returns a cached version of the page if it is younger than this age in milliseconds. If a cached version of the page is older than this value, the page will be scraped. If you do not need extremely fresh data, enabling this can speed up your scrapes by 500%. Defaults to 0, which disables caching.",
+            "default": 0
           },
           "headers": {
             "type": "object",
