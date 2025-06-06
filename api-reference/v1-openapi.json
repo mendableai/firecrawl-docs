@@ -171,6 +171,10 @@
                         },
                         "required": ["url"]
                       },
+                      "maxConcurrency": {
+                        "type": "integer",
+                        "description": "Maximum number of concurrent scrapes. This parameter allows you to set a concurrency limit for this batch scrape. If not specified, the batch scrape adheres to your team's concurrency limit."
+                      },
                       "ignoreInvalidURLs": {
                         "type": "boolean",
                         "default": false,
@@ -783,6 +787,10 @@
                   "delay": {
                     "type": "number",
                     "description": "Delay in seconds between scrapes. This helps respect website rate limits."
+                  },
+                  "maxConcurrency": {
+                    "type": "integer",
+                    "description": "Maximum number of concurrent scrapes. This parameter allows you to set a concurrency limit for this crawl. If not specified, the crawl adheres to your team's concurrency limit."
                   },
                   "webhook": {
                     "type": "object",
