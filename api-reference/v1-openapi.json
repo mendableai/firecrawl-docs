@@ -1159,10 +1159,10 @@
         }
       }
     },
-    "/crawl/ongoing": {
+    "/crawl/active": {
       "get": {
-        "summary": "Get all ongoing crawls for the authenticated team",
-        "operationId": "getOngoingCrawls",
+        "summary": "Get all active crawls for the authenticated team",
+        "operationId": "getActiveCrawls",
         "tags": ["Crawling"],
         "security": [
           {

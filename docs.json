@@ -136,7 +136,7 @@
                   "api-reference/endpoint/crawl-get",
                   "api-reference/endpoint/crawl-delete",
                   "api-reference/endpoint/crawl-get-errors",
-                  "api-reference/endpoint/crawl-ongoing"
+                  "api-reference/endpoint/crawl-active"
                 ]
               },
               {
