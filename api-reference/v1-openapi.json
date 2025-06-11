@@ -1739,16 +1739,6 @@
                     "type": "string",
                     "description": "Time-based search parameter"
                   },
-                  "lang": {
-                    "type": "string",
-                    "description": "Language code for search results",
-                    "default": "en"
-                  },
-                  "country": {
-                    "type": "string",
-                    "description": "Country code for search results",
-                    "default": "us"
-                  },
                   "location": {
                     "type": "string",
                     "description": "Location parameter for search results"

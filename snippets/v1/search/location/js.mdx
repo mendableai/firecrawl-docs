@@ -4,11 +4,10 @@ import FirecrawlApp from '@mendable/firecrawl-js';
 // Initialize the client with your API key
 const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
 
-// Search in German (Germany)
+// Search with location settings (Germany)
 app.search("web scraping tools", {
   limit: 5,
-  lang: "de",
-  country: "de"
+  location: "Germany"
 })
 .then(searchResult => {
   // Process the results

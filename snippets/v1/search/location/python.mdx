@@ -4,12 +4,11 @@ from firecrawl import FirecrawlApp
 # Initialize the client with your API key
 app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
 
-# Search in German (Germany)
+# Search with location settings (Germany)
 search_result = app.search(
     "web scraping tools",
     limit=5,
-    lang="de",
-    country="de"
+    location="Germany"
 )
 
 # Process the results
