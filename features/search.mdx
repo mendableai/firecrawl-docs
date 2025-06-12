@@ -16,9 +16,9 @@ import SearchCURL from "/snippets/v1/search/base/curl.mdx";
 import SearchContentPython from "/snippets/v1/search/content/python.mdx";
 import SearchContentNode from "/snippets/v1/search/content/js.mdx";
 import SearchContentCURL from "/snippets/v1/search/content/curl.mdx";
-import SearchLanguagePython from "/snippets/v1/search/language/python.mdx";
-import SearchLanguageNode from "/snippets/v1/search/language/js.mdx";
-import SearchLanguageCURL from "/snippets/v1/search/language/curl.mdx";
+import SearchLocationPython from "/snippets/v1/search/location/python.mdx";
+import SearchLocationNode from "/snippets/v1/search/location/js.mdx";
+import SearchLocationCURL from "/snippets/v1/search/location/curl.mdx";
 import SearchTimePython from "/snippets/v1/search/time/python.mdx";
 import SearchTimeNode from "/snippets/v1/search/time/js.mdx";
 import SearchTimeCURL from "/snippets/v1/search/time/curl.mdx";
@@ -26,7 +26,7 @@ import SearchTimeCURL from "/snippets/v1/search/time/curl.mdx";
 Firecrawl's search API allows you to perform web searches and optionally scrape the search results in one operation.
 
 - Choose specific output formats (markdown, HTML, links, screenshots)
-- Search the web with customizable parameters (language, country, etc.)
+- Search the web with customizable parameters (location, etc.)
 - Optionally retrieve content from search results in various formats
 - Control the number of results and set timeouts
 
@@ -139,15 +139,15 @@ Search and retrieve content from the search results in one operation.
 
 Firecrawl's search API supports various parameters to customize your search:
 
-### Language and Country Customization
+### Location Customization
 
 <CodeGroup>
 
-  <SearchLanguagePython />
+  <SearchLocationPython />
 
-  <SearchLanguageNode />
+  <SearchLocationNode />
   
-  <SearchLanguageCURL />
+  <SearchLocationCURL />
 
 </CodeGroup>
 
