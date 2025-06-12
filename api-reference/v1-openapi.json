@@ -936,11 +936,6 @@
                   "timeout": {
                     "type": "integer",
                     "description": "Timeout in milliseconds. There is no timeout by default."
-                  },
-                  "useIndex": {
-                    "type": "boolean",
-                    "description": "Allows /map to use the Firecrawl index to find known-good links. Forced to `false` when using `sitemapOnly`.",
-                    "default": true
                   }
                 },
                 "required": ["url"]
