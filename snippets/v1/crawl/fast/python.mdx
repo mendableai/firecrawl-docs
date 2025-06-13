@@ -1,5 +1,5 @@
 ```python Python
-from firecrawl import FirecrawlApp
+from firecrawl import FirecrawlApp, ScrapeOptions
 
 app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
 
@@ -8,10 +8,10 @@ crawl_result = app.crawl_url(
     'https://firecrawl.dev', 
     params={
         'limit': 100,
-        'scrapeOptions': {
-            'formats': ['markdown'],
-            'maxAge': 3600000  # Use cached data if less than 1 hour old
-        }
+        'scrapeOptions': ScrapeOptions(
+            formats=['markdown'],
+            maxAge=3600000  # Use cached data if less than 1 hour old
+        )
     }
 )
 
