@@ -1,0 +1,104 @@
+---
+title: "Faster Scraping"
+description: "Speed up your scrapes by 500% with the maxAge parameter"
+og:title: "Faster Scraping | Firecrawl"
+og:description: "Speed up your scrapes by 500% with the maxAge parameter"
+---
+
+import FastScrapePython from "/snippets/v1/scrape/fast/python.mdx";
+import FastScrapeNode from "/snippets/v1/scrape/fast/js.mdx";
+import FastScrapeGo from "/snippets/v1/scrape/fast/go.mdx";
+import FastScrapeRust from "/snippets/v1/scrape/fast/rust.mdx";
+import FastScrapeCURL from "/snippets/v1/scrape/fast/curl.mdx";
+import FastCrawlPython from "/snippets/v1/crawl/fast/python.mdx";
+import FastCrawlNode from "/snippets/v1/crawl/fast/js.mdx";
+import FastCrawlGo from "/snippets/v1/crawl/fast/go.mdx";
+import FastCrawlRust from "/snippets/v1/crawl/fast/rust.mdx";
+import FastCrawlCURL from "/snippets/v1/crawl/fast/curl.mdx";
+
+# Faster Scraping
+
+Get your scraping results **500% faster** when you don't need the absolute freshest data.
+
+## How It Works
+
+Firecrawl keeps an index of previously scraped pages. Add the `maxAge` parameter to your request and we'll:
+
+1. **Return instantly** if we have a recent version of the page
+2. **Scrape fresh** only if our version is older than your specified age
+3. **Save you time** - results come back in milliseconds instead of seconds
+
+## When to Use This
+
+**Great for:**
+- Documentation, articles, product pages
+- Bulk processing jobs
+- Development and testing
+- Building knowledge bases
+
+**Skip for:**
+- Real-time data (stock prices, live scores, breaking news)
+- Frequently updated content
+- Time-sensitive applications
+
+## Usage
+
+Simply add the `maxAge` parameter to your scrape request. The value is in milliseconds - for example, `3600000` means "use cached data if it's less than 1 hour old."
+
+<CodeGroup>
+
+<FastScrapePython />
+
+<FastScrapeNode />
+
+<FastScrapeGo />
+
+<FastScrapeRust />
+
+<FastScrapeCURL />
+
+</CodeGroup>
+
+## Common maxAge Values
+
+Here are some helpful reference values:
+
+- **5 minutes**: `300000` - For semi-dynamic content
+- **1 hour**: `3600000` - For content that updates hourly
+- **1 day**: `86400000` - For daily-updated content
+- **1 week**: `604800000` - For relatively static content
+
+## Performance Impact
+
+With `maxAge` enabled:
+
+- **500% faster response times** for recent content
+- **Instant results** instead of waiting for fresh scrapes
+
+## Important Notes
+
+- **Default**: `maxAge` defaults to `0`, which means always scrape fresh
+- **Fresh when needed**: If our data is older than `maxAge`, we scrape fresh automatically
+- **No stale data**: You'll never get data older than your specified `maxAge`
+
+## Faster Crawling
+
+The same speed benefits apply when crawling multiple pages. Use `maxAge` within `scrapeOptions` to get cached results for pages we've seen recently.
+
+<CodeGroup>
+
+<FastCrawlPython />
+
+<FastCrawlNode />
+
+<FastCrawlGo />
+
+<FastCrawlRust />
+
+<FastCrawlCURL />
+
+</CodeGroup>
+
+When crawling with `maxAge`, each page in your crawl will benefit from the 500% speed improvement if we have recent cached data for that page.
+
+Start using `maxAge` today for dramatically faster scrapes and crawls!

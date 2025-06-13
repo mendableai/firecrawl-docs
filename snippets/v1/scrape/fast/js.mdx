@@ -1,0 +1,14 @@
+```javascript JavaScript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Use cached data if it's less than 1 hour old (3600000 ms)
+// This can be 500% faster than a fresh scrape!
+const scrapeResult = await app.scrapeUrl('https://firecrawl.dev', {
+  formats: ['markdown'],
+  maxAge: 3600000 // 1 hour in milliseconds
+});
+
+console.log(scrapeResult.markdown);
+```

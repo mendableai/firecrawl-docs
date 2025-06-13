@@ -1,0 +1,23 @@
+```rust Rust
+use firecrawl::FirecrawlApp;
+use std::collections::HashMap;
+
+#[tokio::main]
+async fn main() {
+    // Initialize the FirecrawlApp with your API key
+    let app = FirecrawlApp::new("fc-YOUR_API_KEY").expect("Failed to initialize FirecrawlApp");
+
+    // Use cached data if it's less than 1 hour old (3600000 ms)
+    // This can be 500% faster than a fresh scrape!
+    let mut scrape_params = HashMap::new();
+    scrape_params.insert("formats", vec!["markdown"]);
+    scrape_params.insert("maxAge", 3600000); // 1 hour in milliseconds
+
+    let scrape_result = app
+        .scrape_url("https://firecrawl.dev", Some(scrape_params))
+        .await
+        .expect("Failed to scrape the URL");
+
+    println!("{}", scrape_result.markdown.unwrap_or_default());
+}
+```

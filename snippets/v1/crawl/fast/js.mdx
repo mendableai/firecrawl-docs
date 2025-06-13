@@ -1,0 +1,19 @@
+```javascript JavaScript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Crawl with cached scraping - 500% faster for pages we've seen recently
+const crawlResult = await app.crawlUrl('https://firecrawl.dev', {
+  limit: 100,
+  scrapeOptions: {
+    formats: ['markdown'],
+    maxAge: 3600000 // Use cached data if less than 1 hour old
+  }
+});
+
+crawlResult.data.forEach(page => {
+  console.log(`URL: ${page.metadata.sourceURL}`);
+  console.log(`Content: ${page.markdown.substring(0, 200)}...`);
+});
+```
