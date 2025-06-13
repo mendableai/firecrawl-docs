@@ -37,6 +37,7 @@
                     "icon": "markdown",
                     "pages": [
                       "features/scrape",
+                      "features/fast-scraping",
                       "features/batch-scrape",
                       "features/llm-extract",
                       "features/change-tracking",
