@@ -925,7 +925,7 @@
                   "includeSubdomains": {
                     "type": "boolean",
                     "description": "Include subdomains of the website",
-                    "default": false
+                    "default": true
                   },
                   "limit": {
                     "type": "integer",
