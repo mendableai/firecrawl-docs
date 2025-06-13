@@ -8,7 +8,8 @@ firecrawl = FirecrawlApp(api_key="your_api_key")
 results = firecrawl.generate_llms_text(
     url="https://example.com",
     max_urls=2,
-    show_full_text=True
+    show_full_text=True,
+    cache=True  # Use cached content if available
 )
 
 # Access generation results
