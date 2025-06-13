@@ -1,5 +1,5 @@
 ```python Python
-from firecrawl import FirecrawlApp
+from firecrawl import FirecrawlApp, ScrapeOptions
 
 app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
 
@@ -7,10 +7,10 @@ app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
 # This can be 500% faster than a fresh scrape!
 scrape_result = app.scrape_url(
     'https://firecrawl.dev', 
-    params={
-        'formats': ['markdown'],
-        'maxAge': 3600000  # 1 hour in milliseconds
-    }
+    scrape_options=ScrapeOptions(
+        formats=['markdown'],
+        maxAge=3600000  # 1 hour in milliseconds
+    )
 )
 
 print(scrape_result['markdown'])

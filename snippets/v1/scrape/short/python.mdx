@@ -1,5 +1,7 @@
 ```python Python
+from firecrawl import ScrapeOptions
+
 # Scrape a website:
-scrape_result = app.scrape_url('firecrawl.dev', formats=['markdown', 'html'])
+scrape_result = app.scrape_url('firecrawl.dev', scrape_options=ScrapeOptions(formats=['markdown', 'html']))
 print(scrape_result)
 ```

@@ -1,7 +1,7 @@
 ```python Python
 # pip install firecrawl-py
 
-from firecrawl import FirecrawlApp
+from firecrawl import FirecrawlApp, ScrapeOptions
 
 app = FirecrawlApp(api_key="YOUR_API_KEY")
 
@@ -14,14 +14,14 @@ try:
     if status_code in [401, 403, 500]:
         print(f"Got status code {status_code}, retrying with stealth proxy")
         # Retry with stealth proxy
-        content = app.scrape_url("https://example.com", proxy="stealth")
+        content = app.scrape_url("https://example.com", scrape_options=ScrapeOptions(proxy="stealth"))
     
     print(content["markdown"])
 except Exception as e:
     print(f"Error: {e}")
     # Retry with stealth proxy on exception
     try:
-        content = app.scrape_url("https://example.com", proxy="stealth")
+        content = app.scrape_url("https://example.com", scrape_options=ScrapeOptions(proxy="stealth"))
         print(content["markdown"])
     except Exception as e:
         print(f"Stealth proxy also failed: {e}")

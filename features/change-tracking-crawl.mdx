@@ -24,12 +24,14 @@ const result = await app.crawl('https://example.com', {
 
 ```python
 # Python
+from firecrawl import FirecrawlApp, ScrapeOptions
+
 app = FirecrawlApp(api_key='your-api-key')
-result = app.crawl('https://firecrawl.dev', {
-    'scrapeOptions': {
-        'formats': ['markdown', 'changeTracking']
-    }
-})
+result = app.crawl('https://firecrawl.dev', 
+    scrape_options=ScrapeOptions(
+        formats=['markdown', 'changeTracking']
+    )
+)
 ```
 
 ```json

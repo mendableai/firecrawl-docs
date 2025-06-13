@@ -1,9 +1,9 @@
 ```python Python
-from firecrawl import FirecrawlApp
+from firecrawl import FirecrawlApp, ScrapeOptions
 
 app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
 
 # Scrape a website:
-scrape_result = app.scrape_url('firecrawl.dev', formats=['markdown', 'html'])
+scrape_result = app.scrape_url('firecrawl.dev', scrape_options=ScrapeOptions(formats=['markdown', 'html']))
 print(scrape_result)
 ```
