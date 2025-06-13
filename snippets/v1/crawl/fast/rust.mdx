@@ -1,0 +1,32 @@
+```rust Rust
+use firecrawl::FirecrawlApp;
+use std::collections::HashMap;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let app = FirecrawlApp::new("fc-YOUR_API_KEY").expect("Failed to initialize FirecrawlApp");
+
+    // Crawl with cached scraping - 500% faster for pages we've seen recently
+    let mut scrape_options = HashMap::new();
+    scrape_options.insert("formats", vec!["markdown"]);
+    scrape_options.insert("maxAge", 3600000); // Use cached data if less than 1 hour old
+
+    let mut crawl_params = HashMap::new();
+    crawl_params.insert("limit", 100);
+    crawl_params.insert("scrapeOptions", scrape_options);
+
+    let crawl_result = app.crawl_url("https://firecrawl.dev", Some(crawl_params)).await?;
+
+    for page in crawl_result.data {
+        println!("URL: {}", page.metadata.get("sourceURL").unwrap_or(&"Unknown".to_string()));
+        let content = page.markdown.unwrap_or_default();
+        if content.len() > 200 {
+            println!("Content: {}...", &content[..200]);
+        } else {
+            println!("Content: {}", content);
+        }
+    }
+
+    Ok(())
+}
+```

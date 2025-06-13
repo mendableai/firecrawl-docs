@@ -10,6 +10,11 @@ import FastScrapeNode from "/snippets/v1/scrape/fast/js.mdx";
 import FastScrapeGo from "/snippets/v1/scrape/fast/go.mdx";
 import FastScrapeRust from "/snippets/v1/scrape/fast/rust.mdx";
 import FastScrapeCURL from "/snippets/v1/scrape/fast/curl.mdx";
+import FastCrawlPython from "/snippets/v1/crawl/fast/python.mdx";
+import FastCrawlNode from "/snippets/v1/crawl/fast/js.mdx";
+import FastCrawlGo from "/snippets/v1/crawl/fast/go.mdx";
+import FastCrawlRust from "/snippets/v1/crawl/fast/rust.mdx";
+import FastCrawlCURL from "/snippets/v1/crawl/fast/curl.mdx";
 
 # Faster Scraping
 
@@ -76,4 +81,24 @@ With `maxAge` enabled:
 - **Fresh when needed**: If our data is older than `maxAge`, we scrape fresh automatically
 - **No stale data**: You'll never get data older than your specified `maxAge`
 
-Start using `maxAge` today for dramatically faster scrapes!
+## Faster Crawling
+
+The same speed benefits apply when crawling multiple pages. Use `maxAge` within `scrapeOptions` to get cached results for pages we've seen recently.
+
+<CodeGroup>
+
+<FastCrawlPython />
+
+<FastCrawlNode />
+
+<FastCrawlGo />
+
+<FastCrawlRust />
+
+<FastCrawlCURL />
+
+</CodeGroup>
+
+When crawling with `maxAge`, each page in your crawl will benefit from the 500% speed improvement if we have recent cached data for that page.
+
+Start using `maxAge` today for dramatically faster scrapes and crawls!

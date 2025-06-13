@@ -29,6 +29,11 @@ import PythonCrawlExample from "/snippets/v1/crawl/sdk-example/python.mdx";
 import NodeCrawlExample from "/snippets/v1/crawl/sdk-example/js.mdx";
 import PythonCrawlExampleResponse from "/snippets/v1/crawl/sdk-example/python-response.mdx";
 import NodeCrawlExampleResponse from "/snippets/v1/crawl/sdk-example/js-response.mdx";
+import FastCrawlPython from "/snippets/v1/crawl/fast/python.mdx";
+import FastCrawlNode from "/snippets/v1/crawl/fast/js.mdx";
+import FastCrawlGo from "/snippets/v1/crawl/fast/go.mdx";
+import FastCrawlRust from "/snippets/v1/crawl/fast/rust.mdx";
+import FastCrawlCURL from "/snippets/v1/crawl/fast/curl.mdx";
 
 Firecrawl efficiently crawls websites to extract comprehensive data while bypassing blockers. The process:
 
@@ -147,6 +152,26 @@ The response includes the crawl status and all scraped data:
   <AsyncCrawlPython />
   <AsyncCrawlNode />
 </CodeGroup>
+
+## Faster Crawling
+
+Speed up your crawls by 500% when you don't need the freshest data. Add `maxAge` to your `scrapeOptions` to use cached page data when available.
+
+<CodeGroup>
+  <FastCrawlPython />
+  <FastCrawlNode />
+  <FastCrawlGo />
+  <FastCrawlRust />
+  <FastCrawlCURL />
+</CodeGroup>
+
+**How it works:**
+- Each page in your crawl checks if we have cached data newer than `maxAge`
+- If yes, returns instantly from cache (500% faster)
+- If no, scrapes the page fresh and caches the result
+- Perfect for crawling documentation sites, product catalogs, or other relatively static content
+
+For more details on `maxAge` usage, see the [Faster Scraping](/features/fast-scraping) documentation.
 
 ## Crawl WebSocket
 

@@ -1,0 +1,21 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Crawl with cached scraping - 500% faster for pages we've seen recently
+crawl_result = app.crawl_url(
+    'https://firecrawl.dev', 
+    params={
+        'limit': 100,
+        'scrapeOptions': {
+            'formats': ['markdown'],
+            'maxAge': 3600000  # Use cached data if less than 1 hour old
+        }
+    }
+)
+
+for page in crawl_result['data']:
+    print(f"URL: {page['metadata']['sourceURL']}")
+    print(f"Content: {page['markdown'][:200]}...")
+```
