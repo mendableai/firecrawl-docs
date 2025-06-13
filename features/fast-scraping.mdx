@@ -1,8 +1,8 @@
 ---
 title: "Lightning-Fast Scraping"
-description: "Speed up your scrapes by 500% with intelligent caching"
+description: "Speed up your scrapes by 500% with the maxAge parameter"
 og:title: "Lightning-Fast Scraping | Firecrawl"
-og:description: "Speed up your scrapes by 500% with intelligent caching"
+og:description: "Speed up your scrapes by 500% with the maxAge parameter"
 ---
 
 import FastScrapePython from "/snippets/v1/scrape/fast/python.mdx";
@@ -11,29 +11,29 @@ import FastScrapeGo from "/snippets/v1/scrape/fast/go.mdx";
 import FastScrapeRust from "/snippets/v1/scrape/fast/rust.mdx";
 import FastScrapeCURL from "/snippets/v1/scrape/fast/curl.mdx";
 
-# Lightning-Fast Scraping with Caching
+# Lightning-Fast Scraping
 
-Get your scraping results **500% faster** by using Firecrawl's intelligent caching system. When you don't need the absolute freshest data, caching can dramatically speed up your scrapes while saving you credits.
+Get your scraping results **500% faster** when you don't need the absolute freshest data.
 
 ## How It Works
 
-Firecrawl now maintains an index of previously scraped pages. When you enable caching with the `maxAge` parameter, Firecrawl will:
+Firecrawl keeps an index of previously scraped pages. Add the `maxAge` parameter to your request and we'll:
 
-1. **Check the cache first** - If we have a recent version of the page, return it instantly
-2. **Scrape only when needed** - If the cached version is older than your specified age, we'll scrape fresh content
-3. **Save you time and credits** - Cached results are returned in milliseconds instead of seconds
+1. **Return instantly** if we have a recent version of the page
+2. **Scrape fresh** only if our version is older than your specified age
+3. **Save you time** - results come back in milliseconds instead of seconds
 
-## When to Use Caching
+## When to Use This
 
-**Perfect for:**
-- Content that doesn't change frequently (documentation, articles, product pages)
-- Bulk processing where slight delays in freshness are acceptable
-- Development and testing scenarios
-- Building knowledge bases or RAG systems
+**Great for:**
+- Documentation, articles, product pages
+- Bulk processing jobs
+- Development and testing
+- Building knowledge bases
 
-**Skip caching for:**
+**Skip for:**
 - Real-time data (stock prices, live scores, breaking news)
-- User-generated content that updates frequently
+- Frequently updated content
 - Time-sensitive applications
 
 ## Usage
@@ -65,17 +65,15 @@ Here are some helpful reference values:
 
 ## Performance Impact
 
-With caching enabled, you can expect:
+With `maxAge` enabled:
 
-- **500% faster response times** for cached content
-- **Reduced credit usage** - cached results don't consume scraping credits
-- **Lower server load** - helping maintain consistent performance for all users
+- **500% faster response times** for recent content
+- **Instant results** instead of waiting for fresh scrapes
 
 ## Important Notes
 
-- **Default behavior**: `maxAge` defaults to `0`, which disables caching entirely
-- **Fresh scrapes**: When cached data is older than `maxAge`, a fresh scrape is performed automatically
-- **No stale data**: You'll never receive data older than your specified `maxAge`
-- **Credit efficiency**: Only fresh scrapes consume credits - cached results are free
+- **Default**: `maxAge` defaults to `0`, which means always scrape fresh
+- **Fresh when needed**: If our data is older than `maxAge`, we scrape fresh automatically
+- **No stale data**: You'll never get data older than your specified `maxAge`
 
-Start using `maxAge` in your scraping workflows today and experience dramatically faster data retrieval!
+Start using `maxAge` today for dramatically faster scrapes!
