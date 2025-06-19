@@ -82,7 +82,7 @@ curl -X POST https://api.firecrawl.dev/v1/extract \
 ```
 
 Here, the agent ensures all comments are loaded on the page by interacting with the "Load More Comments" button before the extraction process begins based on the provided schema and prompt.
-**Note:** The FIRE-1 agent provides powerful capabilities but might consume more credits depending on the complexity of the navigation instructions and the number of pages interacted with.
+**Note:** The FIRE-1 agent provides powerful capabilities but consumes additional credits: 150 base credits + 0-900 variable agent credits depending on the complexity of the navigation instructions and the number of pages interacted with.
 
 
 ### Meet FIRE-1: Intelligent Navigation and Interaction
@@ -129,7 +129,7 @@ curl -X POST https://api.firecrawl.dev/v1/scrape \
 ```
 In this scenario, FIRE-1 intelligently navigates pagination and gathers all of the products.
 ## Considerations
-- Using FIRE-1 may consume more credits based on task complexity and interaction depth.
+- Using FIRE-1 consumes 150 base credits + 0-900 variable agent credits based on task complexity and interaction depth.
 - Ensure your prompts clearly guide FIRE-1 to optimize results and efficiency.
 ## Start Using FIRE-1 Today
 Experience the future of web scraping today:
