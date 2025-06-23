@@ -2343,6 +2343,34 @@
                     }
                   },
                   "required": ["type", "script"]
+                },
+                {
+                  "type": "object",
+                  "title": "Generate PDF",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["pdf"],
+                      "description": "Generate a PDF of the current page. The PDF will be returned in the `actions.pdfs` array of the response."
+                    },
+                    "format": {
+                      "type": "string",
+                      "enum": ["A0", "A1", "A2", "A3", "A4", "A5", "A6", "Letter", "Legal", "Tabloid", "Ledger"],
+                      "description": "The page size of the resulting PDF",
+                      "default": "Letter"
+                    },
+                    "landscape": {
+                      "type": "boolean",
+                      "description": "Whether to generate the PDF in landscape orientation",
+                      "default": false
+                    },
+                    "scale": {
+                      "type": "number",
+                      "description": "The scale multiplier of the resulting PDF",
+                      "default": 1
+                    }
+                  },
+                  "required": ["type"]
                 }
               ]
             }
@@ -2489,6 +2517,13 @@
                         },
                         "value": {}
                       }
+                    }
+                  },
+                  "pdfs": {
+                    "type": "array",
+                    "description": "PDFs generated, in the same order as the pdf actions provided.",
+                    "items": {
+                      "type": "string"
                     }
                   }
                 }
