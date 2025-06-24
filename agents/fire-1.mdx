@@ -21,42 +21,43 @@ FIRE-1 is an AI agent that enhances Firecrawl's scraping capabilities. It can co
 - Interact with buttons, links, inputs, and dynamic elements.
 - Get mulitple pages of data that require pagination, multiple steps, etc.
 
-## Extract vs FIRE-1: When to Use Which
+## Using FIRE-1 with Extract and Scrape Endpoints
 
-Understanding the difference between Firecrawl's **Extract** endpoint and the **FIRE-1** agent is crucial for choosing the right tool for your data extraction needs.
+FIRE-1 is an **AI agent enhancement** that can be added to both Firecrawl's `/extract` and `/scrape` endpoints to handle complex navigation and interaction scenarios.
 
-### Extract Endpoint (`/v1/extract`)
-The Extract endpoint is designed for **structured data extraction** using LLMs with schemas or prompts:
-- **Best for**: Static content that doesn't require interaction
-- **Use cases**: Extracting product details, article content, contact information from standard web pages
-- **Pricing**: Token-based billing (see [Extract pricing](https://www.firecrawl.dev/extract#pricing))
-- **Speed**: Fast processing for straightforward extraction tasks
-- **Limitations**: Cannot interact with dynamic elements, buttons, or handle complex navigation
+### Base Endpoints
 
-### FIRE-1 Agent
-FIRE-1 is an **AI agent** that performs intelligent browser navigation and interaction before extraction:
-- **Best for**: Complex sites requiring interaction, navigation, or multi-step processes
-- **Use cases**: Paginated content, sites behind login walls, dynamic content that loads after user interaction
-- **Pricing**: ~8x more expensive than standard extract due to interaction complexity
-- **Speed**: Slower due to browser automation and interaction steps
-- **Capabilities**: Can click buttons, fill forms, navigate pagination, handle dynamic content
+**`/v1/extract` Endpoint:**
+- Designed for structured data extraction using LLMs with schemas or prompts
+- Best for: Static content extraction from single or multiple URLs
+- Pricing: Token-based billing (see [Extract pricing](https://www.firecrawl.dev/extract#pricing))
 
-### When to Choose Each
+**`/v1/scrape` Endpoint:**
+- Designed for converting web pages to clean, readable formats
+- Best for: Getting page content in markdown, HTML, or other formats
+- Pricing: Credit-based billing
 
-**Use Extract when:**
-- Content is readily available on the page without interaction
-- You need fast, cost-effective data extraction
-- Working with static HTML content
-- Extracting from multiple URLs in bulk
+### Adding FIRE-1 Enhancement
 
-**Use FIRE-1 when:**
+**When to add FIRE-1 to `/extract` or `/scrape`:**
 - Content requires clicking "Load More" buttons or pagination
-- Data is behind forms or interactive elements
+- Data is behind forms or interactive elements  
 - Site uses heavy JavaScript that loads content dynamically
 - You need to navigate through multiple steps to reach the data
+- Content is behind login walls or requires user interaction
 
-### Combining Both
-You can enhance Extract with FIRE-1 by adding the `agent` parameter to your extract requests, giving you the best of both worlds - intelligent navigation with structured extraction.
+**FIRE-1 Enhanced Capabilities:**
+- Can click buttons, fill forms, navigate pagination
+- Handles dynamic content that loads after user interaction
+- Plans and takes actions to uncover hidden data
+- Interacts with complex website structures
+
+### Pricing with FIRE-1
+- **`/scrape` + FIRE-1**: 150 credits per request
+- **`/extract` + FIRE-1**: ~8x the cost of standard extract (see [token calculator](https://www.firecrawl.dev/pricing?extract-pricing=true#token-calculator))
+
+### How to Enable FIRE-1
+Simply add the `agent` parameter to your `/extract` or `/scrape` requests to enable FIRE-1 enhancement.
 
 ## How to Enable FIRE-1
 
