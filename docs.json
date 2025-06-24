@@ -153,7 +153,7 @@
                 ]
               },
               {
-                "group": "Extract Endpoints",
+                "group": "Agentic Features",
                 "pages": [
                   "api-reference/endpoint/extract",
                   "api-reference/endpoint/extract-get"
