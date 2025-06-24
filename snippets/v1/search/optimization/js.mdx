@@ -1,0 +1,24 @@
+```js Node
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+// Initialize the client with your API key
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Search without scraping content (saves credits)
+// Empty formats array means only SERP results are returned
+app.search("firecrawl web scraping", {
+  limit: 5,
+  scrapeOptions: {
+    formats: []  // Empty formats = no scraping
+  }
+})
+.then(searchResult => {
+  // Process the basic search results
+  searchResult.data.forEach(result => {
+    console.log(`Title: ${result.title}`);
+    console.log(`URL: ${result.url}`);
+    console.log(`Description: ${result.description}`);
+    // No markdown, html, or other scraped content - just SERP data
+  });
+});
+```

@@ -1,0 +1,25 @@
+```python Python
+from firecrawl import FirecrawlApp, ScrapeOptions
+
+# Initialize the client with your API key
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Search with PDF cost optimization
+# parsePDF=false means flat 1 credit per PDF instead of 1 credit per page
+search_result = app.search(
+    "firecrawl documentation filetype:pdf",
+    limit=3,
+    scrape_options=ScrapeOptions(
+        formats=["markdown"],
+        parsePDF=False  # Flat rate billing for PDFs
+    )
+)
+
+# Process results - PDFs will be charged 1 credit total instead of per page
+for result in search_result.data:
+    print(f"Title: {result['title']}")
+    print(f"URL: {result['url']}")
+    if result.get('markdown'):
+        print(f"Content: {result['markdown'][:150]}...")
+    print("---")
+```

@@ -1,0 +1,27 @@
+```js Node
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+// Initialize the client with your API key
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Search with PDF cost optimization
+// parsePDF=false means flat 1 credit per PDF instead of 1 credit per page
+app.search("firecrawl documentation filetype:pdf", {
+  limit: 3,
+  scrapeOptions: {
+    formats: ["markdown"],
+    parsePDF: false  // Flat rate billing for PDFs
+  }
+})
+.then(searchResult => {
+  // Process results - PDFs will be charged 1 credit total instead of per page
+  searchResult.data.forEach(result => {
+    console.log(`Title: ${result.title}`);
+    console.log(`URL: ${result.url}`);
+    if (result.markdown) {
+      console.log(`Content: ${result.markdown.substring(0, 150)}...`);
+    }
+    console.log("---");
+  });
+});
+```

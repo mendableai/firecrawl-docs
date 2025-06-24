@@ -22,6 +22,12 @@ import SearchLocationCURL from "/snippets/v1/search/location/curl.mdx";
 import SearchTimePython from "/snippets/v1/search/time/python.mdx";
 import SearchTimeNode from "/snippets/v1/search/time/js.mdx";
 import SearchTimeCURL from "/snippets/v1/search/time/curl.mdx";
+import SearchOptimizationPython from "/snippets/v1/search/optimization/python.mdx";
+import SearchOptimizationNode from "/snippets/v1/search/optimization/js.mdx";
+import SearchOptimizationCURL from "/snippets/v1/search/optimization/curl.mdx";
+import SearchPDFPython from "/snippets/v1/search/pdf/python.mdx";
+import SearchPDFNode from "/snippets/v1/search/pdf/js.mdx";
+import SearchPDFCURL from "/snippets/v1/search/pdf/curl.mdx";
 
 Firecrawl's search API allows you to perform web searches and optionally scrape the search results in one operation.
 
@@ -286,3 +292,40 @@ Available formats:
 - `extract`: Structured data extraction
 
 For more details about format options, refer to the [Scrape Feature documentation](https://docs.firecrawl.dev/features/scrape).
+
+## Cost Optimization
+
+### Avoiding Content Scraping
+
+To perform searches without scraping content (which consumes fewer credits), simply provide an empty `formats` array or omit the `scrapeOptions` entirely. This returns only the basic search results (title, URL, description) without any scraped content:
+
+<CodeGroup>
+
+  <SearchOptimizationPython />
+
+  <SearchOptimizationNode />
+  
+  <SearchOptimizationCURL />
+
+</CodeGroup>
+
+**Cost Impact**: When `formats` is empty, you only pay for the search operation itself. No additional credits are consumed for content scraping.
+
+### PDF Pricing Optimization
+
+When search results include PDF files, you can control billing costs using the `parsePDF` parameter:
+
+- **Default (`parsePDF: true`)**: 1 credit per PDF page
+- **Optimized (`parsePDF: false`)**: 1 credit total per PDF document
+
+<CodeGroup>
+
+  <SearchPDFPython />
+
+  <SearchPDFNode />
+  
+  <SearchPDFCURL />
+
+</CodeGroup>
+
+**Cost Comparison**: A 50-page PDF would cost 50 credits with `parsePDF: true` (default) but only 1 credit with `parsePDF: false`. The trade-off is that with `parsePDF: false`, you get the PDF in base64 encoding instead of extracted text content.

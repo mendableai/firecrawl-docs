@@ -7,6 +7,21 @@ The search endpoint combines web search (SERP) with Firecrawl's scraping capabil
 
 Include `scrapeOptions` with `formats: ["markdown"]` to get complete markdown content for each search result otherwise you will default to getting the SERP results (url, title, description).
 
+## Pricing Model
+
+The search endpoint uses a flexible pricing structure based on your scraping options:
+
+- **Search-only**: When `scrapeOptions.formats` is empty or undefined, only basic SERP results are returned with no additional scraping costs
+- **Content scraping**: When formats are specified, each result URL is scraped and billed as 1 credit per URL
+- **PDF handling**: 
+  - `parsePDF: true` (default): 1 credit per PDF page
+  - `parsePDF: false`: 1 credit total per PDF document
+
+### Cost Optimization Tips
+
+1. **Avoid unnecessary scraping**: Use empty `formats` array to get only search results without content scraping
+2. **Optimize PDF costs**: Set `parsePDF: false` for flat-rate PDF billing instead of per-page charges
+
 ## Supported query operators
 We support a variety of query operators that allow you to filter your searches better.
 

@@ -1,0 +1,21 @@
+```python Python
+from firecrawl import FirecrawlApp
+
+# Initialize the client with your API key
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Search without scraping content (saves credits)
+# Empty formats array means only SERP results are returned
+search_result = app.search(
+    "firecrawl web scraping",
+    limit=5,
+    scrape_options={"formats": []}  # Empty formats = no scraping
+)
+
+# Process the basic search results
+for result in search_result.data:
+    print(f"Title: {result['title']}")
+    print(f"URL: {result['url']}")
+    print(f"Description: {result['description']}")
+    # No markdown, html, or other scraped content - just SERP data
+```
