@@ -1,0 +1,21 @@
+```js Node
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+// Initialize the client with your API key
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Search without scrapeOptions to include blocked sites
+// Omitting scrapeOptions entirely includes normally blocked sites
+app.search("firecrawl web scraping", {
+  limit: 5
+  // No scrapeOptions parameter = includes blocked sites
+})
+.then(searchResult => {
+  // Process the basic search results (including blocked sites)
+  searchResult.data.forEach(result => {
+    console.log(`Title: ${result.title}`);
+    console.log(`URL: ${result.url}`);
+    console.log(`Description: ${result.description}`);
+  });
+});
+```

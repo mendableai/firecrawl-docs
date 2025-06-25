@@ -28,6 +28,9 @@ import SearchOptimizationCURL from "/snippets/v1/search/optimization/curl.mdx";
 import SearchPDFPython from "/snippets/v1/search/pdf/python.mdx";
 import SearchPDFNode from "/snippets/v1/search/pdf/js.mdx";
 import SearchPDFCURL from "/snippets/v1/search/pdf/curl.mdx";
+import SearchBlockedSitesPython from "/snippets/v1/search/blocked-sites/python.mdx";
+import SearchBlockedSitesNode from "/snippets/v1/search/blocked-sites/js.mdx";
+import SearchBlockedSitesCURL from "/snippets/v1/search/blocked-sites/curl.mdx";
 
 Firecrawl's search API allows you to perform web searches and optionally scrape the search results in one operation.
 
@@ -295,9 +298,18 @@ For more details about format options, refer to the [Scrape Feature documentatio
 
 ## Cost Optimization
 
+### Base Search Costs
+
+The search endpoint charges **1 credit per search result**, controlled by the `limit` parameter. For example:
+- `limit: 5` = 5 credits for the search operation
+- `limit: 10` = 10 credits for the search operation
+
 ### Avoiding Content Scraping
 
-To perform searches without scraping content (which consumes fewer credits), simply provide an empty `formats` array or omit the `scrapeOptions` entirely. This returns only the basic search results (title, URL, description) without any scraped content:
+To perform searches without scraping content (which consumes additional credits), you have two options:
+
+1. **Empty formats array**: Provide `scrapeOptions: {formats: []}` to get only basic search results without scraping
+2. **Omit scrapeOptions entirely**: This returns basic search results AND includes sites that are normally blocked from scraping
 
 <CodeGroup>
 
@@ -309,14 +321,30 @@ To perform searches without scraping content (which consumes fewer credits), sim
 
 </CodeGroup>
 
-**Cost Impact**: When `formats` is empty, you only pay for the search operation itself. No additional credits are consumed for content scraping.
+**Cost Impact**: When avoiding content scraping, you only pay for the base search operation (1 credit per result). No additional credits are consumed for content scraping.
+
+### Including Blocked Sites
+
+To include sites that are normally blocked from scraping in your search results, omit the `scrapeOptions` parameter entirely:
+
+<CodeGroup>
+
+  <SearchBlockedSitesPython />
+
+  <SearchBlockedSitesNode />
+  
+  <SearchBlockedSitesCURL />
+
+</CodeGroup>
+
+**Note**: This approach returns only basic search results (title, URL, description) but includes sites that would normally be filtered out when `scrapeOptions` is present.
 
 ### PDF Pricing Optimization
 
-When search results include PDF files, you can control billing costs using the `parsePDF` parameter:
+When search results include PDF files AND you're scraping content (not search-only), you can control PDF billing costs using the `parsePDF` parameter:
 
-- **Default (`parsePDF: true`)**: 1 credit per PDF page
-- **Optimized (`parsePDF: false`)**: 1 credit total per PDF document
+- **Default (`parsePDF: true`)**: 1 credit per PDF page (in addition to base search cost and scraping cost)
+- **Optimized (`parsePDF: false`)**: 1 credit total per PDF document (in addition to base search cost and scraping cost)
 
 <CodeGroup>
 
@@ -328,4 +356,4 @@ When search results include PDF files, you can control billing costs using the `
 
 </CodeGroup>
 
-**Cost Comparison**: A 50-page PDF would cost 50 credits with `parsePDF: true` (default) but only 1 credit with `parsePDF: false`. The trade-off is that with `parsePDF: false`, you get the PDF in base64 encoding instead of extracted text content.
+**Cost Comparison**: A 50-page PDF would cost 50 additional credits with `parsePDF: true` (default) but only 1 additional credit with `parsePDF: false`. The trade-off is that with `parsePDF: false`, you get the PDF in base64 encoding instead of extracted text content.

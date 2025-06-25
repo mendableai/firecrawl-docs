@@ -9,18 +9,27 @@ Include `scrapeOptions` with `formats: ["markdown"]` to get complete markdown co
 
 ## Pricing Model
 
-The search endpoint uses a flexible pricing structure based on your scraping options:
+The search endpoint uses a flexible pricing structure:
 
+### Base Search Cost
+- **1 credit per search result** (controlled by the `limit` parameter)
+- Example: `limit: 5` = 5 credits for the search operation
+
+### Content Scraping Options
 - **Search-only**: When `scrapeOptions.formats` is empty or undefined, only basic SERP results are returned with no additional scraping costs
-- **Content scraping**: When formats are specified, each result URL is scraped and billed as 1 credit per URL
-- **PDF handling**: 
-  - `parsePDF: true` (default): 1 credit per PDF page
-  - `parsePDF: false`: 1 credit total per PDF document
+- **Content scraping**: When formats are specified, each result URL is scraped and billed as 1 additional credit per URL
+- **Blocked sites inclusion**: Omit `scrapeOptions` entirely to include sites that are normally blocked from scraping in search results
+
+### PDF Handling
+- **Default (`parsePDF: true`)**: 1 credit per PDF page when scraping PDF results
+- **Optimized (`parsePDF: false`)**: 1 credit total per PDF document when scraping PDF results
 
 ### Cost Optimization Tips
 
-1. **Avoid unnecessary scraping**: Use empty `formats` array to get only search results without content scraping
-2. **Optimize PDF costs**: Set `parsePDF: false` for flat-rate PDF billing instead of per-page charges
+1. **Control result count**: Use the `limit` parameter to control base search costs
+2. **Avoid unnecessary scraping**: Use empty `formats` array to get only search results without content scraping
+3. **Include blocked sites**: Omit `scrapeOptions` entirely to include normally blocked sites in search results
+4. **Optimize PDF costs**: Set `parsePDF: false` for flat-rate PDF billing instead of per-page charges
 
 ## Supported query operators
 We support a variety of query operators that allow you to filter your searches better.
