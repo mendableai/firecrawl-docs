@@ -790,6 +790,11 @@
                     "description": "Allows the crawler to follow links to external websites.",
                     "default": false
                   },
+                  "allowSubdomains": {
+                    "type": "boolean",
+                    "description": "Allows the crawler to follow links to subdomains of the main domain.",
+                    "default": false
+                  },
                   "delay": {
                     "type": "number",
                     "description": "Delay in seconds between scrapes. This helps respect website rate limits."
