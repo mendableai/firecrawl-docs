@@ -224,7 +224,7 @@ curl -X POST https://api.firecrawl.dev/v1/search \
 
 ## Scraping Options
 
-When scraping search results, you can specify multiple output formats:
+When scraping search results, you can specify multiple output formats and advanced scraping options:
 
 <CodeGroup>
 
@@ -285,4 +285,404 @@ Available formats:
 - `screenshot@fullPage`: Full-page screenshot
 - `extract`: Structured data extraction
 
-For more details about format options, refer to the [Scrape Feature documentation](https://docs.firecrawl.dev/features/scrape).
+## Advanced Scraping Options
+
+The search endpoint supports all the same scraping options as the `/scrape` endpoint. Here are the key options you can use:
+
+### Content Filtering
+
+Control what content gets extracted from search results:
+
+<CodeGroup>
+
+```python Python
+from firecrawl import FirecrawlApp, ScrapeOptions
+
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+search_result = app.search(
+    "python tutorials",
+    limit=5,
+    scrape_options=ScrapeOptions(
+        formats=["markdown"],
+        includeTags=["article", "main", "div.content"],
+        excludeTags=["nav", "footer", "aside"],
+        onlyMainContent=True
+    )
+)
+```
+
+```js JavaScript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+app.search("python tutorials", {
+  limit: 5,
+  scrapeOptions: {
+    formats: ["markdown"],
+    includeTags: ["article", "main", "div.content"],
+    excludeTags: ["nav", "footer", "aside"],
+    onlyMainContent: true
+  }
+});
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v1/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "python tutorials",
+    "limit": 5,
+    "scrapeOptions": {
+      "formats": ["markdown"],
+      "includeTags": ["article", "main", "div.content"],
+      "excludeTags": ["nav", "footer", "aside"],
+      "onlyMainContent": true
+    }
+  }'
+```
+
+</CodeGroup>
+
+### PDF Parsing
+
+**Important**: PDF parsing affects the cost of your search request. Each PDF page counts as 1 credit instead of 1 credit per URL.
+
+<CodeGroup>
+
+```python Python
+from firecrawl import FirecrawlApp, ScrapeOptions
+
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Enable PDF parsing (default: true)
+search_result = app.search(
+    "research papers filetype:pdf",
+    limit=3,
+    scrape_options=ScrapeOptions(
+        formats=["markdown"],
+        parsePDF=True
+    )
+)
+
+# Disable PDF parsing to avoid extra costs
+search_result = app.search(
+    "research papers",
+    limit=5,
+    scrape_options=ScrapeOptions(
+        formats=["markdown"],
+        parsePDF=False
+    )
+)
+```
+
+```js JavaScript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Enable PDF parsing (default: true)
+app.search("research papers filetype:pdf", {
+  limit: 3,
+  scrapeOptions: {
+    formats: ["markdown"],
+    parsePDF: true
+  }
+});
+
+// Disable PDF parsing to avoid extra costs
+app.search("research papers", {
+  limit: 5,
+  scrapeOptions: {
+    formats: ["markdown"],
+    parsePDF: false
+  }
+});
+```
+
+```bash cURL
+# Enable PDF parsing (default: true)
+curl -X POST https://api.firecrawl.dev/v1/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "research papers filetype:pdf",
+    "limit": 3,
+    "scrapeOptions": {
+      "formats": ["markdown"],
+      "parsePDF": true
+    }
+  }'
+
+# Disable PDF parsing to avoid extra costs
+curl -X POST https://api.firecrawl.dev/v1/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "research papers",
+    "limit": 5,
+    "scrapeOptions": {
+      "formats": ["markdown"],
+      "parsePDF": false
+    }
+  }'
+```
+
+</CodeGroup>
+
+### Stealth Mode and Proxy Options
+
+For websites with advanced anti-bot protection, use stealth mode. **Note**: Stealth mode costs +4 additional credits per search result (5 total credits per result).
+
+<CodeGroup>
+
+```python Python
+from firecrawl import FirecrawlApp, ScrapeOptions
+
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+search_result = app.search(
+    "protected content",
+    limit=3,
+    scrape_options=ScrapeOptions(
+        formats=["markdown"],
+        proxy="stealth"  # Options: "basic", "stealth", "auto"
+    )
+)
+```
+
+```js JavaScript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+app.search("protected content", {
+  limit: 3,
+  scrapeOptions: {
+    formats: ["markdown"],
+    proxy: "stealth"  // Options: "basic", "stealth", "auto"
+  }
+});
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v1/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "protected content",
+    "limit": 3,
+    "scrapeOptions": {
+      "formats": ["markdown"],
+      "proxy": "stealth"
+    }
+  }'
+```
+
+</CodeGroup>
+
+Available proxy options:
+- `basic`: Standard proxy (default)
+- `stealth`: Advanced anti-bot protection (5x cost)
+- `auto`: Automatically choose based on website
+
+### Dynamic Content and Timing
+
+Handle JavaScript-heavy sites and dynamic content:
+
+<CodeGroup>
+
+```python Python
+from firecrawl import FirecrawlApp, ScrapeOptions
+
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+search_result = app.search(
+    "dynamic web apps",
+    limit=3,
+    scrape_options=ScrapeOptions(
+        formats=["markdown"],
+        waitFor=3000,  # Wait 3 seconds for content to load
+        timeout=30000  # 30 second timeout per page
+    )
+)
+```
+
+```js JavaScript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+app.search("dynamic web apps", {
+  limit: 3,
+  scrapeOptions: {
+    formats: ["markdown"],
+    waitFor: 3000,  // Wait 3 seconds for content to load
+    timeout: 30000  // 30 second timeout per page
+  }
+});
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v1/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "dynamic web apps",
+    "limit": 3,
+    "scrapeOptions": {
+      "formats": ["markdown"],
+      "waitFor": 3000,
+      "timeout": 30000
+    }
+  }'
+```
+
+</CodeGroup>
+
+### Mobile Emulation and Location
+
+Scrape search results as they appear on mobile devices or from specific locations:
+
+<CodeGroup>
+
+```python Python
+from firecrawl import FirecrawlApp, ScrapeOptions
+
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+search_result = app.search(
+    "mobile responsive design",
+    limit=3,
+    scrape_options=ScrapeOptions(
+        formats=["markdown", "screenshot"],
+        mobile=True,
+        location={
+            "country": "JP",
+            "languages": ["ja", "en"]
+        }
+    )
+)
+```
+
+```js JavaScript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+app.search("mobile responsive design", {
+  limit: 3,
+  scrapeOptions: {
+    formats: ["markdown", "screenshot"],
+    mobile: true,
+    location: {
+      country: "JP",
+      languages: ["ja", "en"]
+    }
+  }
+});
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v1/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "mobile responsive design",
+    "limit": 3,
+    "scrapeOptions": {
+      "formats": ["markdown", "screenshot"],
+      "mobile": true,
+      "location": {
+        "country": "JP",
+        "languages": ["ja", "en"]
+      }
+    }
+  }'
+```
+
+</CodeGroup>
+
+### Custom Headers and Caching
+
+Add custom headers and control caching behavior:
+
+<CodeGroup>
+
+```python Python
+from firecrawl import FirecrawlApp, ScrapeOptions
+
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+search_result = app.search(
+    "api documentation",
+    limit=3,
+    scrape_options=ScrapeOptions(
+        formats=["markdown"],
+        headers={
+            "User-Agent": "MyBot/1.0",
+            "Accept-Language": "en-US,en;q=0.9"
+        },
+        maxAge=3600000,  # Cache for 1 hour (in milliseconds)
+        blockAds=True
+    )
+)
+```
+
+```js JavaScript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+app.search("api documentation", {
+  limit: 3,
+  scrapeOptions: {
+    formats: ["markdown"],
+    headers: {
+      "User-Agent": "MyBot/1.0",
+      "Accept-Language": "en-US,en;q=0.9"
+    },
+    maxAge: 3600000,  // Cache for 1 hour (in milliseconds)
+    blockAds: true
+  }
+});
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v1/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "api documentation",
+    "limit": 3,
+    "scrapeOptions": {
+      "formats": ["markdown"],
+      "headers": {
+        "User-Agent": "MyBot/1.0",
+        "Accept-Language": "en-US,en;q=0.9"
+      },
+      "maxAge": 3600000,
+      "blockAds": true
+    }
+  }'
+```
+
+</CodeGroup>
+
+## Cost Implications
+
+When using the search endpoint with scraping enabled, be aware of these cost factors:
+
+- **Standard scraping**: 1 credit per search result URL
+- **PDF parsing**: 1 credit per PDF page (can significantly increase costs for multi-page PDFs)
+- **Stealth proxy mode**: +4 additional credits per search result URL (5 total credits per result)
+- **Screenshots**: No additional cost beyond the base scraping cost
+
+To control costs:
+- Set `parsePDF: false` if you don't need PDF content
+- Use `proxy: "basic"` instead of `"stealth"` when possible
+- Limit the number of search results with the `limit` parameter
+
+For more details about all available scraping options, refer to the [Scrape Feature documentation](https://docs.firecrawl.dev/features/scrape).
