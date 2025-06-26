@@ -1209,6 +1209,11 @@
                             "format": "uri",
                             "description": "The origin URL of the crawl"
                           },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "The timestamp when the crawl was created"
+                          },
                           "options": {
                             "type": "object",
                             "description": "The crawler options used for this crawl",
@@ -1219,7 +1224,7 @@
                             }
                           }
                         },
-                        "required": ["id", "teamId", "url", "status", "options"]
+                        "required": ["id", "teamId", "url", "created_at", "options"]
                       }
                     }
                   },
