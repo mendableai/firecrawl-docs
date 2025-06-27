@@ -32,6 +32,40 @@ result = app.crawl('https://firecrawl.dev', {
 })
 ```
 
+### Using Tags with Crawl
+
+You can use tags to create separate change tracking histories for different crawl contexts:
+
+```typescript
+// JavaScript/TypeScript
+const result = await app.crawl('https://example.com', {
+  scrapeOptions: {
+    formats: ['markdown', 'changeTracking'],
+    changeTrackingOptions: {
+      tag: 'weekly-crawl' // Track changes separately from other crawls
+    }
+  }
+});
+```
+
+```python
+# Python
+result = app.crawl('https://example.com', {
+    'scrapeOptions': {
+        'formats': ['markdown', 'changeTracking'],
+        'changeTrackingOptions': {
+            'tag': 'weekly-crawl'  # Track changes separately from other crawls
+        }
+    }
+})
+```
+
+This is particularly useful for:
+- **Scheduled crawls**: Use different tags for daily, weekly, or monthly crawls
+- **Environment separation**: Use tags like `production`, `staging`, or `development`
+- **Version tracking**: Use tags to track changes across different website versions
+- **Team separation**: Different teams can use different tags to avoid interfering with each other's change tracking
+
 ```json
 {
   "success": true,
@@ -88,4 +122,32 @@ This is particularly useful for:
 ## Full Diff Support
 
 For detailed change tracking with diffs, you can use the same options as described in the [Change Tracking for Scrape](/features/change-tracking) documentation.
+
+### Example: Environment-Specific Crawling
+
+```typescript
+// Production crawl
+const prodCrawl = await app.crawl('https://example.com', {
+  scrapeOptions: {
+    formats: ['markdown', 'changeTracking'],
+    changeTrackingOptions: {
+      tag: 'production',
+      modes: ['git-diff']
+    }
+  }
+});
+
+// Staging crawl - maintains separate history
+const stagingCrawl = await app.crawl('https://example.com', {
+  scrapeOptions: {
+    formats: ['markdown', 'changeTracking'],
+    changeTrackingOptions: {
+      tag: 'staging',
+      modes: ['git-diff']
+    }
+  }
+});
+```
+
+This approach ensures that changes detected in your staging environment don't interfere with production change tracking, allowing you to monitor both environments independently.
 
