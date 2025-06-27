@@ -99,40 +99,6 @@ if (result.changeTracking.json) {
 }
 ```
 
-### Using Tags for Separate Change Tracking Histories
-
-The `tag` parameter allows you to create separate "branches" of change tracking history. This is useful for separating different environments or contexts:
-
-```javascript
-// Scrape with production tag
-const prodResult = await app.scrapeUrl('https://example.com', {
-  formats: ['markdown', 'changeTracking'],
-  changeTrackingOptions: {
-    tag: 'production'
-  }
-});
-
-// Scrape with staging tag - will not be compared against production scrapes
-const stagingResult = await app.scrapeUrl('https://example.com', {
-  formats: ['markdown', 'changeTracking'],
-  changeTrackingOptions: {
-    tag: 'staging'
-  }
-});
-
-// Both will have changeStatus: "new" initially since they use different tags
-console.log(prodResult.changeTracking.changeStatus); // "new"
-console.log(stagingResult.changeTracking.changeStatus); // "new"
-```
-
-**Key points about tags:**
-- Tags create completely separate change tracking histories
-- Scrapes with different tags will never be compared against each other
-- If no tag is specified, the default tag (`null`) is used
-- Tags are scoped to your team/API key
-- Useful for separating environments (production, staging, development)
-- Can be used to track different versions or configurations of the same content
-
 ### Git-Diff Results Example:
 
 ```
@@ -254,30 +220,6 @@ if 'json' in result.changeTracking:
     print(result.changeTracking.json.title.current)  # Current title
 ```
 
-#### Using Tags in Python
-
-```python
-# Scrape with production tag
-prod_result = app.scrape_url('https://example.com',
-    formats=['markdown', 'changeTracking'],
-    change_tracking_options=ChangeTrackingOptions(
-        tag='production'
-    )
-)
-
-# Scrape with staging tag - will not be compared against production scrapes
-staging_result = app.scrape_url('https://example.com',
-    formats=['markdown', 'changeTracking'],
-    change_tracking_options=ChangeTrackingOptions(
-        tag='staging'
-    )
-)
-
-# Both will have changeStatus: "new" initially since they use different tags
-print("Production status:", prod_result.changeTracking.changeStatus)  # "new"
-print("Staging status:", staging_result.changeTracking.changeStatus)  # "new"
-```
-
 ### Python Data Model
 
 The change tracking feature includes the following Python data model:
@@ -347,10 +289,9 @@ Here are some important details to know when using the change tracking feature:
 
 - **Matching Previous Scrapes**: Previous scrapes to compare against are currently matched on the source URL, the team ID, the `markdown` format, and the `tag` parameter.
   - For an effective comparison, the input URL should be exactly the same as the previous request for the same content.
-  - Scrapes with different `tag` values will never be compared against each other - they maintain separate change tracking histories.
   - Crawling the same URLs with different `includePaths`/`excludePaths` will have inconsistencies when using `changeTracking`.
   - Scraping the same URLs with different `includeTags`/`excludeTags`/`onlyMainContent` will have inconsistencies when using `changeTracking`.
-  - Compared pages will also be compared against previous scrapes that only have the `markdown` format without the `changeTracking` format (as long as they use the same tag).
+  - Compared pages will also be compared against previous scrapes that only have the `markdown` format without the `changeTracking` format.
   - Comparisons are scoped to your team. If you scrape a URL for the first time with your API key, its `changeStatus` will always be `new`, even if other Firecrawl users have scraped it before.
 
 - **Beta Status**: While in Beta, it is recommended to monitor the `warning` field of the resulting document, and to handle the `changeTracking` object potentially missing from the response.
@@ -408,8 +349,7 @@ const result = await app.scrapeUrl('https://example.com/product', {
         price: { type: 'string' },
         availability: { type: 'string' }
       }
-    },
-    tag: 'product-monitoring' // Track product changes separately
+    }
   }
 });
 
@@ -430,8 +370,7 @@ result = app.scrape_url('https://example.com/product',
                 'price': {'type': 'string'},
                 'availability': {'type': 'string'}
             }
-        },
-        'tag': 'product-monitoring'  # Track product changes separately
+        }
     }
 )
 
