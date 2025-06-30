@@ -224,7 +224,7 @@ curl -X POST https://api.firecrawl.dev/v1/search \
 
 ## Scraping Options
 
-When scraping search results, you can specify multiple output formats:
+When scraping search results, you can specify multiple output formats and advanced scraping options:
 
 <CodeGroup>
 
@@ -285,4 +285,19 @@ Available formats:
 - `screenshot@fullPage`: Full-page screenshot
 - `extract`: Structured data extraction
 
-For more details about format options, refer to the [Scrape Feature documentation](https://docs.firecrawl.dev/features/scrape).
+## Cost Implications
+
+When using the search endpoint with scraping enabled, be aware of these cost factors:
+
+- **Standard scraping**: 1 credit per search result
+- **PDF parsing**: 1 credit per PDF page (can significantly increase costs for multi-page PDFs)
+- **Stealth proxy mode**: +4 additional credits per search result
+
+To control costs:
+- Set `parsePDF: false` if you don't need PDF content
+- Use `proxy: "basic"` instead of `"stealth"` when possible
+- Limit the number of search results with the `limit` parameter
+
+## Advanced Scraping Options
+
+For more details about the scraping options, refer to the [Scrape Feature documentation](https://docs.firecrawl.dev/features/scrape). Everything except for the FIRE-1 Agent and Change-Tracking features are supported by this Search endpoint.
