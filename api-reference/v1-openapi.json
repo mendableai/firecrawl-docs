@@ -876,16 +876,16 @@
                             "started"
                           ]
                         }
-                      },
-                      "zeroDataRetention": {
-                        "type": "boolean",
-                        "default": false,
-                        "description": "If true, this will enable zero data retention for this crawl. To enable this feature, please contact help@firecrawl.dev"
                       }
                     },
                     "required": [
                       "url"
                     ]
+                  },
+                  "zeroDataRetention": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If true, this will enable zero data retention for this crawl. To enable this feature, please contact help@firecrawl.dev"
                   },
                   "scrapeOptions": {
                     "$ref": "#/components/schemas/ScrapeOptions"
