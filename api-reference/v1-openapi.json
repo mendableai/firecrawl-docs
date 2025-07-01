@@ -41,6 +41,11 @@
                         "type": "string",
                         "format": "uri",
                         "description": "The URL to scrape"
+                      },
+                      "zeroDataRetention": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "If true, this will enable zero data retention for this scrape. To enable this feature, please contact help@firecrawl.dev"
                       }
                     },
                     "required": [
@@ -192,6 +197,11 @@
                         "type": "boolean",
                         "default": false,
                         "description": "If invalid URLs are specified in the urls array, they will be ignored. Instead of them failing the entire request, a batch scrape using the remaining valid URLs will be created, and the invalid URLs will be returned in the invalidURLs field of the response."
+                      },
+                      "zeroDataRetention": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "If true, this will enable zero data retention for this batch scrape. To enable this feature, please contact help@firecrawl.dev"
                       }
                     },
                     "required": [
@@ -866,6 +876,11 @@
                             "started"
                           ]
                         }
+                      },
+                      "zeroDataRetention": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "If true, this will enable zero data retention for this crawl. To enable this feature, please contact help@firecrawl.dev"
                       }
                     },
                     "required": [
