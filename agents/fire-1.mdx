@@ -71,9 +71,16 @@ Similarly, you can leverage the FIRE-1 agent with the `/v1/extract` endpoint for
 
 ## Billing
 
-During this experimental phase:
-* `/scrape`: 150 credits 
-* `/extract`: See our [token calculator](https://www.firecrawl.dev/pricing?extract-pricing=true#token-calculator). Around 8x the cost of non-agent extract.
+
+| Endpoint   | Base Cost                | Agent Cost (Preview)         | Notes                                      |
+|------------|--------------------------|------------------------------|--------------------------------------------|
+| `/scrape`  | 150 credits per page     | 0–900 agent credits per page | Varies by task complexity.                 |
+| `/extract` | See token calculator     | ~8x non-agent extract        | Uses token-based pricing.                  |
+
+- **Why is FIRE-1 more expensive?**  
+  FIRE-1 leverages advanced browser automation and AI planning to interact with complex web pages, which requires more compute resources than standard extraction.
+
+> **Note:** FIRE-1 is currently in preview. Pricing and limits may change. For the latest details on `/extract` costs, see our [token calculator](https://www.firecrawl.dev/pricing?extract-pricing=true#token-calculator).
 
 ## Rate limits
 
