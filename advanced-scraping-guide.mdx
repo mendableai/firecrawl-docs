@@ -417,7 +417,7 @@ When using the `/crawl` endpoint, you can customize the crawling behavior with r
 #### `maxDepth`
 
 - **Type**: `integer`
-- **Description**: Maximum absolute depth to crawl from the entered URL. A maxDepth of 0 scrapes only the entered URL. A maxDepth of 1 scrapes the entered URL and all pages one level deep. A maxDepth of 2 scrapes the entered URL and all pages up to two levels deep. Higher values follow the same pattern.
+- **Description**: Maximum absolute depth to crawl from the base of the entered URL. For example, if the entered URL's path is `/features/feature-1`, then no results would be returned unless `maxDepth` is at least 2.
 - **Example**: `2`
 
 #### `limit`
