@@ -3,7 +3,7 @@
   "info": {
     "title": "Firecrawl API",
     "version": "v1.0",
-    "description": "API for interacting with Firecrawl services to perform web scraping and crawling tasks.",
+    "description": "API for interacting with Firecrawl services to perform web scraping and crawling tasks. Updated to fix zeroDataRetention positioning.",
     "contact": {
       "name": "Firecrawl Support",
       "url": "https://firecrawl.dev/support",
