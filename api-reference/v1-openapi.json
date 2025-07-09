@@ -2348,7 +2348,7 @@
                     },
                     "fullPage": {
                       "type": "boolean",
-                      "description": "Should the screenshot be full-page or viewport sized?",
+                      "description": "Whether to capture a full-page screenshot or limit to the current viewport.",
                       "default": false
                     },
                     "quality": {
