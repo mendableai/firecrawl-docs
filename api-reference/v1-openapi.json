@@ -803,7 +803,7 @@
                   },
                   "maxDepth": {
                     "type": "integer",
-                    "description": "Maximum depth to crawl relative to the base URL. Basically, the max number of slashes the pathname of a scraped URL may contain.",
+                    "description": "Maximum absolute depth to crawl from the base of the entered URL. Basically, the max number of slashes the pathname of a scraped URL may contain.",
                     "default": 10
                   },
                   "maxDiscoveryDepth": {
