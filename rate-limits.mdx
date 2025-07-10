@@ -5,20 +5,13 @@ og:title: "Rate Limits | Firecrawl"
 og:description: "Rate limits for different pricing plans and API requests"
 ---
 
-## Standard Plans
-
-| Plan       | /scrape (requests/min) | /map (requests/min) | /crawl (requests/min) | /search (requests/min) |
-|------------|------------------------|--------------------|-----------------------|------------------------|
-| Free       | 10                     | 10                 | 1                     | 5                      |
-| Hobby      | 100                    | 100                | 15                    | 50                     |
-| Standard        | 500                    | 500                | 50                    | 250                    |
-| Growth | 5000                   | 5000               | 250                   | 2500                   |
-
-## Concurrent Requests
+## Concurrent Browser Limits
 
 Concurrent browsers represent how many web pages Firecrawl can process for you at the same time.
 Your plan determines how many of these jobs can run simultaneously - if you exceed this limit,
 additional jobs will wait in a queue until resources become available.
+
+This is typically the primary bottleneck for most users and determines your actual throughput.
 
 | Plan       | Concurrent Browsers |
 |------------|-----------------------------|
@@ -26,6 +19,28 @@ additional jobs will wait in a queue until resources become available.
 | Hobby      | 5                           |
 | Standard   | 50                          |
 | Growth     | 100                         |
+
+## FIRE-1 Agent Rate Limits
+
+FIRE-1 agent requests have separate rate limits that are counted independently for each endpoint:
+
+| Endpoint   | Rate Limit (requests/min) |
+|------------|---------------------------|
+| `/scrape`  | 10                        |
+| `/extract` | 10                        |
+
+Note: Scrape FIRE-1 and Extract FIRE-1 are separate rate limits, meaning they are counted separately for each endpoint.
+
+## Standard API Rate Limits
+
+The following rate limits apply to standard API requests and are primarily in place to prevent abuse:
+
+| Plan       | /scrape (requests/min) | /map (requests/min) | /crawl (requests/min) | /search (requests/min) |
+|------------|------------------------|--------------------|-----------------------|------------------------|
+| Free       | 10                     | 10                 | 1                     | 5                      |
+| Hobby      | 100                    | 100                | 15                    | 50                     |
+| Standard        | 500                    | 500                | 50                    | 250                    |
+| Growth | 5000                   | 5000               | 250                   | 2500                   |
 
 
 
