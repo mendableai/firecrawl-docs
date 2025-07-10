@@ -362,6 +362,38 @@ When using the `/scrape` endpoint, Firecrawl allows you to perform various actio
   }
   ```
 
+#### scrape
+
+- **Type**: `object`
+- **Description**: Scrape the current page content, returns the url and the html.
+- **Properties**:
+  - `type`: `"scrape"`
+- **Example**:
+  ```json
+  {
+    "type": "scrape"
+  }
+  ```
+
+#### pdf
+
+- **Type**: `object`
+- **Description**: Generate a PDF of the current page. The PDF will be returned in the `actions.pdfs` array of the response.
+- **Properties**:
+  - `type`: `"pdf"`
+  - `format`: The page size of the resulting PDF (default: `"Letter"`)
+  - `landscape`: Whether to generate the PDF in landscape orientation (default: `false`)
+  - `scale`: The scale multiplier of the resulting PDF (default: `1`)
+- **Example**:
+  ```json
+  {
+    "type": "pdf",
+    "format": "A4",
+    "landscape": true,
+    "scale": 0.8
+  }
+  ```
+
 For more details about the actions parameters, refer to the [API Reference](https://docs.firecrawl.dev/api-reference/endpoint/scrape).
 
 
