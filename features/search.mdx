@@ -172,8 +172,6 @@ Common `tbs` values:
 - `qdr:m` - Past month
 - `qdr:y` - Past year
 
-### Custom Date Range Search
-
 For more precise time filtering, you can specify exact date ranges using the custom date range format:
 
 <CodeGroup>
@@ -220,33 +218,6 @@ curl -X POST https://api.firecrawl.dev/v1/search \
 ```
 
 </CodeGroup>
-
-#### Custom Date Range Format
-
-The custom date range format follows this pattern:
-```
-cdr:1,cd_min:MM/DD/YYYY,cd_max:MM/DD/YYYY
-```
-
-- `cdr:1` - Enables custom date range mode
-- `cd_min:MM/DD/YYYY` - Start date (month/day/year)
-- `cd_max:MM/DD/YYYY` - End date (month/day/year)
-
-#### Complete `tbs` Parameter Reference
-
-| Value | Description | Time Range |
-|-------|-------------|------------|
-| `qdr:h` | Past hour | Last 60 minutes |
-| `qdr:d` | Past 24 hours | Last day |
-| `qdr:w` | Past week | Last 7 days |
-| `qdr:m` | Past month | Last 30 days |
-| `qdr:y` | Past year | Last 365 days |
-| `cdr:1,cd_min:MM/DD/YYYY,cd_max:MM/DD/YYYY` | Custom date range | Specific date range |
-
-**Examples:**
-- Recent results: `tbs="qdr:w"`
-- Specific month: `tbs="cdr:1,cd_min:1/1/2024,cd_max:1/31/2024"`
-- Quarter results: `tbs="cdr:1,cd_min:10/1/2024,cd_max:12/31/2024"`
 
 ### Custom Timeout
 
