@@ -365,7 +365,7 @@ When using the `/scrape` endpoint, Firecrawl allows you to perform various actio
 #### scrape
 
 - **Type**: `object`
-- **Description**: Scrape the current page content, returns the url and the html.
+- **Description**: Scrape the current page content, returns the url and the html. The scraped content will be returned in the `actions.scrapes` array of the response.
 - **Properties**:
   - `type`: `"scrape"`
 - **Example**:
@@ -397,7 +397,7 @@ When using the `/scrape` endpoint, Firecrawl allows you to perform various actio
 #### executeJavascript
 
 - **Type**: `object`
-- **Description**: Execute JavaScript code on the page.
+- **Description**: Execute JavaScript code on the page. The return values will be returned in the `actions.javascriptReturns` array of the response.
 - **Properties**:
   - `type`: `"executeJavascript"`
   - `script`: JavaScript code to execute.
