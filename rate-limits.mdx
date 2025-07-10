@@ -11,8 +11,6 @@ Concurrent browsers represent how many web pages Firecrawl can process for you a
 Your plan determines how many of these jobs can run simultaneously - if you exceed this limit,
 additional jobs will wait in a queue until resources become available.
 
-This is typically the primary bottleneck for most users and determines your actual throughput.
-
 | Plan       | Concurrent Browsers |
 |------------|-----------------------------|
 | Free       | 2                           |
@@ -20,18 +18,7 @@ This is typically the primary bottleneck for most users and determines your actu
 | Standard   | 50                          |
 | Growth     | 100                         |
 
-## FIRE-1 Agent Rate Limits
-
-FIRE-1 agent requests have separate rate limits that are counted independently for each endpoint:
-
-| Endpoint   | Rate Limit (requests/min) |
-|------------|---------------------------|
-| `/scrape`  | 10                        |
-| `/extract` | 10                        |
-
-Note: Scrape FIRE-1 and Extract FIRE-1 are separate rate limits, meaning they are counted separately for each endpoint.
-
-## Standard API Rate Limits
+## Standard API
 
 The following rate limits apply to standard API requests and are primarily in place to prevent abuse:
 
@@ -54,7 +41,7 @@ These rate limits are enforced to ensure fair usage and availability of the API 
 
 Batch endpoints follow the /crawl rate limit.
 
-## Extract
+## Extract API
 
 | Plan      | /extract (requests/min) |
 |-----------|------------------------|
@@ -67,6 +54,15 @@ Batch endpoints follow the /crawl rate limit.
 |        | /extract/status (requests/min) |
 |--------|--------------------------------|
 | Free | 500                       |
+
+## FIRE-1 Agent
+
+Requests involving the FIRE-1 agent requests have separate rate limits that are counted independently for each endpoint:
+
+| Endpoint   | Rate Limit (requests/min) |
+|------------|---------------------------|
+| `/scrape`  | 10                        |
+| `/extract` | 10                        |
 
 ## Legacy Plans
 
