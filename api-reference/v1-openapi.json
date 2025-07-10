@@ -1858,7 +1858,13 @@
                   },
                   "tbs": {
                     "type": "string",
-                    "description": "Time-based search parameter"
+                    "description": "Time-based search parameter. Supports predefined time ranges (qdr:h, qdr:d, qdr:w, qdr:m, qdr:y) and custom date ranges (cdr:1,cd_min:MM/DD/YYYY,cd_max:MM/DD/YYYY)",
+                    "examples": [
+                      "qdr:d",
+                      "qdr:w", 
+                      "qdr:m",
+                      "cdr:1,cd_min:12/1/2024,cd_max:12/31/2024"
+                    ]
                   },
                   "location": {
                     "type": "string",
