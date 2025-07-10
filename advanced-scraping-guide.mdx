@@ -394,6 +394,21 @@ When using the `/scrape` endpoint, Firecrawl allows you to perform various actio
   }
   ```
 
+#### executeJavascript
+
+- **Type**: `object`
+- **Description**: Execute JavaScript code on the page.
+- **Properties**:
+  - `type`: `"executeJavascript"`
+  - `script`: JavaScript code to execute.
+- **Example**:
+  ```json
+  {
+    "type": "executeJavascript",
+    "script": "document.querySelector('.button').click();"
+  }
+  ```
+
 For more details about the actions parameters, refer to the [API Reference](https://docs.firecrawl.dev/api-reference/endpoint/scrape).
 
 
