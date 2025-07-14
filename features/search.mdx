@@ -172,6 +172,53 @@ Common `tbs` values:
 - `qdr:m` - Past month
 - `qdr:y` - Past year
 
+For more precise time filtering, you can specify exact date ranges using the custom date range format:
+
+<CodeGroup>
+
+```python Python
+from firecrawl import FirecrawlApp
+
+# Initialize the client with your API key
+app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
+
+# Search for results from December 2024
+search_result = app.search(
+    "firecrawl updates",
+    limit=10,
+    tbs="cdr:1,cd_min:12/1/2024,cd_max:12/31/2024"
+)
+```
+
+```js JavaScript
+import FirecrawlApp from '@mendable/firecrawl-js';
+
+// Initialize the client with your API key
+const app = new FirecrawlApp({apiKey: "fc-YOUR_API_KEY"});
+
+// Search for results from December 2024
+app.search("firecrawl updates", {
+  limit: 10,
+  tbs: "cdr:1,cd_min:12/1/2024,cd_max:12/31/2024"
+})
+.then(searchResult => {
+  console.log(searchResult.data);
+});
+```
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v1/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "firecrawl updates",
+    "limit": 10,
+    "tbs": "cdr:1,cd_min:12/1/2024,cd_max:12/31/2024"
+  }'
+```
+
+</CodeGroup>
+
 ### Custom Timeout
 
 Set a custom timeout for search operations:
