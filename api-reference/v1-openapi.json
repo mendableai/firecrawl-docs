@@ -996,7 +996,7 @@
                   },
                   "search": {
                     "type": "string",
-                    "description": "Search query to use for mapping. During the Alpha phase, the 'smart' part of the search functionality is limited to 1000 search results. However, if map finds more results, there is no limit applied."
+                    "description": "Search query to use for mapping. During the Alpha phase, the 'smart' part of the search functionality is limited to 500 search results. However, if map finds more results, there is no limit applied."
                   },
                   "ignoreSitemap": {
                     "type": "boolean",
