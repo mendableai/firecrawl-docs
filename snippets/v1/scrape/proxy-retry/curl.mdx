@@ -1,29 +1,10 @@
 ```bash cURL
-# First try with default proxy
-RESPONSE=$(curl -s -X POST https://api.firecrawl.dev/v1/scrape \
+# Use auto proxy for automatic retry with stealth on failure
+curl -X POST https://api.firecrawl.dev/v1/scrape \
     -H 'Content-Type: application/json' \
     -H 'Authorization: Bearer YOUR_API_KEY' \
     -d '{
-      "url": "https://example.com"
-    }')
-
-# Extract status code from response
-STATUS_CODE=$(echo $RESPONSE | jq -r '.data.metadata.statusCode')
-
-# Check if status code indicates we should retry with stealth
-if [[ "$STATUS_CODE" == "401" || "$STATUS_CODE" == "403" || "$STATUS_CODE" == "500" ]]; then
-    echo "Got status code $STATUS_CODE, retrying with stealth proxy"
-    
-    # Retry with stealth proxy
-    curl -X POST https://api.firecrawl.dev/v1/scrape \
-        -H 'Content-Type: application/json' \
-        -H 'Authorization: Bearer YOUR_API_KEY' \
-        -d '{
-          "url": "https://example.com",
-          "proxy": "stealth"
-        }'
-else
-    # Output the original response
-    echo $RESPONSE
-fi
+      "url": "https://example.com",
+      "proxy": "auto"
+    }'
 ```
