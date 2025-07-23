@@ -8,9 +8,9 @@ og:description: "Use stealth proxies for sites with advanced anti-bot solutions"
 import ProxyPython from "/snippets/v1/scrape/proxy/python.mdx";
 import ProxyNode from "/snippets/v1/scrape/proxy/js.mdx";
 import ProxyCURL from "/snippets/v1/scrape/proxy/curl.mdx";
-import ProxyRetryPython from "/snippets/v1/scrape/proxy-retry/python.mdx";
-import ProxyRetryNode from "/snippets/v1/scrape/proxy-retry/js.mdx";
-import ProxyRetryCURL from "/snippets/v1/scrape/proxy-retry/curl.mdx";
+import ProxyAutoPython from "/snippets/v1/scrape/proxy-retry/python.mdx";
+import ProxyAutoNode from "/snippets/v1/scrape/proxy-retry/js.mdx";
+import ProxyAutoCURL from "/snippets/v1/scrape/proxy-retry/curl.mdx";
 
 Firecrawl provides different proxy types to help you scrape websites with varying levels of anti-bot protection. The proxy type can be specified using the `proxy` parameter.
 
@@ -40,18 +40,18 @@ When scraping websites with advanced anti-bot protection, you can use the stealt
 
 **Note:** Starting May 8th, stealth proxy requests cost 5 credits per request.
 
-## Using Stealth as a Retry Mechanism
+## Automatic Retry with Auto Proxy (Recommended)
 
-A common pattern is to first try scraping with the default proxy settings, and then retry with stealth mode if you encounter specific error status codes (401, 403, or 500) in the `metadata.statusCode` field of the response. These status codes can be indicative of the website blocking your request.
+The recommended approach for handling sites that may block requests is to use `proxy: "auto"`. This automatically retries with stealth proxies if the basic proxy fails on status codes 401, 403, or 500, without requiring any additional retry logic in your code.
 
 <CodeGroup>
 
-<ProxyRetryPython />
+<ProxyAutoPython />
 
-<ProxyRetryNode />
+<ProxyAutoNode />
 
-<ProxyRetryCURL />
+<ProxyAutoCURL />
 
 </CodeGroup>
 
-This approach allows you to optimize your credit usage by only using stealth mode when necessary.
+This approach optimizes your credit usage by only using stealth mode when necessary, while eliminating the need for manual retry logic. If the first attempt with basic proxy succeeds, you'll only be charged the regular cost. If it fails and the stealth retry succeeds, you'll be charged 5 credits total.
