@@ -3144,6 +3144,11 @@
             ],
             "description": "The current status of the extract job"
           },
+          "tokensUsed": {
+            "type": "integer",
+            "nullable": true,
+            "description": "The number of tokens used for the extract job"
+          },
           "expiresAt": {
             "type": "string",
             "format": "date-time"
