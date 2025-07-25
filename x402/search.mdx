@@ -1,0 +1,90 @@
+---
+title: 'On-Demand Search'
+openapi: 'v1-openapi POST /x402/search'
+---
+
+<Info>
+**Pay-Per-Use Search Endpoint**
+
+This endpoint allows you to use Firecrawl's powerful search capabilities without a subscription by paying per search using cryptocurrency. Perfect for one-off searches or testing before committing to a subscription.
+</Info>
+
+## Authentication
+
+This endpoint requires a special payment header instead of the standard API key:
+
+```
+X-Payment: {{paymentHeader}}
+```
+
+## How it Works
+
+The On-Demand Search endpoint combines web search (SERP) with Firecrawl's scraping capabilities to return full page content for any query, just like the regular `/search` endpoint, but with pay-per-use pricing.
+
+Include `scrapeOptions` with `formats: ["markdown"]` to get complete markdown content for each search result otherwise you will default to getting the SERP results (url, title, description).
+
+### Request Parameters
+
+All parameters from the standard `/search` endpoint are supported with the following exception:
+
+<Warning>
+**Important Limitation**: The `limit` parameter is capped at **10 results maximum** for the wallet endpoint (compared to 100 for the standard endpoint).
+</Warning>
+
+For the complete list of available parameters, supported query operators, and their descriptions, please refer to the [standard Search endpoint documentation](/api-reference/endpoint/search).
+
+## Example Request
+
+```bash
+curl -X POST https://api.firecrawl.dev/x402/search \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <token>' \
+  -H 'X-Payment: {{paymentHeader}}' \
+  -d '{
+    "query": "Premier league fixtures for the 2025/26 season",
+    "limit": 10,  # Maximum 10 results allowed
+    "scrapeOptions": {
+      "formats": ["markdown"],
+      "onlyMainContent": true
+    }
+  }'
+```
+
+## Response
+
+The response format is identical to the standard `/search` endpoint:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "title": "Page Title",
+      "description": "Page description from search result",
+      "url": "https://example.com",
+      "markdown": "# Page Content\n\nMarkdown content if scraping was requested...",
+      "metadata": {
+        "title": "Page Title",
+        "description": "Meta description",
+        "sourceURL": "https://example.com",
+        "statusCode": 200
+      }
+    }
+  ]
+}
+```
+
+## Pricing
+
+**Current price: $0.01 per request**
+
+<Warning>
+**Pricing Notice**: The current pricing of $0.01 per request is subject to change at any time without prior notice. Please check the latest pricing when generating your payment header.
+</Warning>
+
+Each search request is charged on a pay-per-use basis using cryptocurrency through the payment header system.
+
+## See Also
+
+- [Search Feature Documentation](/features/search) - Detailed search functionality guide
+- [Standard Search Endpoint](/api-reference/endpoint/search) - Subscription-based search endpoint 
