@@ -9,6 +9,12 @@ openapi: 'v1-openapi POST /x402/search'
 This endpoint allows you to use Firecrawl's powerful search capabilities without a subscription by paying per search using cryptocurrency. Perfect for one-off searches or testing before committing to a subscription.
 </Info>
 
+<Warning>
+**Experimental Feature**
+
+This is an experimental endpoint. Features, pricing, and availability may change without notice. We recommend using the standard subscription-based search endpoint for production use cases.
+</Warning>
+
 ## Authentication
 
 This endpoint requires a special payment header instead of the standard API key:
@@ -27,9 +33,9 @@ Include `scrapeOptions` with `formats: ["markdown"]` to get complete markdown co
 
 All parameters from the standard `/search` endpoint are supported with the following exception:
 
-<Warning>
+<Note>
 **Important Limitation**: The `limit` parameter is capped at **10 results maximum** for the wallet endpoint (compared to 100 for the standard endpoint).
-</Warning>
+</Note>
 
 For the complete list of available parameters, supported query operators, and their descriptions, please refer to the [standard Search endpoint documentation](/api-reference/endpoint/search).
 
