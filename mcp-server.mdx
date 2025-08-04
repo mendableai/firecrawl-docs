@@ -197,6 +197,18 @@ Add this to the Claude config file:
 }
 ```
 
+### Running on Claude Code
+
+Add the Firecrawl MCP server using the Claude Code CLI:
+
+```bash
+claude mcp add firecrawl -e FIRECRAWL_API_KEY=your-api-key -- npx -y firecrawl-mcp
+```
+
+Replace `your-api-key` with your Firecrawl API key. If you don't have one yet, you can create an account and get it from https://www.firecrawl.dev/app/api-keys
+
+After adding the server, you can use Firecrawl's web scraping capabilities directly within Claude Code by asking Claude to scrape websites, crawl content, or perform web searches.
+
 ## Configuration
 
 ### Environment Variables
