@@ -2569,7 +2569,8 @@
           },
           "removeBase64Images": {
             "type": "boolean",
-            "description": "Removes all base 64 images from the output, which may be overwhelmingly long. The image's alt text remains in the output, but the URL is replaced with a placeholder."
+            "description": "Removes all base 64 images from the output, which may be overwhelmingly long. The image's alt text remains in the output, but the URL is replaced with a placeholder.",
+            "default": true
           },
           "blockAds": {
             "type": "boolean",
