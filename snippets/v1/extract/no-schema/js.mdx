@@ -5,6 +5,7 @@ const app = new FirecrawlApp({
 apiKey: "fc-YOUR_API_KEY"
 });
 
+// SDK automatically polls for completion and returns final results
 const scrapeResult = await app.extract([
 'https://docs.firecrawl.dev/',
 'https://firecrawl.dev/'

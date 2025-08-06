@@ -4,6 +4,7 @@ from firecrawl import FirecrawlApp
 app = FirecrawlApp(api_key="fc-YOUR_API_KEY")
 
 # Extract data from a website:
+# SDK automatically polls for completion and returns final results
 extract_result = app.extract(['firecrawl.dev'],
   prompt="Extract all user comments from this forum thread.",
   schema={

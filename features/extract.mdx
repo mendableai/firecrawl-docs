@@ -34,6 +34,14 @@ The `/extract` endpoint simplifies collecting structured data from any number of
 
 <Info>Extract is billed differently than other endpoints. See the [Extract pricing](https://www.firecrawl.dev/extract#pricing) for details.</Info>
 
+## Understanding the Async Workflow
+
+**Important:** The `/extract` endpoint is asynchronous. When you submit an extraction request, you receive a job ID immediately, then need to poll for results. There are two ways to handle this:
+
+1. **SDK Auto-polling (Recommended)**: Use `app.extract()` - the SDK automatically polls for completion and returns final results
+2. **Manual Async Control**: Use `app.async_extract()` + `app.get_extract_status()` for custom polling logic
+3. **Direct API**: POST to start extraction → GET with job ID to retrieve results
+
 ## Using `/extract`
 
 You can extract structured data from one or multiple URLs, including wildcards:
@@ -45,12 +53,23 @@ You can extract structured data from one or multiple URLs, including wildcards:
 
 When you use `/*`, Firecrawl will automatically crawl and parse all URLs it can discover in that domain, then extract the requested data. This feature is experimental; email [help@firecrawl.com](mailto:help@firecrawl.com) if you have issues.
 
-### Example Usage
+### SDK Auto-polling Examples (Recommended)
+
+The SDK methods below automatically handle the async polling for you and return the final results:
 
 <CodeGroup>
 
 <ExtractPython />
 <ExtractNode />
+
+</CodeGroup>
+
+### Direct API Usage (Two-Step Process)
+
+When using the API directly, you must first start the extraction, then poll for results:
+
+<CodeGroup>
+
 <ExtractCURL />
 
 </CodeGroup>
@@ -64,24 +83,21 @@ When you use `/*`, Firecrawl will automatically crawl and parse all URLs it can 
 
 See [API Reference](https://docs.firecrawl.dev/api-reference/endpoint/extract) for more details.
 
-### Response (sdks)
+### Initial Response (Job ID)
+
+When you start an extraction, you receive a job ID:
+
+<ExtractStatusAsync />
+
+### Final Response (After Completion)
+
+Once the extraction completes, you get the structured data:
 
 <ExtractOutput />
 
-## Asynchronous Extraction & Status Checking
+## Manual Async Control
 
-When you submit an extraction job—either directly via the API or through the SDK's asynchronous methods—you'll receive a Job ID. You can use this ID to:
-
-- Check Job Status: Send a request to the /extract/{ID} endpoint to see if the job is still running or has finished.
-- Automatically Poll (Default SDK Behavior): If you use the default extract method (Python/Node), the SDK automatically polls this endpoint for you and returns the final results once the job completes.
-- Manually Poll (Async SDK Methods): If you use the asynchronous methods—async_extract (Python) or asyncExtract (Node)—the SDK immediately returns a Job ID that you can track. Use get_extract_status (Python) or getExtractStatus (Node) to check the job's progress on your own schedule.
-
-<Note>
-  This endpoint only works for jobs in progress or recently completed (within 24
-  hours).
-</Note>
-
-Below are code examples for checking an extraction job's status using Python, Node.js, and cURL:
+For custom polling logic or integration with job queues, use the async methods to get immediate job IDs:
 
 <CodeGroup>
 
@@ -90,6 +106,10 @@ Below are code examples for checking an extraction job's status using Python, No
 <CheckExtractJobCURL />
 
 </CodeGroup>
+
+<Note>
+  Job status endpoints only work for jobs in progress or recently completed (within 24 hours).
+</Note>
 
 ### Possible States
 

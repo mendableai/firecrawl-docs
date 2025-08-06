@@ -1,4 +1,5 @@
 ```bash cURL
+# Step 1: Start the extraction (returns job ID)
 curl -X POST https://api.firecrawl.dev/v1/extract \
     -H 'Content-Type: application/json' \
     -H 'Authorization: Bearer YOUR_API_KEY' \
@@ -33,4 +34,9 @@ curl -X POST https://api.firecrawl.dev/v1/extract \
         ]
       }
     }'
+
+# Step 2: Get the results using the job ID from step 1
+curl -X GET https://api.firecrawl.dev/v1/extract/<JOB_ID> \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY'
 ```

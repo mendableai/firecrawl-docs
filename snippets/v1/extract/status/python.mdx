@@ -5,23 +5,27 @@ app = FirecrawlApp(
     api_key="fc-YOUR_API_KEY"
 )
 
-# Start an extraction job first
+# Step 1: Start an extraction job (returns immediately with job ID)
 extract_job = app.async_extract([
     'https://docs.firecrawl.dev/*', 
     'https://firecrawl.dev/'
 ], prompt="Extract the company mission and features from these pages.")
 
-# Get the status of the extraction job
-job_status = app.get_extract_status(extract_job.id)
+print(f"Job started with ID: {extract_job.id}")
 
-print(job_status)
-# Example output:
-# id=None
-# status='completed'
-# expiresAt=datetime.datetime(...)
-# success=True
-# data=[{ ... }]
-# error=None
-# warning=None
-# sources=None
+# Step 2: Poll for status until completion
+import time
+while True:
+    job_status = app.get_extract_status(extract_job.id)
+    print(f"Status: {job_status.status}")
+    
+    if job_status.status == 'completed':
+        print("Extraction completed!")
+        print(job_status.data)
+        break
+    elif job_status.status in ['failed', 'cancelled']:
+        print(f"Extraction {job_status.status}: {job_status.error}")
+        break
+    
+    time.sleep(2)  # Wait before next poll
 ```

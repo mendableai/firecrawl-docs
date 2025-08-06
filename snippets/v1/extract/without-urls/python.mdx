@@ -9,6 +9,7 @@ class ExtractSchema(BaseModel):
 prompt = 'Extract the company mission from Firecrawl\'s website.'
 
 # Perform the extraction
+# SDK automatically polls for completion and returns final results
 scrape_result = app.extract(prompt=prompt, schema=ExtractSchema.model_json_schema())
 
 # Check if the extraction was successful

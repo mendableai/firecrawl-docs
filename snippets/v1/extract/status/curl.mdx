@@ -1,5 +1,28 @@
 ```bash cURL
-curl -X GET https://api.firecrawl.dev/v1/extract/<extract_id> \
+# Check the status of an extraction job
+curl -X GET https://api.firecrawl.dev/v1/extract/<JOB_ID> \
     -H 'Content-Type: application/json' \
     -H 'Authorization: Bearer YOUR_API_KEY'
+
+# Poll until completion (example with jq for status checking)
+while true; do
+  response=$(curl -s -X GET https://api.firecrawl.dev/v1/extract/<JOB_ID> \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY')
+  
+  status=$(echo "$response" | jq -r '.status')
+  echo "Status: $status"
+  
+  if [ "$status" = "completed" ]; then
+    echo "Extraction completed!"
+    echo "$response" | jq '.data'
+    break
+  elif [ "$status" = "failed" ] || [ "$status" = "cancelled" ]; then
+    echo "Extraction $status"
+    echo "$response" | jq '.error'
+    break
+  fi
+  
+  sleep 2
+done
 ```

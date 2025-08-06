@@ -11,6 +11,7 @@ class ExtractSchema(BaseModel):
     is_open_source: bool
     is_in_yc: bool
 
+# SDK automatically polls for completion and returns final results
 data = app.extract([
   'https://docs.firecrawl.dev/*', 
   'https://firecrawl.dev/', 

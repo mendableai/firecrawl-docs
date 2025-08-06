@@ -14,6 +14,7 @@ const schema = z.object({
   is_in_yc: z.boolean()
 });
 
+// SDK automatically polls for completion and returns final results
 const scrapeResult = await app.extract([
   'https://docs.firecrawl.dev/*', 
   'https://firecrawl.dev/', 

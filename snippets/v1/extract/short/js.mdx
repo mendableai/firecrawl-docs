@@ -6,6 +6,7 @@ const schema = z.object({
   company_mission: z.string(),
 });
 
+// SDK automatically polls for completion and returns final results
 const scrapeResult = await app.extract([
   "https://firecrawl.dev/*", 
 ], {

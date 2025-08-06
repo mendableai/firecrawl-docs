@@ -5,7 +5,7 @@ const app = new FirecrawlApp({
   apiKey: "fc-YOUR_API_KEY"
 });
 
-// Start an extraction job first
+// Step 1: Start an extraction job (returns immediately with job ID)
 const extractJob = await app.asyncExtract([
   'https://docs.firecrawl.dev/*', 
   'https://firecrawl.dev/'
@@ -13,17 +13,22 @@ const extractJob = await app.asyncExtract([
   prompt: "Extract the company mission and features from these pages."
 });
 
-// Get the status of the extraction job
-const jobStatus = await app.getExtractStatus(extractJob.jobId);
+console.log(`Job started with ID: ${extractJob.id}`);
 
-console.log(jobStatus);
-// Example output:
-// {
-//   status: "completed",
-//   progress: 100,
-//   results: [{
-//     url: "https://docs.firecrawl.dev",
-//     data: { ... }
-//   }]
-// }
+// Step 2: Poll for status until completion
+while (true) {
+  const jobStatus = await app.getExtractStatus(extractJob.id);
+  console.log(`Status: ${jobStatus.status}`);
+  
+  if (jobStatus.status === 'completed') {
+    console.log("Extraction completed!");
+    console.log(jobStatus.data);
+    break;
+  } else if (jobStatus.status === 'failed' || jobStatus.status === 'cancelled') {
+    console.log(`Extraction ${jobStatus.status}: ${jobStatus.error}`);
+    break;
+  }
+  
+  await new Promise(resolve => setTimeout(resolve, 2000)); // Wait before next poll
+}
 ```

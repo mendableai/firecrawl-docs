@@ -12,7 +12,7 @@ urls = [
 # Define the prompt for extraction
 prompt = 'Extract the company mission from the page.'
 
-# Perform the extraction
+# SDK automatically polls for completion and returns final results
 scrape_result = app.extract(urls, prompt=prompt, schema=ExtractSchema.model_json_schema())
 
 # Check if the extraction was successful
