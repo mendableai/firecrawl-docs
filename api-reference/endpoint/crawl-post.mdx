@@ -2,3 +2,77 @@
 title: 'Crawl'
 openapi: 'v1-openapi POST /crawl'
 ---
+
+## Change Tracking with Crawl
+
+Track changes across your entire website during crawl operations. Change tracking becomes especially powerful with crawl as it can detect new pages, removed pages, and content changes across your entire site structure.
+
+To enable change tracking during a crawl, include `'changeTracking'` in the `formats` array of your `scrapeOptions`:
+
+```javascript
+const app = new FirecrawlApp({ apiKey: 'your-api-key' });
+const result = await app.crawlUrl('https://example.com', {
+  scrapeOptions: {
+    formats: ['markdown', 'changeTracking']
+  }
+});
+```
+
+```python
+app = FirecrawlApp(api_key='your-api-key')
+result = app.crawl_url('https://example.com', {
+    'scrapeOptions': {
+        'formats': ['markdown', 'changeTracking']
+    }
+})
+```
+
+### Change Status Values
+
+When using change tracking with crawl, each page will include a `changeStatus` field:
+
+- `new`: A page that didn't exist in your previous crawl
+- `same`: A page that exists and hasn't changed since your last crawl  
+- `changed`: A page that exists but has been modified since your last crawl
+- `removed`: A page that existed in your previous crawl but is no longer found
+
+### Page Visibility
+
+The `visibility` field helps you understand how pages are discovered:
+
+- `visible`: The page is discoverable through links or the sitemap
+- `hidden`: The page still exists but is no longer linked or in the sitemap
+
+This is particularly useful for detecting orphaned content and monitoring site structure changes.
+
+### Advanced Options
+
+You can configure change tracking with additional options using `changeTrackingOptions`:
+
+```javascript
+const result = await app.crawlUrl('https://example.com', {
+  scrapeOptions: {
+    formats: ['markdown', 'changeTracking'],
+    changeTrackingOptions: {
+      modes: ['git-diff', 'json'],
+      schema: { 
+        type: 'object', 
+        properties: { 
+          title: { type: 'string' },
+          price: { type: 'string' }
+        } 
+      },
+      tag: 'production'
+    }
+  }
+});
+```
+
+For detailed information about change tracking modes, configuration options, and examples, see the [Change Tracking documentation](/features/change-tracking) and [Change Tracking with Crawl](/features/change-tracking-crawl) guides.
+
+## Important Notes
+
+- The `markdown` format must be included when using `changeTracking`
+- Change tracking is currently in Beta
+- Using `json` mode for structured data comparison costs 5 additional credits per page
+- Git-diff mode has no additional cost
