@@ -6,6 +6,176 @@ og:description: "Call approved data providers through one Firecrawl contract"
 icon: "arrow-right-arrow-left"
 ---
 
+<iframe
+  title="An agent answering a question with one Exchange request"
+  sandbox="allow-scripts"
+  style={{ width: "100%", height: "426px", border: "0", colorScheme: "normal" }}
+  srcDoc={`<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}
+body{margin:0;padding:14px 16px;
+  font:13px/1.75 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  background:#FAF9F7;color:#2B2926;border:1px solid #E8E5E1;border-radius:10px;overflow:hidden}
+@media (prefers-color-scheme:dark){body{background:#1A1917;color:#D7D3CD;border-color:#302E2B}}
+#tabs{display:flex;gap:6px;margin-bottom:12px}
+button{font:inherit;font-size:11px;cursor:pointer;padding:3px 10px;border-radius:999px;
+  border:1px solid #E2DED9;background:transparent;color:#8A857E;transition:.15s}
+button:hover{color:#2B2926;border-color:#CFC9C2}
+button.on{background:#FA5D19;border-color:#FA5D19;color:#fff}
+@media (prefers-color-scheme:dark){
+  button{border-color:#332F2C}
+  button:hover{color:#E9E6E1;border-color:#4A4541}
+  button.on{color:#fff}}
+.row{white-space:pre-wrap}
+.b{color:#FA5D19}
+.g{color:#8A857E}
+.t{color:#2B2926;font-weight:500}
+@media (prefers-color-scheme:dark){.t{color:#E9E6E1}}
+.ok{color:#12805C}
+@media (prefers-color-scheme:dark){.ok{color:#3DD9A0}}
+.ind{padding-left:19px}
+.cur{display:inline-block;width:7px;height:14px;background:#FA5D19;vertical-align:-2px;
+  animation:blink 1.1s steps(2,start) infinite}
+@keyframes blink{50%{opacity:0}}
+.sp{height:10px}
+</style></head><body>
+<div id="tabs"></div><div id="b"></div>
+<script>
+var SCENES = [
+  { id:'Firmographic',
+    prompt:'> triage the inbound lead from someone@apple.com',
+    think:'I need the company record, the person, and recent coverage.',
+    note:'Crunchbase and Apollo are both on Exchange, so this is one call.',
+    call:'Search', args:'(query: "apple ai strategy", exchange: 2 calls)',
+    rows:[['crunchbase/company-search','Apple · founded 1976'],
+          ['apollo/people-search','Jane Doe · Head of AI'],
+          ['news','Apple details its on-device AI roadmap']],
+    credits:51,
+    done:'Apple is real and funded, Jane Doe owns AI there, and they shipped this month.' },
+  { id:'Finance',
+    prompt:'> who funded AI infrastructure startups this quarter',
+    think:'Funding events are structured records, not something to scrape.',
+    note:'Crunchbase publishes rounds and acquisitions as separate capabilities.',
+    call:'Search', args:'(exchange: 2 calls)',
+    rows:[['crunchbase/funding-round-search','14 rounds · $2.3B raised'],
+          ['crunchbase/acquisition-search','3 acquisitions · buyers attached']],
+    credits:75,
+    done:'Amounts, dates, and investors, already structured. No parsing.' },
+  { id:'News',
+    prompt:'> what is being written about on-device AI',
+    think:'I want reporting with metadata, not a page scrape.',
+    note:'The Atlantic is on Exchange; the open web fills in the rest.',
+    call:'Search', args:'(query: "on-device AI", sources: ["news"], exchange: 1 call)',
+    rows:[['the-atlantic/article-search','4 articles · 100-word previews'],
+          ['news','12 results from the web']],
+    credits:12,
+    done:'Long-form analysis and fresh coverage, in one response.' }
+];
+
+var SPIN = ['✶','✷','✸','✹'];
+var host = document.getElementById('b');
+var tabs = document.getElementById('tabs');
+var run = 0;
+
+function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+function el(cls){ var d = document.createElement('div'); d.className = 'row' + (cls ? ' ' + cls : ''); host.appendChild(d); return d; }
+function gap(){ var d = document.createElement('div'); d.className = 'sp'; host.appendChild(d); }
+function pad(s, n){ while (s.length < n) s += ' '; return s; }
+
+// Streams a line in one character at a time, the way a terminal fills.
+async function stream(target, segs, cps, mine){
+  for (var i = 0; i < segs.length; i++){
+    var span = document.createElement('span');
+    if (segs[i][1]) span.className = segs[i][1];
+    target.appendChild(span);
+    var txt = segs[i][0];
+    for (var j = 0; j < txt.length; j++){
+      if (run !== mine) return;
+      span.textContent += txt[j];
+      if (j % 2 === 0) await wait(cps);
+    }
+  }
+}
+
+async function spinner(ms, mine){
+  var line = el(''), t0 = Date.now(), f = 0;
+  while (Date.now() - t0 < ms){
+    if (run !== mine) { line.remove(); return; }
+    var s = ((Date.now() - t0) / 1000).toFixed(1);
+    line.innerHTML = '<span class="b">' + SPIN[f++ % 4] + '</span> <span class="g">calling providers… (' + s + 's · esc to interrupt)</span>';
+    await wait(110);
+  }
+  line.remove();
+}
+
+async function play(scene, mine){
+  host.innerHTML = '';
+  await stream(el('g'), [[scene.prompt, '']], 16, mine);
+  await wait(700); if (run !== mine) return;
+
+  gap();
+  var a = el(''); a.innerHTML = '<span class="b">⏺</span> ';
+  await stream(a, [[scene.think, 't']], 10, mine);
+  await wait(400); if (run !== mine) return;
+  await stream(el('ind g'), [[scene.note, '']], 8, mine);
+  await wait(900); if (run !== mine) return;
+
+  gap();
+  var c = el(''); c.innerHTML = '<span class="b">⏺</span> ';
+  await stream(c, [[scene.call, 't'], [scene.args, 'g']], 8, mine);
+  await wait(500); if (run !== mine) return;
+  await spinner(2600, mine); if (run !== mine) return;
+
+  // Column width follows the longest capability name in this scene, so the
+  // value column never collides with it.
+  var w = 0;
+  scene.rows.forEach(function(r){ if (r[0].length > w) w = r[0].length; });
+  w += 2;
+
+  for (var i = 0; i < scene.rows.length; i++){
+    var r = el('ind g');
+    r.innerHTML = i === 0 ? '<span class="ok">⎿</span>  ' : '   ';
+    await stream(r, [[pad(scene.rows[i][0], w), ''], [scene.rows[i][1], '']], 5, mine);
+    await wait(500); if (run !== mine) return;
+  }
+
+  var cr = el('ind g'), t0 = Date.now();
+  while (Date.now() - t0 < 800){
+    if (run !== mine) return;
+    var p = Math.min(1, (Date.now() - t0) / 800);
+    cr.textContent = '   ' + Math.round(scene.credits * p) + ' credits · 1 request';
+    await wait(40);
+  }
+  cr.textContent = '   ' + scene.credits + ' credits · 1 request';
+  await wait(900); if (run !== mine) return;
+
+  gap();
+  var d = el(''); d.innerHTML = '<span class="b">⏺</span> ';
+  await stream(d, [[scene.done, 't']], 10, mine);
+  var cur = document.createElement('span'); cur.className = 'cur'; d.appendChild(cur);
+  await wait(5200);
+}
+
+async function loop(scene, mine){
+  while (run === mine){ await play(scene, mine); }
+}
+
+function select(idx){
+  run++;
+  var mine = run;
+  [].forEach.call(tabs.children, function(b, i){ b.className = i === idx ? 'on' : ''; });
+  loop(SCENES[idx], mine);
+}
+
+SCENES.forEach(function(s, i){
+  var b = document.createElement('button');
+  b.textContent = s.id;
+  b.onclick = function(){ select(i); };
+  tabs.appendChild(b);
+});
+select(0);
+</script></body></html>`}
+/>
+
 An inbound lead lands from someone at Apple. Before anyone replies, your agent
 needs three things the web will not give you cleanly:
 
