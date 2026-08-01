@@ -56,14 +56,14 @@ currently available.
     <CodeGroup>
     ```js Node
     const result = await firecrawl.search({
-      query: "company funding data",
+      query: "market data",
       sources: ["exchange"],
     });
     ```
 
     ```python Python
     result = firecrawl.search({
-        "query": "company funding data",
+        "query": "market data",
         "sources": ["exchange"],
     })
     ```
@@ -73,7 +73,7 @@ currently available.
       -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "query": "company funding data",
+        "query": "market data",
         "sources": ["exchange"]
       }'
     ```
@@ -88,19 +88,19 @@ currently available.
     {
       "providers": [
         {
-          "url": "https://www.firecrawl.dev/exchange/providers/acme/company-search",
-          "title": "Acme — Company search",
-          "description": "Find companies by funding stage, location, and headcount. 25 credits per call. Fetch the url for the full request and response contract.",
-          "provider": "acme",
-          "capability": "company-search",
+          "url": "https://www.firecrawl.dev/exchange/providers/finnhub/quote",
+          "title": "Finnhub — Quote",
+          "description": "Latest price, daily change, and volume for a listed symbol. 25 credits per call. Fetch the url for the full request and response contract.",
+          "provider": "finnhub",
+          "capability": "quote",
           "creditsPerCall": 25
         },
         {
-          "url": "https://www.firecrawl.dev/exchange/providers/northstar/company-profile",
-          "title": "Northstar — Company profile",
-          "description": "Firmographics and ownership for a domain. 15 credits per call. Fetch the url for the full request and response contract.",
-          "provider": "northstar",
-          "capability": "company-profile",
+          "url": "https://www.firecrawl.dev/exchange/providers/finnhub/company-fundamentals",
+          "title": "Finnhub — Company fundamentals",
+          "description": "Revenue, margins, and reported earnings for a listed company. 15 credits per call. Fetch the url for the full request and response contract.",
+          "provider": "finnhub",
+          "capability": "company-fundamentals",
           "creditsPerCall": 15
         }
       ]
@@ -172,9 +172,9 @@ currently available.
     const result = await firecrawl.search({
       exchange: [
         {
-          provider: "acme",
-          capability: "company-search",
-          options: { domain: "firecrawl.dev" },
+          provider: "finnhub",
+          capability: "quote",
+          options: { symbol: "NVDA" },
         },
       ],
     });
@@ -184,9 +184,9 @@ currently available.
     result = firecrawl.search({
         "exchange": [
             {
-                "provider": "acme",
-                "capability": "company-search",
-                "options": {"domain": "firecrawl.dev"},
+                "provider": "finnhub",
+                "capability": "quote",
+                "options": {"symbol": "NVDA"},
             }
         ]
     })
@@ -199,9 +199,9 @@ currently available.
       -d '{
         "exchange": [
           {
-            "provider": "acme",
-            "capability": "company-search",
-            "options": { "domain": "firecrawl.dev" }
+            "provider": "finnhub",
+            "capability": "quote",
+            "options": { "symbol": "NVDA" }
           }
         ]
       }'
@@ -217,11 +217,11 @@ currently available.
       "data": {
         "exchange": [
           {
-            "provider": "acme",
-            "capability": "company-search",
+            "provider": "finnhub",
+            "capability": "quote",
             "delivery": "direct",
             "creditsCost": 25,
-            "data": { "company": { "name": "Firecrawl" } }
+            "data": { "symbol": "NVDA", "price": 184.62, "change": 2.14, "volume": 41295300 }
           }
         ]
       },
@@ -245,7 +245,7 @@ does not discard the others.
 <CodeGroup>
 ```js Node
 const result = await firecrawl.search({
-  query: "acme corp recent coverage",
+  query: "nvidia earnings coverage",
   exchange: [
     {
       provider: "fullenrich",
@@ -255,7 +255,7 @@ const result = await firecrawl.search({
     {
       provider: "finnhub",
       capability: "quote",
-      options: { symbol: "ACME" },
+      options: { symbol: "NVDA" },
     },
   ],
 });
@@ -266,7 +266,7 @@ result.exchange; // one entry per provider call
 
 ```python Python
 result = firecrawl.search({
-    "query": "acme corp recent coverage",
+    "query": "nvidia earnings coverage",
     "exchange": [
         {
             "provider": "fullenrich",
@@ -276,7 +276,7 @@ result = firecrawl.search({
         {
             "provider": "finnhub",
             "capability": "quote",
-            "options": {"symbol": "ACME"},
+            "options": {"symbol": "NVDA"},
         },
     ],
 })
@@ -287,7 +287,7 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "query": "acme corp recent coverage",
+    "query": "nvidia earnings coverage",
     "exchange": [
       {
         "provider": "fullenrich",
@@ -297,7 +297,7 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
       {
         "provider": "finnhub",
         "capability": "quote",
-        "options": { "symbol": "ACME" }
+        "options": { "symbol": "NVDA" }
       }
     ]
   }'
@@ -307,38 +307,12 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
 Provider results arrive under `data.exchange`, next to `data.web`, `data.news`,
 and `data.images`.
 
-## Bring your own key
-
-Some providers are published as bring-your-own-key. You already have an account
-with the provider, so you send your own credential and Firecrawl routes the
-call. Pass it as `providerApiKey` on the call:
-
-```js Node
-const result = await firecrawl.search({
-  exchange: [
-    {
-      provider: "acme",
-      capability: "company-search",
-      options: { domain: "firecrawl.dev" },
-      providerApiKey: process.env.ACME_API_KEY,
-    },
-  ],
-});
-```
-
-Bring-your-own-key capabilities cost zero Firecrawl credits; the provider bills
-you directly. The credential is forwarded to the provider for that one call and
-is never stored.
-
 ## Pricing
 
 Searching the catalog adds no credits. Running a capability costs the
 `creditsPerCall` published in its contract, and you are charged only for calls
 that succeed. Discovery results carry the price, so you can check before
 calling.
-
-Bring-your-own-key capabilities cost zero Firecrawl credits; the provider bills
-you directly.
 
 ## List your data on Exchange
 
