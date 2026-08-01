@@ -61,13 +61,14 @@ var SCENES = [
     think:'One email address. I need the person, the company, and what changed recently.',
     findQ:'person by email, company funding, and recent coverage',
     found:[['apollo/people-enrichment','35 credits per call'],
-           ['crunchbase/company-search','25 credits per call']],
+           ['crunchbase/company-search','25 credits per call'],
+           ['benzinga/news-search','10 credits per call']],
     callQ:'jane@firecrawl.dev and the company behind it',
-    calls:2,
+    calls:3,
     rows:[['apollo/people-enrichment','Jane Doe · Head of Engineering'],
           ['crunchbase/company-search','Firecrawl · Series A · 2024'],
-          ['news','3 stories · Exchange launch']],
-    credits:'61 credits · 35 + 25 providers, 1 web',
+          ['benzinga/news-search','3 stories · Exchange launch']],
+    credits:'70 credits · 35 + 25 + 10 providers, no web query',
     table:[['','executive brief'],
            ['who','Jane Doe · Head of Engineering'],
            ['tenure','2 years · previously infrastructure'],
@@ -79,8 +80,9 @@ var SCENES = [
     done:'She runs engineering, they raised a Series A, and Exchange shipped this month — lead with provider onboarding.',
     after:'Writing brief.md now…' },
   { id:'Finance',
-    prompt:'brief me on nvidia, apple, microsoft and amd before the investor call',
-    think:'I need live prices, the latest filings, and what is being reported on each.',
+    prompt:'meeting our LPs at 4 — build a brief on the holdings',
+    think:'Let me start from the portfolio file, then pull live data on each name.',
+    read:{ file:'holdings.md', result:'4 positions · NVDA, AAPL, MSFT, AMD' },
     findQ:'market data, sec filings, and market news',
     found:[['alpha-vantage/quote','10 credits per call'],
            ['financial-datasets/sec-filings','15 credits per call'],
@@ -97,18 +99,19 @@ var SCENES = [
            ['last 10-Q','24 Jul','31 Jul','29 Jul','5 Aug'],
            ['coverage','8 stories','4 stories','6 stories','3 stories']],
     done:'Apple leads on revenue, NVIDIA on attention, and AMD is a tenth the size of either. All four filed 10-Qs in the last fortnight.',
-    after:'Creating the presentation now…' },
+    after:'Building the LP deck now…' },
   { id:'News',
     prompt:'i need a reading list on agent infrastructure for tomorrow morning',
     think:'I want reporting with metadata, not a page scrape.',
-    findQ:'long-form reporting and analysis articles',
-    found:[['the-atlantic/article-search','10 credits per call']],
+    findQ:'long-form reporting and market news',
+    found:[['the-atlantic/article-search','10 credits per call'],
+           ['benzinga/news-search','10 credits per call']],
     callQ:'agent infrastructure coverage',
-    calls:1,
+    calls:2,
     rows:[['the-atlantic/article-search','4 articles · 100-word previews'],
-          ['news','12 results from the web']],
-    credits:'11 credits · 10 provider, 1 web',
-    done:'The Atlantic has four long-form pieces this month, mostly on reliability and cost. The web adds twelve, mostly launches.',
+          ['benzinga/news-search','12 stories · launches and funding']],
+    credits:'20 credits · 10 + 10 providers, no web query',
+    done:'The Atlantic has four long-form pieces this month, mostly on reliability and cost. Benzinga adds twelve, mostly launches and funding.',
     after:'Writing reading-list.md now…' }
 ];
 
@@ -261,6 +264,20 @@ async function play(scene, mine){
   await stream(a, [[scene.think, '']], 14, mine);
   a.firstChild.className = 'dot';
   await wait(900); if (run !== mine) return;
+
+  // A local file read first, so Exchange is shown filling gaps in data the
+  // agent already has rather than starting from nothing.
+  if (scene.read){
+    gap(mine);
+    var rd = el('row', mine); rd.innerHTML = '<span class="live">●</span> ';
+    await stream(rd, [['Read', 't'], ['(' + scene.read.file + ')', 'g']], 9, mine);
+    await wait(650); if (run !== mine) return;
+    rd.firstChild.className = 'dot';
+    var rr = el('row ind g', mine);
+    rr.innerHTML = '<span class="d mk">⎿</span>';
+    await stream(rr, [[scene.read.result, 'g']], 8, mine);
+    await wait(850); if (run !== mine) return;
+  }
 
   gap(mine);
   var t1 = toolLine('firecrawl_exchange', 1, mine);
