@@ -6,14 +6,17 @@ og:description: "Call approved data providers through one Firecrawl contract"
 icon: "arrow-right-arrow-left"
 ---
 
-Firecrawl Exchange takes your agent beyond the web. Plenty of the data an agent
-needs is not on a page at all: it sits behind a specialist API you would
-otherwise have to find, sign up for, get a key from, and wire up as its own
-service. Exchange puts those providers behind the contract you already use.
+Say your agent needs to brief you on Apple: what the company is, who runs AI
+there, and what is being written about it right now.
 
-You find providers and call them through [`/search`](/api-reference/endpoint/search), with the same API
-key as every other Firecrawl request. Every provider publishes a contract
-describing what it returns, what options it takes, and what a call costs.
+Search the web and you get articles *about* those things. The company record
+lives in Crunchbase, the person lives in Apollo, and reaching either one
+normally means finding the vendor, signing up, getting a key, learning their
+schema, and running it as its own service. Three answers, three integrations.
+
+Exchange puts those providers behind the contract you already use. The same
+[`/search`](/api-reference/endpoint/search) call, the same API key. By the end
+of this page that brief is a single request.
 
 <Note>
 Searching the catalog adds no credits to a request. Credits are charged when a
@@ -28,8 +31,9 @@ capability is executed; a web query alongside it bills as an ordinary search.
 
 A provider is a data source: Crunchbase for company and funding records, Apollo
 for people, and so on. A capability is one thing that provider can do, such as
-searching organizations or finding a person by title. Each capability publishes a JSON
-Schema for its options, a schema for its response, and a price in credits. The
+searching organizations or finding a person by title. Each capability publishes a
+JSON Schema for its options, a schema for its response, and a price in credits,
+so an agent can build a valid call and know the cost before it commits. The
 [provider catalogue](https://www.firecrawl.dev/exchange) lists everything
 currently available.
 
@@ -45,25 +49,26 @@ currently available.
   </Card>
 </CardGroup>
 
-## Using Exchange
+## Building the brief
 
 <Steps>
-  <Step title="Find a provider">
-    Exchange has no separate catalog endpoint. Set `sources` to `exchange` on
-    [`/search`](/api-reference/endpoint/search) and matching capabilities come back alongside your web
-    results, shaped like any other result. Searching the catalog adds no credits.
+  <Step title="Ask who can answer it">
+    Your agent does not need to know Crunchbase or Apollo exist. Describe what
+    you are after and set `sources` to `exchange`: matching capabilities come
+    back alongside your web results, shaped like any other result. There is no
+    separate catalog endpoint, and searching it adds no credits.
 
     <CodeGroup>
     ```js Node
     const result = await firecrawl.search({
-      query: "company profile and people at that company",
+      query: "find a company and the people who run it",
       sources: ["exchange"],
     });
     ```
 
     ```python Python
     result = firecrawl.search({
-        "query": "company profile and people at that company",
+        "query": "find a company and the people who run it",
         "sources": ["exchange"],
     })
     ```
@@ -73,7 +78,7 @@ currently available.
       -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "query": "company profile and people at that company",
+        "query": "find a company and the people who run it",
         "sources": ["exchange"]
       }'
     ```
@@ -114,11 +119,11 @@ currently available.
     [provider catalogue](https://www.firecrawl.dev/exchange).
   </Step>
 
-  <Step title="Narrow the search (optional)">
-    Use the object form of the source to scope discovery. `categories` limits it to
-    a cohort, `providers` to named providers, and `capabilities` to specific
-    `provider/capability` pairs. They compose, so a cohort plus a provider narrows
-    further.
+  <Step title="Narrow it down (optional)">
+    When you already know the shape of the answer, say so. Use the object form of
+    the source to scope discovery: `categories` limits it to a cohort, `providers`
+    to named providers, and `capabilities` to specific `provider/capability`
+    pairs. They compose, so a cohort plus a provider narrows further.
 
     Filters work with or without a query. Drop the query to browse everything in a
     cohort; add one to rank within it.
@@ -160,8 +165,9 @@ currently available.
     </CodeGroup>
   </Step>
 
-  <Step title="Call the provider">
-    Providers are called through [`/search`](/api-reference/endpoint/search). Add an `exchange` array with the
+  <Step title="Get the answer">
+    Now fetch the company itself. Providers are called through
+    [`/search`](/api-reference/endpoint/search): add an `exchange` array with the
     `provider`, the `capability`, and the `options` its input schema requires.
 
     `query` is optional. Omit it to call providers only, or include it to get web
@@ -239,15 +245,15 @@ currently available.
   </Step>
 </Steps>
 
-## Putting it together
+## The whole brief, one request
 
-Each step so far did one thing. The point of Exchange is that they compose: the
-`exchange` array takes up to ten calls, and a `query` runs a web search
-alongside them.
+Each step so far answered one part. They compose: the `exchange` array takes up
+to ten calls, and a `query` runs a web search alongside them.
 
-So a question like *"tell me about Apple, who runs AI there, and what is being
-written about it"* is one request across three sources — the company from one
-provider, the person from another, and news from the web.
+So the brief we started with — what Apple is, who runs AI there, and what is
+being written about it — is one request across three sources. The company from
+Crunchbase, the person from Apollo, the coverage from the web. No extra
+accounts, no second endpoint, nothing to reconcile afterwards.
 
 <CodeGroup>
 ```js Node
