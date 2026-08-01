@@ -26,9 +26,9 @@ capability is executed; a web query alongside it bills as an ordinary search.
 
 ## How it works
 
-A provider is a data source: FullEnrich for professional profiles, Finnhub for
-market data, and so on. A capability is one thing that provider can do, such as
-enriching a contact or looking up a quote. Each capability publishes a JSON
+A provider is a data source: Crunchbase for company and funding records, Apollo
+for people, and so on. A capability is one thing that provider can do, such as
+searching organizations or finding a person by title. Each capability publishes a JSON
 Schema for its options, a schema for its response, and a price in credits. The
 [provider catalogue](https://www.firecrawl.dev/exchange) lists everything
 currently available.
@@ -56,14 +56,14 @@ currently available.
     <CodeGroup>
     ```js Node
     const result = await firecrawl.search({
-      query: "market data",
+      query: "company profile and people at that company",
       sources: ["exchange"],
     });
     ```
 
     ```python Python
     result = firecrawl.search({
-        "query": "market data",
+        "query": "company profile and people at that company",
         "sources": ["exchange"],
     })
     ```
@@ -73,7 +73,7 @@ currently available.
       -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "query": "market data",
+        "query": "company profile and people at that company",
         "sources": ["exchange"]
       }'
     ```
@@ -88,20 +88,20 @@ currently available.
     {
       "providers": [
         {
-          "url": "https://www.firecrawl.dev/exchange/providers/finnhub/quote",
-          "title": "Finnhub — Quote",
-          "description": "Latest price, daily change, and volume for a listed symbol. 25 credits per call. Fetch the url for the full request and response contract.",
-          "provider": "finnhub",
-          "capability": "quote",
+          "url": "https://www.firecrawl.dev/exchange/providers/crunchbase/company-search",
+          "title": "Crunchbase — Search organizations",
+          "description": "Find companies with structured firmographic and funding filters. 25 credits per call. Fetch the url for the full request and response contract.",
+          "provider": "crunchbase",
+          "capability": "company-search",
           "creditsPerCall": 25
         },
         {
-          "url": "https://www.firecrawl.dev/exchange/providers/finnhub/company-fundamentals",
-          "title": "Finnhub — Company fundamentals",
-          "description": "Revenue, margins, and reported earnings for a listed company. 15 credits per call. Fetch the url for the full request and response contract.",
-          "provider": "finnhub",
-          "capability": "company-fundamentals",
-          "creditsPerCall": 15
+          "url": "https://www.firecrawl.dev/exchange/providers/apollo/people-search",
+          "title": "Apollo — Search people",
+          "description": "Find net-new prospects using title, seniority, location, and organization filters. 25 credits per call. Fetch the url for the full request and response contract.",
+          "provider": "apollo",
+          "capability": "people-search",
+          "creditsPerCall": 25
         }
       ]
     }
@@ -172,9 +172,9 @@ currently available.
     const result = await firecrawl.search({
       exchange: [
         {
-          provider: "finnhub",
-          capability: "quote",
-          options: { symbol: "NVDA" },
+          provider: "crunchbase",
+          capability: "company-search",
+          options: { query: "Apple", limit: 1 },
         },
       ],
     });
@@ -184,9 +184,9 @@ currently available.
     result = firecrawl.search({
         "exchange": [
             {
-                "provider": "finnhub",
-                "capability": "quote",
-                "options": {"symbol": "NVDA"},
+                "provider": "crunchbase",
+                "capability": "company-search",
+                "options": {"query": "Apple", "limit": 1},
             }
         ]
     })
@@ -199,9 +199,9 @@ currently available.
       -d '{
         "exchange": [
           {
-            "provider": "finnhub",
-            "capability": "quote",
-            "options": { "symbol": "NVDA" }
+            "provider": "crunchbase",
+            "capability": "company-search",
+            "options": { "query": "Apple", "limit": 1 }
           }
         ]
       }'
@@ -217,11 +217,15 @@ currently available.
       "data": {
         "exchange": [
           {
-            "provider": "finnhub",
-            "capability": "quote",
+            "provider": "crunchbase",
+            "capability": "company-search",
             "delivery": "direct",
             "creditsCost": 25,
-            "data": { "symbol": "NVDA", "price": 184.62, "change": 2.14, "volume": 41295300 }
+            "data": {
+              "organizations": [
+                { "name": "Apple", "permalink": "apple", "founded_on": "1976-04-01" }
+              ]
+            }
           }
         ]
       },
@@ -235,48 +239,61 @@ currently available.
   </Step>
 </Steps>
 
-## One call, many providers
+## Putting it together
 
-The `exchange` array takes up to ten calls, and a `query` runs a web search
-alongside them. So a single request can enrich a contact, pull a market quote,
-and search the web at once. Each call is reported separately, so one failure
-does not discard the others.
+Each step so far did one thing. The point of Exchange is that they compose: the
+`exchange` array takes up to ten calls, and a `query` runs a web search
+alongside them.
+
+So a question like *"tell me about Apple, who runs AI there, and what is being
+written about it"* is one request across three sources — the company from one
+provider, the person from another, and news from the web.
 
 <CodeGroup>
 ```js Node
 const result = await firecrawl.search({
-  query: "nvidia earnings coverage",
+  query: "apple ai strategy",
+  sources: ["news"],
   exchange: [
     {
-      provider: "fullenrich",
-      capability: "contact-enrichment",
-      options: { person: { linkedin_url: "https://linkedin.com/in/jane-doe" } },
+      provider: "crunchbase",
+      capability: "company-search",
+      options: { query: "Apple", limit: 1 },
     },
     {
-      provider: "finnhub",
-      capability: "quote",
-      options: { symbol: "NVDA" },
+      provider: "apollo",
+      capability: "people-search",
+      options: {
+        query: "Head of AI at Apple",
+        filters: { titles: ["Head of AI", "VP Artificial Intelligence"] },
+        limit: 5,
+      },
     },
   ],
 });
 
-result.web; // web results
-result.exchange; // one entry per provider call
+result.news; // coverage from the web
+result.exchange; // the company and the people, in call order
 ```
 
 ```python Python
 result = firecrawl.search({
-    "query": "nvidia earnings coverage",
+    "query": "apple ai strategy",
+    "sources": ["news"],
     "exchange": [
         {
-            "provider": "fullenrich",
-            "capability": "contact-enrichment",
-            "options": {"person": {"linkedin_url": "https://linkedin.com/in/jane-doe"}},
+            "provider": "crunchbase",
+            "capability": "company-search",
+            "options": {"query": "Apple", "limit": 1},
         },
         {
-            "provider": "finnhub",
-            "capability": "quote",
-            "options": {"symbol": "NVDA"},
+            "provider": "apollo",
+            "capability": "people-search",
+            "options": {
+                "query": "Head of AI at Apple",
+                "filters": {"titles": ["Head of AI", "VP Artificial Intelligence"]},
+                "limit": 5,
+            },
         },
     ],
 })
@@ -287,25 +304,75 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "query": "nvidia earnings coverage",
+    "query": "apple ai strategy",
+    "sources": ["news"],
     "exchange": [
       {
-        "provider": "fullenrich",
-        "capability": "contact-enrichment",
-        "options": { "person": { "linkedin_url": "https://linkedin.com/in/jane-doe" } }
+        "provider": "crunchbase",
+        "capability": "company-search",
+        "options": { "query": "Apple", "limit": 1 }
       },
       {
-        "provider": "finnhub",
-        "capability": "quote",
-        "options": { "symbol": "NVDA" }
+        "provider": "apollo",
+        "capability": "people-search",
+        "options": {
+          "query": "Head of AI at Apple",
+          "filters": { "titles": ["Head of AI", "VP Artificial Intelligence"] },
+          "limit": 5
+        }
       }
     ]
   }'
 ```
 </CodeGroup>
 
-Provider results arrive under `data.exchange`, next to `data.web`, `data.news`,
-and `data.images`.
+Provider results arrive under `data.exchange` in the order they were sent, next
+to `data.news` and the other web sources. Each call is reported separately, so
+one provider failing does not discard the rest:
+
+```json wrap
+{
+  "success": true,
+  "data": {
+    "news": [
+      {
+        "url": "https://www.example.com/apple-ai-roadmap",
+        "title": "Apple details its on-device AI roadmap",
+        "date": "2026-07-29"
+      }
+    ],
+    "exchange": [
+      {
+        "provider": "crunchbase",
+        "capability": "company-search",
+        "delivery": "direct",
+        "creditsCost": 25,
+        "data": {
+          "organizations": [
+            { "name": "Apple", "permalink": "apple", "founded_on": "1976-04-01" }
+          ]
+        }
+      },
+      {
+        "provider": "apollo",
+        "capability": "people-search",
+        "delivery": "direct",
+        "creditsCost": 25,
+        "data": {
+          "people": [
+            { "name": "Jane Doe", "title": "Head of AI", "organization": "Apple" }
+          ]
+        }
+      }
+    ]
+  },
+  "creditsUsed": 51,
+  "id": "0198f3c2-..."
+}
+```
+
+The web search bills as an ordinary search and each capability bills its own
+`creditsPerCall`, so the cost of the whole request is the sum of its parts.
 
 ## Pricing
 
