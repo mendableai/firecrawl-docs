@@ -115,15 +115,16 @@ var SCENES = [
     after:'Writing reading-list.md now…' },
   { id:'Hiring',
     prompt:'Which of our portfolio companies are actually scaling engineering?',
-    think:'Headcount claims in a board deck are worth checking against workforce data.',
-    read:{ file:'portfolio.md', result:'6 companies · seed through Series B' },
+    think:'Let me see who is advertising roles first, then check that against provider data.',
+    pre:[{ tool:'Search', args:'("portfolio companies hiring infrastructure engineers")', result:'12 results · careers pages' },
+         { tool:'Scrape', args:'(northwind.com/careers)', result:'9 open roles · 6 in engineering' }],
     findQ:'workforce signals and headcount by company',
-    found:[['coresignal/company-search','5 credits per call'],
-           ['coresignal/workforce-search','5 credits per call']],
+    found:[['apollo/organization-search','5 credits per call'],
+           ['apollo/people-search','5 credits per call']],
     callQ:'headcount and engineering hires across the portfolio',
     calls:2,
-    rows:[['coresignal/company-search','6 companies · headcount trend'],
-          ['coresignal/workforce-search','38 engineers hired in 90 days']],
+    rows:[['apollo/organization-search','6 companies · headcount bands'],
+          ['apollo/people-search','38 engineers hired in 90 days']],
     credits:'10 credits · 5 × 2 calls',
     table:[['','Headcount','Eng hires','Open roles'],
            ['Northwind','142','+18','9'],
@@ -301,16 +302,17 @@ async function play(scene, mine){
 
   // A local file read first, so Exchange is shown filling gaps in data the
   // agent already has rather than starting from nothing.
-  if (scene.read){
+  var pre = scene.pre || (scene.read ? [{ tool:'Read', args:'(' + scene.read.file + ')', result: scene.read.result }] : []);
+  for (var pi = 0; pi < pre.length; pi++){
     gap(mine);
-    var rd = el('row', mine); rd.innerHTML = '<span class="live">●</span> ';
-    await stream(rd, [['Read', 't'], ['(' + scene.read.file + ')', 'g']], 9, mine);
-    await wait(650); if (run !== mine) return;
-    rd.firstChild.className = 'dot';
-    var rr = el('row ind g', mine);
-    rr.innerHTML = '<span class="d mk">⎿</span>';
-    await stream(rr, [[scene.read.result, 'g']], 8, mine);
-    await wait(850); if (run !== mine) return;
+    var pd = el('row', mine); pd.innerHTML = '<span class="live">●</span> ';
+    await stream(pd, [[pre[pi].tool, 't'], [pre[pi].args, 'g']], 9, mine);
+    await wait(600); if (run !== mine) return;
+    pd.firstChild.className = 'dot';
+    var pr2 = el('row ind g', mine);
+    pr2.innerHTML = '<span class="d mk">⎿</span>';
+    await stream(pr2, [[pre[pi].result, 'g']], 8, mine);
+    await wait(700); if (run !== mine) return;
   }
 
   gap(mine);
