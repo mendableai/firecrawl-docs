@@ -9,7 +9,7 @@ icon: "arrow-right-arrow-left"
 <iframe
   title="An agent answering a question with one Exchange request"
   sandbox="allow-scripts"
-  style={{ width: "100%", height: "520px", border: "0", colorScheme: "dark" }}
+  style={{ width: "100%", height: "580px", border: "0", colorScheme: "dark" }}
   srcDoc={`<!doctype html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -57,23 +57,26 @@ button.on .seg{transition:width .6s cubic-bezier(.4,0,.2,1)}
 <script>
 var SCENES = [
   { id:'Firmographic',
-    prompt:'i am meeting someone from firecrawl.dev at 4 — brief me on the company and who i am seeing',
-    think:'I need the company record, who works there, and recent coverage.',
-    findQ:'company funding and people by title',
-    found:[['crunchbase/company-search','25 credits per call'],
-           ['apollo/people-search','25 credits per call']],
-    callQ:'firecrawl company and its engineering leadership',
+    prompt:'meeting someone at firecrawl this afternoon — jane@firecrawl.dev. brief me.',
+    think:'One email address. I need the person, the company, and what changed recently.',
+    findQ:'person by email, company funding, and recent coverage',
+    found:[['apollo/people-enrichment','35 credits per call'],
+           ['crunchbase/company-search','25 credits per call']],
+    callQ:'jane@firecrawl.dev and the company behind it',
     calls:2,
-    rows:[['crunchbase/company-search','Firecrawl · founded 2024 · Series A'],
-          ['apollo/people-search','4 people · founders and eng leads'],
-          ['news','Firecrawl ships Exchange for agents']],
-    credits:'51 credits · 25 + 25 providers, 1 web',
-    table:[['','Firecrawl'],
-           ['founded','2024'],
-           ['stage','Series A'],
-           ['engineering','4 people'],
-           ['shipped','Exchange for agents']],
-    done:'Firecrawl is real: Series A, founded 2024, building web data infrastructure for agents. Four people run engineering, and they shipped Exchange this month.',
+    rows:[['apollo/people-enrichment','Jane Doe · Head of Engineering'],
+          ['crunchbase/company-search','Firecrawl · Series A · 2024'],
+          ['news','3 stories · Exchange launch']],
+    credits:'61 credits · 35 + 25 providers, 1 web',
+    table:[['','executive brief'],
+           ['who','Jane Doe · Head of Engineering'],
+           ['tenure','2 years · previously infrastructure'],
+           ['company','Firecrawl · Series A · founded 2024'],
+           ['team','~15 people · 4 in engineering'],
+           ['product','web data infrastructure for agents'],
+           ['shipped','Exchange · this month'],
+           ['talk track','provider onboarding, agent data access']],
+    done:'She runs engineering, they raised a Series A, and Exchange shipped this month — lead with provider onboarding.',
     after:'Writing brief.md now…' },
   { id:'Finance',
     prompt:'brief me on nvidia, apple, microsoft and amd before the investor call',
@@ -224,19 +227,19 @@ async function renderTable(rows, mine){
   }
 
   var top = el('row ind d', mine); top.textContent = rule('┌', '┬', '┐');
-  await wait(140); if (run !== mine) return;
+  await wait(90); if (run !== mine) return;
 
   var head = el('row ind', mine);
   paint(head, rows[0], 'hd');
-  await wait(220); if (run !== mine) return;
+  await wait(130); if (run !== mine) return;
 
   var mid = el('row ind d', mine); mid.textContent = rule('├', '┼', '┤');
-  await wait(160); if (run !== mine) return;
+  await wait(110); if (run !== mine) return;
 
   for (var i = 1; i < rows.length; i++){
     var line = el('row ind', mine);
     paint(line, rows[i], '');
-    await wait(320); if (run !== mine) return;
+    await wait(130); if (run !== mine) return;
   }
 
   var bot = el('row ind d', mine); bot.textContent = rule('└', '┴', '┘');
@@ -314,7 +317,7 @@ async function play(scene, mine){
   stopStatus();
   gap(mine);
   var d = el('row', mine); d.innerHTML = '<span class="live">●</span> ';
-  await stream(d, [[scene.done, '']], 14, mine);
+  await stream(d, [[scene.done, '']], 5, mine);
   d.firstChild.className = 'dot';
   await wait(700); if (run !== mine) return;
 
