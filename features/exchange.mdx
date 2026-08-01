@@ -16,10 +16,10 @@ html,body{height:100%}
 body{margin:0;padding:12px 0 10px;display:flex;flex-direction:column;
   font:13px/1.85 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
   background:#26313B;color:#E4E9ED;border-radius:10px;overflow:hidden}
-#tabs{display:flex;gap:18px;justify-content:center;margin:0 14px 14px;flex:0 0 auto}
+#tabs{display:flex;gap:12px;justify-content:center;margin:0 14px 14px;flex:0 0 auto}
 button{position:relative;font:inherit;font-size:11px;letter-spacing:.03em;cursor:pointer;
   padding:0 0 7px;border:0;background:transparent;color:#7C8794;transition:color .2s;
-  min-width:96px}
+  min-width:78px}
 button:hover{color:#C3CCD4}
 button.on{color:#E4E9ED}
 button .track{position:absolute;left:0;right:0;bottom:0;height:2px;background:#3C4854;
@@ -60,15 +60,15 @@ var SCENES = [
     prompt:'I am meeting someone from Firecrawl this afternoon, jane@firecrawl.dev. Brief me before I go.',
     think:'I have one email address. I need the person behind it, the company, and what has changed recently.',
     findQ:'person by email, company funding, and recent coverage',
-    found:[['apollo/people-enrichment','35 credits per call'],
-           ['crunchbase/company-search','25 credits per call'],
-           ['benzinga/news-search','10 credits per call']],
+    found:[['apollo/people-enrichment','5 credits per call'],
+           ['crunchbase/company-search','5 credits per call'],
+           ['benzinga/news-search','5 credits per call']],
     callQ:'jane@firecrawl.dev and the company behind it',
     calls:3,
     rows:[['apollo/people-enrichment','Jane Doe · Head of Engineering'],
           ['crunchbase/company-search','Firecrawl · Series A · 2024'],
           ['benzinga/news-search','3 stories · Exchange launch']],
-    credits:'70 credits · 35 + 25 + 10 providers, no web query',
+    credits:'15 credits · 5 × 3 calls',
     table:[['','executive brief'],
            ['who','Jane Doe · Head of Engineering'],
            ['tenure','2 years · previously infrastructure'],
@@ -84,15 +84,15 @@ var SCENES = [
     think:'Let me start from the portfolio file, then pull live data on each name.',
     read:{ file:'holdings.md', result:'4 positions · NVDA, AAPL, MSFT, AMD' },
     findQ:'market data, sec filings, and market news',
-    found:[['alpha-vantage/quote','10 credits per call'],
-           ['financial-datasets/sec-filings','15 credits per call'],
-           ['benzinga/news-search','10 credits per call']],
+    found:[['alpha-vantage/quote','5 credits per call'],
+           ['financial-datasets/sec-filings','5 credits per call'],
+           ['benzinga/news-search','5 credits per call']],
     callQ:'NVDA, AAPL, MSFT, AMD prices, filings, and coverage',
     calls:3,
     rows:[['alpha-vantage/quote','4 symbols · live'],
           ['financial-datasets/sec-filings','4 filings · all 10-Q'],
           ['benzinga/news-search','21 stories · earnings and guidance']],
-    credits:'35 credits · 10 + 15 + 10 providers, no web query',
+    credits:'15 credits · 5 × 3 calls',
     table:[['','NVIDIA','Apple','Microsoft','AMD'],
            ['price','$184.62','$271.84','$512.30','$164.90'],
            ['revenue','$130.5B','$391.0B','$281.7B','$25.8B'],
@@ -104,15 +104,49 @@ var SCENES = [
     prompt:'I need a reading list on agent infrastructure for tomorrow morning.',
     think:'I want reporting with metadata, not a page scrape.',
     findQ:'long-form reporting and market news',
-    found:[['the-atlantic/article-search','10 credits per call'],
-           ['benzinga/news-search','10 credits per call']],
+    found:[['the-atlantic/article-search','5 credits per call'],
+           ['benzinga/news-search','5 credits per call']],
     callQ:'agent infrastructure coverage',
     calls:2,
     rows:[['the-atlantic/article-search','4 articles · 100-word previews'],
           ['benzinga/news-search','12 stories · launches and funding']],
-    credits:'20 credits · 10 + 10 providers, no web query',
+    credits:'10 credits · 5 × 2 calls',
     done:'The Atlantic has four long-form pieces this month, mostly on reliability and cost. Benzinga adds twelve, mostly launches and funding.',
-    after:'Writing reading-list.md now…' }
+    after:'Writing reading-list.md now…' },
+  { id:'Hiring',
+    prompt:'Which of our portfolio companies are actually scaling engineering?',
+    think:'Headcount claims in a board deck are worth checking against workforce data.',
+    read:{ file:'portfolio.md', result:'6 companies · seed through Series B' },
+    findQ:'workforce signals and headcount by company',
+    found:[['coresignal/company-search','5 credits per call'],
+           ['coresignal/workforce-search','5 credits per call']],
+    callQ:'headcount and engineering hires across the portfolio',
+    calls:2,
+    rows:[['coresignal/company-search','6 companies · headcount trend'],
+          ['coresignal/workforce-search','38 engineers hired in 90 days']],
+    credits:'10 credits · 5 × 2 calls',
+    table:[['','Headcount','Eng hires','Open roles'],
+           ['Northwind','142','+18','9'],
+           ['Belltower','61','+12','4'],
+           ['Cadence','absent','0','0'],
+           ['Kestrel','24','+8','6']],
+    done:'Three are hiring hard and Cadence has stopped entirely, which is worth raising before the board reads the deck.',
+    after:'Writing the board update now…' },
+  { id:'Audience',
+    prompt:'We launch next week. Build the target audience and enrich the first hundred contacts.',
+    think:'I need the audience defined first, then real people to put in it.',
+    findQ:'audience building and contact enrichment',
+    found:[['wattdata/audience-compose','5 credits per call'],
+           ['wattdata/audience-insights','5 credits per call'],
+           ['fullenrich/contact-search','5 credits per call']],
+    callQ:'infrastructure buyers evaluating agent tooling',
+    calls:3,
+    rows:[['wattdata/audience-compose','1 audience · 12.4k profiles'],
+          ['wattdata/audience-insights','top traits · infra buyers'],
+          ['fullenrich/contact-search','100 contacts · verified']],
+    credits:'15 credits · 5 × 3 calls',
+    done:'The audience is twelve thousand strong, skewed to platform teams, and the first hundred contacts are verified and ready.',
+    after:'Writing launch-list.csv now…' },
 ];
 
 var SPIN = ['✻','✳','✶','✻'];
@@ -437,7 +471,7 @@ currently available.
   </Card>
 </CardGroup>
 
-## Building the brief
+## Finding and calling capabilities
 
 <Steps>
   <Step title="Ask who can answer it">
@@ -636,7 +670,7 @@ currently available.
   </Step>
 </Steps>
 
-## The whole brief, one request
+## Multiple providers in one request
 
 Each step so far answered one part. They compose: the `exchange` array takes up
 to ten calls, and a `query` runs a web search alongside them.
@@ -778,7 +812,7 @@ Searching the catalog adds no credits. Running a capability costs the
 that succeed. Discovery results carry the price, so you can check before
 calling.
 
-## List your data on Exchange
+## Listing your data
 
 If you have an API you want agents to reach, you can publish it as a provider.
 Upload an OpenAPI specification and Firecrawl derives your capabilities from it,
