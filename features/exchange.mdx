@@ -6,17 +6,21 @@ og:description: "Call approved data providers through one Firecrawl contract"
 icon: "arrow-right-arrow-left"
 ---
 
-Say your agent needs to brief you on Apple: what the company is, who runs AI
-there, and what is being written about it right now.
+An inbound lead lands from someone at Apple. Before anyone replies, your agent
+needs three things the web will not give you cleanly:
 
-Search the web and you get articles *about* those things. The company record
-lives in Crunchbase, the person lives in Apollo, and reaching either one
+1. Is the company real, funded, and how big?
+2. Who actually owns AI there?
+3. What has shipped in the last month?
+
+The first answer lives in a company database, the second in a contact database,
+and only the third is really on the open web. Reaching either of the first two
 normally means finding the vendor, signing up, getting a key, learning their
 schema, and running it as its own service. Three answers, three integrations.
 
-Exchange puts those providers behind the contract you already use. The same
+Exchange puts those providers behind the contract you already use: the same
 [`/search`](/api-reference/endpoint/search) call, the same API key. By the end
-of this page that brief is a single request.
+of this page, triaging that lead is a single request.
 
 <Note>
 Searching the catalog adds no credits to a request. Credits are charged when a
@@ -53,22 +57,22 @@ currently available.
 
 <Steps>
   <Step title="Ask who can answer it">
-    Your agent does not need to know Crunchbase or Apollo exist. Describe what
-    you are after and set `sources` to `exchange`: matching capabilities come
-    back alongside your web results, shaped like any other result. There is no
-    separate catalog endpoint, and searching it adds no credits.
+    Your agent does not need to know Crunchbase or Apollo exist. Name the data it
+    needs and set `sources` to `exchange`: matching capabilities come back
+    alongside your web results, shaped like any other result. There is no separate
+    catalog endpoint, and searching it adds no credits.
 
     <CodeGroup>
     ```js Node
     const result = await firecrawl.search({
-      query: "find a company and the people who run it",
+      query: "company funding and people by title",
       sources: ["exchange"],
     });
     ```
 
     ```python Python
     result = firecrawl.search({
-        "query": "find a company and the people who run it",
+        "query": "company funding and people by title",
         "sources": ["exchange"],
     })
     ```
@@ -78,16 +82,17 @@ currently available.
       -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "query": "find a company and the people who run it",
+        "query": "company funding and people by title",
         "sources": ["exchange"]
       }'
     ```
     </CodeGroup>
 
-    Matches arrive under `data.providers`, best first. The `description` tells you
-    what the capability does and what it costs, `provider` and `capability` are the
-    keys you call it with, and the `url` resolves to its full request and response
-    contract as Markdown:
+    Matches arrive under `data.providers`, ranked. The `description` tells you what
+    the capability does and what it costs, `provider` and `capability` are the keys
+    you call it with, and the `url` resolves to its full request and response
+    contract as Markdown. A response looks like this, trimmed to the two
+    capabilities this page goes on to use:
 
     ```json wrap
     {
@@ -113,9 +118,11 @@ currently available.
     ```
 
     Ranking weights a capability name above a provider blurb that merely mentions
-    the words, so the closest match to your query comes first.
+    the words. Matching is lexical, so name the data you want rather than the
+    situation you are in: "company funding" and "people by title" rank well,
+    "research this lead for me" does not.
 
-    To see the full list rather than search it, browse the
+    To see everything available rather than search it, browse the
     [provider catalogue](https://www.firecrawl.dev/exchange).
   </Step>
 
