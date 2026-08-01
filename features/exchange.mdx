@@ -84,7 +84,7 @@ currently available.
     keys you call it with, and the `url` resolves to its full request and response
     contract as Markdown:
 
-    ```json
+    ```json wrap
     {
       "providers": [
         {
@@ -158,11 +158,6 @@ currently available.
       }'
     ```
     </CodeGroup>
-
-    <Note>
-    Discovery is additive. If the catalog is unavailable the request still returns
-    your web results rather than failing.
-    </Note>
   </Step>
 
   <Step title="Call the provider">
@@ -216,7 +211,7 @@ currently available.
     Provider results arrive under `data.exchange`, and each call is reported
     separately so one failure does not discard the rest:
 
-    ```json
+    ```json wrap
     {
       "success": true,
       "data": {
