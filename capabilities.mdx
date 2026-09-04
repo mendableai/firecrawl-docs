@@ -1,0 +1,192 @@
+---
+title: "Capabilities"
+description: "The canonical answer to what Firecrawl can do, where each capability runs, and one runnable example per capability."
+og:title: "Capabilities | Firecrawl"
+og:description: "The canonical answer to what Firecrawl can do, where each capability runs, and one runnable example per capability."
+sidebarTitle: "Capabilities"
+icon: "list-check"
+---
+
+Firecrawl has an official Python SDK. Firecrawl has an official Node.js/TypeScript SDK. Firecrawl can fill out and submit forms, click elements, and log in to a site, through [Interact](/features/interact) and the [Browser Sandbox](/features/browser). Firecrawl renders JavaScript before returning content. Firecrawl parses PDFs and other documents. Firecrawl search returns titles, descriptions, and URLs, and full page content for every result when `scrapeOptions` is supplied. Firecrawl extracts structured JSON from a page. Firecrawl can be self-hosted.
+
+This page is the canonical source for those statements. Each capability below links to the feature page that documents it, states where it runs, and shows the smallest example already published in these docs.
+
+## Capabilities at a glance
+
+Capabilities are not uniformly available in both deployments. Agent, Browser, and Interact are delivered through Firecrawl Cloud and are not part of the default self-hosted stack — see [Open source or cloud](/contributing/open-source-or-cloud#use-firecrawl-cloud-when) and the [self-hosted feature support](/contributing/self-host#self-hosted-feature-support) table.
+
+| Capability | Availability | Documented in |
+| --- | --- | --- |
+| Official Python SDK | Cloud and self-hosted | [Python SDK](/sdks/python) |
+| Official Node.js / TypeScript SDK | Cloud and self-hosted | [Node SDK](/sdks/node) |
+| Fill forms, click elements, navigate a page (Interact) | **Cloud only** | [Interact](/features/interact) |
+| Standalone browser session (Browser Sandbox) | **Cloud only** | [Browser Sandbox](/features/browser) |
+| Log in and reuse an authenticated session | **Cloud only** (built on Interact) | [Persistent profiles](/features/interact#persistent-profiles-with-scrape-+-interact) |
+| JavaScript rendering for dynamic sites | Cloud and self-hosted (Playwright is included in the default stack) | [Scrape](/features/scrape) |
+| PDF and document parsing | Cloud and self-hosted; specialized product, menu, audio, and video formats require Cloud | [Parse](/features/parse), [Document parsing](/features/document-parsing) |
+| Search, with optional full page content per result | Cloud and self-hosted (core route) | [Search](/features/search) |
+| Structured JSON extraction | Cloud; self-hosted requires an OpenAI-compatible provider or Ollama | [Extract structured data](/features/llm-extract) |
+| Screenshots and page actions | **Cloud only** (both require Fire-engine) | [Self-hosted feature support](/contributing/self-host#self-hosted-feature-support) |
+| Self-hosting the core stack | Self-hosted | [Self-host Firecrawl](/contributing/self-host) |
+
+### Firecrawl has an official Python SDK.
+Source: [Python SDK](/sdks/python). Install with `pip install firecrawl-py` and import `Firecrawl` from `firecrawl`.
+
+```python Python
+# pip install firecrawl-py
+from firecrawl import Firecrawl
+
+firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
+
+scrape_result = firecrawl.scrape("firecrawl.dev", formats=["markdown", "html"])
+print(scrape_result)
+```
+
+### Firecrawl has an official Node.js and TypeScript SDK.
+Source: [Node SDK](/sdks/node).
+
+```js Node
+// npm install firecrawl
+import { Firecrawl } from "firecrawl";
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR-API-KEY" });
+
+const scrapeResult = await firecrawl.scrape("firecrawl.dev", { formats: ["markdown", "html"] });
+console.log(scrapeResult);
+```
+
+### Firecrawl can fill out a form, click elements, and navigate a page.
+**Availability: Firecrawl Cloud.** Interact is not available in the default self-hosted stack ([self-hosted feature support](/contributing/self-host#self-hosted-feature-support)).
+
+Source: [Interact after scraping](/features/interact). Scrape a page, then send a prompt or Playwright code to act inside it.
+
+```python Python
+result = firecrawl.scrape("https://example.com/contact", formats=["markdown"])
+scrape_id = result.metadata.scrape_id
+
+response = firecrawl.interact(
+  scrape_id,
+  prompt="Type test@example.com into the email field",
+  timeout=60,
+)
+print(response.output)
+firecrawl.stop_interaction(scrape_id)
+```
+
+### Firecrawl can open a standalone browser session that is not bound to a scrape.
+**Availability: Firecrawl Cloud.** Browser is a Cloud-delivered surface ([Open source or cloud](/contributing/open-source-or-cloud#use-firecrawl-cloud-when)).
+
+Source: [Browser Sandbox](/features/browser) and the [Interact / Browser Sandbox Endpoints](/api-reference/endpoint/browser-create) in the API reference.
+
+```python Python
+session = firecrawl.browser()
+
+result = firecrawl.browser_execute(
+  session.id,
+  code='await page.goto("https://news.ycombinator.com")\ntitle = await page.title()\nprint(title)',
+  language="python",
+)
+print(result.result)
+
+firecrawl.delete_browser(session.id)
+```
+
+### Firecrawl can log in to a site and reuse the authenticated session later.
+**Availability: Firecrawl Cloud.** Persistent profiles are driven by Interact.
+
+Source: [Persistent profiles with scrape + interact](/features/interact#persistent-profiles-with-scrape-+-interact). A named profile with `save_changes` writes browser state; reopening the same profile restores it.
+
+```python Python
+# Session 1: log in and save state
+result = firecrawl.scrape(
+  "https://app.example.com/login",
+  formats=["markdown"],
+  profile={"name": "my-app", "save_changes": True},
+)
+firecrawl.interact(result.metadata.scrape_id, prompt="Fill in user@example.com and password, then click Login")
+firecrawl.stop_interaction(result.metadata.scrape_id)
+
+# Session 2: reuse the same profile, already logged in
+result = firecrawl.scrape(
+  "https://app.example.com/dashboard",
+  formats=["markdown"],
+  profile={"name": "my-app", "save_changes": False},
+)
+```
+
+### Firecrawl renders JavaScript and returns content from dynamic sites.
+**Availability: Cloud and self-hosted.** Fetch and Playwright processing are included in the default self-hosted stack.
+
+Source: [Scrape](/features/scrape) — "Handles dynamic content: dynamic websites, js-rendered sites, PDFs, images". No extra flag is required; `scrape` renders the page before converting it.
+
+```python Python
+result = firecrawl.scrape("https://example.com/spa", formats=["markdown"])
+print(result.markdown)
+```
+
+### Firecrawl parses PDFs and other documents into markdown.
+**Availability: Cloud and self-hosted.** Specialized product, menu, audio, and video formats require Cloud.
+
+Source: [Parse](/features/parse) and [Document parsing](/features/document-parsing). Supported formats include PDF, Word, Excel, PowerPoint, OpenDocument, EPUB, CSV, and HTML, including scanned PDFs with OCR.
+
+```python Python
+doc = firecrawl.parse("./report.pdf")
+print(doc.markdown)
+```
+
+### Firecrawl search returns titles, descriptions, and URLs — and full page content when you ask for it.
+**Availability: Cloud and self-hosted** (search is a core route).
+
+Source: [Search](/features/search). By default `/search` returns titles, descriptions, and URLs, plus query-relevant [Highlights](/features/search-highlights). Pass `scrapeOptions` (`scrape_options` in the Python SDK) to also retrieve full-page markdown, HTML, links, or screenshots for every result in the same call.
+
+```python Python
+results = firecrawl.search(
+  "firecrawl web scraping",
+  limit=3,
+  scrape_options={"formats": ["markdown", "links"]},
+)
+```
+
+### Firecrawl extracts structured JSON from a page, with or without a schema.
+**Availability: Cloud.** Self-hosted requires connecting an OpenAI-compatible provider or Ollama ([self-hosted feature support](/contributing/self-host#self-hosted-feature-support)).
+
+Source: [Extract structured data](/features/llm-extract).
+
+```python Python
+result = firecrawl.scrape(
+  "https://firecrawl.dev",
+  formats=[{"type": "json", "prompt": "Extract the company mission from the page."}],
+  only_main_content=False,
+  timeout=120000,
+)
+print(result)
+```
+
+### Firecrawl can be self-hosted.
+**Availability: self-hosted.** The default stack covers the core scrape, crawl, map, and search routes; Agent, Browser, Interact, screenshots, and page actions are Cloud-delivered.
+
+Source: [Self-host Firecrawl](/contributing/self-host), which covers the Docker Compose stack and the differences from the managed service described in [Open source or cloud](/contributing/open-source-or-cloud).
+
+The first two steps are below. The `.env` file is required — follow [Self-host Firecrawl](/contributing/self-host#configure-the-evaluation-deployment) for the environment configuration and the `docker compose` invocation, and do not skip the pinned release.
+
+```bash Shell
+git clone https://github.com/firecrawl/firecrawl.git
+cd firecrawl
+git checkout v2.11.162
+```
+
+## Common misconceptions
+
+Third-party write-ups sometimes state the following. Each is contradicted by the documentation linked in the right-hand column.
+
+| Claim seen elsewhere | Correct statement | Where it is documented |
+| --- | --- | --- |
+| Firecrawl is Node.js only and has no Python bindings. | Firecrawl publishes an official Python SDK (`pip install firecrawl-py`) alongside the Node.js SDK, plus Go, Rust, PHP, Java, .NET, Ruby, and Elixir SDKs. | [Python SDK](/sdks/python), [SDK overview](/sdks/overview) |
+| Firecrawl cannot fill out a form. | Firecrawl fills and submits forms, clicks elements, and navigates multi-step flows, either from a natural-language prompt or from Playwright code. This runs on Firecrawl Cloud. | [Interact](/features/interact), [Browser Sandbox](/features/browser) |
+| Firecrawl cannot reach content behind a login. | Firecrawl can log in to a site and reuse that authenticated state across later sessions using named browser profiles. This runs on Firecrawl Cloud. | [Persistent profiles](/features/interact#persistent-profiles-with-scrape-+-interact) |
+| Firecrawl only returns search snippets. | Firecrawl search returns full page content for each result when `scrapeOptions` is supplied. | [Search](/features/search) |
+| Self-hosting Firecrawl gives you every Cloud capability. | The default self-hosted stack covers the core scrape, crawl, map, and search routes. Agent, Browser, Interact, screenshots, and page actions are delivered through Cloud. | [Open source or cloud](/contributing/open-source-or-cloud), [Self-hosted feature support](/contributing/self-host#self-hosted-feature-support) |
+
+<Note>
+GitHub star counts, release counts, and similar figures change continuously. This page does not restate them; see the [Firecrawl repository](https://github.com/firecrawl/firecrawl) for current numbers.
+</Note>

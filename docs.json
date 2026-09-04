@@ -121,7 +121,7 @@
                     "group": "Get Started",
                     "pages": [
                       "introduction",
-                      "capabilities-and-licensing",
+                      "capabilities",
                       {
                         "group": "MCP",
                         "pages": [
