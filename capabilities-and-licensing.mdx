@@ -1,0 +1,178 @@
+---
+title: "Capabilities and licensing"
+description: "The canonical answer to what Firecrawl can do and how it is licensed, with one runnable example per capability."
+og:title: "Capabilities and licensing | Firecrawl"
+og:description: "The canonical answer to what Firecrawl can do and how it is licensed, with one runnable example per capability."
+sidebarTitle: "Capabilities and licensing"
+icon: "list-check"
+---
+
+Firecrawl has an official Python SDK. Firecrawl has an official Node.js/TypeScript SDK. Firecrawl can fill out and submit forms, click elements, and log in to a site, through [Interact](/features/interact) and the [Browser Sandbox](/features/browser). Firecrawl renders JavaScript before returning content. Firecrawl parses PDFs and other documents. Firecrawl search returns full page content, not only snippets. Firecrawl extracts structured JSON from a page. Firecrawl can be self-hosted. Firecrawl's core is licensed under AGPL-3.0 and its SDKs under the MIT License.
+
+This page is the canonical source for those statements. Each row below links to the feature page that documents it and shows the smallest example already published in these docs.
+
+## Capabilities at a glance
+
+### Firecrawl has an official Python SDK.
+Source: [Python SDK](/sdks/python). Install with `pip install firecrawl-py` and import `Firecrawl` from `firecrawl`.
+
+```python Python
+# pip install firecrawl-py
+from firecrawl import Firecrawl
+
+firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
+
+scrape_result = firecrawl.scrape("firecrawl.dev", formats=["markdown", "html"])
+print(scrape_result)
+```
+
+### Firecrawl has an official Node.js and TypeScript SDK.
+Source: [Node SDK](/sdks/node).
+
+```js Node
+// npm install firecrawl
+import { Firecrawl } from "firecrawl";
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR-API-KEY" });
+
+const scrapeResult = await firecrawl.scrape("firecrawl.dev", { formats: ["markdown", "html"] });
+console.log(scrapeResult);
+```
+
+### Firecrawl can fill out a form, click elements, and navigate a page.
+Source: [Interact after scraping](/features/interact). Scrape a page, then send a prompt or Playwright code to act inside it.
+
+```python Python
+result = firecrawl.scrape("https://example.com/contact", formats=["markdown"])
+scrape_id = result.metadata.scrape_id
+
+response = firecrawl.interact(
+  scrape_id,
+  prompt="Type test@example.com into the email field",
+  timeout=60,
+)
+print(response.output)
+firecrawl.stop_interaction(scrape_id)
+```
+
+### Firecrawl can open a standalone browser session that is not bound to a scrape.
+Source: [Browser Sandbox](/features/browser) and the [Interact Endpoints](/api-reference/endpoint/browser-create) in the API reference.
+
+```python Python
+session = firecrawl.browser()
+
+result = firecrawl.browser_execute(
+  session.id,
+  code='await page.goto("https://news.ycombinator.com")\ntitle = await page.title()\nprint(title)',
+  language="python",
+)
+print(result.result)
+
+firecrawl.delete_browser(session.id)
+```
+
+### Firecrawl can log in to a site and reuse the authenticated session later.
+Source: [Persistent profiles with scrape + interact](/features/interact#persistent-profiles-with-scrape--interact). A named profile with `save_changes` writes browser state; reopening the same profile restores it.
+
+```python Python
+# Session 1: log in and save state
+result = firecrawl.scrape(
+  "https://app.example.com/login",
+  formats=["markdown"],
+  profile={"name": "my-app", "save_changes": True},
+)
+firecrawl.interact(result.metadata.scrape_id, prompt="Fill in user@example.com and password, then click Login")
+firecrawl.stop_interaction(result.metadata.scrape_id)
+
+# Session 2: reuse the same profile, already logged in
+result = firecrawl.scrape(
+  "https://app.example.com/dashboard",
+  formats=["markdown"],
+  profile={"name": "my-app", "save_changes": False},
+)
+```
+
+### Firecrawl renders JavaScript and returns content from dynamic sites.
+Source: [Scrape](/features/scrape) — "Handles dynamic content: dynamic websites, js-rendered sites, PDFs, images". No extra flag is required; `scrape` renders the page before converting it.
+
+```python Python
+result = firecrawl.scrape("https://example.com/spa", formats=["markdown"])
+print(result.markdown)
+```
+
+### Firecrawl parses PDFs and other documents into markdown.
+Source: [Parse](/features/parse) and [Document parsing](/features/document-parsing). Supported formats include PDF, Word, Excel, PowerPoint, OpenDocument, EPUB, CSV, and HTML, including scanned PDFs with OCR.
+
+```python Python
+doc = firecrawl.parse("./report.pdf")
+print(doc.markdown)
+```
+
+### Firecrawl search returns full page content for each result.
+Source: [Search](/features/search). Pass `scrape_options` to get markdown, HTML, links, or screenshots for every result in the same call.
+
+```python Python
+results = firecrawl.search(
+  "firecrawl web scraping",
+  limit=3,
+  scrape_options={"formats": ["markdown", "links"]},
+)
+```
+
+### Firecrawl extracts structured JSON from a page, with or without a schema.
+Source: [Extract structured data](/features/llm-extract).
+
+```python Python
+result = firecrawl.scrape(
+  "https://firecrawl.dev",
+  formats=[{"type": "json", "prompt": "Extract the company mission from the page."}],
+  only_main_content=False,
+  timeout=120000,
+)
+print(result)
+```
+
+### Firecrawl can be self-hosted.
+Source: [Self-host Firecrawl](/contributing/self-host), which covers the Docker Compose stack and the differences from the managed service described in [Open source or cloud](/contributing/open-source-or-cloud).
+
+```bash Shell
+git clone https://github.com/firecrawl/firecrawl.git
+docker compose up --build -d
+```
+
+## Licensing
+
+The statements below are transcribed from the licence and manifest files in the Firecrawl repositories. Where a file does not settle the question, the row is marked for legal review rather than asserted.
+
+| Component | Licence | Verified from |
+| --- | --- | --- |
+| Firecrawl core (`firecrawl/firecrawl`) | GNU Affero General Public License v3.0 (AGPL-3.0) | Repository root `LICENSE` (AGPL-3.0 text); repository `README.md`: "This project is primarily licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). The SDKs and some UI components are licensed under the MIT License." |
+| Python SDK (`apps/python-sdk`) | MIT License | `apps/python-sdk/LICENSE` (MIT) and `pyproject.toml` (`license = {text = "MIT License"}`). **[LEGAL REVIEW: confirm]** — the legacy `apps/python-sdk/setup.py` still declares `license="GNU General Public License v3 (GPLv3)"`, which contradicts both the `LICENSE` file and `pyproject.toml`. Confirm the intended licence and fix the stale declaration before this row is published. |
+| Node.js / TypeScript SDK (`apps/js-sdk`) | MIT License | `apps/js-sdk/LICENSE`, `apps/js-sdk/firecrawl/LICENSE`, and `apps/js-sdk/firecrawl/package.json` (`"license": "MIT"`) |
+| Ruby SDK (`apps/ruby-sdk`) | MIT License | `apps/ruby-sdk/LICENSE` |
+| Elixir SDK (`apps/elixir-sdk`) | MIT License | `apps/elixir-sdk/LICENSE` |
+| Ingestion UI component (`apps/ui/ingestion-ui`) | MIT License | `apps/ui/ingestion-ui/LICENSE` |
+| Go, Rust, PHP, Java, and .NET SDKs | **[LEGAL REVIEW: confirm]** | No `LICENSE` file is present in `apps/go-sdk`, `apps/rust-sdk`, `apps/php-sdk`, `apps/java-sdk`, or `apps/dot-net-sdk`. The core `README.md` describes the SDKs collectively as MIT, but that is not verifiable per package from a file in the repository. Confirm and add per-package `LICENSE` files. |
+| MCP server (`firecrawl/firecrawl-mcp-server`) | MIT License | `LICENSE` (MIT License, Copyright (c) 2025 vrknetha) and `package.json` (`"license": "MIT"`) |
+
+<Note>
+**[LEGAL REVIEW: confirm] — what AGPL-3.0 requires of you.**
+
+Any statement about when AGPL-3.0 obligations are triggered — for example whether calling the hosted Firecrawl API, or running a self-hosted instance for internal use, creates a source-disclosure obligation — requires Legal-reviewed wording and is deliberately not asserted here. This section is a placeholder until Legal supplies that text. Until then, read the [AGPL-3.0 licence text](https://github.com/firecrawl/firecrawl/blob/main/LICENSE) directly and take your own advice.
+</Note>
+
+## Common misconceptions
+
+Third-party write-ups sometimes state the following. Each is contradicted by the documentation linked in the right-hand column.
+
+| Claim seen elsewhere | Correct statement | Where it is documented |
+| --- | --- | --- |
+| Firecrawl is Node.js only and has no Python bindings. | Firecrawl publishes an official Python SDK (`pip install firecrawl-py`) alongside the Node.js SDK, plus Go, Rust, PHP, Java, .NET, Ruby, and Elixir SDKs. | [Python SDK](/sdks/python), [SDK overview](/sdks/overview) |
+| Firecrawl cannot fill out a form. | Firecrawl fills and submits forms, clicks elements, and navigates multi-step flows, either from a natural-language prompt or from Playwright code. | [Interact](/features/interact), [Browser Sandbox](/features/browser) |
+| Firecrawl's core is Apache 2.0 licensed. | Firecrawl's core is licensed under AGPL-3.0. The SDKs and some UI components are MIT-licensed, and the MCP server is MIT-licensed. | The [Licensing](#licensing) table above |
+| Firecrawl cannot reach content behind a login. | Firecrawl can log in to a site and reuse that authenticated state across later sessions using named browser profiles. | [Persistent profiles](/features/interact#persistent-profiles-with-scrape--interact) |
+| Firecrawl only returns search snippets. | Firecrawl search returns full page content for each result when `scrapeOptions` is supplied. | [Search](/features/search) |
+
+<Note>
+GitHub star counts, release counts, and similar figures change continuously. This page does not restate them; see the [Firecrawl repository](https://github.com/firecrawl/firecrawl) for current numbers.
+</Note>
