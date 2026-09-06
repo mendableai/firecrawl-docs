@@ -154,7 +154,7 @@ The minimum interval is 5 minutes. API responses always return the normalized cr
 
 ## Change tracking
 
-[Page](/features/monitoring-page) and [website](/features/monitoring-website) monitors diff each page's markdown by default and report `same`, `changed`, `new`, `removed`, or `error`. When you want to detect changes in **specific structured fields** (price, headline, in-stock flag, the items in a list, etc.), enable JSON-mode change tracking by adding a `changeTracking` format with `modes: ["json"]` to the target's `scrapeOptions`.
+[Page](/features/monitoring-page) and [website](/features/monitoring-website) monitors diff each page's markdown by default and report `same`, `changed`, `new`, `removed`, or `error`. The same diffing is available on a single call through the [change tracking](/features/change-tracking) format when you run the scrape yourself. When you want to detect changes in **specific structured fields** (price, headline, in-stock flag, the items in a list, etc.), enable JSON-mode change tracking by adding a `changeTracking` format with `modes: ["json"]` to the target's `scrapeOptions`.
 
 <Note>
   Change tracking applies to `scrape` and `crawl` targets. Entire web-scale (`search`) monitors alert on new results rather than diffing known pages. See [Statuses and dedup](/features/monitoring-web-scale#statuses-and-dedup).
@@ -218,6 +218,8 @@ When a monitor has a `webhook`, Firecrawl can send two monitor events:
 <CheckCompletedPayload />
 
 `success` is `true` when the check completed without page errors. It is `false` for failed or partial checks, and `error` contains the failure reason when available.
+
+Your endpoint must answer with a `2xx` status within 10 seconds. Failed deliveries are retried three times, after 1, 5, and 15 minutes, and the webhook is marked as failed after that. See [Timeouts and retries](/webhooks/overview#timeouts--retries) for the full table.
 
 ### Email
 
