@@ -60,7 +60,7 @@ Every monitor has one or more **targets**. The target type determines what each 
 
 Each monitor accepts 1–50 targets, and you can mix target types in a single monitor. `retentionDays` defaults to `30` and can be set up to `365`.
 
-Every create call returns the new monitor with its normalized cron, computed `nextRunAt`, and `estimatedCreditsPerMonth`. When judging is enabled, `estimatedCreditsPerMonth` is an upper-bound estimate because judge credits are only charged for changed pages that are actually judged:
+Every create call returns the new monitor with its normalized cron, computed `nextRunAt`, `estimatedCreditsPerMonth`, and `unchangedPagesFree`. When judging is enabled, `estimatedCreditsPerMonth` is an upper-bound estimate because judge credits are only charged for changed pages that are actually judged. `unchangedPagesFree` tells you whether this schedule qualifies for [free unchanged pages](#unchanged-pages):
 
 <CreateOutput />
 
@@ -77,7 +77,7 @@ Use `judgeEnabled: false` if you want to store a goal without judging changes ye
 </Note>
 
 <Note>
-  Each check always charges for the underlying scrapes or crawls. If judging is enabled, the judge adds 1 credit for each changed page it validates. Checks with no changed pages do not use judge credits.
+  Each check charges for the underlying scrapes or crawls, except for unchanged pages on a [qualifying schedule](#unchanged-pages). If judging is enabled, the judge adds 1 credit for each changed page it validates. Checks with no changed pages do not use judge credits.
 </Note>
 
 Good goals are short and explicit: say what should trigger an alert, restate any scope such as top N, price, role type, company, region, topic, status, or entity, and include exclusions only when they are part of the intent. If the goal is broad, keep it broad; for example, "any change" should not add noise filters that would hide changes.
@@ -260,7 +260,7 @@ Use `GET /v2/monitor/{monitorId}/checks` to list checks and `GET /v2/monitor/{mo
 
 List checks can be filtered by check `status`: `queued`, `running`, `completed`, `failed`, `partial`, or `skipped_overlap`.
 
-The check detail response includes `estimatedCredits`, `actualCredits`, summary counts, and a paginated `pages` array. `estimatedCredits` is the upper-bound reservation for the check; `actualCredits` is the final amount charged after Firecrawl knows how many pages changed and needed judging. Use the top-level `next` URL to fetch the next page of results, matching crawl pagination. You can filter pages by `status`: `same`, `new`, `changed`, `removed`, or `error`. Each changed page includes inline `diff` data; pages from JSON-mode monitors also include a `snapshot` with the current extraction.
+The check detail response includes `estimatedCredits`, `actualCredits`, summary counts, and a paginated `pages` array. `estimatedCredits` is the upper-bound reservation for the check; `actualCredits` is the final amount charged after Firecrawl knows how many pages changed and needed judging. On a schedule that qualifies for [free unchanged pages](#unchanged-pages), `same` pages are left out of `actualCredits`, so a check where nothing changed settles at `0`. Use the top-level `next` URL to fetch the next page of results, matching crawl pagination. You can filter pages by `status`: `same`, `new`, `changed`, `removed`, or `error`. Each changed page includes inline `diff` data; pages from JSON-mode monitors also include a `snapshot` with the current extraction.
 
 <Tabs>
   <Tab title="Markdown mode">
@@ -286,6 +286,27 @@ Monitors don't introduce a separate per-monitor fee. Each check pays for the und
 | Web monitor judging | 1 credit per result judged, when AI judging is enabled (covers scraping and evaluating the result) |
 | Meaningful change enabled | 1 additional credit per changed page that the judge validates |
 | Format add-ons (JSON, PDF, question, enhanced mode, etc.) | Same as standalone [scrape](/features/scrape) |
+
+### Unchanged pages
+
+Checks on a slow enough schedule don't pay for pages whose content didn't change. A page counted as `same` in the check summary costs 0 credits; `new`, `changed`, and `error` pages bill normally, as does the judge credit for a changed page it validates.
+
+The schedule has to be at or slower than your plan's threshold:
+
+| Plan | Unchanged pages are free at |
+|------|-----------------------------|
+| Free | Daily or slower |
+| Hobby, Standard | Hourly or slower |
+| Growth | Every 15 minutes or slower |
+| Scale, Enterprise | Every 5 minutes or slower |
+
+Faster schedules keep billing every page, so a high-frequency monitor costs the same as before.
+
+You don't have to work the threshold out yourself: every monitor response includes `unchangedPagesFree`, resolved from the monitor's current schedule and your plan. It flips automatically when you change the schedule or your plan, so a monitor created below the threshold starts saving credits as soon as it qualifies — no need to recreate it.
+
+<Note>
+  Reservations are still sized for the worst case. A check reserves credits as if every page changed, then settles to the real amount once it knows what actually changed, so `estimatedCredits` on a check can be much higher than the `actualCredits` you're billed.
+</Note>
 
 
 ## API reference

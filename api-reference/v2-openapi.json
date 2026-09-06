@@ -7710,6 +7710,10 @@
             "nullable": true,
             "description": "Upper-bound monthly credit estimate. When judging is enabled, actual usage may be lower because judge credits are only charged for changed pages that are judged."
           },
+          "unchangedPagesFree": {
+            "type": "boolean",
+            "description": "Whether checks on this monitor skip billing for pages whose content did not change. True when the schedule interval is at or above your plan's threshold. Because it depends on both the schedule and the plan, it is resolved per request rather than stored on the monitor."
+          },
           "lastCheckSummary": {
             "$ref": "#/components/schemas/MonitorSummary"
           },
