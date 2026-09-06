@@ -51,7 +51,7 @@ func main() {
 
   content, err := app.ScrapeURL("docs.firecrawl.dev", nil)
   if err != nil {
-    log.Fatalf("Failed)
+    log.Fatalf("Failed to scrape URL: %v", err)
   }
 }
 ```
