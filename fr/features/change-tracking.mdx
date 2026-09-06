@@ -41,7 +41,7 @@ La réponse inclut ces champs dans l&#39;objet `changeTracking` :
   ## Utilisation de base
 </div>
 
-Incluez à la fois `markdown` et `suiviDesModifications` dans le tableau `formats`. Le format `markdown` est obligatoire, car la fonctionnalité de suivi des modifications compare les pages à partir de leur contenu Markdown.
+Incluez à la fois `markdown` et `changeTracking` dans le tableau `formats`. Le format `markdown` est obligatoire, car la fonctionnalité de suivi des modifications compare les pages à partir de leur contenu Markdown.
 
 <CodeGroup>
   ```python Python
@@ -51,7 +51,7 @@ Incluez à la fois `markdown` et `suiviDesModifications` dans le tableau `format
 
   result = firecrawl.scrape(
       "https://example.com/pricing",
-      formats=["markdown", "suiviDesModifications"]
+      formats=["markdown", "changeTracking"]
   )
 
   print(result.changeTracking)
@@ -63,7 +63,7 @@ Incluez à la fois `markdown` et `suiviDesModifications` dans le tableau `format
   const firecrawl = new Firecrawl({ apiKey: "fc-YOUR-API-KEY" });
 
   const result = await firecrawl.scrape('https://example.com/pricing', {
-    formats: ['markdown', 'suiviDesModifications']
+    formats: ['markdown', 'changeTracking']
   });
 
   console.log(result.changeTracking);
@@ -75,7 +75,7 @@ Incluez à la fois `markdown` et `suiviDesModifications` dans le tableau `format
     -H "Content-Type: application/json" \
     -d '{
       "url": "https://example.com/pricing",
-      "formats": ["markdown", "suiviDesModifications"]
+      "formats": ["markdown", "changeTracking"]
     }'
   ```
 </CodeGroup>
@@ -174,7 +174,7 @@ L&#39;objet `diff` contient à la fois un diff en texte brut et une représentat
 
 ```json
 {
-  "suiviDesModifications": {
+  "changeTracking": {
     "previousScrapeAt": "2025-06-01T10:00:00.000+00:00",
     "changeStatus": "changed",
     "visibility": "visible",

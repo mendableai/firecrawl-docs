@@ -14,7 +14,7 @@ Le suivi des modifications permet de surveiller et de détecter l’évolution d
   ## Vue d’ensemble
 </div>
 
-Le suiviDesModifications vous permet de :
+Le suivi des modifications vous permet de :
 
 - Détecter si une page web a changé depuis le dernier scrape
 - Voir les changements spécifiques entre les scrapes
@@ -187,7 +187,7 @@ interface ScrapeParams {
   ### Utilisation de base
 </div>
 
-Pour activer le suivi des modifications dans le SDK Python, ajoutez &quot;suiviDesModifications&quot; à la liste des formats lors du scraping d’une URL :
+Pour activer le suivi des modifications dans le SDK Python, ajoutez &quot;changeTracking&quot; à la liste des formats lors du scraping d’une URL :
 
 ```python
 from firecrawl import FirecrawlApp, ChangeTrackingOptions
@@ -246,7 +246,7 @@ La fonctionnalité de suivi des modifications comprend le modèle de données Py
 ```python
 class ChangeTrackingData(pydantic.BaseModel):
     """
-    Données pour le format de suiviDesModifications.
+    Données pour le format changeTracking.
     """
     previousScrapeAt: Optional[str] = None
     changeStatus: str  # "new" | "same" | "changed" | "removed" (nouveau | identique | modifié | supprimé)
@@ -311,17 +311,17 @@ Pour utiliser le mode JSON, vous devez fournir un schéma qui spécifie les cham
 Voici quelques points clés à connaître lors de l’utilisation de la fonctionnalité de suivi des modifications :
 
 - **Méthode de comparaison** : Les scrapes sont toujours comparés à partir de leur réponse en markdown.
-  - Le format `markdown` doit également être spécifié lorsque vous utilisez le format `suiviDesModifications`. D’autres formats peuvent être ajoutés en complément.
+  - Le format `markdown` doit également être spécifié lorsque vous utilisez le format `changeTracking`. D’autres formats peuvent être ajoutés en complément.
   - L’algorithme de comparaison est robuste face aux variations d’espaces et à l’ordre du contenu. Les URL source d’iframe sont actuellement ignorées afin de résister aux captchas et aux antibots qui utilisent des URL aléatoires.
 
 - **Appariement avec les scrapes précédents** : Les scrapes précédents utilisés pour la comparaison sont actuellement appariés selon l’URL source, l’ID d’équipe, le format `markdown` et le paramètre `tag`.
   - Pour une comparaison efficace, l’URL fournie doit être exactement la même que lors de la requête précédente pour le même contenu.
-  - Explorer les mêmes URL avec des `includePaths`/`excludePaths` différents entraînera des incohérences avec `suiviDesModifications`.
-  - Scraper les mêmes URL avec des `includeTags`/`excludeTags`/`onlyMainContent` différents entraînera des incohérences avec `suiviDesModifications`.
-  - Les pages seront également comparées aux scrapes précédents qui ne disposaient que du format `markdown`, sans le format `suiviDesModifications`.
+  - Explorer les mêmes URL avec des `includePaths`/`excludePaths` différents entraînera des incohérences avec `changeTracking`.
+  - Scraper les mêmes URL avec des `includeTags`/`excludeTags`/`onlyMainContent` différents entraînera des incohérences avec `changeTracking`.
+  - Les pages seront également comparées aux scrapes précédents qui ne disposaient que du format `markdown`, sans le format `changeTracking`.
   - Les comparaisons sont limitées à votre équipe. Si vous scrapez une URL pour la première fois avec votre clé API, son `changeStatus` sera toujours `new`, même si d’autres utilisateurs de Firecrawl l’ont déjà scrapée.
 
-- **Gestion des erreurs** : Il est recommandé de surveiller le champ `warning` du document résultant et de gérer le cas où l’objet `suiviDesModifications` pourrait être absent de la réponse.
+- **Gestion des erreurs** : Il est recommandé de surveiller le champ `warning` du document résultant et de gérer le cas où l’objet `changeTracking` pourrait être absent de la réponse.
   - Cela peut se produire si la recherche en base de données du scrape précédent à comparer dépasse le délai imparti.
 
 <div id="examples">
@@ -375,7 +375,7 @@ Voici quelques points clés à connaître lors de l’utilisation de la fonction
 ```javascript
 // JavaScript
 const result = await app.scrapeUrl('https://example.com/product', {
-  formats: ['markdown', 'suiviDesModifications'],
+  formats: ['markdown', 'changeTracking'],
   changeTrackingOptions: {
     modes: ['json'],
     schema: {
