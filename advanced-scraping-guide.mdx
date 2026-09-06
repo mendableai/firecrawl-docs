@@ -664,7 +664,8 @@ Here is the API Reference for it: [Map Endpoint Documentation](https://docs.fire
 
 ### Allowing Firecrawl to scrape your website
 
-- **User Agent**: Allow `FirecrawlAgent` in your firewall or security rules.
+- **robots.txt**: Firecrawl reads `robots.txt` before it crawls a site, and applies the rules written for the user-agent token `FirecrawlAgent` as well as the rules written for `*`. Use `FirecrawlAgent` to allow or disallow Firecrawl in `robots.txt`.
+- **User agent**: Firecrawl does not send `FirecrawlAgent` in the `User-Agent` header of its page requests, so firewall and WAF rules that match on that token will not match Firecrawl traffic.
 - **IP addresses**: Firecrawl does not use a fixed set of outbound IPs.
 
 ### Allowing your application to call the Firecrawl API
