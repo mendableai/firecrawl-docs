@@ -5352,6 +5352,26 @@
     {
       "destination": "/introduction",
       "source": "/migrate-to-v2.md"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/amazon"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/etsy"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/github"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/wikipedia"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites"
     }
   ],
   "seo": {
