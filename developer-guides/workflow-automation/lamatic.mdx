@@ -1,0 +1,273 @@
+# Firecrawl + Lamatic.ai
+
+> Official integration for Firecrawl + Lamatic AI agent automation platform
+
+<Note>
+  **Official Integration:** [lamatic.ai/integrations/apps-data-sources/firecrawl](https://lamatic.ai/integrations/apps-data-sources/firecrawl)
+
+  Native Lamatic integration -  Sync & Async modes -  Agent & workflow apps -  Production-ready
+</Note>
+
+## Lamatic Integration Overview
+
+Lamatic.ai is an AI agent automation platform that enables developers to build, deploy, and scale intelligent agents. The native Firecrawl integration provides powerful web crawling and scraping capabilities directly within your agent workflows.
+
+<CardGroup cols={2}>
+  <Card title="Visual Agent Builder" icon="diagram-project">
+    Drag-and-drop Firecrawl nodes into your agent workflows with no code required
+  </Card>
+
+  <Card title="Sync & Async Execution" icon="arrows-rotate">
+    Run crawls in real-time or async mode with webhook notifications for long operations
+  </Card>
+</CardGroup>
+
+## Firecrawl Tools in Lamatic
+
+<AccordionGroup>
+  <Accordion title="Single Crawler" icon="spider">
+    Systematically crawl websites starting from a single URL, discovering and mapping site structure with customizable depth and limits.
+
+    **Use Cases:** Documentation scraping, blog content extraction, site structure mapping, competitive analysis.
+  </Accordion>
+
+  <Accordion title="Batch Crawler" icon="spider-web">
+    Crawl multiple websites simultaneously in sync or async mode with webhook notifications for completion events.
+
+    **Use Cases:** Multi-domain monitoring, bulk content extraction, parallel competitor research, distributed crawling.
+  </Accordion>
+
+  <Accordion title="Single Scraper" icon="file-code">
+    Extract targeted content from specific web pages using customizable rules, HTML tag filtering, and dynamic content handling.
+
+    **Use Cases:** Product data extraction, article scraping, price monitoring, content aggregation.
+  </Accordion>
+
+  <Accordion title="Batch Scraper" icon="layer-group">
+    Scrape multiple URLs in batch mode with async processing and webhook-driven updates.
+
+    **Use Cases:** Bulk data collection, scheduled scraping jobs, multi-page extraction, batch processing pipelines.
+  </Accordion>
+
+  <Accordion title="Map URL" icon="sitemap">
+    Generate a complete map of all accessible URLs on a website for discovery and planning.
+
+    **Use Cases:** Site structure analysis, SEO auditing, crawl planning, URL discovery for batch operations.
+  </Accordion>
+</AccordionGroup>
+
+## Getting Started
+
+<Steps>
+  <Step title="Register on Firecrawl">
+    Visit [Firecrawl](https://www.firecrawl.dev) and create an account to access the API dashboard
+  </Step>
+
+  <Step title="Generate API Key">
+    Navigate to your Firecrawl account dashboard and generate a new API key
+  </Step>
+
+  <Step title="Configure Credentials in Lamatic">
+    In Lamatic, add Firecrawl credentials with:
+    * **Credential Name:** Identifier for your credentials (e.g., `my-firecrawl-creds`)
+    * **Firecrawl API Key:** Your authentication key (e.g., `fc_api_xxxxxxxxxxxxx`)
+    * **Host:** Base URL (`https://api.firecrawl.dev`)
+  </Step>
+
+  <Step title="Add Firecrawl Node">
+    Drag a Firecrawl node into your Lamatic workflow and select your operation type
+  </Step>
+
+  <Step title="Configure & Deploy">
+    Set parameters, test your workflow, and deploy your agent
+  </Step>
+</Steps>
+
+## Usage Patterns
+
+<Tabs>
+  <Tab title="Sync Mode">
+    **Real-Time Execution**
+
+    Firecrawl nodes execute within sync nodes, returning results immediately in your workflow.
+
+    **Best For:**
+    * Quick single-page scrapes
+    * Small-scale crawls (< 50 pages)
+    * Real-time data needs
+    * Interactive agent responses
+
+    **Output Format:**
+    ```json
+    {
+      "success": true,
+      "status": "completed",
+      "completed": 48,
+      "total": 50,
+      "creditsUsed": 13,
+      "data": [...]
+    }
+    ```
+  </Tab>
+
+  <Tab title="Async Mode">
+    **Webhook-Driven Processing**
+
+    Large crawls run asynchronously with webhook notifications for completion, progress, and errors.
+
+    **Best For:**
+    * Large-scale crawls (100+ pages)
+    * Multi-domain batch operations
+    * Background processing
+    * Scheduled jobs
+
+    **Webhook Events:**
+    * `started` - Crawl initiated
+    * `page` - Each page completed
+    * `completed` - Job finished
+    * `failed` - Error occurred
+
+    **Output Format:**
+    ```json
+    {
+      "success": true,
+      "id": "8***************************7",
+      "url": "https://api.firecrawl.dev/v1/crawl/..."
+    }
+    ```
+  </Tab>
+
+  <Tab title="Agent Workflows">
+    **AI-Powered Automation**
+
+    Combine Firecrawl with LLM nodes for intelligent data processing:
+
+    1. Firecrawl extracts web content
+    2. Code nodes process and transform data
+    3. LLM nodes analyze and generate insights
+    4. Vector DB stores for RAG applications
+
+    **Example Flow:**
+    ```
+    Trigger → Firecrawl (Crawl) → Code Node (Parse) → LLM (Analyze) → VectorDB (Store)
+    ```
+  </Tab>
+</Tabs>
+
+## Common Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Knowledge Base Chatbot" icon="messages">
+    Crawl documentation sites and build RAG-powered chatbots with up-to-date knowledge
+  </Card>
+
+  <Card title="Competitor Monitoring Agent" icon="binoculars">
+    Track competitor websites, extract pricing data, and alert on changes automatically
+  </Card>
+
+  <Card title="Content Aggregation Pipeline" icon="newspaper">
+    Scrape multiple content sources, process with LLMs, and publish aggregated insights
+  </Card>
+
+  <Card title="Research Assistant" icon="brain">
+    Build agents that autonomously research topics by crawling and analyzing web sources
+  </Card>
+</CardGroup>
+
+## Configuration Reference
+
+### Crawler Parameters
+
+| Parameter              | Description                                    | Example Value               |
+| ---------------------- | ---------------------------------------------- | --------------------------- |
+| **URL**                | Starting point for crawl                       | `https://example.com`       |
+| **Include Path**       | URL patterns to include                        | `"blog/*", "products/*"`    |
+| **Exclude Path**       | URL patterns to exclude                        | `"admin/*", "private/*"`    |
+| **Crawl Depth**        | Maximum depth relative to start URL            | `3`                         |
+| **Crawl Limit**        | Maximum pages to crawl                         | `1000`                      |
+| **Max Discovery Depth**| Max depth for discovering new URLs             | `5`                         |
+| **Allow External Links**| Crawl external domains                        | `false`                     |
+| **Delay**              | Request throttle delay (seconds)               | `2`                         |
+
+### Scraper Parameters
+
+| Parameter                | Description                         | Example Value             |
+| ------------------------ | ----------------------------------- | ------------------------- |
+| **URL**                  | Target URL to scrape                | `https://example.com/page`|
+| **Main Content**         | Extract only main content           | `true`                    |
+| **Include Tags**         | HTML tags to extract                | `p, h1, h2, article`      |
+| **Exclude Tags**         | HTML tags to exclude                | `nav, footer, aside`      |
+| **Emulate Mobile Device**| Simulate mobile browser             | `true`                    |
+| **Wait for Page Load**   | Delay for dynamic content (ms)      | `2000`                    |
+
+### Webhook Configuration
+
+| Parameter            | Description                           | Example Value                        |
+| -------------------- | ------------------------------------- | ------------------------------------ |
+| **Callback Webhook** | URL for completion notifications      | `https://example.com/webhook`        |
+| **Webhook Headers**  | Custom headers for webhook            | `{'Content-Type':'application/json'}`|
+| **Webhook Metadata** | Custom metadata to send               | `{'status':'{{node.status}}'}`       |
+| **Webhook Events**   | Events to trigger notifications       | `["completed", "failed", "page"]`    |
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Performance Optimization" icon="gauge-high">
+    * Use Map URL before large crawls to plan
+    * Set appropriate crawl limits
+    * Configure delay to avoid rate limits
+    * Use batch mode for multiple domains
+  </Card>
+
+  <Card title="Workflow Design" icon="diagram-project">
+    * Test with small datasets first
+    * Add error handling for failed scrapes
+    * Use async mode for > 50 pages
+    * Configure webhook metadata for tracking
+  </Card>
+
+  <Card title="Dynamic Content" icon="mobile">
+    * Increase "Wait for Page Load" time
+    * Enable mobile emulation if needed
+    * Test with browser DevTools first
+    * Use Include/Exclude Tags strategically
+  </Card>
+
+  <Card title="Data Processing" icon="code">
+    * Process scraped data with Code nodes
+    * Transform JSON before LLM processing
+    * Store in VectorDB for RAG applications
+    * Cache results to reduce API calls
+  </Card>
+</CardGroup>
+
+## Lamatic vs Other Platforms
+
+| Feature              | Lamatic              | Dify                 | Make                | n8n                 |
+| -------------------- | -------------------- | -------------------- | ------------------- | ------------------- |
+| **Type**             | AI agent platform    | LLM app platform     | Workflow automation | Workflow automation |
+| **Best For**         | Agent automation     | AI chatbots          | Visual workflows    | Developer control   |
+| **Firecrawl Mode**   | Tool + Node Based    | Tool-based           | Action-based        | Node-based          |
+| **Webhook Support**  | Native               | Via plugins          | Native              | Native              |
+| **Batch Operations** | Yes                  | Manual               | Yes                 | Yes                 |
+| **Self-Hosted**      | In Works             | Yes                  | No                  | Yes                 |
+| **VectorDB Built-in**| Yes                  | Yes                  | No                  | No                  |
+
+<Tip>
+  **Pro Tip:** Lamatic excels at building production-grade AI agents with native Firecrawl integration. Use sync mode for real-time scraping in interactive agents, and async mode with webhooks for large-scale batch processing and monitoring workflows.
+</Tip>
+
+## Troubleshooting
+
+| Problem                      | Solution                                                      |
+| ---------------------------- | ------------------------------------------------------------- |
+| Invalid API Key              | Verify API key in Firecrawl dashboard and update credentials  |
+| Connection Issues            | Check host URL and whitelist Cloudflare IPs if self-hosting   |
+| Webhook Not Triggering       | Confirm endpoint is active and accepts POST requests          |
+| Dynamic Content Not Loaded   | Increase "Wait for Page Load" time (e.g., 2000-5000ms)        |
+| Crawl Limit Exceeded         | Adjust "Crawl Limit" parameter or upgrade Firecrawl plan      |
+| Include/Exclude Path Errors  | Review path patterns for syntax errors and test individually  |
+
+<Note>
+  **Need Help?** Check [Lamatic Firecrawl Documentation](https://lamatic.ai/integrations/apps-data-sources/firecrawl) or join the community for support. For Firecrawl-specific issues, refer to [Firecrawl Docs](https://docs.firecrawl.dev).
+</Note>
