@@ -260,7 +260,7 @@ Use `GET /v2/monitor/{monitorId}/checks` to list checks and `GET /v2/monitor/{mo
   <GetCheckCURL />
 </CodeGroup>
 
-List checks can be filtered by check `status`: `queued`, `running`, `completed`, `failed`, `partial`, or `skipped_overlap`.
+List checks can be filtered by check `status`: `queued`, `running`, `completed`, `failed`, `partial`, `skipped_overlap`, or `skipped_no_credits`. That is the complete set. See [Skipped checks and paused monitors](#skipped-checks-and-paused-monitors) for what the two skip statuses mean.
 
 The check detail response includes `estimatedCredits`, `actualCredits`, summary counts, and a paginated `pages` array. `estimatedCredits` is the upper-bound reservation for the check; `actualCredits` is the final amount charged after Firecrawl knows how many pages changed and needed judging. Use the top-level `next` URL to fetch the next page of results, matching crawl pagination. You can filter pages by `status`: `same`, `new`, `changed`, `removed`, or `error`. Each changed page includes inline `diff` data; pages from JSON-mode monitors also include a `snapshot` with the current extraction.
 
@@ -275,6 +275,34 @@ The check detail response includes `estimatedCredits`, `actualCredits`, summary 
     <CheckOutputMixed />
   </Tab>
 </Tabs>
+
+## Skipped checks and paused monitors
+
+A scheduled check can end without running. It is recorded with a skip status, not a failure, and it is not charged.
+
+| Status | What happened |
+|--------|---------------|
+| `skipped_overlap` | The previous check for this monitor was still running when this one came due, so this one was skipped instead of running alongside it. The next scheduled check runs normally. |
+| `skipped_no_credits` | The credit check for this monitor refused the run. `actualCredits` is `0` and `error` says why. This covers both a team that has run out of credits and a partner-granted job whose partner has withdrawn it. |
+
+A `skipped_no_credits` check resolves itself as soon as the reason does. Adding credits is enough. Nothing needs to be reset on the monitor.
+
+### There is no failure counter to read
+
+Firecrawl does not keep or return an aggregate failure count, an error rate, or a consecutive-skip count on a monitor. The monitor object returns `status`, `nextRunAt`, `lastRunAt`, `currentCheckId` and `lastCheckSummary`, and a check returns its own `status` and `error`. None of those is a running total.
+
+If you want a streak or a rate, derive it from the checks list. `GET /v2/monitor/{monitorId}/checks` returns checks newest first, so counting the leading run of a status gives you the current streak, and one check with a different status ends it.
+
+### Automatic pausing
+
+Firecrawl pauses a monitor in one case. When a monitor runs on credits granted through a [partner integration](/partner-credits) and the partner withdraws that job, every check is skipped with `skipped_no_credits` and an error saying the partner has revoked the job. That condition never clears on its own, so after three consecutive skips of that kind Firecrawl sets the monitor's `status` to `paused` and clears `nextRunAt`, which stops the schedule.
+
+Two things follow from this.
+
+- Running out of credits does not pause a monitor. A team over its balance keeps its schedule and keeps recording `skipped_no_credits` checks until credits are available again.
+- The pause is a state change, not a notification. There is no pause webhook event and no pause email. Read `status` on the monitor to see it, and use `PATCH /v2/monitor/{monitorId}` to set it back to `active` once the underlying access is restored.
+
+A paused monitor keeps its configuration and its check history. Pausing is not deleting.
 
 ## Pricing
 
