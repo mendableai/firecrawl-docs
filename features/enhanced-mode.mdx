@@ -39,11 +39,11 @@ Set the `proxy` parameter to choose a proxy strategy. The following example uses
 
 </CodeGroup>
 
-## When `auto` escalates
+## When Firecrawl escalates
 
-With `proxy` set to `auto`, Firecrawl starts on basic proxies. If the target responds with **401, 403, or 429**, Firecrawl treats that as a sign the proxy was not good enough and retries the same URL through enhanced proxies. Other status codes, including 404 and 5xx, do not trigger an escalation, because a different proxy would not change the answer.
+Firecrawl starts on basic proxies. If the target responds with **401, 403, or 429**, Firecrawl treats that as a sign the proxy was not good enough and retries the same URL through enhanced proxies. Other status codes, including 404 and 5xx, do not trigger an escalation, because a different proxy would not change the answer.
 
-The escalation happens at most once per request. Once a request is already on enhanced proxies, a further 401, 403, or 429 is returned to you as the result rather than retried again. Setting `proxy` to `basic` or `enhanced` explicitly turns escalation off, since you have chosen the tier yourself.
+The escalation happens at most once per request. Once a request is already on enhanced proxies, a further 401, 403, or 429 is returned to you as the result rather than retried again.
 
 You do not need to detect this or handle it. The retry is part of the same request and the response you receive is the final one.
 
