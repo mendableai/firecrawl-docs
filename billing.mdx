@@ -91,8 +91,8 @@ New accounts start on the free plan. It costs nothing and does not need a card. 
 
 - **1,000 credits per month.** The allotment resets at the start of each monthly cycle. Unused free credits do not roll over.
 - **2 concurrent browsers**, with the same 50,000 maximum queued jobs as the paid self-serve plans.
-- **Rate limits of 10 requests per minute** on `/scrape`, `/map` and `/search`, and **2 requests per minute** on `/crawl`, `/agent` and `/interact`. Batch scrape shares the crawl limit and extract shares the agent limit. See [Rate Limits](/rate-limits) for the full table.
-- **Every API endpoint.** No endpoint is restricted by plan. Credit costs are the same on every plan, so the [credit costs per endpoint](#credit-costs-per-endpoint) table above applies unchanged.
+- **Rate limits of 10 requests per minute** on `/scrape`, `/map` and `/search`, and **2 requests per minute** on `/crawl`, `/agent` and `/interact`. Batch scrape shares the scrape limit and extract shares the agent limit. See [Rate Limits](/rate-limits) for the full table.
+- **Every core product endpoint.** Scrape, crawl, map, search, extract, batch scrape, interact and monitor all work on the free plan. Some team administration and enterprise features are enabled per team rather than by plan, including threat protection, SIEM logging and zero data retention search. Credit costs are the same on every plan, so the [credit costs per endpoint](#credit-costs-per-endpoint) table above applies unchanged.
 
 The free plan does not include pay-as-you-go, so requests return an HTTP 402 once the monthly allotment runs out. See [Running Out of Credits](#running-out-of-credits). It also does not include credit rollover, a Data Processing Agreement, or Slack support. Support is community support.
 
