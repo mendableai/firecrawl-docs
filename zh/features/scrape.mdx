@@ -60,6 +60,7 @@ import ScrapeHighlightsPython from "/snippets/zh/v2/scrape/highlights/python.mdx
 import ScrapeHighlightsNode from "/snippets/zh/v2/scrape/highlights/js.mdx";
 import ScrapeHighlightsCURL from "/snippets/zh/v2/scrape/highlights/curl.mdx";
 import PlaygroundCTA from "/snippets/zh/shared/playground-cta-scrape.mdx";
+import VideoParseVsScrape from "/snippets/zh/shared/video-parse-vs-scrape.mdx";
 
 Firecrawl 可将网页转换为 markdown，非常适合 LLM 应用。
 
@@ -67,9 +68,13 @@ Firecrawl 可将网页转换为 markdown，非常适合 LLM 应用。
 * 处理动态内容：动态网站、JS 渲染的网站、PDF 和图片
 * 输出干净的 markdown、结构化数据、截图或 html。
 
-详情请参阅 [Scrape Endpoint API 参考](https://docs.firecrawl.dev/api-reference/endpoint/scrape)。
+详情请参阅 [抓取 Endpoint API 参考](https://docs.firecrawl.dev/api-reference/endpoint/scrape)。
 
 <PlaygroundCTA />
+
+要抓取某个 URL 上的文档，还是解析本地磁盘上的文档？下面介绍何时使用 抓取、何时使用 [Parse](/zh/features/parse)：
+
+<VideoParseVsScrape />
 
 <Note>如果请求失败，请参见 [Errors](/zh/api-reference/errors) 了解完整的错误代码目录、原因、补救措施和重试指南。</Note>
 
