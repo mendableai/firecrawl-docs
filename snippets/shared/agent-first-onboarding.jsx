@@ -93,7 +93,7 @@ export const McpClientSelector = ({ variant = "agent", showSeeAll = true } = {})
     {
       id: "cursor",
       name: "Cursor",
-      detail: "One-click + JSON",
+      detail: "One click",
       icon: "/images/agent-clients/cursor.svg",
       iconClassName: "fc-client-icon-mono",
       code: cursorConfig,
