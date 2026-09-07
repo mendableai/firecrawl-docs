@@ -3,8 +3,8 @@
 #
 #   sh scripts/check-locale-api-literals.sh
 #
-# This repository has no CI workflows, so run this locally before merging a
-# change to the localized trees, and run it after every translation sync.
+# .github/workflows/checks.yml runs this on every pull request. Run it locally
+# too before a change to the localized trees, and after every translation sync.
 #
 # For every localized .mdx that has an English counterpart, this compares the
 # identifiers used inside code fences and inline code:
