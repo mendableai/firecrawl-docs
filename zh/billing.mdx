@@ -101,6 +101,21 @@ Credits 是 Firecrawl 中的用量单位。每个方案都包含每月的 Credit
 
 所有付费方案均支持**月度计费**或**年度计费**。年度计费相比月度计费享有折扣。各方案的最新价格请访问 [价格页面](https://www.firecrawl.dev/pricing)。
 
+<div id="free-plan">
+  ### Free 套餐
+</div>
+
+新账户默认使用 Free 套餐。它完全免费，也无需绑定银行卡。具体包含以下内容：
+
+* **每月 1,000 额度。** 配额在每个月度周期开始时重置，未用完的免费额度不会顺延到下一周期。
+* **2 个并发浏览器**，队列任务上限与付费自助套餐相同，均为 50,000 个。
+* `/scrape`、`/map` 和 `/search` 的**限流为每分钟 10 次请求**，`/crawl`、`/agent` 和 `/interact` 为**每分钟 2 次请求**。Batch scrape 与 scrape 共用限流额度，extract 与 agent 共用限流额度。完整表格请参见 [Rate Limits](/zh/rate-limits)。
+* **全部核心产品端点。** Scrape、crawl、map、search、extract、batch scrape、交互 和 monitor 在 Free 套餐上均可使用。部分团队管理和企业功能按团队而非按套餐开启，包括威胁防护、SIEM 日志记录和零数据保留 search。各套餐的额度成本相同，因此上方的[各端点额度成本](#credit-costs-per-endpoint)表格同样适用。
+
+Free 套餐不支持按量付费，因此月度配额用尽后，请求会返回 HTTP 402。请参见 [Running Out of Credits](#running-out-of-credits)。此外也不包含额度顺延、数据处理协议和 Slack 支持，仅提供社区支持。
+
+Scrape、Search 和 交互 还可以完全不使用 API 密钥，通过免密钥免费档位调用，其上限按每个 IP 地址每天计算，而非按额度配额计算。请参见 [Keyless (no API key)](/zh/rate-limits#keyless-no-api-key)。
+
 <div id="billing-cycle">
   ### 计费周期
 </div>
