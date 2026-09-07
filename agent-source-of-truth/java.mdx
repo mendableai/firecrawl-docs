@@ -13,14 +13,14 @@ Maven:
 <dependency>
   <groupId>com.firecrawl</groupId>
   <artifactId>firecrawl-java</artifactId>
-  <version>1.2.0</version>
+  <version>1.17.0</version>
 </dependency>
 ```
 
 Gradle:
 
 ```gradle
-implementation("com.firecrawl:firecrawl-java:1.2.0")
+implementation("com.firecrawl:firecrawl-java:1.17.0")
 ```
 
 ## Authenticate
@@ -28,10 +28,24 @@ implementation("com.firecrawl:firecrawl-java:1.2.0")
 ```java
 import com.firecrawl.client.FirecrawlClient;
 
+// Builder pattern
 FirecrawlClient client = FirecrawlClient.builder()
     .apiKey(System.getenv("FIRECRAWL_API_KEY"))
     .build();
+
+// From environment — reads FIRECRAWL_API_KEY env var, falls back to firecrawl.apiKey system property
+FirecrawlClient client = FirecrawlClient.fromEnv();
 ```
+
+### Builder options
+
+- `apiKey(String)` — API key for authentication
+- `apiUrl(String)` — base URL (default `"https://api.firecrawl.dev"`, also reads `FIRECRAWL_API_URL` env var)
+- `timeoutMs(long)` — HTTP timeout in milliseconds (default 300000)
+- `maxRetries(int)` — maximum retry attempts (default 3)
+- `backoffFactor(double)` — exponential backoff multiplier (default 0.5)
+- `asyncExecutor(Executor)` — custom executor for async methods
+- `httpClient(OkHttpClient)` — custom OkHttp client instance
 
 ## When To Use What
 
@@ -49,8 +63,9 @@ Use search to discover relevant pages from a query, then pick URLs to scrape or 
 
 ### Preferred SDK methods
 
-- `client.search(query)`
-- `client.search(query, options)`
+- `client.search(query)` — returns `SearchData`
+- `client.search(query, options)` — returns `SearchData`
+- `client.searchAsync(query, options)` — returns `CompletableFuture<SearchData>`
 
 ### Return value
 
@@ -77,11 +92,14 @@ import com.firecrawl.models.LocationConfig;
 
 SearchOptions options = SearchOptions.builder()
     .sources(List.of("web", "news"))
-    .categories(List.of("research"))
+    .categories(List.of("research", "github"))
+    .includeDomains(List.of("docs.firecrawl.dev", "github.com"))
+    .excludeDomains(List.of("example.com"))
     .limit(10)
     .tbs("qdr:m")
     .location("San Francisco,California,United States")
     .ignoreInvalidURLs(true)
+    .highlights(true)
     .timeout(60000)
     .scrapeOptions(
         ScrapeOptions.builder()
@@ -119,10 +137,19 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   - Type: List of category strings or maps
   - Use when: you want to filter results by category.
   - Confirmed values:
+    - `"github"`: GitHub results
     - `"developer"`: Developer Index results
     - `"research"`: research and academic results
     - `"pdf"`: PDF-focused results
-    - `{type: "developer" | "research" | "pdf"}`: typed category map form
+    - `{type: "github" | "developer" | "research" | "pdf"}`: typed category map form
+
+- `options.includeDomains`
+  - Type: `List<String>`
+  - Use when: you want results only from specific domains.
+
+- `options.excludeDomains`
+  - Type: `List<String>`
+  - Use when: you want to exclude results from specific domains.
 
 - `options.limit`
   - Type: Integer
@@ -144,6 +171,10 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   - Type: Integer
   - Use when: you need a request timeout in milliseconds.
 
+- `options.highlights`
+  - Type: Boolean
+  - Use when: you want highlighted snippets in results. Default is true.
+
 - `options.scrapeOptions`
   - Type: `ScrapeOptions`
   - Use when: you want to scrape each search result (see Scrape parameters for fields).
@@ -160,12 +191,13 @@ Use scrape when you already have a URL and want structured content in one or mor
 
 ### Preferred SDK methods
 
-- `client.scrape(url)`
-- `client.scrape(url, options)`
+- `client.scrape(url)` — returns `Document`
+- `client.scrape(url, options)` — returns `Document`
+- `client.scrapeAsync(url, options)` — returns `CompletableFuture<Document>`
 
 ### Return value
 
-`scrape` returns `Document`. Typical getters include `getMarkdown()`, `getHtml()`, `getRawHtml()`, `getJson()`, `getMetadata()`, `getLinks()`, `getAudio()`, `getVideo()`, and additional fields when the corresponding formats are requested.
+`scrape` returns `Document`. Typical getters: `getMarkdown()`, `getHtml()`, `getRawHtml()` (String), `getJson()` (Object), `getSummary()` (String), `getMetadata()` (Map), `getLinks()` (List\<String\>), `getImages()` (List\<String\>), `getScreenshot()` (String), `getAudio()` (String), `getVideo()` (String), `getAttributes()` (List\<Map\>), `getActions()` (Map), `getAnswer()` (String), `getHighlights()` (String), `getWarning()` (String), `getChangeTracking()` (Map), `getBranding()` (Map), `getProduct()` (Product), `getMenu()` (Menu), `getPages()` (List\<PdfPage\>), `getBlocks()` (List\<PdfPageBlocks\>).
 
 ### Simple Example
 
@@ -181,6 +213,7 @@ Document doc = client.scrape(
 ```java
 import com.firecrawl.models.ScrapeOptions;
 import com.firecrawl.models.JsonFormat;
+import com.firecrawl.models.AuditMetadata;
 
 List<Map<String, Object>> actions = List.of(
     Map.of("type", "click", "selector", "#accept"),
@@ -197,7 +230,10 @@ ScrapeOptions options = ScrapeOptions.builder()
     .formats(List.of(
         "markdown",
         "links",
-        JsonFormat.builder().prompt("Extract plan names and prices.").build(),
+        JsonFormat.builder()
+            .prompt("Extract plan names and prices.")
+            .checkPromptInjection(true)
+            .build(),
         Map.of("type", "screenshot", "fullPage", true, "quality", 80)
     ))
     .onlyMainContent(true)
@@ -210,10 +246,20 @@ ScrapeOptions options = ScrapeOptions.builder()
     .proxy("auto")
     .maxAge(86400000L)
     .storeInCache(true)
+    .lockdown(false)
+    .redactPII(true)
+    .auditMetadata(AuditMetadata.builder().username("agent-user").build())
     .build();
 
 Document doc = client.scrape("https://example.com/pricing", options);
 ```
+
+### Format config types
+
+- `JsonFormat`: `prompt` (String), `schema` (Map), `checkPromptInjection` (Boolean) — use for structured JSON extraction.
+- `QuestionFormat`: `question` (String) — use to ask a question about the page content.
+- `HighlightsFormat`: `query` (String) — use to extract highlighted passages matching a query.
+- `QueryFormat` (deprecated): `prompt` (String), `mode` (FREEFORM, DIRECT_QUOTE) — prefer `JsonFormat` or `QuestionFormat` instead.
 
 ### Parameters
 
@@ -222,7 +268,7 @@ Document doc = client.scrape("https://example.com/pricing", options);
   - Use when: you want to scrape a specific page.
 
 - `options.formats`
-  - Type: List of format strings or format maps
+  - Type: List of format strings or format config objects
   - Use when: you want multiple output formats.
   - Confirmed format strings:
     - `"markdown"`: markdown content
@@ -240,7 +286,9 @@ Document doc = client.scrape("https://example.com/pricing", options);
     - `"video"`: video extraction
   - Format object fields:
     - `type`: one of the format strings above
-    - `prompt`, `schema`: JSON extraction options for `type: "json"`
+    - `prompt`, `schema`, `checkPromptInjection`: JSON extraction options for `type: "json"` (via `JsonFormat`)
+    - `question`: question option for `type: "json"` (via `QuestionFormat`)
+    - `query`: highlights query for `type: "highlights"` (via `HighlightsFormat`)
     - `modes`, `schema`, `prompt`, `tag`: change tracking options for `type: "changeTracking"`
     - `fullPage`, `quality`, `viewport`: screenshot options for `type: "screenshot"`
     - `selectors`: array of `{selector, attribute}` for `type: "attributes"`
@@ -323,9 +371,25 @@ Document doc = client.scrape("https://example.com/pricing", options);
   - Type: Boolean
   - Use when: you want Firecrawl to cache the result.
 
+- `options.lockdown`
+  - Type: Boolean
+  - Use when: you want to only serve cached results and never hit the live page.
+
+- `options.redactPII`
+  - Type: Boolean
+  - Use when: you want personally identifiable information redacted from the output.
+
+- `options.auditMetadata`
+  - Type: `AuditMetadata`
+  - Use when: you need to attach audit metadata to the scrape request.
+  - Fields:
+    - `username` (String, required) — the username to associate with the request for audit purposes.
+
 - `options.integration`
   - Type: String
   - Use when: the API expects an integration identifier on the request.
+
+- Note: `fastMode` is NOT available in the Java SDK's `ScrapeOptions` builder as of v1.17.0. Do not attempt to use it.
 
 ## Interact
 
@@ -336,8 +400,9 @@ Use interact when a page requires browser actions or code execution after a scra
 ### Preferred SDK methods
 
 - `client.interact(jobId, code)` — uses default language `node` and API default execution timeout
-- `client.interact(jobId, code, language, timeout)` — `timeout` is seconds (1–300), or null to omit and use the API default (30 seconds)
+- `client.interact(jobId, code, language, timeout)` — `timeout` is seconds (1-300), or null to omit and use the API default (30 seconds)
 - `client.interact(jobId, code, language, timeout, origin)` — optional `origin` string is sent only when non-null (request attribution)
+- `client.interactAsync(...)` — async variants returning `CompletableFuture<BrowserExecuteResponse>`
 
 ### Simple Example
 
@@ -407,7 +472,7 @@ BrowserDeleteResponse stopped = client.stopInteractiveBrowser("<scrapeJobId>");
 
 - `timeout`
   - Type: Integer
-  - Use when: you need an execution timeout in seconds (1–300). Null omits the field and uses the API default.
+  - Use when: you need an execution timeout in seconds (1-300). Null omits the field and uses the API default.
 
 - `origin`
   - Type: String
@@ -415,7 +480,7 @@ BrowserDeleteResponse stopped = client.stopInteractiveBrowser("<scrapeJobId>");
 
 ## Notes
 
-- Deprecated aliases: `scrapeExecute` → `interact`, `deleteScrapeBrowser` → `stopInteractiveBrowser` (and the corresponding `*Async` helpers).
+- Deprecated aliases: `scrapeExecute` -> `interact`, `deleteScrapeBrowser` -> `stopInteractiveBrowser` (and the corresponding `*Async` helpers).
 - The Java SDK exposes code-based interactions only: there is no `prompt` parameter on `interact` (unlike some other language SDKs).
 
 ## Source Of Truth

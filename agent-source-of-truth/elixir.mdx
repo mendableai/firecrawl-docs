@@ -10,7 +10,7 @@ Canonical Firecrawl Elixir source of truth for agents. Generated from SDK source
 Add to `mix.exs`:
 
 ```elixir
-{:firecrawl, "~> 1.0.0"}
+{:firecrawl, "~> 1.11.0"}
 ```
 
 ## Authenticate
@@ -22,6 +22,8 @@ config :firecrawl, api_key: System.get_env("FIRECRAWL_API_KEY")
 # or pass api_key per call
 {:ok, res} = Firecrawl.search_and_scrape([query: "site:docs.firecrawl.dev webhook retries"], api_key: "fc-your-api-key")
 ```
+
+All functions accept `base_url:` in opts (defaults to `"https://api.firecrawl.dev/v2"`). Extra opts are passed through to Req. The SDK stamps `"origin": "elixir-sdk@<version>"` into every JSON request body.
 
 ## When To Use What
 
@@ -58,6 +60,9 @@ Use search to discover relevant pages from a query, then pick URLs to scrape or 
   country: "US",
   ignore_invalid_urls: true,
   timeout: 60000,
+  highlights: true,
+  include_domains: ["docs.firecrawl.dev", "firecrawl.dev"],
+  exclude_domains: ["example.com"],
   scrape_options: [
     formats: [
       "markdown",
@@ -97,6 +102,14 @@ Use search to discover relevant pages from a query, then pick URLs to scrape or 
     - `"pdf"` or `:pdf`
     - `%{type: "developer" | "research" | "pdf"}`
 
+- `include_domains`
+  - Type: list of strings
+  - Use when: you want to restrict results to specific domains.
+
+- `exclude_domains`
+  - Type: list of strings
+  - Use when: you want to exclude specific domains from results.
+
 - `limit`
   - Type: integer
   - Use when: you want to cap results.
@@ -120,6 +133,10 @@ Use search to discover relevant pages from a query, then pick URLs to scrape or 
 - `timeout`
   - Type: integer
   - Use when: you need a request timeout in milliseconds.
+
+- `highlights`
+  - Type: boolean (default `true`)
+  - Use when: you want highlighted snippets in search results.
 
 - `enterprise`
   - Type: list of strings
@@ -160,6 +177,8 @@ Use scrape when you already have a URL and want structured content in one or mor
     "markdown",
     "links",
     %{type: "json", prompt: "Extract plan names and prices."},
+    %{type: "question", question: "What are the available pricing tiers?"},
+    %{type: "highlights", query: "pricing"},
     %{type: "screenshot", fullPage: true, quality: 80, viewport: %{width: 1280, height: 720}},
     %{type: "changeTracking", modes: ["git-diff"], tag: "pricing"}
   ],
@@ -179,6 +198,9 @@ Use scrape when you already have a URL and want structured content in one or mor
   max_age: 86400000,
   min_age: 1,
   store_in_cache: true,
+  lockdown: false,
+  redact_pii: false,
+  audit_metadata: [username: "docs-bot"],
   profile: [name: "docs-session", save_changes: true],
   zero_data_retention: false
 )
@@ -209,6 +231,8 @@ Use scrape when you already have a URL and want structured content in one or mor
   - Format map fields:
     - `type`: one of the format strings above
     - `prompt`, `schema`: JSON extraction options for `type: "json"`
+    - `question`: question to answer for `type: "question"`
+    - `query`: highlights query for `type: "highlights"`
     - `modes`, `schema`, `prompt`, `tag`: change tracking options for `type: "changeTracking"`
     - `fullPage`, `quality`, `viewport`: screenshot options for `type: "screenshot"`
 
@@ -229,7 +253,7 @@ Use scrape when you already have a URL and want structured content in one or mor
   - Use when: you want to strip nav, footer, and other boilerplate.
 
 - `timeout`
-  - Type: integer
+  - Type: integer (ms, 1000-300000, default 60000)
   - Use when: you need a timeout in milliseconds.
 
 - `wait_for`
@@ -294,6 +318,18 @@ Use scrape when you already have a URL and want structured content in one or mor
   - Type: boolean
   - Use when: you want Firecrawl to cache the result.
 
+- `lockdown`
+  - Type: boolean
+  - Use when: you want to only serve cached results and never hit the live page.
+
+- `redact_pii`
+  - Type: boolean
+  - Use when: you want personally identifiable information redacted from the output.
+
+- `audit_metadata`
+  - Type: keyword list (for example `username: "..."`)
+  - Use when: you want to attach audit metadata to the scrape request.
+
 - `profile`
   - Type: keyword list with `name:` and optional `save_changes:` (or `saveChanges:`)
   - Use when: you want a persistent browser profile shared across scrapes and interactions.
@@ -330,7 +366,8 @@ Use interact when a page requires browser actions or code execution after a scra
   "<scrapeJobId>",
   code: "// Use Playwright page methods here",
   language: :node,
-  timeout: 120
+  timeout: 120,
+  origin: "my-agent"
 )
 ```
 
