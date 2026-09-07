@@ -13,22 +13,28 @@ This page is the canonical source for those statements. Each capability below li
 
 ## Capabilities at a glance
 
-Capabilities are not uniformly available in both deployments. Agent, Browser, and Interact are delivered through Firecrawl Cloud and are not part of the default self-hosted stack — see [Open source or cloud](/contributing/open-source-or-cloud#use-firecrawl-cloud-when) and the [self-hosted feature support](/contributing/self-host#self-hosted-feature-support) table.
+The table answers five separate questions per capability, because the answers do not track each other. A capability available in both deployments may still have no MCP tool, and a capability that needs no Firecrawl API key may still need your credentials for the target site.
 
-| Capability | Availability | Documented in |
-| --- | --- | --- |
-| Official Python SDK | Cloud and self-hosted | [Python SDK](/sdks/python) |
-| Official Node.js / TypeScript SDK | Cloud and self-hosted | [Node SDK](/sdks/node) |
-| Fill forms, click elements, navigate a page (Interact) | **Cloud only** | [Interact](/features/interact) |
-| Standalone browser session (Browser Sandbox) | **Cloud only** | [Browser Sandbox](/features/browser) |
-| Log in and reuse an authenticated session | **Cloud only** (built on Interact) | [Persistent profiles](/features/interact#persistent-profiles-with-scrape-+-interact) |
-| JavaScript rendering for dynamic sites | Cloud and self-hosted (Playwright is included in the default stack) | [Scrape](/features/scrape) |
-| PDF and document parsing | Cloud and self-hosted; specialized product, menu, audio, and video formats require Cloud | [Parse](/features/parse), [Document parsing](/features/document-parsing) |
-| Search, with optional full page content per result | Cloud and self-hosted (core route) | [Search](/features/search) |
-| Scheduled monitoring and change detection | Cloud and self-hosted (core route); meaningful-change judging needs an LLM provider, as structured extraction does | [Monitoring](/features/monitoring) |
-| Structured JSON extraction | Cloud; self-hosted requires an OpenAI-compatible provider or Ollama | [Extract structured data](/features/llm-extract) |
-| Screenshots and page actions | **Cloud only** (both require Fire-engine) | [Self-hosted feature support](/contributing/self-host#self-hosted-feature-support) |
-| Self-hosting the core stack | Self-hosted | [Self-host Firecrawl](/contributing/self-host) |
+- **Deployment.** Cloud, self-hosted, or both. Agent, Browser, and Interact are delivered through Firecrawl Cloud and are not part of the default self-hosted stack. See [Open source or cloud](/contributing/open-source-or-cloud#use-firecrawl-cloud-when) and the [self-hosted feature support](/contributing/self-host#self-hosted-feature-support) table.
+- **MCP tool.** The tool name on the Firecrawl MCP server, or none if the capability has no tool. The same tool names apply to the hosted server and to a local server; which tools work depends on the API the server is connected to, as [MCP tools](/mcp-server/tools) explains.
+- **Session lifetime.** Whether the capability holds a browser session, and how long that session lasts. Single-request capabilities have no session, only a request timeout.
+- **API auth.** Whether the endpoint accepts a request with no API key, or requires one. See [Rate limits](/rate-limits) for what a keyless request is allowed to do.
+- **Target credentials.** Whether you have to supply credentials for the site you are reading, on top of your Firecrawl credentials.
+
+| Capability | Deployment | MCP tool | Session lifetime | API auth | Target credentials | Documented in |
+| --- | --- | --- | --- | --- | --- | --- |
+| Official Python SDK | Cloud and self-hosted | None. The SDK is a client for the same endpoints. | Follows the endpoint it calls | Follows the endpoint it calls | Not required | [Python SDK](/sdks/python) |
+| Official Node.js / TypeScript SDK | Cloud and self-hosted | None. The SDK is a client for the same endpoints. | Follows the endpoint it calls | Follows the endpoint it calls | Not required | [Node SDK](/sdks/node) |
+| Fill forms, click elements, navigate a page (Interact) | **Cloud only** | `firecrawl_interact`, `firecrawl_interact_stop` | Browser session. `ttl` 30 to 3600 seconds, default 600. Idle `activityTtl` 10 to 3600 seconds, default 300. | Key optional. `/v2/scrape/{id}/interact` accepts a keyless request. | Only when you pass a `profile` to log in | [Interact](/features/interact) |
+| Standalone browser session (Browser Sandbox) | **Cloud only** | None. The MCP interact tools act on a scrape, not on a standalone session. | Browser session. Same `ttl` and `activityTtl` bounds and defaults as Interact. | API key required | Only when you pass a `profile` to log in | [Browser Sandbox](/features/browser) |
+| Log in and reuse an authenticated session | **Cloud only** (built on Interact) | The `profile` field on `firecrawl_scrape`. There is no separate profile management tool. | The profile outlives the session. Each session that opens it follows the Interact and Browser limits above. One session at a time may write to a profile. | Follows the endpoint you pass `profile` to | **Required.** You supply the login for the target site. | [Persistent profiles](/features/interact#persistent-profiles-with-scrape-+-interact) |
+| JavaScript rendering for dynamic sites | Cloud and self-hosted (Playwright is included in the default stack) | `firecrawl_scrape` | Single request. Default `timeout` 30 seconds, raised to 60 for the `json` and `changeTracking` formats and to 120 for the stealth, enhanced, and auto proxy modes. | Key optional. `/v2/scrape` accepts a keyless request. | Not required | [Scrape](/features/scrape) |
+| PDF and document parsing | Cloud and self-hosted; specialized product, menu, audio, and video formats require Cloud | `firecrawl_parse` | Single request | Key optional. `/v2/parse` accepts a keyless request. | Not required | [Parse](/features/parse), [Document parsing](/features/document-parsing) |
+| Search, with optional full page content per result | Cloud and self-hosted (core route) | `firecrawl_search`. The marketplace search profile registers a narrower variant that does not accept `scrapeOptions`. | Single request | Key optional. `/v2/search` accepts a keyless request. | Not required | [Search](/features/search) |
+| Scheduled monitoring and change detection | Cloud and self-hosted (core route); meaningful-change judging needs an LLM provider, as structured extraction does | `firecrawl_monitor_create`, `firecrawl_monitor_list`, `firecrawl_monitor_get`, `firecrawl_monitor_update`, `firecrawl_monitor_delete`, `firecrawl_monitor_run`, `firecrawl_monitor_checks`, `firecrawl_monitor_check` | No browser session. A monitor is a scheduled job and each check runs a scrape. | API key required | Not required | [Monitoring](/features/monitoring) |
+| Structured JSON extraction | Cloud; self-hosted requires an OpenAI-compatible provider or Ollama | `firecrawl_scrape` with the `json` format. `firecrawl_agent` covers multi-source extraction. | Single request for `scrape`. `firecrawl_agent` is an async job you poll with `firecrawl_agent_status`. | Key optional on `/v2/scrape`. `/v2/extract` and `/v2/agent` require an API key. | Not required | [Extract structured data](/features/llm-extract) |
+| Screenshots and page actions | **Cloud only** (both require Fire-engine) | The `formats` and `actions` parameters of `firecrawl_scrape`. There is no separate tool. | Single request | Key optional. Same as `/v2/scrape`. | Not required | [Self-hosted feature support](/contributing/self-host#self-hosted-feature-support) |
+| Self-hosting the core stack | Self-hosted | None. Self-hosting is a deployment, not an endpoint. | Not applicable | Your deployment sets its own auth | Not required | [Self-host Firecrawl](/contributing/self-host) |
 
 ### Firecrawl has an official Python SDK.
 Source: [Python SDK](/sdks/python). Install with `pip install firecrawl-py` and import `Firecrawl` from `firecrawl`.
