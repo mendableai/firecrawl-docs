@@ -82,7 +82,7 @@ Vous pouvez suivre votre consommation de crédits de deux manières :
   ## Offres
 </div>
 
-Les offres d’abonnement sont facturées au mois ou à l’année. Les offres payantes en libre-service peuvent aussi utiliser le paiement à l’usage. Le paiement à l’usage ajoute des crédits lorsque le quota de votre offre est épuisé. Consultez [Paiement à l’usage](#auto-reload).
+Les offres d’abonnement sont facturées au mois ou à l’année. Les offres payantes en libre-service peuvent aussi utiliser le paiement à l’usage. Le paiement à l’usage ajoute des crédits lorsque le quota de votre offre est épuisé. Consultez [Paiement à l’usage](#pay-as-you-go).
 
 <div id="paid-plans">
   ### Offres payantes
@@ -110,12 +110,14 @@ Toutes les offres payantes sont disponibles avec une facturation **mensuelle** o
 * **Par défaut, les crédits d’offre inutilisés ne sont pas reportés** : votre quota mensuel est réinitialisé chaque mois. **Les offres annuelles Scale reportent les crédits d’offre inutilisés pendant 1 mois**, et **les offres annuelles Enterprise les reportent pendant 2 mois**.
 
 <div id="concurrent-browsers">
-  ### Navigateurs simultanés
+  ### Navigateurs concurrents
 </div>
 
-Les navigateurs simultanés correspondent au nombre de pages web que Firecrawl peut traiter en parallèle pour vous. Votre offre détermine cette limite. Si vous la dépassez, les tâches supplémentaires attendent dans une file d’attente jusqu’à ce qu’un créneau se libère. Consultez [Limites de débit](/fr/rate-limits) pour tous les détails sur la concurrence et les limites de débit de l’API.
+Les navigateurs concurrents correspondent au nombre de pages web que Firecrawl peut traiter en parallèle pour vous. Votre offre détermine cette limite. Si vous la dépassez, les tâches supplémentaires attendent dans une file d’attente jusqu’à ce qu’un créneau se libère. Consultez [Limites de débit](/fr/rate-limits) pour tous les détails sur la concurrence et les limites de débit de l’API.
 
-## Paiement à l’usage {#auto-reload}
+<a id="auto-reload" />
+
+## Paiement à l’usage {#pay-as-you-go}
 
 Le paiement à l’usage permet à vos requêtes de continuer à s&#39;exécuter lorsque les crédits de votre offre sont épuisés. Il ajoute automatiquement des crédits à votre compte.
 
@@ -177,7 +179,7 @@ Si le paiement à l&#39;usage est activé, nous ajoutons un nouvel incrément de
 
 Pour reprendre l&#39;utilisation après un arrêt forcé, vous pouvez :
 
-1. Définir une **limite mensuelle de paiement à l&#39;usage** pour acheter des crédits automatiquement. Voir [Paiement à l&#39;usage](#auto-reload).
+1. Définir une **limite mensuelle de paiement à l&#39;usage** pour acheter des crédits automatiquement. Voir [Paiement à l&#39;usage](#pay-as-you-go).
 2. Passer manuellement à une offre supérieure
 3. Attendre la réinitialisation de vos crédits au prochain cycle de facturation
 
