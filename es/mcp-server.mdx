@@ -26,11 +26,20 @@ Selecciona cómo se autenticará la conexión. Iniciar sesión y añadir una cla
   ## Añade una clave de API
 </div>
 
-[Crea una clave de API de Firecrawl](https://www.firecrawl.dev/app/api-keys) y envíala como token de portador:
+[Crea una clave de API de Firecrawl](https://www.firecrawl.dev/app/api-keys) y añádela como token de portador en la configuración de tu cliente:
 
-```text
-URL: https://mcp.firecrawl.dev/v2/mcp
-Authorization: Bearer <FIRECRAWL_API_KEY>
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
 ```
 
 Configura la clave mediante una variable de entorno o el almacenamiento seguro de tu cliente, nunca en la URL de MCP.

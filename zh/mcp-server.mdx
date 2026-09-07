@@ -26,11 +26,20 @@ sidebarTitle: '开始使用'
   ## 添加 API 密钥
 </div>
 
-[创建 Firecrawl API 密钥](https://www.firecrawl.dev/app/api-keys)，然后将其作为 Bearer 令牌发送：
+[创建 Firecrawl API 密钥](https://www.firecrawl.dev/app/api-keys)，然后在客户端配置中将其作为 Bearer 令牌添加：
 
-```text
-URL: https://mcp.firecrawl.dev/v2/mcp
-Authorization: Bearer <FIRECRAWL_API_KEY>
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
 ```
 
 请通过环境变量或客户端的密钥存储配置密钥，切勿将密钥放在 MCP URL 中。
