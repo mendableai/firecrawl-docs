@@ -101,6 +101,21 @@ Os planos de assinatura são cobrados mensalmente ou anualmente. Os planos pagos
 
 Todos os planos pagos estão disponíveis com cobrança **mensal** ou **anual**. A cobrança anual oferece um desconto em comparação ao pagamento mês a mês. Para preços atualizados de cada plano, visite a [página de preços](https://www.firecrawl.dev/pricing).
 
+<div id="free-plan">
+  ### Free plan
+</div>
+
+Novas contas começam no plano gratuito. Ele não tem custo e não exige cartão. Veja o que está incluído:
+
+* **1.000 credits por mês.** A cota é reiniciada no início de cada ciclo mensal. Credits gratuitos não utilizados não são transferidos.
+* **2 navegadores concorrentes**, com o mesmo limite de 50.000 jobs em fila dos planos de autoatendimento pagos.
+* **Limites de taxa de 10 requisições por minuto** em `/scrape`, `/map` e `/search`, e **2 requisições por minuto** em `/crawl`, `/agent` e `/interact`. A extração em lote compartilha o limite de scraping, e o extract compartilha o limite do agente. Veja [limite de taxa](/pt-BR/rate-limits) para a tabela completa.
+* **Todos os endpoints principais do produto.** Scrape, rastreamento, map, search, extract, batch scrape, interact e monitor funcionam no plano gratuito. Alguns recursos de administração de equipe e corporativos são habilitados por equipe, e não por plano, como proteção contra ameaças, logging SIEM e busca sem retenção de dados. Os credit costs são iguais em todos os planos, portanto a tabela de [credit costs por endpoint](#credit-costs-per-endpoint) acima se aplica sem alterações.
+
+O plano gratuito não inclui pagamento por uso, então as requisições retornam HTTP 402 quando a cota mensal se esgota. Veja [crédito esgotado](#running-out-of-credits). Ele também não inclui transferência de credits, Contrato de Processamento de Dados nem suporte via Slack. O suporte é feito pela comunidade.
+
+Scrape, Search e Interact também funcionam sem nenhuma API key, pelo keyless free tier, que é limitado por endereço IP por dia, e não por uma cota de credits. Veja [Keyless (sem API key)](/pt-BR/rate-limits#keyless-no-api-key).
+
 <div id="billing-cycle">
   ### Ciclo de cobrança
 </div>

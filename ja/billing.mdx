@@ -101,6 +101,21 @@ Firecrawl の課金は**クレジットベース**です。行う API 呼び出�
 
 すべての有料プランは **月払い** または **年払い** に対応しています。年払いは月払いと比べて割引があります。各プランの最新の料金については、[料金ページ](https://www.firecrawl.dev/pricing) を参照してください。
 
+<div id="free-plan">
+  ### Free plan
+</div>
+
+新規アカウントは free plan からスタートします。無料で、カード登録も不要です。含まれる内容は次のとおりです。
+
+* **月間1,000クレジット。** 割り当ては毎月のサイクル開始時にリセットされます。使い切らなかった無料クレジットは繰り越されません。
+* **同時ブラウザ数は2**。キューに入れられるジョブの上限は有料のセルフサーブ plan と同じ50,000件です。
+* **レート制限**は `/scrape`、`/map`、`/search` が**1分あたり10リクエスト**、`/crawl`、`/agent`、`/interact` が**1分あたり2リクエスト**です。バッチスクレイプは scrape の制限を、extract は agent の制限をそれぞれ共有します。表の全体は [Rate Limits](/ja/rate-limits) を参照してください。
+* **主要プロダクトのエンドポイントすべて。** scrape、クロール、map、search、extract、バッチスクレイプ、interact、monitor はいずれも free plan で利用できます。脅威保護、SIEM ロギング、ゼロデータ保持 search など、一部のチーム管理機能やエンタープライズ機能は plan 単位ではなくチーム単位で有効化されます。クレジットコストはどの plan でも同じなので、上記の[エンドポイントごとのクレジットコスト](#credit-costs-per-endpoint)の表がそのまま当てはまります。
+
+free plan には 従量課金 が含まれないため、月次の割り当てを使い切るとリクエストは HTTP 402 を返します。[クレジットが不足した場合](#running-out-of-credits)を参照してください。また、クレジットの繰り越し、データ処理契約(DPA)、Slack サポートも含まれません。サポートはコミュニティサポートのみです。
+
+Scrape、Search、Interact は、keyless free tier を利用すれば API key なしでも実行できます。この tier の上限はクレジットの割り当てではなく、IP アドレスごと・1日ごとに設定されます。[Keyless(API key なし)](/ja/rate-limits#keyless-no-api-key)を参照してください。
+
 <div id="billing-cycle">
   ### 請求サイクル
 </div>
