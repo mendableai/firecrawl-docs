@@ -7,14 +7,24 @@
 # too before a change to the localized trees, and after every translation sync.
 #
 # For every localized .mdx that has an English counterpart, this compares the
-# identifiers used inside code fences and inline code:
+# identifiers the two pages use:
 #   1. missing API literal: the English page uses an API identifier inside a
 #      code fence and the localized page has dropped it from its code.
 #   2. translated API literal: the localized page uses an identifier-shaped
-#      token inside code that no English page uses anywhere.
+#      token that no English page uses anywhere, in code or in prose.
 # Rule 1 draws its vocabulary from the OpenAPI specs, so it follows the API
 # instead of a hand-written list. Rule 2 needs no vocabulary: an identifier
 # that exists only in a translated tree was written by a translation pass.
+#
+# Rule 2 covers prose as well as code because a translated identifier reads the
+# same either way: `changeTracking` rendered as `suiviDesModifications` in a
+# sentence still tells the reader to pass a format name the API will reject.
+# Prose costs no false positives here: the token still has to be camelCase or
+# dotted, at least five characters, and absent from every English page, which
+# no ordinary Spanish, French, Japanese, Portuguese, or Chinese word is. The
+# one shape that is not an identifier is a localized filename such as
+# `destino.mdx`, so tokens ending in a file extension or a bare TLD are
+# skipped.
 set -eu
 
 specs="api-reference/v2-openapi.json api-reference/v1-openapi.json api-reference/webhooks-openapi.json"
@@ -58,28 +68,30 @@ xargs awk '
   }
 ' <"$work/english-mdx" | sort -u >"$work/english-tokens"
 
-# One "file<TAB>token<TAB>fenced|inline" row per identifier that appears inside
-# a code fence or inline code, deduplicated.
+# One "file<TAB>token<TAB>fenced|inline|prose" row per identifier, deduplicated.
+# Rule 1 reads only the "fenced" rows; rule 2 reads all three.
 xargs awk '
+  function emit(text, kind,   token) {
+    gsub(/\\[nrt]/, " ", text)
+    while (match(text, /[A-Za-z_][A-Za-z0-9_.]*/)) {
+      token = substr(text, RSTART, RLENGTH)
+      sub(/\.+$/, "", token)
+      if (token != "") print FILENAME "\t" token "\t" kind
+      text = substr(text, RSTART + RLENGTH)
+    }
+  }
   FNR == 1 { fenced = 0 }
   /^[[:space:]]*(```|~~~)/ { fenced = !fenced; next }
   {
     line = $0
-    if (!fenced) {
-      code = ""
-      while (match(line, /`[^`]+`/)) {
-        code = code " " substr(line, RSTART + 1, RLENGTH - 2)
-        line = substr(line, RSTART + RLENGTH)
-      }
-      line = code
+    if (fenced) { emit(line, "fenced"); next }
+    code = ""
+    while (match(line, /`[^`]+`/)) {
+      code = code " " substr(line, RSTART + 1, RLENGTH - 2)
+      line = substr(line, 1, RSTART - 1) " " substr(line, RSTART + RLENGTH)
     }
-    gsub(/\\[nrt]/, " ", line)
-    while (match(line, /[A-Za-z_][A-Za-z0-9_.]*/)) {
-      token = substr(line, RSTART, RLENGTH)
-      sub(/\.+$/, "", token)
-      if (token != "") print FILENAME "\t" token "\t" (fenced ? "fenced" : "inline")
-      line = substr(line, RSTART + RLENGTH)
-    }
+    emit(code, "inline")
+    emit(line, "prose")
   }
 ' <"$work/all-mdx" | sort -u >"$work/tokens"
 
@@ -119,6 +131,8 @@ awk -F'\t' -v locales="$locales" '
         if (token == "" || (token in allow) || (token in english)) continue
         if (length(token) < 5) continue
         if (token !~ /^[a-z][a-z0-9]*([A-Z][a-zA-Z0-9]*)+$/ && token !~ /^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$/) continue
+        # A localized filename or hostname is not an API identifier.
+        if (token ~ /\.(mdx|md|json|ya?ml|toml|txt|csv|html?|xml|js|jsx|ts|tsx|py|rb|go|rs|php|sh|env|lock|png|jpe?g|gif|svg|webp|pdf|zip|com|net|org|dev|io|ai|co|app)$/) continue
         if (reported[file SUBSEP token]++) continue
         print "translated API literal: " file " uses `" token "`, which no English page uses"
         status = 1
@@ -128,7 +142,7 @@ awk -F'\t' -v locales="$locales" '
   }
 ' vocabfile="$work/vocab" englishfile="$work/english-tokens" \
   "$work/allow" "$work/vocab" "$work/english-tokens" "$work/tokens" >&2 || {
-  echo "Localized code samples must keep API identifiers in English." >&2
+  echo "Localized pages must keep API identifiers in English, in code and in prose." >&2
   exit 1
 }
 

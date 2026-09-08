@@ -32,5 +32,8 @@ jobs:
       - name: Keep API literals untranslated
         run: sh scripts/check-locale-api-literals.sh
 
+      - name: Check the locale literal fixtures
+        run: sh scripts/check-locale-api-literals-selftest.sh
+
       - name: Keep published samples runnable
         run: sh scripts/check-extraction-hostile-markdown.sh
