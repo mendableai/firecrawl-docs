@@ -26,11 +26,20 @@ Escolha como a conexão será autenticada. Fazer login e adicionar uma chave de 
   ## Adicione uma chave de API
 </div>
 
-[Crie uma chave de API do Firecrawl](https://www.firecrawl.dev/app/api-keys) e envie-a como um token bearer:
+[Crie uma chave de API do Firecrawl](https://www.firecrawl.dev/app/api-keys) e adicione-a como um token bearer na configuração do seu cliente:
 
-```text
-URL: https://mcp.firecrawl.dev/v2/mcp
-Authorization: Bearer <FIRECRAWL_API_KEY>
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
 ```
 
 Configure a chave usando uma variável de ambiente ou o armazenamento de segredos do cliente, nunca na URL do MCP.

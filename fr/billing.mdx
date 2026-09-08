@@ -82,7 +82,7 @@ Vous pouvez suivre votre consommation de crédits de deux manières :
   ## Offres
 </div>
 
-Les offres d’abonnement sont facturées au mois ou à l’année. Les offres payantes en libre-service peuvent aussi utiliser le paiement à l’usage. Le paiement à l’usage ajoute des crédits lorsque le quota de votre offre est épuisé. Consultez [Paiement à l’usage](#auto-reload).
+Les offres d’abonnement sont facturées au mois ou à l’année. Les offres payantes en libre-service peuvent aussi utiliser le paiement à l’usage. Le paiement à l’usage ajoute des crédits lorsque le quota de votre offre est épuisé. Consultez [Paiement à l’usage](#pay-as-you-go).
 
 <div id="paid-plans">
   ### Offres payantes
@@ -101,6 +101,21 @@ Les offres d’abonnement sont facturées au mois ou à l’année. Les offres p
 
 Toutes les offres payantes sont disponibles avec une facturation **mensuelle** ou **annuelle**. La facturation annuelle propose une remise par rapport au paiement mensuel. Pour les tarifs actuels de chaque offre, consultez la [page de tarification](https://www.firecrawl.dev/pricing).
 
+<div id="free-plan">
+  ### Offre Free
+</div>
+
+Les nouveaux comptes démarrent sur l&#39;offre Free. Elle est gratuite et ne nécessite aucune carte bancaire. Voici ce qu&#39;elle inclut :
+
+* **1 000 crédits par mois.** Le quota est réinitialisé au début de chaque cycle mensuel. Les crédits gratuits non utilisés ne sont pas reportés.
+* **2 navigateurs concurrents**, avec le même maximum de 50 000 tâches en file d&#39;attente que les offres payantes en libre-service.
+* **Des limites de débit de 10 requêtes par minute** sur `/scrape`, `/map` et `/search`, et de **2 requêtes par minute** sur `/crawl`, `/agent` et `/interact`. Le batch scrape partage la limite du scrape et extract partage celle de l&#39;agent. Consultez les [limites de débit](/fr/rate-limits) pour le tableau complet.
+* **Tous les points de terminaison principaux du produit.** Scrape, crawl, map, search, extract, batch scrape, interact et monitor fonctionnent tous avec l&#39;offre Free. Certaines fonctionnalités d&#39;administration d&#39;équipe et d&#39;entreprise sont activées par équipe plutôt que par offre, notamment la protection contre les menaces, la journalisation SIEM et la recherche zero data retention. Les coûts en crédits sont identiques sur toutes les offres : le tableau des [coûts en crédits par point de terminaison](#credit-costs-per-endpoint) ci-dessus s&#39;applique donc tel quel.
+
+L&#39;offre Free n&#39;inclut pas le paiement à l&#39;usage : les requêtes renvoient donc un HTTP 402 dès que le quota mensuel est épuisé. Consultez [Épuisement des crédits](#running-out-of-credits). Elle n&#39;inclut pas non plus le report de crédits, d&#39;accord de traitement des données, ni de support Slack. Le support est assuré par la communauté.
+
+Scrape, Search et Interact fonctionnent également sans aucune API key, via le niveau gratuit sans clé, plafonné par adresse IP et par jour plutôt que par un quota de crédits. Consultez [Sans clé (aucune API key)](/fr/rate-limits#keyless-no-api-key).
+
 <div id="billing-cycle">
   ### Cycle de facturation
 </div>
@@ -110,12 +125,14 @@ Toutes les offres payantes sont disponibles avec une facturation **mensuelle** o
 * **Par défaut, les crédits d’offre inutilisés ne sont pas reportés** : votre quota mensuel est réinitialisé chaque mois. **Les offres annuelles Scale reportent les crédits d’offre inutilisés pendant 1 mois**, et **les offres annuelles Enterprise les reportent pendant 2 mois**.
 
 <div id="concurrent-browsers">
-  ### Navigateurs simultanés
+  ### Navigateurs concurrents
 </div>
 
-Les navigateurs simultanés correspondent au nombre de pages web que Firecrawl peut traiter en parallèle pour vous. Votre offre détermine cette limite. Si vous la dépassez, les tâches supplémentaires attendent dans une file d’attente jusqu’à ce qu’un créneau se libère. Consultez [Limites de débit](/fr/rate-limits) pour tous les détails sur la concurrence et les limites de débit de l’API.
+Les navigateurs concurrents correspondent au nombre de pages web que Firecrawl peut traiter en parallèle pour vous. Votre offre détermine cette limite. Si vous la dépassez, les tâches supplémentaires attendent dans une file d’attente jusqu’à ce qu’un créneau se libère. Consultez [Limites de débit](/fr/rate-limits) pour tous les détails sur la concurrence et les limites de débit de l’API.
 
-## Paiement à l’usage {#auto-reload}
+<a id="auto-reload" />
+
+## Paiement à l’usage {#pay-as-you-go}
 
 Le paiement à l’usage permet à vos requêtes de continuer à s&#39;exécuter lorsque les crédits de votre offre sont épuisés. Il ajoute automatiquement des crédits à votre compte.
 
@@ -177,7 +194,7 @@ Si le paiement à l&#39;usage est activé, nous ajoutons un nouvel incrément de
 
 Pour reprendre l&#39;utilisation après un arrêt forcé, vous pouvez :
 
-1. Définir une **limite mensuelle de paiement à l&#39;usage** pour acheter des crédits automatiquement. Voir [Paiement à l&#39;usage](#auto-reload).
+1. Définir une **limite mensuelle de paiement à l&#39;usage** pour acheter des crédits automatiquement. Voir [Paiement à l&#39;usage](#pay-as-you-go).
 2. Passer manuellement à une offre supérieure
 3. Attendre la réinitialisation de vos crédits au prochain cycle de facturation
 
