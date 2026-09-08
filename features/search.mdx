@@ -611,6 +611,18 @@ For more details about the scraping options, refer to the [Scrape Feature docume
 > Are you an AI agent that needs a Firecrawl API key? See [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) for automated onboarding instructions.
 
 
+## Measured Performance
+
+Independent evaluators have benchmarked Firecrawl Search against other search APIs. The figures below are pulled directly from each evaluator's published results as of the date shown.
+
+| Metric | Value | Source | Date | n / ± |
+| --- | --- | --- | --- | --- |
+| Agent Score (Mean Relevant × Quality) | 14.58, rank 2 of 8 (Mean Relevant 4.30/5, Quality 3.39/5) | [AIMultiple — Agentic Search Benchmark](https://aimultiple.com/agentic-search) | Dec 2025 (source updated May 25, 2026) | 95% CI 13.12–15.98, n=100 AI/LLM-domain queries drawn from AIMultiple's own organic search traffic (10,000 bootstrap resamples); the source notes results don't generalize to other domains |
+
+<Note>
+These are third-party measurements, each with its own harness, task set, and methodology — they are not directly comparable to one another or to Firecrawl's own benchmarks. Point-estimate rank 2 of 8; paired-bootstrap testing found no statistically significant gap versus Brave, Exa, or Parallel Search Pro. Firecrawl's own first-party benchmark pages, including the open-source Developer Index evaluation, live at [firecrawl.dev/benchmarks](https://www.firecrawl.dev/benchmarks).
+</Note>
+
 ## Search feedback
 
 When a search result is useful or misses important content, submit feedback with `POST /v2/search/{jobId}/feedback`. The first feedback submission for a search job can refund 1 credit, subject to team limits, and helps improve Firecrawl search quality. See [Search Feedback](/api-reference/endpoint/search-feedback).
