@@ -49,6 +49,14 @@ import InteractFeedbackCTA from "/snippets/pt-BR/interact-feedback-cta.mdx";
 
 Faça o scraping de uma página para obter dados limpos e, em seguida, chame `/interact` para começar a realizar ações nessa página: clicar em botões, preencher formulários, extrair conteúdo dinâmico ou navegar mais profundamente. Basta descrever o que você quer, ou escrever código se precisar de controle total.
 
+Use interagir quando você precisar:
+
+* **Faça scraping atrás de um login** — faça login uma vez e depois leia as páginas que só aparecem após a autenticação. Veja [Perfis persistentes com Scrape + interagir](#persistent-profiles-with-scrape-+-interact).
+* **Navegue pela paginação** — avance de página e colete cada conjunto de resultados, reutilizando uma única session. Veja [interagir via prompting](#interact-via-prompting) e [ciclo de vida da sessão](#session-lifecycle).
+* **Preencha e envie um formulário** — digite nos campos e envie, a partir de um prompt ou de código Playwright. Veja [interagir via prompting](#interact-via-prompting) e [Executando código](#running-code).
+* **Reutilize uma session autenticada** — salve o estado do navegador em um perfil nomeado e carregue-o em scrapings posteriores. Veja [Perfis persistentes com Scrape + interagir](#persistent-profiles-with-scrape-+-interact).
+* **Inicie uma session sem fazer scraping antes** — abra um navegador independente, controlado diretamente por você. Veja [Browser Sandbox](/pt-BR/features/browser).
+
 <InteractFeedbackCTA src="docs-interact" />
 
 <div id="choose-the-right-interaction-model">
