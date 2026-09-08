@@ -176,7 +176,7 @@ O objeto `diff` contém um diff em texto simples e uma representação JSON estr
 
 ```json
 {
-  "changeTracking": {
+  "rastreioDeMudanças": {
     "previousScrapeAt": "2025-06-01T10:00:00.000+00:00",
     "changeStatus": "changed",
     "visibility": "visible",
@@ -701,7 +701,7 @@ O conjunto completo de opções disponível ao passar um objeto no formato `chan
 </div>
 
 <Warning>
-  O formato `markdown` deve sempre ser incluído junto com `changeTracking`. O rastreamento de mudanças compara páginas com base no conteúdo em markdown.
+  O formato `markdown` deve sempre ser incluído junto com `changeTracking`. O rastreioDeMudanças compara páginas com base no conteúdo em markdown.
 </Warning>
 
 * **Retenção de snapshots**: Snapshots são armazenados de forma persistente e não expiram. Uma raspagem feita meses após a anterior ainda será comparada corretamente com o snapshot anterior.

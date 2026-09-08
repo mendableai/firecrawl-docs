@@ -165,7 +165,7 @@ L&#39;intervalle minimal est de 5 minutes. Les réponses de l&#39;API renvoient 
   ## Suivi des modifications
 </div>
 
-Les moniteurs [Page](/fr/features/monitoring-page) et [website](/fr/features/monitoring-website) calculent par défaut les différences dans le markdown de chaque page et indiquent `same`, `changed`, `new`, `removed` ou `error`. Le même calcul de différences est disponible en un seul appel via le format [suivi des modifications](/fr/features/change-tracking) lorsque vous exécutez vous-même le scrape. Si vous souhaitez détecter des modifications dans des **champs structurés précis** (prix, titre, indicateur de disponibilité, éléments d’une liste, etc.), activez le suivi des modifications en mode JSON en ajoutant le format `changeTracking` avec `modes: ["json"]` aux `scrapeOptions` de la cible.
+Les moniteurs [Page](/fr/features/monitoring-page) et [website](/fr/features/monitoring-website) calculent par défaut les différences dans le markdown de chaque page et indiquent `same`, `changed`, `new`, `removed` ou `error`. Le même calcul de différences est disponible en un seul appel via le format [suivi des modifications](/fr/features/change-tracking) lorsque vous exécutez vous-même le scrape. Si vous souhaitez détecter des modifications dans des **champs structurés précis** (prix, titre, indicateur de disponibilité, éléments d’une liste, etc.), activez le suivi des modifications en mode JSON en ajoutant le format `suiviDesModifications` avec `modes: ["json"]` aux `scrapeOptions` de la cible.
 
 <Note>
   Le suivi des modifications s’applique aux cibles `scrape` et `crawl`. Les moniteurs web à grande échelle (`search`) génèrent des alertes sur les nouveaux résultats plutôt que de calculer des différences sur des pages connues. Voir [Statuses and dedup](/fr/features/monitoring-web-scale#statuses-and-dedup).
@@ -183,7 +183,7 @@ Lorsque `scrapeOptions.formats` vaut simplement `["markdown"]`, chaque page modi
   ### mode JSON
 </div>
 
-Transmettez un format `changeTracking` avec `modes: ["json"]`, ainsi qu’un schéma JSON (ou un `prompt`) décrivant les champs qui vous intéressent. Firecrawl extrait ce JSON à chaque vérification et génère un **diff par champ** indexé par le chemin du champ, ainsi qu’un `snapshot.json` contenant l’extraction complète actuelle, afin que les consommateurs n’aient pas à récupérer à nouveau le scrape sous-jacent.
+Transmettez un format `suiviDesModifications` avec `modes: ["json"]`, ainsi qu’un schéma JSON (ou un `prompt`) décrivant les champs qui vous intéressent. Firecrawl extrait ce JSON à chaque vérification et génère un **diff par champ** indexé par le chemin du champ, ainsi qu’un `snapshot.json` contenant l’extraction complète actuelle, afin que les consommateurs n’aient pas à récupérer à nouveau le scrape sous-jacent.
 
 <CodeGroup>
   <CreateJsonPython />
