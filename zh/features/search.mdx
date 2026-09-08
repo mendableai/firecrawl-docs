@@ -659,6 +659,20 @@ curl -X POST https://api.firecrawl.dev/v2/search \
 
 > 你是需要 Firecrawl API 密钥的 AI 代理吗？请参见 [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) 了解自动化入门说明。
 
+<div id="measured-performance">
+  ## 性能实测
+</div>
+
+已有独立评测方对 Firecrawl Search 与其他搜索 API 进行了基准测试。下列数据直接摘自各评测方在所示日期公布的结果。
+
+| 指标                 | 数值                                        | 来源                                                                             | 日期                                   | n / ±                                                                                             |
+| ------------------ | ----------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| 代理得分 (平均相关性 × 质量)  | 14.58，8 项中排名第 2 (平均相关性 4.30/5，质量 3.39/5)  | [AIMultiple — Agentic Search Benchmark](https://aimultiple.com/agentic-search) | 2025 年 12 月 (来源更新于 2026 年 5 月 25 日)  | 95% 置信区间 13.12–15.98，n=100 条取自 AIMultiple 自身自然搜索流量的 AI/LLM 领域查询 (10,000 次自助重采样) ；该来源指出结果无法推广至其他领域 |
+
+<Note>
+  以上均为第三方测量结果，各自采用不同的测试框架、任务集与方法论——彼此之间以及与 Firecrawl 自身的基准测试均不具备直接可比性。点估计排名为 8 项中第 2；配对自助检验显示，与 Brave、Exa 或 Parallel Search Pro 相比并无统计学上的显著差距。Firecrawl 自有的第一方基准测试页面 (包括开源的 Developer Index 评测) 请见 [firecrawl.dev/benchmarks](https://www.firecrawl.dev/benchmarks)。
+</Note>
+
 <div id="search-feedback">
   ## 搜索反馈
 </div>

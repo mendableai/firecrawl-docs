@@ -38,7 +38,7 @@ import ExtractWithoutURLsCURL from "/snippets/ja/v2/extract/without-urls/curl.md
 
 `/extract` エンドポイントは、複数の URL やドメイン全体から構造化データを収集する作業を簡略化します。ワイルドカード (例: `example.com/*`) を含めることもできる URL のリストと、取得したい情報を記述するプロンプトまたはスキーマを指定してください。Firecrawl がクロール、解析、集約の処理を担い、大規模・小規模いずれのデータセットにも対応します。
 
-<Info>課金体系を簡素化し、Extract でも他のエンドポイントと同様にクレジット制を採用しました。各クレジットは 15 トークンに相当します。</Info>
+<Info>課金を簡素化し、Extract でも他のエンドポイントと同様にクレジット制を採用しました。各クレジットは 15 トークンに相当します。クレジットとプラン料金の対応については [課金](/ja/billing) を参照してください。scrape と クロール は 1 ページあたり 1 クレジットで課金されます ([Scrape のコスト](/ja/features/scrape#scraping-a-url-with-firecrawl))。</Info>
 
 <div id="using-extract">
   ## `/extract` の使用方法
@@ -238,10 +238,10 @@ curl -X POST https://api.firecrawl.dev/v2/extract \
 > FIRE-1 はすでに稼働しており、プレビュー版として利用可能です。
 
 <div id="billing-and-usage-tracking">
-  ## 請求と利用状況の追跡
+  ## 課金と利用状況の追跡
 </div>
 
-請求を簡素化し、Extract は他のエンドポイントと同様にクレジット制になりました。1 クレジットは 15 トークンに相当します。
+課金を簡素化し、Extract は他のエンドポイントと同様にクレジット制になりました。1 クレジットは 15 トークンに相当します。クレジットとプラン料金の対応については [課金](/ja/billing) を参照してください。scrape と クロール は 1 ページあたり 1 クレジットで課金されます ([Scrape のコスト](/ja/features/scrape#scraping-a-url-with-firecrawl)) 。
 
 [ダッシュボード](https://www.firecrawl.dev/app/extract)で Extract の利用状況を確認できます。
 

@@ -1,10 +1,10 @@
 ---
-title: "Extract"
-description: "使用大语言模型从页面中Extract结构化数据"
-og:title: "Extract | Firecrawl"
-og:description: "使用大语言模型从页面中Extract结构化数据"
+title: "提取"
+description: "使用大语言模型从页面中提取结构化数据"
+og:title: "提取 | Firecrawl"
+og:description: "使用大语言模型从页面中提取结构化数据"
 icon: "barcode-read"
-sidebarTitle: "Extract"
+sidebarTitle: "提取"
 hidden: true
 noindex: true
 
@@ -32,13 +32,13 @@ import ExtractWithoutURLsJS from "/snippets/zh/v2/extract/without-urls/js.mdx";
 import ExtractWithoutURLsCURL from "/snippets/zh/v2/extract/without-urls/curl.mdx";
 
 <Note>
-  **全新推出 Agent：Extract 的下一代形态**
-  我们正在发布 [`/agent`](/zh/features/agent) —— `/extract` 的继任者。它更快、更可靠，而且不需要提供 URL。你只需描述你的需求，让 AI 代理为你自动查找并Extract数据。[立即试用 Agent →](/zh/features/agent)
+  **全新推出 代理：提取 的下一代形态**
+  我们正在发布 [`/agent`](/zh/features/agent) —— `/extract` 的继任者。它更快、更可靠，而且不需要提供 URL。你只需描述你的需求，让 AI 代理为你自动查找并提取数据。[立即试用 代理 →](/zh/features/agent)
 </Note>
 
 `/extract` 端点可简化从任意数量的 URL 或整个域名收集结构化数据的流程。你只需提供一个 URL 列表 (可选使用通配符，如 `example.com/*`) ，以及用于描述所需信息的prompt或 schema。Firecrawl 将负责爬取、解析与汇总，不论数据集大小。
 
-<Info>我们已简化计费：Extract 现在与其他端点一样使用额度。每个额度相当于 15 个 token。</Info>
+<Info>我们已简化计费：提取 现在与其他端点一样使用额度。每个额度相当于 15 个 token。关于额度如何对应各套餐价格，请参见 [计费](/zh/billing)；scrape 和 crawl 按每页 1 个额度计费 ([Scrape 成本](/zh/features/scrape#scraping-a-url-with-firecrawl)) 。</Info>
 
 <div id="using-extract">
   ## 使用 `/extract`
@@ -241,9 +241,9 @@ curl -X POST https://api.firecrawl.dev/v2/extract \
   ## 计费与使用方式跟踪
 </div>
 
-我们已简化计费：现在 Extract 与其他所有端点一样采用额度计费。每个额度相当于 15 个 token。
+我们已简化计费：现在 提取 与其他所有端点一样采用额度计费。每个额度相当于 15 个 token。有关额度如何对应到套餐定价，请参见 [计费](/zh/billing)；scrape 和 crawl 按每页 1 个额度计费 ([Scrape 成本](/zh/features/scrape#scraping-a-url-with-firecrawl)) 。
 
-你可以通过[dashboard](https://www.firecrawl.dev/app/extract)监控 Extract 的使用方式。
+你可以通过[dashboard](https://www.firecrawl.dev/app/extract)监控 提取 的使用方式。
 
 有反馈或需要帮助？请发送邮件至 [help@firecrawl.com](mailto:help@firecrawl.com)。
 

@@ -3,4 +3,8 @@ title: 'Obtener el estado del rastreo'
 openapi: '/es/api-reference/v2-openapi.json GET /crawl/{id}'
 ---
 
+<Info>
+  `total` cuenta las páginas completadas, activas, en cola y pendientes, y excluye las fallidas, por lo que `completed == total` en un rastreo finalizado no significa que todas las páginas descubiertas se hayan procesado correctamente. Combina los contadores con [Obtener los errores del rastreo](/es/api-reference/endpoint/crawl-get-errors) para ver las páginas que se intentaron pero no se devolvieron, y consulta [Ejecución y contabilización de resultados](/es/features/crawl#execution-and-result-accounting) para saber cómo interpretarlos en conjunto y cuándo dejar de paginar con `next`.
+</Info>
+
 > ¿Eres un agente de IA que necesita una API key de Firecrawl? Consulta [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para ver las instrucciones de incorporación automatizada.

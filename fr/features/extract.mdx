@@ -38,7 +38,7 @@ import ExtractWithoutURLsCURL from "/snippets/fr/v2/extract/base/curl.mdx";
 
 Le point de terminaison `/extract` simplifie la collecte de données structurées depuis n’importe quel nombre d’URL ou de domaines entiers. Fournissez une liste d’URL, éventuellement avec des jokers (p. ex. `example.com/*`), ainsi qu’un prompt ou un schéma décrivant les informations souhaitées. Firecrawl gère l’exploration, l’analyse et l’agrégation, que l’ensemble de données soit petit ou volumineux.
 
-<Info>Nous avons simplifié la facturation afin qu’Extract utilise désormais des crédits, comme tous les autres points de terminaison. Chaque crédit équivaut à 15 tokens.</Info>
+<Info>Nous avons simplifié la facturation afin qu’Extract utilise désormais des crédits, comme tous les autres points de terminaison. Chaque crédit équivaut à 15 tokens. Consultez [Facturation](/fr/billing) pour savoir comment les crédits correspondent à la tarification des offres ; scrape et crawl sont facturés 1 crédit par page ([Coût de Scrape](/fr/features/scrape#scraping-a-url-with-firecrawl)).</Info>
 
 <div id="using-extract">
   ## Utiliser `/extract`
@@ -241,7 +241,7 @@ curl -X POST https://api.firecrawl.dev/v2/extract \
   ## Facturation et suivi de l’utilisation
 </div>
 
-Nous avons simplifié la facturation afin qu’Extract utilise désormais des crédits, comme tous les autres points de terminaison. Chaque crédit vaut 15 tokens.
+Nous avons simplifié la facturation afin qu’Extract utilise désormais des crédits, comme tous les autres points de terminaison. Chaque crédit vaut 15 tokens. Consultez [Facturation](/fr/billing) pour savoir comment les crédits se traduisent dans la tarification des offres ; scrape et crawl sont facturés 1 crédit par page ([Coût de Scrape](/fr/features/scrape#scraping-a-url-with-firecrawl)).
 
 Vous pouvez suivre l’utilisation d’Extract via le [tableau de bord](https://www.firecrawl.dev/app/extract).
 

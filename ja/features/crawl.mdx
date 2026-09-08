@@ -39,6 +39,8 @@ Crawl は URL を Firecrawl に送信し、到達可能なすべてのサブペ�
 * パスのフィルタリング、深さ制限、サブドメインや外部リンクの制御をサポート
 * ポーリング、WebSocket、または Webhook で結果を返す
 
+クロールがスクレイピングする各ページは、スクレイピングと同じパイプラインを通ります。そのため、スクレイピングが 1 ページに対してできることは、クロールが到達するすべてのページに対しても実行できます。[Capabilities](/ja/capabilities) では、その内容、各機能がどこで実行されるか、APIキーが必要かどうかを一覧しています。
+
 <PlaygroundCTA />
 
 <div id="installation">
@@ -275,6 +277,98 @@ Firecrawl からのすべての webhook リクエストには、HMAC-SHA256 シ�
 
 JavaScript と Python による完全な実装例については、[Webhook セキュリティのドキュメント](/ja/webhooks/security) を参照してください。詳細なイベントペイロード、ペイロード構造、高度な設定、トラブルシューティングを含む包括的な webhook ドキュメントについては、[Webhooks ドキュメント](/ja/webhooks/overview) を参照してください。
 
+<div id="execution-and-result-accounting">
+  ## 実行と結果の集計
+</div>
+
+クロールが完了したことは、すべてのページに到達できたことを意味しません。このセクションでは、crawl endpoint が実行について現在報告する内容 — カウンター、ページングの規約、失敗の記録、スコープの上限 — を説明します。これをもとに、その実行結果が次のアクションを判断できるだけの完全性を備えているかを、ご自身で見極められます。ただし、これらの記録はいずれも完全性を保証するものではありません。
+
+<div id="reading-the-status-counters">
+  ### ステータスカウンターの読み方
+</div>
+
+[Get Crawl Status](/ja/api-reference/endpoint/crawl-get) (`GET /v2/crawl/{id}`) のレスポンスには、その実行状況を表すカウンターが必ず含まれます。
+
+| フィールド                                    | 意味                                                                                                     |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `status`                                 | `scraping`、`completed`、`failed`、`cancelled` のいずれか                                                      |
+| `total`                                  | `completed` に処理中のページ (実行中・キュー待ち・バックログ) を加えた数。**失敗したページは含まれません。**                                       |
+| `completed`                              | 正常にクロールできたページ数                                                                                         |
+| `creditsUsed`                            | これまでにクロールで消費したクレジット                                                                                    |
+| `createdAt` / `completedAt` / `duration` | 開始時刻、終了時刻 (終了状態のみ) 、経過秒数                                                                               |
+| `expiresAt`                              | 結果をAPIから取得できなくなる時刻                                                                                     |
+| `next`                                   | 次の10MB分の結果ページのURL。`status` が `completed` 以外のときにも出力されます — [結果のページング](#paging-through-results)を参照してください。 |
+
+<Warning>
+  完了したクロールで `completed == total` になっていても、発見されたすべてのページが成功したという意味では**ありません**。`total` は完了・実行中・キュー待ち・バックログのページを合計し、失敗したページを除外するため、終了状態のクロールでは `active`、`queued`、`backlog` が必ずゼロになります。そのため、ページが失敗したかどうかに関係なく2つのカウンターは一致します。ステータスカウンターでは失敗の有無を判断できません。失敗したページを列挙できるのは [Get Crawl Errors](#failed-and-blocked-pages) だけです。
+</Warning>
+
+`data` 配列には、Firecrawl が正常にスクレイピングできたページのみが含まれます。試行したものの結果が得られなかったページは `data` に含まれないため、後述の Get Crawl Errors から確認してください。
+
+<div id="paging-through-results">
+  ### 結果のページング
+</div>
+
+レスポンスの上限は10MBです。レスポンスが切り詰められた場合、`next` に次のページの結果を取得するためのURLが入ります。
+
+`next` は単に「まだデータが残っている」ことを示すものではありません。`status` が `completed` 以外のときにも常に返されるため、`failed` や `cancelled` で終了したクロールでも、残りの結果が存在しないのに `next` のURLが返ることがあります。`next` がないことをループの終了条件にしないでください。失敗またはキャンセルされたクロールでは、`next` が消えることはありません。
+
+終了判定に使うのはステータスフィールドです。実行を最後まで読み取るには、次の手順に従います。
+
+1. `status` が `completed`、`failed`、`cancelled` のいずれかになるまで `GET /v2/crawl/{id}` をポーリングします。
+2. `next` が存在し、**かつ** 直前のページが空でない `data` 配列を返している間は、`next` をたどって残りの結果を収集します。
+3. `next` がなくなったとき、またはページが新しいドキュメントを返さなくなったときに停止します。
+
+公式SDKsはこのページングを自動的に処理し、すべての結果をまとめて返します。
+
+<div id="failed-and-blocked-pages">
+  ### 失敗したページとブロックされたページ
+</div>
+
+[Get Crawl Errors](/ja/api-reference/endpoint/crawl-get-errors) (`GET /v2/crawl/{id}/errors`) は、`data` に含まれなかったページを記録します。返されるのは2つの配列です:
+
+* `errors` — 失敗した scrape job で、それぞれ `id`、`url`、`error` (error message) 、失敗時刻の `timestamp` を持ちます。これらはネットワークエラーや timeout など、Firecrawl 自体がスクレイピングに失敗したページです。意図的にスキップされた外部サイトのホームページへのリンクも、エラーコード `EXTERNAL_LINK` としてここに報告されます。
+* `robotsBlocked` — アクセスを試みたものの、サイトの robots.txt によってブロックされたURLです。
+
+<Note>
+  このリストは、すべての失敗を漏れなく列挙することを保証するものではありません。一部の内部的な失敗クラスは、現在レスポンスを構築する前に `errors` から除外されています。あくまで Firecrawl が報告する失敗の記録であり、他に問題が起きていないことの証明ではない点に注意してください。上記のエラーコード (`EXTERNAL_LINK`) は現時点でもエラーオブジェクトとして返されますが、公開されている `GET /crawl/{id}/errors` の schema にはまだ含まれておらず、APIリファレンスの更新待ちです。
+</Note>
+
+対象サイトが404などのHTTPエラーを返したページは、クロールエラーでは*ありません*。Firecrawl はスクレイピングに成功しているため、そのページは `data` に含まれ、サイトのステータスコードが `metadata.statusCode` に入ります。
+
+<div id="what-the-crawler-is-scoped-to-reach">
+  ### クローラーが到達できる範囲
+</div>
+
+到達範囲は設定した scope パラメータによって決まります。詳細は [設定リファレンス](#configuration-reference) と [Crawl エンドポイントリファレンス](/ja/api-reference/endpoint/crawl-post) を参照してください:
+
+* **デフォルトでは子ページのみ。** クロールは、指定した URL の子ではないサブリンクを無視します。兄弟パスや親パスをたどるには `crawlEntireDomain`、サブドメインには `allowSubdomains`、ドメイン外へのリンクをたどるには `allowExternalLinks` を使用します。
+* **`includePaths` / `excludePaths` は URL のパス名に対して**正規表現パターンとして照合されます。完全な URL やクエリパラメータは対象外です。クエリ文字列を含む完全な URL に対して照合したい場合は `regexOnFullURL: true` を設定します。開始 URL も `includePaths` と照合されるため、一致しない場合はクロール結果が 0 ページになることがあります。
+* **sitemap モード。** デフォルトの `sitemap: "include"` では、URL は sitemap と再帰的なリンク探索の両方から取得されます。`"skip"` は HTML のリンクのみを使用するため、PDF や深い階層のページなど sitemap にしかないページは取得できません。`"only"` は sitemap と開始 URL をクロールし、HTML からのリンク探索は行いません。
+* **`maxDiscoveryDepth`** は、ルートからたどるリンク探索のホップ数の上限です。最大深度のページ自体はスクレイピングされますが、そこで見つかったリンクはたどりません。
+* **`limit`** はページ数の上限で、デフォルトは `10000` です。
+* **`ignoreQueryParameters`** は、クエリパラメータのみが異なる同一パスの再スクレイピングを回避します。
+* **robots.txt は尊重されます** (`ignoreRobotsTxt` を有効にした場合を除く。Enterprise のみ) 。
+
+`maxConcurrency` のデフォルトは、プランによって決まるチームの concurrency 上限です — [Rate limits](/ja/rate-limits) を参照してください。
+
+<div id="when-results-vary-between-runs">
+  ### 実行ごとに結果が異なる場合
+</div>
+
+同じ設定で実行しても、クロール結果は実行ごとに異なる場合があります。ページは並行してスクレイピングされるため、リンクが検出される順序はネットワークのタイミングや、どのページの読み込みが先に完了するかに左右されます。そのため、深さの境界付近ではサイト内の異なる分岐が異なる程度まで探索されることがあり、特に `maxDiscoveryDepth` の値が大きい場合に顕著です。
+
+実行の再現性を高めるには:
+
+* `maxConcurrency` を `1` に設定します。[設定リファレンス](#configuration-reference)に記載のとおり、`maxConcurrency` は「最大同時スクレイピング数」であり、同時に処理中となるリクエスト数の上限を定めます。これによりタイミング依存の処理の入れ替わりは減りますが、実行ごとの差異が完全になくなるわけではありません。サイトマップの検出はこの上限の対象外でキューに入れられ、ネストされたサイトマップは独立したジョブとして取得され、返される `data` 配列は検出順ではなく完了時刻順に並びます。`delay` を設定した場合も同時実行数は 1 に強制されます。
+* サイトに包括的なサイトマップがある場合は `sitemap: "only"` を使用し、URL の集合をリンク検出ではなくサイトマップから取得するようにします。
+
+<div id="knowing-when-a-crawl-is-done">
+  ### クロールの完了を知る方法
+</div>
+
+ポーリングを行わない場合は、[webhook イベント](#event-types)から同じ情報を得られます。`crawl.page` はページのスクレイピングが成功するたびに発火し、`crawl.completed` (または `crawl.failed`) は実行の終了時に発火します。ジョブの結果は完了後 24 時間 API から取得できます。それ以降は[アクティビティログ](https://www.firecrawl.dev/app/logs)で確認してください。
+
 <div id="configuration-reference">
   ## 設定リファレンス
 </div>
@@ -315,6 +409,6 @@ JavaScript と Python による完全な実装例については、[Webhook セ�
 * **結果の有効期限**: ジョブの結果は、完了後 24 時間は API 経由で利用できます。その後は、[アクティビティログ](https://www.firecrawl.dev/app/logs)で結果を確認してください。
 * **クロールエラー**: `data` 配列には、Firecrawl が正常にスクレイピングしたページが含まれます。ネットワークエラー、タイムアウト、または robots.txt によるブロックで失敗したページを取得するには、[Get Crawl Errors](/ja/api-reference/endpoint/crawl-get-errors) エンドポイントを使用します。
 * <a id="external-links" />**外部リンク**: `allowExternalLinks: true` を指定すると、クローラーはドメイン外を指すリンクをたどり、リンク先の各ページを 1 回スクレイピングします。ただし、その外部ページで見つかったリンクをさらにクロールすることはありません。無関係なサイト全体を取り込むことを避けるため、外部サイトの**ホームページ** (パスのないルート URL。例: `https://example.com/`) へのリンクは意図的にスキップされます。これらは [Get Crawl Errors](/ja/api-reference/endpoint/crawl-get-errors) にコード `EXTERNAL_LINK` として表示されます。リダイレクトは宛先までたどられます。これには正規 URL に解決されるリンク (たとえば `http → https` や `www` バリアント) も含まれるため、外部ホームページに到達するリダイレクトのみがスキップされます。
-* **非決定的な結果**: 同じ設定で実行しても、クロール結果は実行ごとに異なる場合があります。ページは並行してスクレイピングされるため、リンクが検出される順序はネットワークのタイミングや、どのページの読み込みが先に完了するかに左右されます。そのため、深さの境界付近ではサイト内の異なる分岐が異なる程度まで探索されることがあり、特に `maxDiscoveryDepth` の値が大きい場合に顕著です。より決定的な結果を得るには、`maxConcurrency` を `1` に設定するか、サイトに包括的なサイトマップがある場合は `sitemap: "only"` を使用してください。
+* **非決定的な結果**: 同じ設定で実行しても、クロール結果は実行ごとに異なる場合があります。これは、ページが並行してスクレイピングされ、リンクの検出順序がネットワークのタイミングに左右されるためです。何が変動するのか、また実行の再現性を高める方法については、[実行と結果の集計](#execution-and-result-accounting)を参照してください。
 
-> Firecrawl API キーが必要な AI エージェントですか？ 自動オンボーディング手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) を参照してください。
+> Firecrawl APIキーが必要な AI エージェントですか？ 自動オンボーディング手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) を参照してください。

@@ -3,4 +3,8 @@ title: "クロールのエラーを取得"
 openapi: '/ja/api-reference/v2-openapi.json GET /crawl/{id}/errors'
 ---
 
+<Info>
+  このエンドポイントは、クロールの `data` 配列に含まれなかったページを記録します。Firecrawl がスクレイピングに失敗したものは `errors`、robots.txt によってブロックされた URL は `robotsBlocked` に入ります。失敗したページは[クロールのステータス](/ja/api-reference/endpoint/crawl-get)のカウンターには一切現れないため、確認できるのはここだけです。ただし、一部の内部的な失敗クラスはレスポンスの生成前に除外されるため、この一覧が完全であるとは限りません。ステータスのカウンターと併せた読み方については、[実行と結果の集計](/ja/features/crawl#execution-and-result-accounting)を参照してください。
+</Info>
+
 > Firecrawl API キーが必要な AI エージェントですか？自動オンボーディングの手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) を参照してください。

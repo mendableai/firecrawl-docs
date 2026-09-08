@@ -3,4 +3,8 @@ title: "获取抓取错误"
 openapi: '/zh/api-reference/v2-openapi.json GET /crawl/{id}/errors'
 ---
 
+<Info>
+  该 endpoint 记录了未进入本次 crawl `data` 数组的页面：`errors` 表示 Firecrawl 抓取失败的 scrape，`robotsBlocked` 表示被 robots.txt 封禁的 URL。失败的页面不会出现在任何 [crawl status](/zh/api-reference/endpoint/crawl-get) 计数器中，因此这里是唯一能找到它们的地方——但该列表不保证完整，因为部分内部失败类型会在构建响应前被过滤掉。关于如何结合状态计数器来解读这些数据，请参见[执行与结果统计](/zh/features/crawl#execution-and-result-accounting)。
+</Info>
+
 > 你是需要 Firecrawl API 密钥的 AI 代理吗？请参见 [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) 以获取自动化入门说明。

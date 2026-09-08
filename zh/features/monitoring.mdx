@@ -165,7 +165,7 @@ Firecrawl 监控会定期执行检查，并在有内容发生变化或出现新�
   ## 变更追踪
 </div>
 
-[页面](/zh/features/monitoring-page) 和 [网站](/zh/features/monitoring-website) 监控默认会比较每个页面的 markdown 差异，并报告 `same`、`changed`、`new`、`removed` 或 `error`。如果你想检测**特定结构化字段** (如价格、标题、库存状态标记、列表中的条目等) 的变化，请在目标的 `scrapeOptions` 中添加 `changeTracking` 格式，并设置 `modes: ["json"]`，以启用 JSON 模式的变更追踪。
+[页面](/zh/features/monitoring-page) 和 [网站](/zh/features/monitoring-website) 监控默认会比较每个页面的 markdown 差异，并报告 `same`、`changed`、`new`、`removed` 或 `error`。如果你自己执行 抓取，也可以通过 [变更追踪](/zh/features/change-tracking) 格式在单次调用中获得同样的差异比较。如果你想检测**特定结构化字段** (如价格、标题、库存状态标记、列表中的条目等) 的变化，请在目标的 `scrapeOptions` 中添加 `changeTracking` 格式，并设置 `modes: ["json"]`，以启用 JSON 模式的变更追踪。
 
 <Note>
   变更追踪适用于 `scrape` 和 `crawl` 目标。面向整个网页规模的 (`search`) 监控会针对新结果触发告警，而不是比较已知页面的差异。请参见 [Statuses and dedup](/zh/features/monitoring-web-scale#statuses-and-dedup)。
@@ -242,6 +242,8 @@ diff 载荷使用提取结果中的 JSON 路径作为键。每个值都是一个
 
 当检查在没有页面级错误的情况下完成时，`success` 为 `true`。对于失败或部分完成的检查，它为 `false`；如果可用，`error` 会包含失败原因。
 
+你的 endpoint 必须在 10 秒内返回 `2xx` 状态。投递失败会重试三次，分别在 1 分钟、5 分钟和 15 分钟后进行，之后该 webhook 会被标记为失败。完整表格请参见 [超时与重试](/zh/webhooks/overview#timeouts--retries)。
+
 <div id="email">
   ### 电子邮件
 </div>
@@ -291,7 +293,7 @@ diff 载荷使用提取结果中的 JSON 路径作为键。每个值都是一个
   <GetCheckCURL />
 </CodeGroup>
 
-检查列表可按检查 `status` 过滤：`queued`、`running`、`completed`、`failed`、`partial` 或 `skipped_overlap`。
+检查列表可按检查 `status` 过滤：`queued`、`running`、`completed`、`failed`、`partial`、`skipped_overlap` 或 `skipped_no_credits`。这就是全部取值。关于这两种跳过状态的含义，请参见[跳过的检查与已暂停的监控](#skipped-checks-and-paused-monitors)。
 
 检查详情响应包含 `estimatedCredits`、`actualCredits`、汇总计数以及分页的 `pages` 数组。`estimatedCredits` 是该检查预留额度的上限；`actualCredits` 是 Firecrawl 在确认有多少页面发生变化并需要判定后，最终收取的额度。使用顶层 `next` URL 获取下一页结果，其分页方式与 爬取 保持一致。你还可以按页面 `status` 过滤：`same`、`new`、`changed`、`removed` 或 `error`。每个已变更页面都包含内联 `diff` 数据；来自 JSON 模式监控的页面还会包含带有当前提取结果的 `snapshot`。
 
@@ -308,6 +310,40 @@ diff 载荷使用提取结果中的 JSON 路径作为键。每个值都是一个
     <CheckOutputMixed />
   </Tab>
 </Tabs>
+
+<div id="skipped-checks-and-paused-monitors">
+  ## 被跳过的 检查 与暂停的监控
+</div>
+
+计划中的 检查 可能未运行就结束。这类情况会记录为跳过状态，而非失败，也不会计费。
+
+| 状态                   | 发生了什么                                                                                      |
+| -------------------- | ------------------------------------------------------------------------------------------ |
+| `skipped_overlap`    | 本次 检查 到期时，该监控的上一次 检查 仍在运行，因此本次被跳过，而不是与其并行运行。下一次计划的 检查 会正常运行。                      |
+| `skipped_no_credits` | 该监控的额度检查拒绝了此次运行。`actualCredits` 为 `0`，`error` 会说明原因。这既包括团队额度耗尽的情况，也包括由合作伙伴授予的任务被合作伙伴撤回的情况。 |
+
+一旦原因消除，`skipped_no_credits` 的 检查 会自行恢复。补充额度即可，无需在监控上重置任何内容。
+
+<div id="there-is-no-failure-counter-to-read">
+  ### 没有可直接读取的失败计数器
+</div>
+
+Firecrawl 不会为监控保存或返回失败总次数、错误率或连续跳过次数。监控对象返回 `status`、`nextRunAt`、`lastRunAt`、`currentCheckId` 和 `lastCheckSummary`，单次检查返回自身的 `status` 和 `error`，其中没有任何一项是累计值。
+
+如果需要连续次数或比率，可自行从检查列表中推算。`GET /v2/monitor/{monitorId}/checks` 按从新到旧返回检查记录，因此统计开头连续相同 `status` 的数量即为当前的连续次数，一旦出现状态不同的检查，连续即中断。
+
+<div id="automatic-pausing">
+  ### 自动暂停
+</div>
+
+Firecrawl 只在一种情况下暂停监控：当监控使用通过[合作伙伴集成](/zh/partner-credits)发放的额度运行，而合作伙伴撤回了该任务时，每次检查都会以 `skipped_no_credits` 被跳过，并返回一条提示合作伙伴已撤销该任务的错误。这种情况不会自行恢复，因此在连续三次出现此类跳过后，Firecrawl 会将该监控的 `status` 设为 `paused` 并清除 `nextRunAt`，从而停止调度。
+
+由此可以得出两点。
+
+* 额度耗尽不会导致监控暂停。余额不足的团队仍会保留其调度，并持续记录 `skipped_no_credits` 检查，直到额度再次可用。
+* 暂停是一次状态变更，而非一种通知。没有暂停的 webhook 事件，也不会发送暂停邮件。请读取监控的 `status` 来查看状态，并在底层访问权限恢复后，使用 `PATCH /v2/monitor/{monitorId}` 将其设回 `active`。
+
+被暂停的监控会保留其配置和检查历史。暂停不等于删除。
 
 <div id="pricing">
   ## 定价

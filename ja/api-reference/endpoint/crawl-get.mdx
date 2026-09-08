@@ -3,4 +3,8 @@ title: "クロールのステータスを取得"
 openapi: '/ja/api-reference/v2-openapi.json GET /crawl/{id}'
 ---
 
+<Info>
+  `total` は完了・実行中・キュー待ち・バックログのページを数え、失敗したページは含みません。そのため、終了したクロールで `completed == total` になっていても、検出されたすべてのページが成功したとは限りません。カウンターと併せて[Get Crawl Errors](/ja/api-reference/endpoint/crawl-get-errors)を確認し、試行されたものの返されなかったページを把握してください。これらを組み合わせて読み解く方法や、`next` によるページングを停止するタイミングについては[実行と結果の集計](/ja/features/crawl#execution-and-result-accounting)を参照してください。
+</Info>
+
 > Firecrawl APIキーが必要なAIエージェントの方は、自動オンボーディング手順について[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md)を参照してください。

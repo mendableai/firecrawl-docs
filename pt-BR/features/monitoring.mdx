@@ -165,7 +165,7 @@ O intervalo mínimo é de 5 minutos. As respostas da API sempre retornam a expre
   ## Rastreamento de mudanças
 </div>
 
-Os monitores de [Página](/pt-BR/features/monitoring-page) e [site](/pt-BR/features/monitoring-website) comparam o markdown de cada página por padrão e informam `same`, `changed`, `new`, `removed` ou `error`. Quando quiser detectar mudanças em **campos estruturados específicos** (preço, manchete, indicador de disponibilidade em estoque, itens de uma lista etc.), habilite o rastreamento de mudanças no modo JSON adicionando um formato `changeTracking` com `modes: ["json"]` às `scrapeOptions` do alvo.
+Os monitores de [Página](/pt-BR/features/monitoring-page) e [site](/pt-BR/features/monitoring-website) comparam o markdown de cada página por padrão e informam `same`, `changed`, `new`, `removed` ou `error`. A mesma comparação está disponível em uma única chamada por meio do formato de [rastreamento de mudanças](/pt-BR/features/change-tracking) quando você mesmo executa o scraping. Quando quiser detectar mudanças em **campos estruturados específicos** (preço, manchete, indicador de disponibilidade em estoque, itens de uma lista etc.), habilite o rastreamento de mudanças no modo JSON adicionando um formato `changeTracking` com `modes: ["json"]` às `scrapeOptions` do alvo.
 
 <Note>
   O rastreamento de mudanças se aplica a alvos `scrape` e `crawl`. Monitores de toda a web em escala completos (`search`) emitem alertas sobre novos resultados em vez de comparar páginas conhecidas. Veja [Statuses and dedup](/pt-BR/features/monitoring-web-scale#statuses-and-dedup).
@@ -242,6 +242,8 @@ Payload de `monitor.check.completed`:
 
 `success` é `true` quando a verificação é concluída sem erros de página. É `false` em verificações com falha ou parciais, e `error` contém o motivo da falha quando disponível.
 
+Seu endpoint deve responder com um status `2xx` em até 10 segundos. Entregas com falha são repetidas três vezes, após 1, 5 e 15 minutos, e o webhook é marcado como falho depois disso. Veja [Tempos limite e retentativas](/pt-BR/webhooks/overview#timeouts--retries) para a tabela completa.
+
 <div id="email">
   ### Email
 </div>
@@ -291,7 +293,7 @@ Use `GET /v2/monitor/{monitorId}/checks` para listar verificações e `GET /v2/m
   <GetCheckCURL />
 </CodeGroup>
 
-A lista de verificações pode ser filtrada pelo `status` da verificação: `queued`, `running`, `completed`, `failed`, `partial` ou `skipped_overlap`.
+A lista de verificações pode ser filtrada pelo `status` da verificação: `queued`, `running`, `completed`, `failed`, `partial`, `skipped_overlap` ou `skipped_no_credits`. Esse é o conjunto completo. Veja [Verificações ignoradas e monitores pausados](#skipped-checks-and-paused-monitors) para entender o que significam os dois status de ignorado.
 
 A resposta de detalhes da verificação inclui `estimatedCredits`, `actualCredits`, contagens resumidas e um array `pages` paginado. `estimatedCredits` é a reserva no limite máximo para a verificação; `actualCredits` é o valor final cobrado depois que o Firecrawl determina quantas páginas mudaram e precisaram de avaliação. Use a URL `next` de nível superior para buscar a próxima página de resultados, seguindo a paginação do rastreamento. Você pode filtrar páginas por `status`: `same`, `new`, `changed`, `removed` ou `error`. Cada página alterada inclui dados de `diff` inline; páginas de monitores em modo JSON também incluem um `snapshot` com a extração atual.
 
@@ -308,6 +310,40 @@ A resposta de detalhes da verificação inclui `estimatedCredits`, `actualCredit
     <CheckOutputMixed />
   </Tab>
 </Tabs>
+
+<div id="skipped-checks-and-paused-monitors">
+  ## Verificações ignoradas e monitors pausados
+</div>
+
+Uma verificação agendada pode terminar sem ser executada. Ele é registrado com um status de ignorado, e não de falha, e não é cobrado.
+
+| Status               | O que aconteceu                                                                                                                                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `skipped_overlap`    | A verificação anterior deste monitor ainda estava em execução quando chegou a hora deste, então ele foi ignorado em vez de rodar em paralelo. A próxima verificação agendada é executada normalmente.                          |
+| `skipped_no_credits` | A verificação de créditos deste monitor recusou a run. `actualCredits` é `0` e `error` informa o motivo. Isso abrange tanto uma equipe que ficou sem créditos quanto um job concedido por um parceiro que o retirou. |
+
+Uma verificação `skipped_no_credits` se resolve sozinho assim que o motivo deixa de existir. Basta adicionar créditos. Nada precisa ser resetado no monitor.
+
+<div id="there-is-no-failure-counter-to-read">
+  ### Não existe um contador de falhas para consultar
+</div>
+
+O Firecrawl não mantém nem retorna uma contagem agregada de falhas, uma taxa de erros ou uma contagem de ignorados consecutivos em um monitor. O objeto do monitor retorna `status`, `nextRunAt`, `lastRunAt`, `currentCheckId` e `lastCheckSummary`, e uma verificação retorna seu próprio `status` e `error`. Nenhum desses valores é um total acumulado.
+
+Se você quiser uma sequência ou uma taxa, calcule-a a partir da lista de verificações. `GET /v2/monitor/{monitorId}/checks` retorna as verificações da mais recente para a mais antiga, portanto contar a sequência inicial de um determinado `status` mostra a sequência atual, e a primeira verificação com um `status` diferente encerra essa sequência.
+
+<div id="automatic-pausing">
+  ### Pausa automática
+</div>
+
+O Firecrawl pausa um monitor em apenas um caso. Quando um monitor é executado com créditos concedidos por meio de uma [integração de parceiro](/pt-BR/partner-credits) e o parceiro retira esse job, toda verificação é ignorada com `skipped_no_credits` e um erro informando que o parceiro revogou o job. Essa condição nunca se resolve sozinha, então, após três verificações consecutivas ignoradas desse tipo, o Firecrawl define o `status` do monitor como `paused` e limpa `nextRunAt`, interrompendo o agendamento.
+
+Disso decorrem duas consequências.
+
+* O crédito esgotado não pausa um monitor. Uma equipe com saldo excedido mantém seu agendamento e continua registrando verificações `skipped_no_credits` até que haja créditos disponíveis novamente.
+* A pausa é uma mudança de estado, não uma notificação. Não existe evento de webhook de pausa nem email de pausa. Consulte o `status` no monitor para verificá-la e use `PATCH /v2/monitor/{monitorId}` para voltá-lo a `active` quando o acesso subjacente for restaurado.
+
+Um monitor pausado mantém sua configuração e seu histórico de verificações. Pausar não é excluir.
 
 <div id="pricing">
   ## Preços

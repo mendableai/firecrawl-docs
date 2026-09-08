@@ -162,4 +162,6 @@ Para mais detalhes sobre as localizações compatíveis, consulte a [documentaç
 
 Este endpoint prioriza a velocidade, portanto, talvez não capture todos os links do site. Ele se baseia principalmente no sitemap do site, complementado por dados de rastreamento em cache e resultados de mecanismos de busca. Para obter uma lista de URLs mais completa e atualizada, considere usar o endpoint [/crawl](/pt-BR/features/crawl).
 
+Se você precisa de uma descoberta recursiva mais completa, com registros auditáveis de resultados e erros em vez de uma aproximação rápida, use o [/crawl](/pt-BR/features/crawl), que descobre páginas percorrendo links de forma recursiva e também pelo sitemap, além de informar o que retornou e o que não conseguiu buscar — consulte [Execução e contabilização de resultados](/pt-BR/features/crawl#execution-and-result-accounting). Para obter os links de uma página específica, solicite o [formato `links`](/pt-BR/features/scrape#scrape-formats) no [/scrape](/pt-BR/features/scrape).
+
 > Você é um agente de IA que precisa de uma chave de API do Firecrawl? Consulte [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para ver instruções de onboarding automatizado.

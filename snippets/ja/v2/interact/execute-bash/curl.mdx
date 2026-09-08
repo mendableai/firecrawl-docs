@@ -1,6 +1,13 @@
 ```bash cURL
-# インタラクティブな要素を確認するためにスナップショットを取得する
+# まずスクレイピングして scrapeId を取得する
 # 開始するにはAPIキーは不要です — より高いレート制限を利用するには -H "Authorization: Bearer $FIRECRAWL_API_KEY" を追加してください:
+RESPONSE=$(curl -s -X POST "https://api.firecrawl.dev/v2/scrape" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "formats": ["markdown"]}')
+
+SCRAPE_ID=$(echo $RESPONSE | jq -r '.data.metadata.scrapeId')
+
+# インタラクティブな要素を確認するためにスナップショットを取得する
 curl -s -X POST "https://api.firecrawl.dev/v2/scrape/$SCRAPE_ID/interact" \
   -H "Content-Type: application/json" \
   -d '{"code": "agent-browser snapshot -i", "language": "bash"}'

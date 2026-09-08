@@ -4,16 +4,23 @@ description: '通过 LLM 从页面提取结构化数据'
 icon: 'file-export'
 og:title: "提取 | Firecrawl"
 og:description: "通过 LLM 从页面提取结构化数据"
+canonical: "https://docs.firecrawl.dev/features/extract"
 ---
+
+<Warning>
+  **本页介绍的是 v0 API，已于 2025 年 4 月 1 日弃用。** 保留此页仅作历史参考，
+  并不反映 Firecrawl 当前的工作方式。最新文档：[Extract](/zh/features/extract)。
+  如需迁移现有的 v0 集成，请参见 [从 v0 迁移](/zh/migrating-from-v0)。
+</Warning>
 
 <div id="scrape-and-extract-structured-data-with-firecrawl">
   ## 使用 Firecrawl 抓取并提取结构化数据
 </div>
 
-Firecrawl 利用大型语言模型（LLM）高效从网页提取结构化数据。具体步骤如下：
+Firecrawl 利用大型语言模型 (LLM) 高效从网页提取结构化数据。具体步骤如下：
 
 1. **Schema 定义：**
-   使用 JSON Schema（遵循 OpenAI 工具 schema）定义要抓取的 URL 和目标数据的 schema。该 schema 用于指定你期望从页面提取的数据结构。
+   使用 JSON Schema (遵循 OpenAI 工具 schema) 定义要抓取的 URL 和目标数据的 schema。该 schema 用于指定你期望从页面提取的数据结构。
 
 2. **Scrape 端点：**
    将 URL 和 schema 传递给 /scrape 端点。该端点的文档如下：
@@ -29,7 +36,7 @@ Firecrawl 利用大型语言模型（LLM）高效从网页提取结构化数据�
 </div>
 
 <div id="scrape-with-extract-endpoint">
-  ### /scrape（携带 extract）端点
+  ### /scrape (携带 extract) 端点
 </div>
 
 用于从抓取到的页面中提取结构化数据。

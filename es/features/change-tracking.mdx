@@ -14,6 +14,8 @@ El seguimiento de cambios compara el contenido actual de una página con el de l
 * Dos modos de diff: `git-diff` para cambios a nivel de línea y `json` para comparación a nivel de campo
 * Acotado a tu equipo y, opcionalmente, a una etiqueta que especifiques
 
+El seguimiento de cambios es la primitiva de diff por cada scrape. Si quieres que Firecrawl ejecute las comprobaciones de forma programada y te avise por webhook, correo electrónico o Slack cuando algo cambie, usa la [supervisión](/es/features/monitoring) en lugar de llamar a `/scrape` por tu cuenta con un temporizador.
+
 <div id="how-it-works">
   ## Cómo funciona
 </div>
@@ -478,7 +480,7 @@ Usa [batch scrape](/es/features/batch-scrape) para supervisar un conjunto espec�
   ## Programar el seguimiento de cambios
 </div>
 
-El seguimiento de cambios es más útil cuando haces scraping a intervalos regulares. Puedes automatizarlo con cron, planificadores en la nube o herramientas de orquestación de flujos de trabajo.
+El seguimiento de cambios es más útil cuando haces scraping a intervalos regulares. [Monitoring](/es/features/monitoring) ejecuta esa programación por ti, con intervalos de hasta 5 minutos, y envía notificaciones por webhook, correo electrónico o Slack. Usa las opciones a continuación cuando quieras gestionar tú mismo la programación con cron, planificadores en la nube o herramientas de orquestación de flujos de trabajo.
 
 <div id="cron-job">
   ### Tarea cron

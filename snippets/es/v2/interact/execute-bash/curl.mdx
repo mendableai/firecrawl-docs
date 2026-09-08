@@ -1,6 +1,13 @@
 ```bash cURL
-# Tomar una instantánea para ver los elementos interactivos
+# Primero haz scraping para obtener un scrapeId
 # No se necesita API key para comenzar — agrega -H "Authorization: Bearer $FIRECRAWL_API_KEY" para mayores límites de tasa:
+RESPONSE=$(curl -s -X POST "https://api.firecrawl.dev/v2/scrape" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "formats": ["markdown"]}')
+
+SCRAPE_ID=$(echo $RESPONSE | jq -r '.data.metadata.scrapeId')
+
+# Tomar una instantánea para ver los elementos interactivos
 curl -s -X POST "https://api.firecrawl.dev/v2/scrape/$SCRAPE_ID/interact" \
   -H "Content-Type: application/json" \
   -d '{"code": "agent-browser snapshot -i", "language": "bash"}'

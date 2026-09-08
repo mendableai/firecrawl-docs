@@ -4,16 +4,21 @@ description: 'LLMでページから構造化データを抽出'
 icon: 'file-export'
 og:title: "抽出 | Firecrawl"
 og:description: "LLMでページから構造化データを抽出"
+canonical: "https://docs.firecrawl.dev/features/extract"
 ---
+
+<Warning>
+  **このページは2025年4月1日に廃止されたv0 APIについて説明しています。** 過去の参照用として残しているもので、現在のFirecrawlの動作を説明するものではありません。最新のドキュメントは[抽出](/ja/features/extract)をご覧ください。既存のv0連携を移行する場合は、[v0からの移行](/ja/migrating-from-v0)をご覧ください。
+</Warning>
 
 <div id="scrape-and-extract-structured-data-with-firecrawl">
   ## Firecrawlで構造化データをスクレイプして抽出する
 </div>
 
-FirecrawlはLarge Language Models（LLMs）を活用し、ウェブページから構造化データを効率よく抽出します。手順は次のとおりです。
+FirecrawlはLarge Language Models (LLMs) を活用し、ウェブページから構造化データを効率よく抽出します。手順は次のとおりです。
 
 1. **スキーマ定義:**
-   JSON Schema（OpenAIのツールスキーマに準拠）を使い、スクレイプするURLと取得したいデータのスキーマを定義します。このスキーマで、ページから抽出したいデータ構造を指定します。
+   JSON Schema (OpenAIのツールスキーマに準拠) を使い、スクレイプするURLと取得したいデータのスキーマを定義します。このスキーマで、ページから抽出したいデータ構造を指定します。
 
 2. **/scrape エンドポイント:**
    URLとスキーマを /scrape エンドポイントに渡します。エンドポイントのドキュメントはこちら:
@@ -29,7 +34,7 @@ FirecrawlはLarge Language Models（LLMs）を活用し、ウェブページか�
 </div>
 
 <div id="scrape-with-extract-endpoint">
-  ### /scrape（extract付き）エンドポイント
+  ### /scrape (extract付き) エンドポイント
 </div>
 
 スクレイプしたページから構造化データを抽出するために使用します。
