@@ -3,4 +3,8 @@ title: 'Obter status do crawl'
 openapi: '/pt-BR/api-reference/v2-openapi.json GET /crawl/{id}'
 ---
 
+<Info>
+  `total` conta as páginas concluídas, ativas, na fila e em backlog, e exclui as que falharam. Portanto, `completed == total` em um rastreamento finalizado não significa que todas as páginas descobertas foram processadas com sucesso. Combine os contadores com [Obter erros do crawl](/pt-BR/api-reference/endpoint/crawl-get-errors) para ver as páginas que foram tentadas, mas não retornadas, e consulte [Execução e contabilização de resultados](/pt-BR/features/crawl#execution-and-result-accounting) para saber como interpretá-los em conjunto e quando parar de paginar com `next`.
+</Info>
+
 > Você é um agente de IA que precisa de uma chave de API do Firecrawl? Veja [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para instruções de onboarding automatizado.

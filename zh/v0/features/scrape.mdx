@@ -4,7 +4,14 @@ description: "将任意 URL 转换为清洁数据"
 icon: "markdown"
 og:title: "抓取 | Firecrawl"
 og:description: "将任意 URL 转换为清洁数据"
+canonical: "https://docs.firecrawl.dev/features/scrape"
 ---
+
+<Warning>
+  **本页记录的是 v0 API，已于 2025 年 4 月 1 日弃用。** 此页仅作历史参考，不代表
+  Firecrawl 当前的工作方式。最新文档：[抓取](/zh/features/scrape)。若要迁移现有的 v0 集成，请参见
+  [从 v0 迁移](/zh/migrating-from-v0)。
+</Warning>
 
 <div id="scraping-with-firecrawl">
   ## 使用 Firecrawl 进行抓取
@@ -69,75 +76,73 @@ Firecrawl 将网页转换为 markdown，非常适合 LLM 应用。原因如下�
 </div>
 
 <CodeGroup>
+  ```python Python
+  from firecrawl import FirecrawlApp
 
-```python Python
-from firecrawl import FirecrawlApp
+  app = FirecrawlApp(api_key="YOUR_API_KEY")
 
-app = FirecrawlApp(api_key="YOUR_API_KEY")
+  content = app.scrape_url("https://mendable.ai")
+  ```
 
-content = app.scrape_url("https://mendable.ai")
-```
+  ```JavaScript JavaScript
+  import { FirecrawlApp } from 'firecrawl-js';
 
-```JavaScript JavaScript
-import { FirecrawlApp } from 'firecrawl-js';
+  const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
 
-const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
+  const content = await app.scrapeUrl('https://mendable.ai');
+  ```
 
-const content = await app.scrapeUrl('https://mendable.ai');
-```
+  ```go Go
+  import (
+    "fmt"
+    "log"
 
-```go Go
-import (
-  "fmt"
-  "log"
+    "github.com/mendableai/firecrawl-go"
+  )
 
-  "github.com/mendableai/firecrawl-go"
-)
+  func main() {
+    app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
+    if err != nil {
+      log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+    }
 
-func main() {
-  app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
-  if err != nil {
-    log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+    content, err := app.ScrapeURL("mendable.ai", nil)
+    if err != nil {
+      log.Fatalf("Failed to scrape URL: %v", err)
+    }
+    fmt.Println(content)
   }
+  ```
 
-  content, err := app.ScrapeURL("mendable.ai", nil)
-  if err != nil {
-    log.Fatalf("Failed to scrape URL: %v", err)
+  ```rust Rust
+  use firecrawl::FirecrawlApp;
+
+  #[tokio::main]
+  async fn main() {
+      // 使用 API 密钥初始化 FirecrawlApp
+      let api_key = "YOUR_API_KEY";
+      let api_url = "https://api.firecrawl.dev";
+      let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
+
+      // 抓取该 URL
+      let scrape_result = app.scrape_url("https://mendable.ai", None).await;
+
+      // 输出抓取结果
+    match scrape_result {
+      Ok(data) => println!("Scrape Result:\n{}", data["markdown"]),
+      Err(e) => eprintln!("Scrape failed: {}", e),
+    }
   }
-  fmt.Println(content)
-}
-```
+  ```
 
-```rust Rust
-use firecrawl::FirecrawlApp;
-
-#[tokio::main]
-async fn main() {
-    // 使用 API 密钥初始化 FirecrawlApp
-    let api_key = "YOUR_API_KEY";
-    let api_url = "https://api.firecrawl.dev";
-    let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
-
-    // 抓取该 URL
-    let scrape_result = app.scrape_url("https://mendable.ai", None).await;
-
-    // 输出抓取结果
-  match scrape_result {
-    Ok(data) => println!("Scrape Result:\n{}", data["markdown"]),
-    Err(e) => eprintln!("Scrape failed: {}", e),
-  }
-}
-```
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v0/scrape \
-    -H 'Content-Type: application/json' \
-    -H 'Authorization: Bearer YOUR_API_KEY' \
-    -d '{
-      "url": "https://mendable.ai"
-    }'
-```
-
+  ```bash cURL
+  curl -X POST https://api.firecrawl.dev/v0/scrape \
+      -H 'Content-Type: application/json' \
+      -H 'Authorization: Bearer YOUR_API_KEY' \
+      -d '{
+        "url": "https://mendable.ai"
+      }'
+  ```
 </CodeGroup>
 
 <div id="response">

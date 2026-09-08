@@ -1,10 +1,15 @@
 ---
-title: "スクレイプ"
+title: "スクレイピング"
 description: "あらゆるURLをクリーンなデータに変換"
 icon: "markdown"
-og:title: "スクレイプ | Firecrawl"
+og:title: "スクレイピング | Firecrawl"
 og:description: "あらゆるURLをクリーンなデータに変換"
+canonical: "https://docs.firecrawl.dev/features/scrape"
 ---
+
+<Warning>
+  **このページは、2025年4月1日に廃止されたv0 APIに関するドキュメントです。** 過去の参照用として残しているもので、現在のFirecrawlの動作を説明するものではありません。最新のドキュメントは[スクレイピング](/ja/features/scrape)をご覧ください。既存のv0連携を移行する場合は、[v0からの移行](/ja/migrating-from-v0)を参照してください。
+</Warning>
 
 <div id="scraping-with-firecrawl">
   ## Firecrawlでのスクレイピング
@@ -69,75 +74,73 @@ URLをスクレイピングして、コンテンツを取得します。
 </div>
 
 <CodeGroup>
+  ```python Python
+  from firecrawl import FirecrawlApp
 
-```python Python
-from firecrawl import FirecrawlApp
+  app = FirecrawlApp(api_key="YOUR_API_KEY")
 
-app = FirecrawlApp(api_key="YOUR_API_KEY")
+  content = app.scrape_url("https://mendable.ai")
+  ```
 
-content = app.scrape_url("https://mendable.ai")
-```
+  ```JavaScript JavaScript
+  import { FirecrawlApp } from 'firecrawl-js';
 
-```JavaScript JavaScript
-import { FirecrawlApp } from 'firecrawl-js';
+  const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
 
-const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
+  const content = await app.scrapeUrl('https://mendable.ai');
+  ```
 
-const content = await app.scrapeUrl('https://mendable.ai');
-```
+  ```go Go
+  import (
+    "fmt"
+    "log"
 
-```go Go
-import (
-  "fmt"
-  "log"
+    "github.com/mendableai/firecrawl-go"
+  )
 
-  "github.com/mendableai/firecrawl-go"
-)
+  func main() {
+    app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
+    if err != nil {
+      log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+    }
 
-func main() {
-  app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
-  if err != nil {
-    log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+    content, err := app.ScrapeURL("mendable.ai", nil)
+    if err != nil {
+      log.Fatalf("Failed to scrape URL: %v", err)
+    }
+    fmt.Println(content)
   }
+  ```
 
-  content, err := app.ScrapeURL("mendable.ai", nil)
-  if err != nil {
-    log.Fatalf("Failed to scrape URL: %v", err)
+  ```rust Rust
+  use firecrawl::FirecrawlApp;
+
+  #[tokio::main]
+  async fn main() {
+      // APIキーで FirecrawlApp を初期化
+      let api_key = "YOUR_API_KEY";
+      let api_url = "https://api.firecrawl.dev";
+      let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
+
+      // URL をスクレイピング
+      let scrape_result = app.scrape_url("https://mendable.ai", None).await;
+
+      // 結果を出力
+    match scrape_result {
+      Ok(data) => println!("Scrape Result:\n{}", data["markdown"]),
+      Err(e) => eprintln!("Scrape failed: {}", e),
+    }
   }
-  fmt.Println(content)
-}
-```
+  ```
 
-```rust Rust
-use firecrawl::FirecrawlApp;
-
-#[tokio::main]
-async fn main() {
-    // APIキーで FirecrawlApp を初期化
-    let api_key = "YOUR_API_KEY";
-    let api_url = "https://api.firecrawl.dev";
-    let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
-
-    // URL をスクレイピング
-    let scrape_result = app.scrape_url("https://mendable.ai", None).await;
-
-    // 結果を出力
-  match scrape_result {
-    Ok(data) => println!("Scrape Result:\n{}", data["markdown"]),
-    Err(e) => eprintln!("Scrape failed: {}", e),
-  }
-}
-```
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v0/scrape \
-    -H 'Content-Type: application/json' \
-    -H 'Authorization: Bearer YOUR_API_KEY' \
-    -d '{
-      "url": "https://mendable.ai"
-    }'
-```
-
+  ```bash cURL
+  curl -X POST https://api.firecrawl.dev/v0/scrape \
+      -H 'Content-Type: application/json' \
+      -H 'Authorization: Bearer YOUR_API_KEY' \
+      -d '{
+        "url": "https://mendable.ai"
+      }'
+  ```
 </CodeGroup>
 
 <div id="response">

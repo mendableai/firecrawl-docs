@@ -33,11 +33,13 @@ import StartCrawlCLI from '/snippets/fr/v2/start-crawl/base/cli.mdx';
 import StartCrawlOutput from '/snippets/fr/v2/start-crawl/base/output.mdx';
 import PlaygroundCTA from "/snippets/fr/shared/playground-cta-crawl.mdx";
 
-Le crawl soumet une URL à Firecrawl, découvre récursivement chaque sous-page accessible et en extrait le contenu. Elle gère automatiquement les sitemaps, le rendu JavaScript et les limites de taux, en renvoyant du Markdown propre ou des données structurées pour chaque page.
+Le crawl soumet une URL à Firecrawl, découvre récursivement chaque sous-page accessible et en extrait le contenu. Elle gère automatiquement les sitemaps, le rendu JavaScript et les limites de débit, en renvoyant du Markdown propre ou des données structurées pour chaque page.
 
 * Découvre les pages via le sitemap et le parcours récursif des liens
 * Prend en charge le filtrage des chemins, les limites de profondeur et le contrôle des sous-domaines et des liens externes
 * Renvoie les résultats via polling, WebSocket ou webhook
+
+Chaque page extraite par un crawl passe par le même pipeline de scraping : tout ce que le scrape peut faire sur une page, le crawl peut le faire sur chaque page qu&#39;il atteint. La page [Fonctionnalités](/fr/capabilities) recense ces possibilités, indique où chaque fonctionnalité s&#39;exécute et si elle nécessite une API key.
 
 <PlaygroundCTA />
 
@@ -277,6 +279,98 @@ Chaque requête de webhook provenant de Firecrawl inclut un en-tête `X-Firecraw
 
 Pour des exemples d&#39;implémentation complets en JavaScript et Python, consultez la [documentation sur la sécurité des webhooks](/fr/webhooks/security). Pour une documentation complète sur les webhooks, y compris les charges utiles d&#39;événements détaillées, la structure des charges utiles, la configuration avancée et le dépannage, consultez la [documentation sur les webhooks](/fr/webhooks/overview).
 
+<div id="execution-and-result-accounting">
+  ## Exécution et comptabilisation des résultats
+</div>
+
+Un crawl qui se termine n&#39;équivaut pas à un crawl qui a atteint toutes les pages. Cette section décrit ce que les points de terminaison de crawl rapportent actuellement sur une exécution — les compteurs, le contrat de pagination, les enregistrements d&#39;échec et les limites de portée — afin que vous puissiez juger par vous-même si une exécution est suffisamment complète pour en exploiter les résultats. Aucun de ces enregistrements ne garantit l&#39;exhaustivité.
+
+<div id="reading-the-status-counters">
+  ### Lire les compteurs d&#39;état
+</div>
+
+Chaque réponse de [Get Crawl Status](/fr/api-reference/endpoint/crawl-get) (`GET /v2/crawl/{id}`) contient les compteurs qui décrivent l&#39;exécution :
+
+| Champ                                    | Signification                                                                                                                                                                    |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `status`                                 | L&#39;une des valeurs `scraping`, `completed`, `failed` ou `cancelled`                                                                                                           |
+| `total`                                  | `completed` plus les pages encore en cours de traitement : actives, en file d&#39;attente et en attente de traitement. **Les pages en échec ne sont pas comptabilisées.**        |
+| `completed`                              | Le nombre de pages explorées avec succès                                                                                                                                         |
+| `creditsUsed`                            | Crédits consommés par le crawl jusqu&#39;à présent                                                                                                                               |
+| `createdAt` / `completedAt` / `duration` | Heure de début, heure de fin (états terminaux uniquement) et durée écoulée en secondes                                                                                           |
+| `expiresAt`                              | Moment à partir duquel les résultats ne sont plus récupérables via l&#39;API                                                                                                     |
+| `next`                                   | URL de la page de résultats suivante de 10 Mo. Également renvoyé dès que `status` n&#39;est pas `completed` — voir [Parcourir les résultats par pages](#paging-through-results). |
+
+<Warning>
+  `completed == total` sur un crawl terminé ne signifie **pas** que toutes les pages découvertes ont abouti. Comme `total` additionne les pages complétées, actives, en file d&#39;attente et en attente de traitement, en excluant celles en échec, un crawl en état terminal a toujours `active`, `queued` et `backlog` à zéro — les deux compteurs convergent donc, que des pages aient échoué ou non. Les compteurs d&#39;état ne permettent pas de savoir si un échec s&#39;est produit. Les pages en échec sont énumérées uniquement par [Get Crawl Errors](#failed-and-blocked-pages).
+</Warning>
+
+Le tableau `data` ne contient que les pages que Firecrawl a extraites avec succès. Les pages tentées qui n&#39;ont jamais produit de résultat n&#39;y figurent pas — récupérez-les via Get Crawl Errors, ci-dessous.
+
+<div id="paging-through-results">
+  ### Parcourir les résultats page par page
+</div>
+
+Les réponses sont limitées à 10 Mo. Lorsqu&#39;une réponse est tronquée, `next` contient l&#39;URL de la page de résultats suivante.
+
+`next` n&#39;est pas seulement un signal indiquant qu&#39;« il reste des données » : ce champ est également renvoyé dès que `status` n&#39;est pas `completed`, si bien qu&#39;un crawl dans l&#39;état terminal `failed` ou `cancelled` peut fournir une URL `next` alors qu&#39;il n&#39;existe plus aucun résultat. N&#39;utilisez pas l&#39;absence de `next` comme condition de sortie de votre boucle : sur un crawl en échec ou annulé, ce champ ne disparaît jamais.
+
+La condition terminale, c&#39;est le champ d&#39;état. Pour lire une exécution jusqu&#39;au bout :
+
+1. Interrogez `GET /v2/crawl/{id}` jusqu&#39;à ce que `status` vaille `completed`, `failed` ou `cancelled`.
+2. Tant que `next` est présent **et** que la dernière page a renvoyé un tableau `data` non vide, suivez `next` pour collecter les résultats restants.
+3. Arrêtez-vous lorsque `next` est absent, ou lorsqu&#39;une page ne renvoie aucun nouveau document.
+
+Les SDKs officiels gèrent cette pagination pour vous et renvoient tous les résultats en une seule fois.
+
+<div id="failed-and-blocked-pages">
+  ### Pages en échec et bloquées
+</div>
+
+[Get Crawl Errors](/fr/api-reference/endpoint/crawl-get-errors) (`GET /v2/crawl/{id}/errors`) recense les pages qui ne sont pas arrivées jusqu&#39;à `data`. Ce point de terminaison renvoie deux tableaux :
+
+* `errors` — les tâches de scraping en erreur, chacune avec `id`, `url`, `error` (le message d&#39;erreur) et un `timestamp` de l&#39;échec. Il s&#39;agit des pages que Firecrawl lui-même n&#39;a pas réussi à extraire : erreurs réseau, dépassements de délai et cas similaires. Les liens vers la page d&#39;accueil d&#39;un site externe volontairement ignorés sont signalés ici avec le code d&#39;erreur `EXTERNAL_LINK`.
+* `robotsBlocked` — les URL tentées mais bloquées par le fichier robots.txt du site.
+
+<Note>
+  Rien ne garantit que cette liste énumère l&#39;intégralité des échecs : certaines classes d&#39;échecs internes sont actuellement exclues de `errors` avant la construction de la réponse. Voyez-la comme le relevé des échecs signalés par Firecrawl, et non comme la preuve que rien d&#39;autre n&#39;a échoué. Le code d&#39;erreur mentionné ci-dessus (`EXTERNAL_LINK`) est aujourd&#39;hui renvoyé dans les objets d&#39;erreur, mais ne fait pas encore partie du schema publié de `GET /crawl/{id}/errors` ; une mise à jour de la référence API est en attente.
+</Note>
+
+Une page pour laquelle le site cible a renvoyé une erreur HTTP telle qu&#39;un 404 n&#39;est *pas* une erreur de crawl : Firecrawl l&#39;a extraite avec succès, elle apparaît donc dans `data` avec le code d&#39;état du site dans `metadata.statusCode`.
+
+<div id="what-the-crawler-is-scoped-to-reach">
+  ### Ce que le crawler est autorisé à atteindre
+</div>
+
+La couverture est délimitée par les paramètres de portée que vous définissez, tous documentés dans la [référence de configuration](#configuration-reference) et la [référence du point de terminaison Crawl](/fr/api-reference/endpoint/crawl-post) :
+
+* **Enfants uniquement par défaut.** Le crawl ignore les sous-liens qui ne sont pas des enfants de l&#39;URL que vous fournissez. Utilisez `crawlEntireDomain` pour les chemins frères et parents, `allowSubdomains` pour les sous-domaines et `allowExternalLinks` pour suivre les liens hors du domaine.
+* **`includePaths` / `excludePaths` s&#39;appliquent au chemin de l&#39;URL**, sous forme d&#39;expressions régulières — et non à l&#39;URL complète ni aux paramètres de requête. Définissez `regexOnFullURL: true` pour effectuer la correspondance sur l&#39;URL complète, chaînes de requête incluses. L&#39;URL de départ est elle aussi confrontée à `includePaths` : si elle ne correspond pas, le crawl peut renvoyer 0 page.
+* **Mode sitemap.** Avec la valeur par défaut `sitemap: "include"`, les URL proviennent du sitemap ainsi que de la découverte récursive de liens. `"skip"` n&#39;utilise que les liens HTML, ce qui fait manquer les pages présentes uniquement dans le sitemap, comme les PDF ou les pages très imbriquées. `"only"` crawle le sitemap plus l&#39;URL de départ, sans découvrir de liens depuis le HTML.
+* **`maxDiscoveryDepth`** limite le nombre de sauts de découverte de liens suivis depuis la racine. Les pages situées à la profondeur maximale sont tout de même extraites, mais les liens qui s&#39;y trouvent ne sont pas suivis.
+* **`limit`** limite le nombre de pages, avec `10000` par défaut.
+* **`ignoreQueryParameters`** évite d&#39;extraire à nouveau le même chemin avec des paramètres de requête différents.
+* **Le fichier robots.txt est respecté**, sauf si `ignoreRobotsTxt` est activé (Enterprise uniquement).
+
+Par défaut, `maxConcurrency` correspond à la limite de concurrence de votre équipe, définie par votre offre — voir [Limites de débit](/fr/rate-limits).
+
+<div id="when-results-vary-between-runs">
+  ### Quand les résultats varient d’une exécution à l’autre
+</div>
+
+Les résultats du crawl peuvent varier d’une exécution à l’autre avec la même configuration. Les pages sont extraites de manière concurrente, donc l’ordre dans lequel les liens sont découverts dépend du timing réseau et des pages qui finissent de se charger en premier. Cela signifie que différentes branches d’un site peuvent être explorées à des degrés divers à l’approche de la limite de profondeur, en particulier avec des valeurs élevées de `maxDiscoveryDepth`.
+
+Pour rendre une exécution plus reproductible :
+
+* Définissez `maxConcurrency` sur `1`. Comme l’indique la [référence de configuration](#configuration-reference), `maxConcurrency` correspond au « nombre maximal d’extractions concurrentes » — il limite le nombre de requests en cours simultanément. Cela réduit l’entrelacement dépendant du timing, mais n’élimine pas les variations d’une exécution à l’autre : la découverte du sitemap est mise en file en dehors de cette limite, les sitemaps imbriqués sont récupérés comme des jobs indépendants, et le tableau `data` renvoyé est ordonné selon l’heure de fin plutôt que selon l’ordre de découverte. Définir `delay` force également la concurrence à 1.
+* Utilisez `sitemap: "only"` si le site dispose d’un sitemap complet, afin que l’ensemble des URL provienne du sitemap plutôt que de la découverte de liens.
+
+<div id="knowing-when-a-crawl-is-done">
+  ### Savoir quand un crawl est terminé
+</div>
+
+Si vous n&#39;interrogez pas l&#39;API, les [événements webhook](#event-types) vous donnent la même information : `crawl.page` se déclenche pour chaque page extraite avec succès, et `crawl.completed` (ou `crawl.failed`) se déclenche à la fin de l&#39;exécution. Les résultats d&#39;un job restent récupérables via l&#39;API pendant 24 heures après son achèvement ; passé ce délai, consultez-les dans les [journaux d&#39;activité](https://www.firecrawl.dev/app/logs).
+
 <div id="configuration-reference">
   ## Référence de configuration
 </div>
@@ -312,13 +406,13 @@ Ensemble complet des paramètres disponibles lors de l’envoi d’une tâche de
   Par défaut, le crawl ignore les sous-liens qui ne dépendent pas de l’URL fournie. Par exemple, `website.com/other-parent/blog-1` ne sera pas renvoyé si vous lancez un crawl sur `website.com/blogs/`. Utilisez le paramètre `crawlEntireDomain` pour inclure les chemins frères et parents. Pour inclure des sous-domaines comme `blog.website.com` lors du crawl de `website.com`, utilisez le paramètre `allowSubdomains`.
 </Warning>
 
-* **Découverte du sitemap** : Par défaut, le crawler inclut le sitemap du site pour découvrir les URL (`sitemap: "include"`). Si vous définissez `sitemap: "skip"`, seules les pages accessibles via des liens HTML depuis l’URL racine seront trouvées. Les ressources comme les PDF ou les pages profondément imbriquées listées dans le sitemap mais non directement liées en HTML ne seront pas découvertes. Pour une couverture maximale, conservez le paramètre par défaut.
-* **Utilisation des crédits** : Chaque page crawlée coûte 1 crédit. Le mode JSON ajoute 4 crédits par page, et l’analyse des PDF coûte 1 crédit par page de PDF.
-* **Expiration des résultats** : Les résultats des jobs restent disponibles via l’API pendant 24 heures après leur exécution. Passé ce délai, vous pouvez consulter les résultats dans les [journaux d’activité](https://www.firecrawl.dev/app/logs).
-* **Erreurs de crawl** : Le tableau `data` contient les pages que Firecrawl a réussi à extraire. Utilisez le point de terminaison [Get Crawl Errors](/fr/api-reference/endpoint/crawl-get-errors) pour récupérer les pages ayant échoué en raison d’erreurs réseau, de délais d’attente ou de blocages par robots.txt.
+* **Découverte du sitemap** : Par défaut, le crawler inclut le sitemap du site pour découvrir les URL (`sitemap: "include"`). Si vous définissez `sitemap: "skip"`, seules les pages accessibles via des liens HTML depuis l’URL racine seront trouvées. Les ressources comme les PDF ou les pages profondément imbriquées listées dans le sitemap mais non directement liées en HTML ne seront pas découvertes. Pour une couverture maximale, conservez le paramètre par défaut.
+* **Utilisation des crédits** : Chaque page crawlée coûte 1 crédit. Le mode JSON ajoute 4 crédits par page, et l’analyse des PDF coûte 1 crédit par page de PDF.
+* **Expiration des résultats** : Les résultats des jobs restent disponibles via l’API pendant 24 heures après leur exécution. Passé ce délai, vous pouvez consulter les résultats dans les [journaux d’activité](https://www.firecrawl.dev/app/logs).
+* **Erreurs de crawl** : Le tableau `data` contient les pages que Firecrawl a réussi à extraire. Utilisez le point de terminaison [Get Crawl Errors](/fr/api-reference/endpoint/crawl-get-errors) pour récupérer les pages ayant échoué en raison d’erreurs réseau, de délais d’attente ou de blocages par robots.txt.
 
-- <a id="external-links" />**Liens externes** : Avec `allowExternalLinks: true`, le crawler suit les liens pointant hors de votre domaine et extrait chaque page liée une seule fois — il ne crawl ensuite pas les liens trouvés sur ces pages externes. Les liens vers la **page d’accueil** d’un site externe (une URL racine sans chemin, par exemple `https://example.com/`) sont intentionnellement ignorés afin d’éviter d’extraire un site entier sans rapport ; ils apparaissent dans [Get Crawl Errors](/fr/api-reference/endpoint/crawl-get-errors) avec le code `EXTERNAL_LINK`. Les redirections sont suivies jusqu’à leur destination — y compris un lien qui se résout vers son URL canonique (par exemple `http → https` ou la variante `www`) — ainsi, seules les redirections qui aboutissent sur une page d’accueil externe sont ignorées.
+- <a id="external-links" />**Liens externes** : Avec `allowExternalLinks: true`, le crawler suit les liens pointant hors de votre domaine et extrait chaque page liée une seule fois — il ne crawl ensuite pas les liens trouvés sur ces pages externes. Les liens vers la **page d’accueil** d’un site externe (une URL racine sans chemin, par exemple `https://example.com/`) sont intentionnellement ignorés afin d’éviter d’extraire un site entier sans rapport ; ils apparaissent dans [Get Crawl Errors](/fr/api-reference/endpoint/crawl-get-errors) avec le code `EXTERNAL_LINK`. Les redirections sont suivies jusqu’à leur destination — y compris un lien qui se résout vers son URL canonique (par exemple `http → https` ou la variante `www`) — ainsi, seules les redirections qui aboutissent sur une page d’accueil externe sont ignorées.
 
-* **Résultats non déterministes** : Les résultats du crawl peuvent varier d’une exécution à l’autre avec la même configuration. Les pages sont extraites de manière concurrente, donc l’ordre dans lequel les liens sont découverts dépend du timing réseau et des pages qui finissent de se charger en premier. Cela signifie que différentes branches d’un site peuvent être explorées à des degrés divers à l’approche de la limite de profondeur, en particulier avec des valeurs élevées de `maxDiscoveryDepth`. Pour obtenir des résultats plus déterministes, définissez `maxConcurrency` sur `1` ou utilisez `sitemap: "only"` si le site dispose d’un sitemap complet.
+* **Résultats non déterministes** : Les résultats du crawl peuvent varier d’une exécution à l’autre avec la même configuration, car les pages sont extraites de manière concurrente et l’ordre de découverte des liens dépend du timing réseau. Consultez [Exécution et comptabilisation des résultats](#execution-and-result-accounting) pour savoir ce qui varie et comment rendre une exécution plus reproductible.
 
-> Êtes-vous un agent IA qui a besoin d’une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour obtenir des instructions d’intégration automatisée.
+> Êtes-vous un agent IA qui a besoin d’une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour obtenir des instructions d’intégration automatisée.

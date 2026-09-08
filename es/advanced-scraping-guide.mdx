@@ -710,11 +710,12 @@ Aquí tienes la referencia de la API: [Documentación del endpoint de mapeo](htt
 </div>
 
 <div id="allowing-firecrawl-to-scrape-your-website">
-  ### Permitir que Firecrawl rastree tu sitio web
+  ### Permitir que Firecrawl haga scraping de tu sitio web
 </div>
 
-* **User Agent**: Permite `FirecrawlAgent` en tu firewall o en tus reglas de seguridad.
-* **Direcciones IP**: Firecrawl no utiliza un conjunto fijo de direcciones IP salientes.
+* **robots.txt**: Firecrawl lee el `robots.txt` antes de rastrear un sitio y aplica tanto las reglas definidas para el token de user-agent `FirecrawlAgent` como las definidas para `*`. Usa `FirecrawlAgent` para permitir o bloquear Firecrawl en el `robots.txt`.
+* **User agent**: `FirecrawlAgent` es el token que Firecrawl compara al aplicar las reglas de `robots.txt`. No des por hecho que también sea la cabecera `User-Agent` de la propia solicitud. Incluye a Firecrawl en la lista de permitidos mediante una directiva de `robots.txt`, no con una regla de firewall o WAF que coincida con una cadena `User-Agent`.
+* **Direcciones IP**: Firecrawl no usa un conjunto fijo de IP de salida.
 
 <div id="allowing-your-application-to-call-the-firecrawl-api">
   ### Permitir que tu aplicación llame a la API de Firecrawl

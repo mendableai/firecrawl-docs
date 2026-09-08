@@ -659,6 +659,20 @@ Para mais detalhes sobre as opções de scraping, consulte a [documentação do 
 
 > Você é um agente de IA que precisa de uma chave de API da Firecrawl? Consulte [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para obter instruções de onboarding automatizado.
 
+<div id="measured-performance">
+  ## Desempenho medido
+</div>
+
+Avaliadores independentes compararam o Firecrawl Search com outras APIs de busca. Os números abaixo foram extraídos diretamente dos resultados publicados por cada avaliador na data indicada.
+
+| Métrica                                       | Valor                                                                  | Fonte                                                                          | Data                                              | n / ±                                                                                                                                                                                                                                   |
+| --------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent Score (Média de Relevância × Qualidade) | 14,58, 2º lugar entre 8 (Média de Relevância 4,30/5, Qualidade 3,39/5) | [AIMultiple — Agentic Search Benchmark](https://aimultiple.com/agentic-search) | Dez 2025 (fonte atualizada em 25 de maio de 2026) | IC de 95% 13,12–15,98, n=100 queries do domínio de IA/LLM extraídas do próprio tráfego de busca orgânica da AIMultiple (10.000 reamostragens por bootstrap); a fonte ressalta que os resultados não se generalizam para outros domínios |
+
+<Note>
+  Estas são medições de terceiros, cada uma com seu próprio harness, conjunto de tarefas e metodologia — não são diretamente comparáveis entre si nem com os benchmarks do próprio Firecrawl. Estimativa pontual de 2º lugar entre 8; o teste de bootstrap pareado não apontou diferença estatisticamente significativa em relação a Brave, Exa ou Parallel Search Pro. As páginas de benchmark próprias do Firecrawl, incluindo a avaliação de código aberto do índice para desenvolvedores, estão em [firecrawl.dev/benchmarks](https://www.firecrawl.dev/benchmarks).
+</Note>
+
 <div id="search-feedback">
   ## Feedback sobre busca
 </div>

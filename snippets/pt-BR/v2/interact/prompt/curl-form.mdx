@@ -1,4 +1,12 @@
 ```bash cURL (Fill a field)
+# Faça o scraping primeiro para obter um scrapeId
+RESPONSE=$(curl -s -X POST "https://api.firecrawl.dev/v2/scrape" \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "formats": ["markdown"]}')
+
+SCRAPE_ID=$(echo $RESPONSE | jq -r '.data.metadata.scrapeId')
+
 curl -s -X POST "https://api.firecrawl.dev/v2/scrape/$SCRAPE_ID/interact" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
   -H "Content-Type: application/json" \

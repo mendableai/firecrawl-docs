@@ -1,4 +1,6 @@
 ```bash cURL
+# SCRAPE_ID 是之前调用 POST /v2/scrape 时返回的 scrapeId，
+# 例如：SCRAPE_ID=$(echo $RESPONSE | jq -r '.data.metadata.scrapeId')
 # 无需 API 密钥即可开始使用 — 添加 -H "Authorization: Bearer $FIRECRAWL_API_KEY" 以获得更高的限流配额：
 curl -s -X DELETE "https://api.firecrawl.dev/v2/scrape/$SCRAPE_ID/interact"
 ```

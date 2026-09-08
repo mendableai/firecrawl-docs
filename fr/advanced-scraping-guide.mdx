@@ -710,11 +710,12 @@ Voici la référence de l’API : [Documentation du point de terminaison « Ma
 </div>
 
 <div id="allowing-firecrawl-to-scrape-your-website">
-  ### Autoriser Firecrawl à explorer votre site web
+  ### Autoriser Firecrawl à scraper votre site web
 </div>
 
-* **User Agent** : Autorisez `FirecrawlAgent` dans votre pare-feu ou vos règles de sécurité.
-* **Adresses IP** : Firecrawl n’utilise pas un ensemble fixe d’adresses IP sortantes.
+* **robots.txt** : Firecrawl lit le fichier `robots.txt` avant de crawler un site et applique les règles définies pour le jeton user-agent `FirecrawlAgent` ainsi que celles définies pour `*`. Utilisez `FirecrawlAgent` pour autoriser ou interdire Firecrawl dans `robots.txt`.
+* **User agent** : `FirecrawlAgent` est le jeton que Firecrawl utilise pour appliquer les règles du `robots.txt`. Ne partez pas du principe qu&#39;il correspond aussi à l&#39;en-tête `User-Agent` de la requête elle-même. Autorisez Firecrawl via une directive `robots.txt` plutôt qu&#39;avec une règle de pare-feu ou de WAF fondée sur une chaîne `User-Agent`.
+* **Adresses IP** : Firecrawl n&#39;utilise pas d&#39;ensemble fixe d&#39;adresses IP sortantes.
 
 <div id="allowing-your-application-to-call-the-firecrawl-api">
   ### Autoriser votre application à appeler l&#39;API Firecrawl
