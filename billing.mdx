@@ -68,7 +68,7 @@ We are actively working on improvements to make credit usage easier to understan
 
 ## Plans
 
-Subscription plans bill monthly or yearly. Paid self-serve plans can also use pay-as-you-go. Pay-as-you-go adds credits when your plan allotment runs out. See [Pay-as-you-go](#auto-reload).
+Subscription plans bill monthly or yearly. Paid self-serve plans can also use pay-as-you-go. Pay-as-you-go adds credits when your plan allotment runs out. See [Pay-as-you-go](#pay-as-you-go).
 
 ### Paid plans
 
@@ -85,6 +85,19 @@ For needs beyond Scale, Firecrawl offers **Enterprise** plans with custom credit
 
 All paid plans are available with **monthly** or **yearly** billing. Yearly billing offers a discount compared to paying month-to-month. For current pricing on each plan, visit the [pricing page](https://www.firecrawl.dev/pricing).
 
+### Free plan
+
+New accounts start on the free plan. It costs nothing and does not need a card. Here is what it includes:
+
+- **1,000 credits per month.** The allotment resets at the start of each monthly cycle. Unused free credits do not roll over.
+- **2 concurrent browsers**, with the same 50,000 maximum queued jobs as the paid self-serve plans.
+- **Rate limits of 10 requests per minute** on `/scrape`, `/map` and `/search`, and **2 requests per minute** on `/crawl`, `/agent` and `/interact`. Batch scrape shares the scrape limit and extract shares the agent limit. See [Rate Limits](/rate-limits) for the full table.
+- **Every core product endpoint.** Scrape, crawl, map, search, extract, batch scrape, interact and monitor all work on the free plan. Some team administration and enterprise features are enabled per team rather than by plan, including threat protection, SIEM logging and zero data retention search. Credit costs are the same on every plan, so the [credit costs per endpoint](#credit-costs-per-endpoint) table above applies unchanged.
+
+The free plan does not include pay-as-you-go, so requests return an HTTP 402 once the monthly allotment runs out. See [Running Out of Credits](#running-out-of-credits). It also does not include credit rollover, a Data Processing Agreement, or Slack support. Support is community support.
+
+Scrape, Search and Interact also work with no API key at all, through the keyless free tier, which is capped per IP address per day rather than by a credit allotment. See [Keyless (no API key)](/rate-limits#keyless-no-api-key).
+
 ### Billing cycle
 
 - **Monthly plans**: Credits reset on your monthly renewal date
@@ -95,7 +108,9 @@ All paid plans are available with **monthly** or **yearly** billing. Yearly bill
 
 Concurrent browsers represent how many web pages Firecrawl can process for you simultaneously. Your plan determines this limit. If you exceed it, additional jobs wait in a queue until a slot opens. See [Rate Limits](/rate-limits) for full details on concurrency and API rate limits.
 
-## Pay-as-you-go {#auto-reload}
+<a id="auto-reload"></a>
+
+## Pay-as-you-go {#pay-as-you-go}
 
 Pay-as-you-go keeps your requests running when your plan credits run out. It adds credits to your account automatically.
 
@@ -149,7 +164,7 @@ If pay-as-you-go is on, we add a new 5 USD increment of credits when your balanc
 
 To resume usage after a hard stop, you can:
 
-1. Set a **Monthly pay-as-you-go limit** to buy credits automatically. See [Pay-as-you-go](#auto-reload).
+1. Set a **Monthly pay-as-you-go limit** to buy credits automatically. See [Pay-as-you-go](#pay-as-you-go).
 2. Upgrade to a higher plan manually
 3. Wait for your credits to reset at the next billing cycle
 

@@ -26,11 +26,20 @@ Choisissez le mode d’authentification de la connexion. Se connecter et ajouter
   ## Ajouter une clé API
 </div>
 
-[Créez une clé API Firecrawl](https://www.firecrawl.dev/app/api-keys), puis envoyez-la comme jeton Bearer :
+[Créez une clé API Firecrawl](https://www.firecrawl.dev/app/api-keys), puis ajoutez-la comme jeton Bearer dans la configuration de votre client :
 
-```text
-URL: https://mcp.firecrawl.dev/v2/mcp
-Authorization: Bearer <FIRECRAWL_API_KEY>
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
 ```
 
 Configurez la clé via une variable d’environnement ou le stockage sécurisé de votre client, jamais dans l’URL MCP.

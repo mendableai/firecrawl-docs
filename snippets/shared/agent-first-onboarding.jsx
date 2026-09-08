@@ -93,12 +93,11 @@ export const McpClientSelector = ({ variant = "agent", showSeeAll = true } = {})
     {
       id: "cursor",
       name: "Cursor",
-      detail: "One-click + JSON",
+      detail: "One click",
       icon: "/images/agent-clients/cursor.svg",
       iconClassName: "fc-client-icon-mono",
       code: cursorConfig,
       codeLabel: "mcp.json",
-      codeClassName: "",
       installUrl: cursorInstallUrl,
       description:
         "Install the hosted MCP server in one click, or copy the configuration below.",
@@ -122,7 +121,6 @@ export const McpClientSelector = ({ variant = "agent", showSeeAll = true } = {})
       iconClassName: "fc-client-icon-mono",
       code: opencodeConfig,
       codeLabel: "opencode.json",
-      codeClassName: "",
       description: isHuman
         ? "Add this remote server configuration to your global or project config. OpenCode opens Firecrawl in your browser on first use."
         : "Add this remote server configuration to your global or project config.",
@@ -234,7 +232,7 @@ export const McpClientSelector = ({ variant = "agent", showSeeAll = true } = {})
     return (
       <button
         type="button"
-        className={`fc-copy-button${copied ? " is-copied" : ""}`}
+        className={copied ? "fc-copy-button is-copied" : "fc-copy-button"}
         onClick={() => copy(id, text, label)}
         aria-label={copied ? `${label} copied` : `Copy ${label}`}
       >
@@ -257,7 +255,7 @@ export const McpClientSelector = ({ variant = "agent", showSeeAll = true } = {})
     </div>
   );
   const codeBlock = ({ client }) => (
-    <div className={`fc-code-block ${client.codeClassName || ""}`.trim()}>
+    <div className="fc-code-block">
       <div className="fc-code-header">
         <span>{client.codeLabel}</span>
         {copyButton({
@@ -323,16 +321,23 @@ export const McpClientSelector = ({ variant = "agent", showSeeAll = true } = {})
               }}
               type="button"
               role="tab"
-              className={`fc-client-tab${selected ? " is-active" : ""}`}
+              className={selected ? "fc-client-tab is-active" : "fc-client-tab"}
               aria-selected={selected}
               aria-controls={`fc-panel-${client.id}`}
               tabIndex={selected ? 0 : -1}
               onClick={() => setActiveId(client.id)}
               onKeyDown={(event) => handleKeyDown(event, index)}
             >
-              <span
-                className={`fc-client-icon ${client.iconClassName}`}
-                style={{ backgroundImage: `url("${client.icon}")` }}
+              <img
+                className={
+                  client.iconClassName === "fc-client-icon-mono"
+                    ? "fc-client-icon fc-client-icon-mono"
+                    : "fc-client-icon"
+                }
+                src={client.icon}
+                alt=""
+                width={26}
+                height={26}
                 aria-hidden="true"
               />
               <span className="fc-client-tab-copy">
@@ -468,7 +473,7 @@ export const AgentSetupButton = () => {
     <div className="fc-agent-prompt not-prose">
       <button
         type="button"
-        className={`fc-agent-prompt-button${copied ? " is-copied" : ""}`}
+        className={copied ? "fc-agent-prompt-button is-copied" : "fc-agent-prompt-button"}
         onClick={copyPrompt}
         aria-label={copied ? "Copied agent setup prompt" : "Setup for agents"}
       >

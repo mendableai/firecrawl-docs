@@ -22,6 +22,7 @@ import ParseJsonNode from "/snippets/es/v2/parse/json/js.mdx";
 import ParseJsonCURL from "/snippets/es/v2/parse/json/curl.mdx";
 import ParseGroundingPython from "/snippets/es/v2/parse/grounding/python.mdx";
 import ParseGroundingNode from "/snippets/es/v2/parse/grounding/js.mdx";
+import VideoParseVsScrape from "/snippets/es/shared/video-parse-vs-scrape.mdx";
 
 Procesar convierte documentos en datos limpios y listos para LLM. Sube un archivo a
 [`/parse`](/es/api-reference/endpoint/parse) — o apunta [`/scrape`](/es/features/scrape)
@@ -33,6 +34,10 @@ diseño tipados o JSON estructurado.
 * **Estructura basada en el documento**: bloques de diseño tipados con cuadros delimitadores y enlaces a rangos de caracteres en el markdown (PDF)
 * **Cualquier formato habitual**: PDF, Word, Excel, PowerPoint, OpenDocument, EPUB, CSV, HTML
 * Compatible con **retención de datos cero**
+
+¿No sabes si necesitas Procesar o [Scrape](/es/features/scrape)? Aquí repasamos las diferencias:
+
+<VideoParseVsScrape />
 
 <div id="quickstart">
   ## Inicio rápido

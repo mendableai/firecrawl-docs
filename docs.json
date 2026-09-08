@@ -986,6 +986,7 @@
                           "es/features/monitoring-web-scale"
                         ]
                       },
+                      "es/features/browser",
                       "es/features/interact"
                     ]
                   },
@@ -1772,6 +1773,7 @@
                           "fr/features/monitoring-web-scale"
                         ]
                       },
+                      "fr/features/browser",
                       "fr/features/interact"
                     ]
                   },
@@ -2558,6 +2560,7 @@
                           "ja/features/monitoring-web-scale"
                         ]
                       },
+                      "ja/features/browser",
                       "ja/features/interact"
                     ]
                   },
@@ -3344,6 +3347,7 @@
                           "pt-BR/features/monitoring-web-scale"
                         ]
                       },
+                      "pt-BR/features/browser",
                       "pt-BR/features/interact"
                     ]
                   },
@@ -4130,6 +4134,7 @@
                           "zh/features/monitoring-web-scale"
                         ]
                       },
+                      "zh/features/browser",
                       "zh/features/interact"
                     ]
                   },

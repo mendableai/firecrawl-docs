@@ -35,11 +35,20 @@ Le MCP sans clé est soumis à des limites de débit et donne accès à la reche
   ## Ajouter une clé API
 </div>
 
-[Créez une clé API Firecrawl](https://www.firecrawl.dev/app/api-keys), puis envoyez-la sous forme de jeton Bearer au même point de terminaison :
+[Créez une clé API Firecrawl](https://www.firecrawl.dev/app/api-keys), puis ajoutez-la sous forme de jeton Bearer sur le même point de terminaison dans la configuration de votre client :
 
-```text
-URL: https://mcp.firecrawl.dev/v2/mcp
-Authorization: Bearer <FIRECRAWL_API_KEY>
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
 ```
 
 <div id="verify-your-connection">
