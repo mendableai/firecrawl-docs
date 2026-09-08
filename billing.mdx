@@ -38,7 +38,7 @@ Certain scrape options add credits on top of the base cost per page:
 |--------|----------------|-------------|
 | PDF parsing | +1 credit / PDF page | Extract content from PDF documents |
 | JSON format (LLM extraction) | +4 credits / page | Use an LLM to extract structured JSON data from the page |
-| Prompt injection check | +4 credits / page | Opt-in `checkPromptInjection` guard for JSON format (see [Prompt injection detection](/features/llm-extract#prompt-injection-detection)). If the scrape fails after the check has run, 5 credits are billed instead of the usual 0 for a failed scrape. That includes a scrape blocked with a 403 because an injection was detected. |
+| Prompt injection check | +4 credits / page | Opt-in `checkPromptInjection` guard for JSON format (see [Prompt injection detection](/features/llm-extract#prompt-injection-detection)). If the scrape fails after the check has run, 5 credits are billed. See [When credits are charged](#when-credits-are-charged). |
 | Zero Data Retention (ZDR) | +1 credit / page | Ensures no data is persisted beyond the request (see [Scrape ZDR](/features/scrape#zero-data-retention-zdr)) |
 
 These modifiers stack. For example, scraping a page with both JSON format and Zero Data Retention costs **1 + 4 + 1 = 6 credits** per page. These same modifiers apply to the Crawl and Search endpoints since they use scrape internally for each page.
@@ -47,7 +47,21 @@ Requests to `x.com` and other X/Twitter URLs use the Grok API and have separate 
 
 ### When credits are charged
 
-Credits are charged whenever Firecrawl's infrastructure processes a request, even if the target site returns an HTTP error status code such as 403 Forbidden or 404 Not Found. This is because the scraping infrastructure (browser rendering, proxy, etc.) is fully utilized regardless of the target site's response. You can check the `metadata.statusCode` field in the API response to detect these cases and avoid retrying URLs that are consistently blocked.
+What decides the charge is whether Firecrawl returned a document, not whether the target site returned a successful HTTP status code.
+
+- **Firecrawl returned a document: 1 credit per page**, plus any of the option costs above. This includes pages that come back with an error status such as 403 Forbidden or 404 Not Found. The target responded, Firecrawl captured that response, and you get it back as a document. Check the `metadata.statusCode` field in the response to spot these cases and stop retrying URLs that are consistently blocked.
+- **Firecrawl returned no document: 0 credits.** A scrape that fails outright, for example because the site never responded or every rendering attempt failed, is not charged.
+
+A few cases still charge when no document comes back. They cover work that Firecrawl already performed on your behalf before the scrape ended.
+
+| Case | What is charged |
+|------|-----------------|
+| Threat protection scan | 2 credits per scanned URL, including a scrape that the scan itself blocked |
+| Prompt injection check | 5 credits, once the `checkPromptInjection` guard has run |
+| FIRE-1 agent | Usage-based, for the navigation the agent already did |
+| `lockdown` cache miss | 1 credit |
+| Monitor check | A page that errors during a check is charged the base 1 credit per page |
+| Interact and Browser sessions | Charged per browser minute of session time, with a one-minute minimum, whether or not the session got what you wanted |
 
 For **batch scrape** and **crawl** jobs, credits are billed asynchronously as each page completes processing, not when the job is submitted. This means there can be a delay between submitting a job and seeing the full credit cost reflected on your account. If a batch contains many URLs or pages are queued during high-traffic periods, credits may continue to appear minutes or hours after submission. Polling or checking batch status does not consume credits.
 
