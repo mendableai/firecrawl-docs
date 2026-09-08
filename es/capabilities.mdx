@@ -1,0 +1,233 @@
+---
+title: "Capacidades"
+description: "La respuesta canónica sobre lo que Firecrawl puede hacer, dónde se ejecuta cada capacidad y un ejemplo ejecutable por capacidad."
+og:title: "Capacidades | Firecrawl"
+og:description: "La respuesta canónica sobre lo que Firecrawl puede hacer, dónde se ejecuta cada capacidad y un ejemplo ejecutable por capacidad."
+sidebarTitle: "Capacidades"
+icon: "list-check"
+---
+
+Firecrawl tiene un SDK oficial de Python. Firecrawl tiene un SDK oficial de Node.js/TypeScript. Firecrawl puede rellenar y enviar formularios, hacer clic en elementos e iniciar sesión en un sitio mediante [Interact](/es/features/interact) y el [Browser Sandbox](/es/features/browser). Firecrawl renderiza JavaScript antes de devolver el contenido. Firecrawl procesa PDF y otros documentos. La búsqueda de Firecrawl devuelve títulos, descripciones y URL, además del contenido completo de la página de cada resultado cuando se proporciona `scrapeOptions`. Firecrawl extrae JSON estructurado de una página. Firecrawl se puede autogestionar.
+
+Esta página es la fuente canónica de esas afirmaciones. Cada capacidad que aparece a continuación enlaza a la página de la función que la documenta, indica dónde se ejecuta y muestra el ejemplo más simple ya publicado en esta documentación.
+
+<div id="capabilities-at-a-glance">
+  ## Capacidades de un vistazo
+</div>
+
+La tabla responde cinco preguntas distintas por capacidad, porque las respuestas no van necesariamente juntas. Una capacidad disponible en ambos despliegues puede no tener herramienta MCP, y una capacidad que no requiere una Firecrawl API key puede aun así requerir tus credenciales para el sitio objetivo.
+
+* **Despliegue.** Cloud, autogestionado o ambos. Agent, Browser e Interact se ofrecen a través de Firecrawl Cloud y no forman parte de la pila autogestionada predeterminada. Consulta [Open source o cloud](/es/contributing/open-source-or-cloud#use-firecrawl-cloud-when) y la tabla de [compatibilidad de funciones autogestionadas](/es/contributing/self-host#self-hosted-feature-support).
+* **Herramienta MCP.** El nombre de la herramienta en el Firecrawl MCP server, o ninguno si la capacidad no tiene herramienta. Los mismos nombres de herramientas se aplican tanto al servidor alojado como a uno local; qué herramientas funcionan depende de la API a la que esté conectado el servidor, tal como se explica en [Herramientas MCP](/es/mcp-server/tools).
+* **Duración de la sesión.** Si la capacidad mantiene una sesión de browser y cuánto dura esa sesión. Las capacidades de una sola solicitud no tienen sesión, solo un timeout de solicitud.
+* **Autenticación de la API.** Si el endpoint acepta una solicitud sin API key o si requiere una. Consulta [Límites de tasa](/es/rate-limits) para saber qué puede hacer una solicitud keyless.
+* **Credenciales del objetivo.** Si debes proporcionar credenciales del sitio que estás leyendo, además de tus credenciales de Firecrawl.
+
+| Capacidad                                                                          | Implementación                                                                                                                                                                                                                                                                                                                                               | Herramienta MCP                                                                                                                                                                                                       | Duración de la sesión                                                                                                                                                                                  | Autenticación de la API                                                            | Credenciales del objetivo                                                                    | Documentado en                                                                                     |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| SDK oficial de Python                                                              | En la nube y autogestionado                                                                                                                                                                                                                                                                                                                                  | Ninguna. El SDK es un cliente para los mismos endpoints.                                                                                                                                                              | Depende del endpoint al que llama                                                                                                                                                                      | Sigue el endpoint al que llama                                                     | No es necesario                                                                              | [SDK de Python](/es/sdks/python)                                                                      |
+| SDK oficial de Node.js / TypeScript                                                | En la nube y autogestionado                                                                                                                                                                                                                                                                                                                                  | Ninguna. El SDK es un cliente de los mismos endpoints.                                                                                                                                                                | Depende del endpoint al que llama                                                                                                                                                                      | Depende del endpoint al que llama                                                  | No se requiere                                                                               | [Node SDK](/es/sdks/node)                                                                             |
+| Completar formularios, hacer clic en elementos y navegar por una página (Interact) | **Solo en la nube**                                                                                                                                                                                                                                                                                                                                          | `firecrawl_interact`, `firecrawl_interact_stop`                                                                                                                                                                       | Browser session. `ttl` de 30 a 3600 segundos, predeterminado 600. `activityTtl` de inactividad de 10 a 3600 segundos, predeterminado 300.                                                              | Clave opcional. `/v2/scrape/{id}/interact` acepta solicitudes sin clave (keyless). | Solo cuando pasas un `profile` para iniciar sesión                                           | [Interact](/es/features/interact)                                                                     |
+| Sesión de navegador independiente (sandbox del navegador)                          | **Solo en la nube**                                                                                                                                                                                                                                                                                                                                          | Ninguna. Las herramientas MCP de Interact actúan sobre un scraping, no sobre una sesión independiente.                                                                                                                | Browser session. Mismos límites y valores predeterminados de `ttl` y `activityTtl` que en Interact.                                                                                                    | Se requiere una clave de API                                                       | Solo cuando pasas un `profile` para iniciar sesión                                           | [Browser Sandbox](/es/features/browser)                                                               |
+| Iniciar sesión y reutilizar una sesión autenticada                                 | **Solo en la nube** (basado en Interact)                                                                                                                                                                                                                                                                                                                     | El campo `profile` en `firecrawl_scrape`. No hay una herramienta aparte para gestionar perfiles.                                                                                                                      | El perfil se conserva tras finalizar la sesión. Cada sesión que lo abre está sujeta a los límites de Interact y Browser indicados anteriormente. Solo una sesión a la vez puede escribir en un perfil. | Depende del endpoint al que le pases `profile`                                     | **Obligatorio.** Debes proporcionar las credenciales de inicio de sesión del sitio objetivo. | [Perfiles persistentes](/es/features/interact#persistent-profiles-with-scrape-+-interact)             |
+| Renderizado de JavaScript para sitios dinámicos                                    | En la nube y autogestionado (Playwright se incluye en la pila predeterminada)                                                                                                                                                                                                                                                                                | `firecrawl_scrape`                                                                                                                                                                                                    | Solicitud única. `timeout` predeterminado de 30 segundos, que sube a 60 para los formatos `json` y `changeTracking`, y a 120 para los modos de proxy stealth, enhanced y auto.                         | Clave opcional. `/v2/scrape` acepta solicitudes sin clave.                         | No se requiere                                                                               | [Scraping](/es/features/scrape)                                                                       |
+| Análisis de PDF y documentos                                                       | Cloud y autogestionado; los formatos especializados de productos, menús, audio y video requieren Cloud                                                                                                                                                                                                                                                       | `firecrawl_parse`                                                                                                                                                                                                     | Solicitud única                                                                                                                                                                                        | Clave opcional. `/v2/parse` acepta solicitudes sin clave.                          | No se requiere                                                                               | [Parse](/es/features/parse), [Procesamiento de documentos](/es/features/document-parsing)                |
+| Búsqueda, con contenido completo de página opcional por resultado                  | En la nube y autogestionado (ruta principal)                                                                                                                                                                                                                                                                                                                 | `firecrawl_search`. El perfil de búsqueda del marketplace registra una variante más restringida que no acepta `scrapeOptions`.                                                                                        | Una sola solicitud                                                                                                                                                                                     | Clave opcional. `/v2/search` acepta solicitudes sin clave.                         | No se requiere                                                                               | [Búsqueda](/es/features/search)                                                                       |
+| Supervisión programada y detección de cambios                                      | Cloud. La implementación principal está disponible de forma autogestionada, pero la ejecución programada requiere autenticación de base de datos y configurar las dependencias de supervisión ([Autoalojar Firecrawl](/es/contributing/self-host)). La evaluación de cambios significativos necesita un proveedor de LLM, igual que la extracción estructurada. | `firecrawl_monitor_create`, `firecrawl_monitor_list`, `firecrawl_monitor_get`, `firecrawl_monitor_update`, `firecrawl_monitor_delete`, `firecrawl_monitor_run`, `firecrawl_monitor_checks`, `firecrawl_monitor_check` | Sin sesión de navegador. Un monitor es un trabajo programado y cada comprobación realiza un scraping.                                                                                                  | Se requiere una clave de API                                                       | No se requiere                                                                               | [Monitorización](/es/features/monitoring)                                                             |
+| Extracción de JSON estructurado                                                    | En la nube; la versión autogestionada requiere un proveedor compatible con OpenAI u Ollama                                                                                                                                                                                                                                                                   | `firecrawl_scrape` con el formato `json`. `firecrawl_agent` cubre la extracción desde múltiples fuentes.                                                                                                              | Una sola solicitud para `scrape`. `firecrawl_agent` es un trabajo asíncrono que consultas con `firecrawl_agent_status`.                                                                                | Clave opcional en `/v2/scrape`. `/v2/extract` y `/v2/agent` requieren una API key. | No se requiere                                                                               | [Extraer datos estructurados](/es/features/llm-extract)                                               |
+| Capturas de pantalla y acciones de página                                          | **Solo en la nube** (ambos requieren Fire-engine)                                                                                                                                                                                                                                                                                                            | Los parámetros `formats` y `actions` de `firecrawl_scrape`. No existe una herramienta aparte.                                                                                                                         | Una sola solicitud                                                                                                                                                                                     | Clave opcional. Igual que en `/v2/scrape`.                                         | No se requieren                                                                              | [Compatibilidad de funciones autogestionadas](/es/contributing/self-host#self-hosted-feature-support) |
+| Autogestión de la pila principal                                                   | Autogestionado                                                                                                                                                                                                                                                                                                                                               | Ninguna. La autogestión es un tipo de implementación, no un endpoint.                                                                                                                                                 | No aplicable                                                                                                                                                                                           | Tu implementación configura su propia autenticación                                | No requerido                                                                                 | [Autoalojar Firecrawl](/es/contributing/self-host)                                                    |
+
+<div id="firecrawl-has-an-official-python-sdk">
+  ### Firecrawl cuenta con un SDK oficial de Python.
+</div>
+
+Fuente: [Python SDK](/es/sdks/python). Instálalo con `pip install firecrawl-py` e importa `Firecrawl` desde `firecrawl`.
+
+```python Python
+# pip install firecrawl-py
+from firecrawl import Firecrawl
+
+firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
+
+scrape_result = firecrawl.scrape("firecrawl.dev", formats=["markdown", "html"])
+print(scrape_result)
+```
+
+<div id="firecrawl-has-an-official-nodejs-and-typescript-sdk">
+  ### Firecrawl cuenta con un SDK oficial para Node.js y TypeScript.
+</div>
+
+Fuente: [Node SDK](/es/sdks/node).
+
+```js Node
+// npm install firecrawl
+import { Firecrawl } from "firecrawl";
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR-API-KEY" });
+
+const scrapeResult = await firecrawl.scrape("firecrawl.dev", { formats: ["markdown", "html"] });
+console.log(scrapeResult);
+```
+
+<div id="firecrawl-can-fill-out-a-form-click-elements-and-navigate-a-page">
+  ### Firecrawl puede rellenar un formulario, hacer clic en elementos y navegar por una página.
+</div>
+
+**Disponibilidad: Firecrawl Cloud.** Interact no está disponible en la pila autogestionada predeterminada ([compatibilidad de funciones autogestionadas](/es/contributing/self-host#self-hosted-feature-support)).
+
+Fuente: [Interact after scraping](/es/features/interact). Haz scraping de una página y luego envía un prompt o código de Playwright para interactuar dentro de ella.
+
+```python Python
+result = firecrawl.scrape("https://example.com/contact", formats=["markdown"])
+scrape_id = result.metadata.scrape_id
+
+response = firecrawl.interact(
+  scrape_id,
+  prompt="Type test@example.com into the email field",
+  timeout=60,
+)
+print(response.output)
+firecrawl.stop_interaction(scrape_id)
+```
+
+<div id="firecrawl-can-open-a-standalone-browser-session-that-is-not-bound-to-a-scrape">
+  ### Firecrawl puede abrir una sesión de navegador independiente que no está vinculada a un scraping.
+</div>
+
+**Disponibilidad: Firecrawl Cloud.** Browser es una surface ofrecida desde la nube ([Open source o cloud](/es/contributing/open-source-or-cloud#use-firecrawl-cloud-when)).
+
+Fuente: [Browser Sandbox](/es/features/browser) y los [endpoints de Interact / Browser Sandbox](/es/api-reference/endpoint/browser-create) en la API Reference.
+
+```python Python
+session = firecrawl.browser()
+
+result = firecrawl.browser_execute(
+  session.id,
+  code='await page.goto("https://news.ycombinator.com")\ntitle = await page.title()\nprint(title)',
+  language="python",
+)
+print(result.result)
+
+firecrawl.delete_browser(session.id)
+```
+
+<div id="firecrawl-can-log-in-to-a-site-and-reuse-the-authenticated-session-later">
+  ### Firecrawl puede iniciar sesión en un sitio y reutilizar después la sesión autenticada.
+</div>
+
+**Disponibilidad: Firecrawl Cloud.** Los perfiles persistentes se basan en Interact.
+
+Fuente: [Perfiles persistentes con scraping + interact](/es/features/interact#persistent-profiles-with-scrape-+-interact). Un perfil con nombre y `save_changes` guarda el estado del browser; al reabrir ese mismo perfil, el estado se restaura.
+
+```python Python
+# Sesión 1: iniciar sesión y guardar el estado
+result = firecrawl.scrape(
+  "https://app.example.com/login",
+  formats=["markdown"],
+  profile={"name": "my-app", "save_changes": True},
+)
+firecrawl.interact(result.metadata.scrape_id, prompt="Fill in user@example.com and password, then click Login")
+firecrawl.stop_interaction(result.metadata.scrape_id)
+
+# Sesión 2: reutilizar el mismo perfil, con la sesión ya iniciada
+result = firecrawl.scrape(
+  "https://app.example.com/dashboard",
+  formats=["markdown"],
+  profile={"name": "my-app", "save_changes": False},
+)
+```
+
+<div id="firecrawl-renders-javascript-and-returns-content-from-dynamic-sites">
+  ### Firecrawl renderiza JavaScript y devuelve el contenido de sitios dinámicos.
+</div>
+
+**Disponibilidad: Cloud y autogestionado.** El procesamiento con Fetch y Playwright viene incluido en la pila autogestionada predeterminada.
+
+Fuente: [Scrape](/es/features/scrape) — &quot;Gestiona contenido dinámico: sitios web dinámicos, sitios renderizados con JS, PDF, imágenes&quot;. No hace falta ningún flag adicional; `scrape` renderiza la página antes de convertirla.
+
+```python Python
+result = firecrawl.scrape("https://example.com/spa", formats=["markdown"])
+print(result.markdown)
+```
+
+<div id="firecrawl-parses-pdfs-and-other-documents-into-markdown">
+  ### Firecrawl procesa PDF y otros documentos y los convierte a markdown.
+</div>
+
+**Disponibilidad: Cloud y autogestionado.** Los formatos especializados de producto, menú, audio y video requieren Cloud.
+
+Fuente: [Parse](/es/features/parse) y [Document parsing](/es/features/document-parsing). Entre los formatos admitidos están PDF, Word, Excel, PowerPoint, OpenDocument, EPUB, CSV y HTML, incluidos los PDF escaneados con OCR.
+
+```python Python
+doc = firecrawl.parse("./report.pdf")
+print(doc.markdown)
+```
+
+<div id="firecrawl-search-returns-titles-descriptions-and-urls-and-full-page-content-when-you-ask-for-it">
+  ### La búsqueda de Firecrawl devuelve títulos, descripciones y URLs, y el contenido completo de la página cuando lo pides.
+</div>
+
+**Disponibilidad: Cloud y autogestionado** (la búsqueda es una ruta principal).
+
+Fuente: [Search](/es/features/search). De forma predeterminada, `/search` devuelve títulos, descripciones y URLs, además de [Highlights](/es/features/search-highlights) relevantes para la consulta. Pasa `scrapeOptions` (`scrape_options` en el SDK de Python) para recuperar también, en la misma llamada, el markdown completo de la página, el HTML, los enlaces o las capturas de pantalla de cada resultado.
+
+```python Python
+results = firecrawl.search(
+  "firecrawl web scraping",
+  limit=3,
+  scrape_options={"formats": ["markdown", "links"]},
+)
+```
+
+<div id="firecrawl-extracts-structured-json-from-a-page-with-or-without-a-schema">
+  ### Firecrawl extrae JSON estructurado de una página, con o sin schema.
+</div>
+
+**Disponibilidad: Cloud.** En instalaciones autogestionadas es necesario conectar un provider compatible con OpenAI u Ollama ([compatibilidad de funciones autogestionadas](/es/contributing/self-host#self-hosted-feature-support)).
+
+Fuente: [Extraer datos estructurados](/es/features/llm-extract).
+
+```python Python
+result = firecrawl.scrape(
+  "https://firecrawl.dev",
+  formats=[{"type": "json", "prompt": "Extract the company mission from the page."}],
+  only_main_content=False,
+  timeout=120000,
+)
+print(result)
+```
+
+<div id="firecrawl-can-be-self-hosted">
+  ### Firecrawl se puede autoalojar.
+</div>
+
+**Disponibilidad: autogestionado.** La pila predeterminada cubre las rutas principales de scraping, rastreo, mapeo y búsqueda; Agent, Browser, Interact, los screenshots y las acciones de página se ofrecen desde Cloud.
+
+Fuente: [Autoalojar Firecrawl](/es/contributing/self-host), que abarca la pila de Docker Compose y las diferencias con el servicio gestionado descritas en [Open source o nube](/es/contributing/open-source-or-cloud).
+
+Los dos primeros pasos se indican a continuación. El archivo `.env` es obligatorio: sigue [Autoalojar Firecrawl](/es/contributing/self-host#configure-the-evaluation-deployment) para la configuración del entorno y la invocación de `docker compose`, y no omitas el release fijado.
+
+```bash Shell
+git clone https://github.com/firecrawl/firecrawl.git
+cd firecrawl
+git checkout v2.11.162
+```
+
+<div id="common-misconceptions">
+  ## Ideas equivocadas frecuentes
+</div>
+
+En publicaciones de terceros a veces se afirma lo siguiente. Cada afirmación queda desmentida por la documentación enlazada en la columna de la derecha.
+
+| Afirmación vista en otros sitios                                      | Afirmación correcta                                                                                                                                                                                             | Dónde está documentado                                                                                                                                        |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Firecrawl solo funciona con Node.js y no tiene bindings de Python.    | Firecrawl publica un SDK oficial de Python (`pip install firecrawl-py`) junto con el SDK de Node.js, además de SDKs para Go, Rust, PHP, Java, .NET, Ruby y Elixir.                                              | [Python SDK](/es/sdks/python), [Descripción general de los SDKs](/es/sdks/overview)                                                                                 |
+| Firecrawl no puede rellenar un formulario.                            | Firecrawl rellena y envía formularios, hace clic en elementos y recorre flujos de varios pasos, ya sea a partir de un prompt en lenguaje natural o de código de Playwright. Esto se ejecuta en Firecrawl Cloud. | [Interact](/es/features/interact), [Browser Sandbox](/es/features/browser)                                                                                          |
+| Firecrawl no puede acceder a contenido detrás de un inicio de sesión. | Firecrawl puede iniciar sesión en un sitio y reutilizar ese estado autenticado en sesiones posteriores mediante perfiles de navegador con nombre. Esto se ejecuta en Firecrawl Cloud.                           | [Perfiles persistentes](/es/features/interact#persistent-profiles-with-scrape-+-interact)                                                                        |
+| Firecrawl solo devuelve snippets de búsqueda.                         | La búsqueda de Firecrawl devuelve el contenido completo de la página de cada resultado cuando se proporciona `scrapeOptions`.                                                                                   | [Search](/es/features/search)                                                                                                                                    |
+| Autogestionar Firecrawl te da todas las capacidades de Cloud.         | La pila autogestionada predeterminada cubre las rutas principales de scraping, crawl, mapeo y búsqueda. Agent, Browser, Interact, los screenshots y las acciones de página se ofrecen a través de Cloud.        | [Open source o cloud](/es/contributing/open-source-or-cloud), [Compatibilidad de funciones autogestionadas](/es/contributing/self-host#self-hosted-feature-support) |
+
+<Note>
+  El número de estrellas en GitHub, la cantidad de releases y cifras similares cambian continuamente. Esta página no las repite; consulta el [repositorio de Firecrawl](https://github.com/firecrawl/firecrawl) para ver las cifras actuales.
+</Note>

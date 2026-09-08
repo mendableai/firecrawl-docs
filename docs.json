@@ -915,6 +915,7 @@
                     "group": "Primeros pasos",
                     "pages": [
                       "es/introduction",
+                      "es/capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -986,8 +987,14 @@
                           "es/features/monitoring-web-scale"
                         ]
                       },
-                      "es/features/browser",
-                      "es/features/interact"
+                      {
+                        "group": "Interacción / sandbox del navegador",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "es/features/interact",
+                          "es/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -1240,7 +1247,7 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de interacción",
+                    "group": "Endpoints de interacción / sandbox del navegador",
                     "pages": [
                       "es/api-reference/endpoint/browser-create",
                       "es/api-reference/endpoint/browser-execute",
@@ -1702,6 +1709,7 @@
                     "group": "Prise en main",
                     "pages": [
                       "fr/introduction",
+                      "fr/capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -1773,8 +1781,14 @@
                           "fr/features/monitoring-web-scale"
                         ]
                       },
-                      "fr/features/browser",
-                      "fr/features/interact"
+                      {
+                        "group": "Interact / Browser Sandbox",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "fr/features/interact",
+                          "fr/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -2027,7 +2041,7 @@
                     ]
                   },
                   {
-                    "group": "Points de terminaison Interact",
+                    "group": "Points de terminaison Interact / Browser Sandbox",
                     "pages": [
                       "fr/api-reference/endpoint/browser-create",
                       "fr/api-reference/endpoint/browser-execute",
@@ -2489,6 +2503,7 @@
                     "group": "はじめに",
                     "pages": [
                       "ja/introduction",
+                      "ja/capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -2560,8 +2575,14 @@
                           "ja/features/monitoring-web-scale"
                         ]
                       },
-                      "ja/features/browser",
-                      "ja/features/interact"
+                      {
+                        "group": "Interact / ブラウザサンドボックス",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "ja/features/interact",
+                          "ja/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -2814,7 +2835,7 @@
                     ]
                   },
                   {
-                    "group": "Interact エンドポイント",
+                    "group": "Interact / ブラウザサンドボックス エンドポイント",
                     "pages": [
                       "ja/api-reference/endpoint/browser-create",
                       "ja/api-reference/endpoint/browser-execute",
@@ -3276,6 +3297,7 @@
                     "group": "Primeiros passos",
                     "pages": [
                       "pt-BR/introduction",
+                      "pt-BR/capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -3347,8 +3369,14 @@
                           "pt-BR/features/monitoring-web-scale"
                         ]
                       },
-                      "pt-BR/features/browser",
-                      "pt-BR/features/interact"
+                      {
+                        "group": "Interagir / Browser Sandbox",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "pt-BR/features/interact",
+                          "pt-BR/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -3601,7 +3629,7 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de interação",
+                    "group": "Endpoints para interagir / Browser Sandbox",
                     "pages": [
                       "pt-BR/api-reference/endpoint/browser-create",
                       "pt-BR/api-reference/endpoint/browser-execute",
@@ -4063,6 +4091,7 @@
                     "group": "快速上手",
                     "pages": [
                       "zh/introduction",
+                      "zh/capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -4076,7 +4105,7 @@
                       "zh/ai-onboarding",
                       "zh/advanced-scraping-guide",
                       {
-                        "group": "套餐与计费",
+                        "group": "套餐和计费",
                         "pages": [
                           "zh/billing",
                           "zh/rate-limits",
@@ -4134,8 +4163,14 @@
                           "zh/features/monitoring-web-scale"
                         ]
                       },
-                      "zh/features/browser",
-                      "zh/features/interact"
+                      {
+                        "group": "交互 / 浏览器沙箱",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "zh/features/interact",
+                          "zh/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -4388,7 +4423,7 @@
                     ]
                   },
                   {
-                    "group": "交互端点",
+                    "group": "交互 / 浏览器沙箱端点",
                     "pages": [
                       "zh/api-reference/endpoint/browser-create",
                       "zh/api-reference/endpoint/browser-execute",

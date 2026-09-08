@@ -1,0 +1,233 @@
+---
+title: "機能一覧"
+description: "Firecrawl で何ができるのか、各機能がどこで動作するのか、そして機能ごとに実行可能な例を 1 つ示す、正規のリファレンスです。"
+og:title: "機能一覧 | Firecrawl"
+og:description: "Firecrawl で何ができるのか、各機能がどこで動作するのか、そして機能ごとに実行可能な例を 1 つ示す、正規のリファレンスです。"
+sidebarTitle: "機能一覧"
+icon: "list-check"
+---
+
+Firecrawl には公式の Python SDK があります。Firecrawl には公式の Node.js/TypeScript SDK があります。Firecrawl は [Interact](/ja/features/interact) と [ブラウザサンドボックス](/ja/features/browser) を通じて、フォームへの入力と送信、要素のクリック、サイトへのログインを行えます。Firecrawl はコンテンツを返す前に JavaScript をレンダリングします。Firecrawl は PDF やその他のドキュメントを解析します。Firecrawl の search はタイトル、説明、URL を返し、`scrapeOptions` を指定した場合は各結果のページ全体のコンテンツも返します。Firecrawl はページから構造化 JSON を抽出します。Firecrawl はセルフホストできます。
+
+このページは、これらの記述における正規の情報源です。以下の各機能には、それを解説する機能ページへのリンク、動作する場所、そして本ドキュメントで既に公開されている最小限の例を掲載しています。
+
+<div id="capabilities-at-a-glance">
+  ## 機能一覧
+</div>
+
+この表は、機能ごとに5つの異なる問いに答えています。それぞれの答えは互いに連動しないためです。両方のデプロイで利用できる機能でもMCPツールが存在しないことがあり、Firecrawl APIキーが不要な機能でも対象サイトの認証情報が必要になることがあります。
+
+* **デプロイ。** Cloud、セルフホスト、またはその両方。Agent、Browser、Interact は Firecrawl Cloud を通じて提供され、デフォルトのセルフホストスタックには含まれません。[オープンソースかクラウドか](/ja/contributing/open-source-or-cloud#use-firecrawl-cloud-when)および[セルフホストの機能サポート](/ja/contributing/self-host#self-hosted-feature-support)の表をご覧ください。
+* **MCPツール。** Firecrawl MCPサーバー上のツール名。ツールがない機能の場合は none。ツール名はホスト型サーバーとローカルサーバーで共通で、どのツールが動作するかはサーバーの接続先APIによって決まります。詳細は[MCPツール](/ja/mcp-server/tools)を参照してください。
+* **セッションの持続時間。** 機能がブラウザセッションを保持するかどうか、また保持する場合はどれだけ持続するか。単一リクエストの機能にセッションはなく、リクエストのタイムアウトのみが存在します。
+* **API認証。** エンドポイントがAPIキーなしのリクエストを受け付けるか、APIキーが必須か。キーなしのリクエストで何ができるかについては[レート制限](/ja/rate-limits)をご覧ください。
+* **対象サイトの認証情報。** Firecrawlの認証情報に加えて、読み取り対象サイトの認証情報を用意する必要があるかどうか。
+
+| 機能                                 | デプロイメント                                                                                                                                                 | MCP ツール                                                                                                                                                                                                        | セッションの有効期間                                                                                                         | API 認証                                                           | ターゲットの認証情報                  | 記載先                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------------- |
+| 公式 Python SDK                      | クラウドおよびセルフホスト型                                                                                                                                          | なし。SDK は同じエンドポイントを呼び出すクライアントです。                                                                                                                                                                                | 呼び出すエンドポイントに準拠                                                                                                     | 呼び出すエンドポイントに準拠                                                   | 不要                          | [Python SDK](/ja/sdks/python)                                                |
+| 公式 Node.js / TypeScript SDK        | クラウドおよびセルフホスト                                                                                                                                           | なし。SDKは同じエンドポイントのクライアントです。                                                                                                                                                                                     | 呼び出すエンドポイントに準拠                                                                                                     | 呼び出すエンドポイントに準拠                                                   | 不要                          | [Node SDK](/ja/sdks/node)                                                    |
+| フォームへの入力、要素のクリック、ページ遷移 (Interact)  | **クラウドのみ**                                                                                                                                              | `firecrawl_interact`、`firecrawl_interact_stop`                                                                                                                                                                 | ブラウザセッション。`ttl` は 30〜3600 秒、デフォルトは 600。アイドル時の `activityTtl` は 10〜3600 秒、デフォルトは 300。                                | キーは任意。`/v2/scrape/{id}/interact` は keyless リクエストを受け付けます。         | ログイン用に `profile` を渡す場合のみ必要  | [Interact](/ja/features/interact)                                            |
+| スタンドアロンのブラウザセッション (ブラウザサンドボックス)    | **クラウドのみ**                                                                                                                                              | なし。MCPのInteractツールは、スタンドアロンセッションではなく、スクレイピングに対して動作します。                                                                                                                                                         | ブラウザセッション。`ttl` と `activityTtl` の範囲とデフォルト値は Interact と同じ。                                                          | APIキーが必要                                                         | ログイン用に `profile` を渡す場合のみ    | [Browser Sandbox](/ja/features/browser)                                      |
+| ログインして認証済みセッションを再利用                | **クラウドのみ** (Interact ベース)                                                                                                                               | `firecrawl_scrape` の `profile` フィールド。プロファイル管理専用のツールはありません。                                                                                                                                                     | プロファイルはセッションより長く存続します。プロファイルを開く各セッションには、上記の Interact と Browser の制限が適用されます。プロファイルに書き込めるのは、一度に1つのセッションのみです。          | `profile` を渡す endpoint の設定に従います                                  | **必須。** 対象サイトのログイン情報を指定します。 | [永続プロファイル](/ja/features/interact#persistent-profiles-with-scrape-+-interact) |
+| 動的サイトのJavaScriptレンダリング             | クラウドおよびセルフホスト (Playwrightはデフォルトのスタックに含まれます)                                                                                                             | `firecrawl_scrape`                                                                                                                                                                                             | 単一リクエスト。`timeout` はデフォルト30秒、`json` および `changeTracking` フォーマットでは60秒、stealth、enhanced、auto のプロキシモードでは120秒に引き上げられます。 | キーは任意。`/v2/scrape` はキーなしのリクエストも受け付けます。                           | 不要                          | [スクレイピング](/ja/features/scrape)                                               |
+| PDFとドキュメントの解析                      | Cloud およびセルフホスト型。商品、メニュー、音声、動画の専用フォーマットには Cloud が必要                                                                                                     | `firecrawl_parse`                                                                                                                                                                                              | 1 回のリクエスト                                                                                                          | キーは任意。`/v2/parse` はキーなしのリクエストを受け付けます。                            | 不要                          | [Parse](/ja/features/parse)、[Document parsing](/ja/features/document-parsing)   |
+| 検索 (結果ごとにページ全体のコンテンツを任意で取得可能)      | クラウドおよびセルフホスト型 (コアルート)                                                                                                                                  | `firecrawl_search`。マーケットプレイスの検索プロファイルでは、`scrapeOptions` を受け付けないより限定的なバリアントが登録されます。                                                                                                                             | 単一リクエスト                                                                                                            | キーは任意。`/v2/search` はキーなしのリクエストも受け付けます。                           | 不要                          | [検索](/ja/features/search)                                                    |
+| 定期監視と変更検出                          | クラウド。コア実装はセルフホストでも利用できますが、スケジュール実行にはデータベース認証とモニタリング関連の依存関係の設定が必要です ([Firecrawlのセルフホスト](/ja/contributing/self-host)) 。意味のある変更の判定には、構造化抽出と同じくLLMプロバイダーが必要です。 | `firecrawl_monitor_create`、`firecrawl_monitor_list`、`firecrawl_monitor_get`、`firecrawl_monitor_update`、`firecrawl_monitor_delete`、`firecrawl_monitor_run`、`firecrawl_monitor_checks`、`firecrawl_monitor_check` | ブラウザセッションは使用しません。モニターはスケジュール設定されたジョブで、各チェックでスクレイピングを実行します。                                                         | APIキーが必要                                                         | 不要                          | [監視](/ja/features/monitoring)                                                |
+| 構造化 JSON の抽出                       | クラウド。セルフホストでは OpenAI 互換のプロバイダーまたは Ollama が必要                                                                                                            | `json` フォーマットを使う `firecrawl_scrape`。複数ソースからの抽出は `firecrawl_agent` が対応します。                                                                                                                                      | `scrape` は単一リクエスト。`firecrawl_agent` は非同期ジョブで、`firecrawl_agent_status` でポーリングします。                                   | `/v2/scrape` ではキーは任意。`/v2/extract` と `/v2/agent` には API key が必要。 | 不要                          | [構造化データを抽出](/ja/features/llm-extract)                                        |
+| スクリーンショットとページアクション                 | **クラウドのみ** (どちらも Fire-engine が必要)                                                                                                                       | `firecrawl_scrape` の `formats` および `actions` パラメータ。専用のツールはありません。                                                                                                                                               | 1リクエスト                                                                                                             | キーは任意。`/v2/scrape` と同じ。                                          | 不要                          | [セルフホスティングでの機能サポート](/ja/contributing/self-host#self-hosted-feature-support)  |
+| コアスタックのセルフホスティング                   | セルフホスト型                                                                                                                                                 | なし。セルフホスティングはデプロイ方法であり、エンドポイントではありません。                                                                                                                                                                         | 該当なし                                                                                                               | デプロイ環境で独自の認証を設定                                                  | 不要                          | [Firecrawlをセルフホスト](/ja/contributing/self-host)                               |
+
+<div id="firecrawl-has-an-official-python-sdk">
+  ### Firecrawl には公式の Python SDK があります。
+</div>
+
+ソース: [Python SDK](/ja/sdks/python)。`pip install firecrawl-py` でインストールし、`firecrawl` から `Firecrawl` をインポートします。
+
+```python Python
+# pip install firecrawl-py
+from firecrawl import Firecrawl
+
+firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
+
+scrape_result = firecrawl.scrape("firecrawl.dev", formats=["markdown", "html"])
+print(scrape_result)
+```
+
+<div id="firecrawl-has-an-official-nodejs-and-typescript-sdk">
+  ### Firecrawl には公式の Node.js / TypeScript SDK があります。
+</div>
+
+ソース: [Node SDK](/ja/sdks/node)。
+
+```js Node
+// npm install firecrawl
+import { Firecrawl } from "firecrawl";
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR-API-KEY" });
+
+const scrapeResult = await firecrawl.scrape("firecrawl.dev", { formats: ["markdown", "html"] });
+console.log(scrapeResult);
+```
+
+<div id="firecrawl-can-fill-out-a-form-click-elements-and-navigate-a-page">
+  ### Firecrawl はフォームの入力、要素のクリック、ページ内の遷移ができます。
+</div>
+
+**提供状況: Firecrawl Cloud。** Interact はデフォルトのセルフホスト構成では利用できません ([セルフホストの機能サポート](/ja/contributing/self-host#self-hosted-feature-support)) 。
+
+ソース: [スクレイピング後の Interact](/ja/features/interact)。ページをスクレイピングした後、prompt または Playwright コードを送信してページ内で操作します。
+
+```python Python
+result = firecrawl.scrape("https://example.com/contact", formats=["markdown"])
+scrape_id = result.metadata.scrape_id
+
+response = firecrawl.interact(
+  scrape_id,
+  prompt="Type test@example.com into the email field",
+  timeout=60,
+)
+print(response.output)
+firecrawl.stop_interaction(scrape_id)
+```
+
+<div id="firecrawl-can-open-a-standalone-browser-session-that-is-not-bound-to-a-scrape">
+  ### Firecrawlは、スクレイピングに紐づかないスタンドアロンのブラウザセッションを開けます。
+</div>
+
+**提供範囲: Firecrawl Cloud。** BrowserはCloudで提供される機能です ([Open source or cloud](/ja/contributing/open-source-or-cloud#use-firecrawl-cloud-when)) 。
+
+ソース: [ブラウザサンドボックス](/ja/features/browser)、およびAPIリファレンスの[Interact / Browser Sandbox Endpoints](/ja/api-reference/endpoint/browser-create)。
+
+```python Python
+session = firecrawl.browser()
+
+result = firecrawl.browser_execute(
+  session.id,
+  code='await page.goto("https://news.ycombinator.com")\ntitle = await page.title()\nprint(title)',
+  language="python",
+)
+print(result.result)
+
+firecrawl.delete_browser(session.id)
+```
+
+<div id="firecrawl-can-log-in-to-a-site-and-reuse-the-authenticated-session-later">
+  ### Firecrawl はサイトにログインし、認証済みセッションを後から再利用できます。
+</div>
+
+**提供対象: Firecrawl Cloud。** 永続プロファイルは Interact によって実現されています。
+
+ソース: [scrape + interact による永続プロファイル](/ja/features/interact#persistent-profiles-with-scrape-+-interact)。`save_changes` を指定した名前付きプロファイルはブラウザの状態を保存し、同じプロファイルを再度開くとその状態が復元されます。
+
+```python Python
+# セッション1: ログインして状態を保存
+result = firecrawl.scrape(
+  "https://app.example.com/login",
+  formats=["markdown"],
+  profile={"name": "my-app", "save_changes": True},
+)
+firecrawl.interact(result.metadata.scrape_id, prompt="Fill in user@example.com and password, then click Login")
+firecrawl.stop_interaction(result.metadata.scrape_id)
+
+# セッション2: 同じプロファイルを再利用（すでにログイン済み）
+result = firecrawl.scrape(
+  "https://app.example.com/dashboard",
+  formats=["markdown"],
+  profile={"name": "my-app", "save_changes": False},
+)
+```
+
+<div id="firecrawl-renders-javascript-and-returns-content-from-dynamic-sites">
+  ### Firecrawl は JavaScript をレンダリングし、動的サイトから content を取得して返します。
+</div>
+
+**利用可否: Cloudおよびセルフホスト。** Fetch と Playwright の処理は、default のセルフホスト stack に含まれています。
+
+出典: [Scrape](/ja/features/scrape) — 「動的な content に対応: 動的な Web サイト、js でレンダリングされるサイト、PDF、images」。追加のフラグは不要で、`scrape` は変換前にページをレンダリングします。
+
+```python Python
+result = firecrawl.scrape("https://example.com/spa", formats=["markdown"])
+print(result.markdown)
+```
+
+<div id="firecrawl-parses-pdfs-and-other-documents-into-markdown">
+  ### Firecrawl は PDF やその他のドキュメントを markdown に変換して解析します。
+</div>
+
+**対応環境: Cloud およびセルフホスト。** 商品情報、メニュー、音声、動画などの専用フォーマットは Cloud のみで利用できます。
+
+参照: [Parse](/ja/features/parse) および [Document parsing](/ja/features/document-parsing)。対応フォーマットは PDF、Word、Excel、PowerPoint、OpenDocument、EPUB、CSV、HTML で、OCR によるスキャン PDF にも対応します。
+
+```python Python
+doc = firecrawl.parse("./report.pdf")
+print(doc.markdown)
+```
+
+<div id="firecrawl-search-returns-titles-descriptions-and-urls-and-full-page-content-when-you-ask-for-it">
+  ### Firecrawl の search はタイトル、説明、URL を返し、指定すればページ全体のコンテンツも取得できます。
+</div>
+
+**利用可能環境: Cloudおよびセルフホスト** (search はコアルートです) 。
+
+ソース: [Search](/ja/features/search)。デフォルトでは `/search` はタイトル、説明、URL に加えて、query に関連する [Highlights](/ja/features/search-highlights) を返します。`scrapeOptions` (Python SDK では `scrape_options`) を渡せば、同じ呼び出しで各結果のページ全文のマークダウン、HTML、リンク、スクリーンショットも併せて取得できます。
+
+```python Python
+results = firecrawl.search(
+  "firecrawl web scraping",
+  limit=3,
+  scrape_options={"formats": ["markdown", "links"]},
+)
+```
+
+<div id="firecrawl-extracts-structured-json-from-a-page-with-or-without-a-schema">
+  ### Firecrawl は、schema の有無にかかわらず、ページから構造化 JSON を抽出します。
+</div>
+
+**利用可否: Cloud。** セルフホストの場合は、OpenAI 互換の provider または Ollama への接続が必要です ([セルフホストの機能サポート](/ja/contributing/self-host#self-hosted-feature-support)) 。
+
+出典: [Extract structured data](/ja/features/llm-extract)。
+
+```python Python
+result = firecrawl.scrape(
+  "https://firecrawl.dev",
+  formats=[{"type": "json", "prompt": "Extract the company mission from the page."}],
+  only_main_content=False,
+  timeout=120000,
+)
+print(result)
+```
+
+<div id="firecrawl-can-be-self-hosted">
+  ### Firecrawl はセルフホストできます。
+</div>
+
+**提供形態: セルフホスト。** デフォルトのスタックは、コアとなる scrape、crawl、map、search の各ルートに対応します。Agent、Browser、Interact、screenshots、ページアクションはクラウドのみでの提供です。
+
+参照: [Self-host Firecrawl](/ja/contributing/self-host)。Docker Compose スタックと、[Open source or cloud](/ja/contributing/open-source-or-cloud) で説明しているマネージドサービスとの違いを解説しています。
+
+最初の 2 つのステップは以下のとおりです。`.env` ファイルは必須です。環境の構成と `docker compose` の実行方法は [Self-host Firecrawl](/ja/contributing/self-host#configure-the-evaluation-deployment) に従い、固定されたリリースの指定は省略しないでください。
+
+```bash Shell
+git clone https://github.com/firecrawl/firecrawl.git
+cd firecrawl
+git checkout v2.11.162
+```
+
+<div id="common-misconceptions">
+  ## よくある誤解
+</div>
+
+第三者による解説記事では、次のような記述が見られることがあります。いずれも右欄にリンクしたドキュメントの内容と矛盾しています。
+
+| 他で見かける主張                                   | 正しい説明                                                                                                                                 | ドキュメントの参照先                                                                                                                |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Firecrawl は Node.js 専用で、Python バインディングがない。 | Firecrawl は Node.js SDK に加えて公式の Python SDK (`pip install firecrawl-py`) を公開しており、さらに Go、Rust、PHP、Java、.NET、Ruby、Elixir の SDK も提供しています。 | [Python SDK](/ja/sdks/python)、[SDK 概要](/ja/sdks/overview)                                                                       |
+| Firecrawl はフォームに入力できない。                    | Firecrawl は自然言語のプロンプトまたは Playwright のコードから、フォームへの入力と送信、要素のクリック、複数ステップのフローの操作を実行できます。これは Firecrawl Cloud で動作します。                       | [Interact](/ja/features/interact)、[ブラウザサンドボックス](/ja/features/browser)                                                       |
+| Firecrawl はログインが必要なコンテンツにアクセスできない。         | Firecrawl は名前付きのブラウザプロファイルを使って、サイトにログインし、その認証済み状態を以降のセッションでも再利用できます。これは Firecrawl Cloud で動作します。                                       | [永続プロファイル](/ja/features/interact#persistent-profiles-with-scrape-+-interact)                                                 |
+| Firecrawl は検索のスニペットしか返さない。                 | `scrapeOptions` を指定すると、Firecrawl の検索は各結果のページ全体のコンテンツを返します。                                                                                  | [Search](/ja/features/search)                                                                                                |
+| Firecrawl をセルフホスティングすれば Cloud のすべての機能が使える。 | デフォルトのセルフホスト構成では、コアとなる scrape、crawl、map、search のルートに対応します。Agent、Browser、Interact、スクリーンショット、ページアクションは Cloud を通じて提供されます。               | [オープンソースかクラウドか](/ja/contributing/open-source-or-cloud)、[セルフホストの機能サポート](/ja/contributing/self-host#self-hosted-feature-support) |
+
+<Note>
+  GitHub のスター数やリリース数などの数値は常に変動します。本ページではそれらを記載していません。最新の数値は [Firecrawl リポジトリ](https://github.com/firecrawl/firecrawl) を参照してください。
+</Note>
