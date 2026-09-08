@@ -372,6 +372,8 @@ API または SDK を使って agent-browser コマンドを実行するには�
 
   ```bash agent-browser
   # セッションのレスポンスで返される cdpUrl を使用
+  CDP_URL=YOUR_SESSION_CDP_URL
+
   agent-browser open https://example.com --cdp "$CDP_URL"
   agent-browser snapshot --cdp "$CDP_URL"
   ```

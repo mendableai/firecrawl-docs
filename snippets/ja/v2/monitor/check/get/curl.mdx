@@ -1,4 +1,9 @@
 ```bash cURL
+# モニター ID は「モニターを作成」または「モニター一覧」から、チェック ID は
+# 「チェック一覧」から取得します。
+MONITOR_ID=YOUR_MONITOR_ID
+CHECK_ID=YOUR_CHECK_ID
+
 curl "https://api.firecrawl.dev/v2/monitor/$MONITOR_ID/checks/$CHECK_ID?limit=25&status=changed" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY"
 ```
