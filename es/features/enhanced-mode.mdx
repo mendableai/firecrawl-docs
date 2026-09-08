@@ -41,8 +41,18 @@ Configura el parámetro `proxy` para elegir una estrategia de proxy. En el sigui
   <ProxyCURL />
 </CodeGroup>
 
+<div id="when-firecrawl-escalates">
+  ## Cuándo escala Firecrawl
+</div>
+
+Firecrawl empieza con proxies basic. Si el objetivo responde con **401, 403 o 429**, Firecrawl lo interpreta como una señal de que el proxy no fue suficiente y reintenta la misma URL a través de proxies mejorados. Otros códigos de estado, incluidos 404 y 5xx, no provocan una escalada, porque cambiar de proxy no alteraría la respuesta.
+
+La escalada ocurre como máximo una vez por solicitud. Cuando una solicitud ya está en proxies mejorados, un nuevo 401, 403 o 429 se te devuelve como resultado en lugar de reintentarse de nuevo.
+
+No necesitas detectarlo ni gestionarlo. El reintento forma parte de la misma solicitud y la respuesta que recibes es la definitiva.
+
 <Info>
-  Las solicitudes con proxy mejorado ahora tienen el mismo costo que las solicitudes básicas: **1 crédito por solicitud**. Ya no hay ningún cargo adicional cuando `auto` pasa a un reintento mejorado.
+  Las solicitudes con proxy mejorado cuestan lo mismo que las solicitudes basic: **1 crédito por solicitud**. Un reintento escalado no se cobra por separado, así que una solicitud que empieza en basic y termina en enhanced sigue costando 1 crédito.
 </Info>
 
-> ¿Eres un agente de IA que necesita una clave de API de Firecrawl? Consulta [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para ver las instrucciones de incorporación automatizada.
+> ¿Eres un agente de IA que necesita una API key de Firecrawl? Consulta [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para ver instrucciones de incorporación automatizada.
