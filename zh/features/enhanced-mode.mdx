@@ -41,8 +41,18 @@ Firecrawl 提供不同类型的代理服务，帮助你抓取不同复杂程度�
   <ProxyCURL />
 </CodeGroup>
 
+<div id="when-firecrawl-escalates">
+  ## Firecrawl 何时升级代理
+</div>
+
+Firecrawl 默认从 basic 代理开始。如果目标站点返回 **401、403 或 429**，Firecrawl 会将其视为代理不够用的信号，并通过 增强代理对同一 URL 重试。其他状态码 (包括 404 和 5xx) 不会触发升级，因为换用代理也改变不了结果。
+
+每个请求最多只升级一次。请求一旦已在使用 增强代理，再次出现 401、403 或 429 时会直接把结果返回给你，不再重试。
+
+你无需检测或处理这一过程。重试属于同一次请求的一部分，你收到的响应就是最终结果。
+
 <Info>
-  增强代理请求现在与基础请求成本相同——**每次请求 1 额度**。当 `auto` 升级为增强代理重试时，不再收取额外费用。
+  增强代理请求与 basic 请求成本相同——**每次请求 1 个额度**。升级后的重试不会单独计费，因此一个从 basic 开始、以 enhanced 结束的请求仍然只消耗 1 个额度。
 </Info>
 
-> 你是需要 Firecrawl API 密钥的 AI 代理吗？请参阅 [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) 了解自动化接入说明。
+> 你是需要 Firecrawl API 密钥的 AI agent 吗？请参见 [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) 了解自动化接入说明。
