@@ -39,6 +39,8 @@ Crawl submits a URL to Firecrawl and recursively discovers and scrapes every rea
 - Supports path filtering, depth limits, and subdomain/external link control
 - Returns results via polling, WebSocket, or webhook
 
+Each page a crawl scrapes goes through the same scrape pipeline, so anything scrape can do to a page, crawl can do to every page it reaches. [Capabilities](/capabilities) lists what that is, where each capability runs, and whether it needs an API key.
+
 <PlaygroundCTA />
 
 ## Installation
