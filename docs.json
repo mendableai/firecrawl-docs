@@ -121,6 +121,7 @@
                     "group": "Get Started",
                     "pages": [
                       "introduction",
+                      "capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -192,8 +193,14 @@
                           "features/monitoring-web-scale"
                         ]
                       },
-                      "features/browser",
-                      "features/interact"
+                      {
+                        "group": "Interact / Browser Sandbox",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "features/interact",
+                          "features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -446,7 +453,7 @@
                     ]
                   },
                   {
-                    "group": "Interact Endpoints",
+                    "group": "Interact / Browser Sandbox Endpoints",
                     "pages": [
                       "api-reference/endpoint/browser-create",
                       "api-reference/endpoint/browser-execute",
