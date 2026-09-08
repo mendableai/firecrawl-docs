@@ -961,7 +961,7 @@
                 "type": "object"
               },
               "changeTracking": {
-                "description": "Informações de rastreioDeMudanças se `changeTracking` estiver em `formats`. Só estará presente quando o formato `changeTracking` for solicitado.",
+                "description": "Informações de rastreamento de mudanças se `changeTracking` estiver em `formats`. Só estará presente quando o formato `changeTracking` for solicitado.",
                 "nullable": true,
                 "properties": {
                   "changeStatus": {
