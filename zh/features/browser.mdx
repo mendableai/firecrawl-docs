@@ -372,6 +372,8 @@ firecrawl browser "click @e5"
 
   ```bash agent-browser
   # 使用会话响应中的 cdpUrl
+  CDP_URL=YOUR_SESSION_CDP_URL
+
   agent-browser open https://example.com --cdp "$CDP_URL"
   agent-browser snapshot --cdp "$CDP_URL"
   ```

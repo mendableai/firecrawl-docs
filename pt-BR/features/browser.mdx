@@ -372,6 +372,8 @@ Cada sessão expõe uma URL de WebSocket do CDP. A API `execute` e a opção `--
 
   ```bash agent-browser
   # Use o cdpUrl retornado na resposta da sessão
+  CDP_URL=YOUR_SESSION_CDP_URL
+
   agent-browser open https://example.com --cdp "$CDP_URL"
   agent-browser snapshot --cdp "$CDP_URL"
   ```
