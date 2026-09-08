@@ -1,7 +1,12 @@
 ---
 title: "クロールステータスの取得"
 openapi: '/ja/v0/api-reference/v0-openapi.json GET /crawl/status/{jobId}'
+canonical: "https://docs.firecrawl.dev/api-reference/endpoint/crawl-get"
 ---
+
+<Warning>
+  **このページは、2025年4月1日に廃止されたv0 APIについてのドキュメントです。** 過去の参照用として保持されており、現在のFirecrawlの動作を説明するものではありません。最新のドキュメントは[クロールステータスの取得](/ja/api-reference/endpoint/crawl-get)をご覧ください。既存のv0連携を移行する場合は、[v0からの移行](/ja/migrating-from-v0)を参照してください。
+</Warning>
 
 このエンドポイントは、クロールジョブのステータスを取得します。ジョブが未完了の場合、レスポンスの `partial_data` にコンテンツが含まれます。完了後は、コンテンツは `data` に格納されます。
 

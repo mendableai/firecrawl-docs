@@ -1,8 +1,15 @@
 ---
 title: '获取爬取状态'
 openapi: '/zh/v0/api-reference/v0-openapi.json GET /crawl/status/{jobId}'
+canonical: "https://docs.firecrawl.dev/api-reference/endpoint/crawl-get"
 ---
+
+<Warning>
+  **本页面记录的是 v0 API，已于 2025 年 4 月 1 日弃用。** 保留此页仅供历史参考，
+  并不代表 Firecrawl 当前的工作方式。最新文档：[获取爬取状态](/zh/api-reference/endpoint/crawl-get)。
+  如需迁移现有的 v0 集成，请参见 [从 v0 迁移](/zh/migrating-from-v0)。
+</Warning>
 
 此端点用于获取爬取任务的状态。若任务尚未完成，响应会在 `partial_data` 中返回内容。任务完成后，内容将位于 `data` 中。
 
-我们建议自行跟踪爬取任务，因为爬取状态结果可能会在 24 小时后过期。
+**我们建议自行跟踪爬取任务，因为爬取状态结果可能会在 24 小时后过期。**

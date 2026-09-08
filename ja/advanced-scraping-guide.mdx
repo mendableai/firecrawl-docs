@@ -710,11 +710,12 @@ API リファレンス: [Map Endpoint Documentation](https://docs.firecrawl.dev/
 </div>
 
 <div id="allowing-firecrawl-to-scrape-your-website">
-  ### 自分のウェブサイトのスクレイピングを Firecrawl に許可する
+  ### Firecrawl に Web サイトのスクレイピングを許可する
 </div>
 
-* **User Agent**: ファイアウォールやセキュリティルールで `FirecrawlAgent` を許可してください。
-* **IP addresses**: Firecrawl は、外向き通信に固定の送信元 IP アドレスを使用していません。
+* **robots.txt**: Firecrawl はサイトをクロールする前に `robots.txt` を読み取り、user-agent トークン `FirecrawlAgent` 向けのルールと `*` 向けのルールを適用します。`robots.txt` で Firecrawl を許可または拒否する場合は `FirecrawlAgent` を指定してください。
+* **User agent**: `FirecrawlAgent` は、Firecrawl が `robots.txt` のルールを適用する際に照合するトークンです。フェッチ時の `User-Agent` ヘッダーも同じ値であるとは考えないでください。Firecrawl を許可リストに追加する場合は、`User-Agent` 文字列で照合するファイアウォールや WAF のルールではなく、`robots.txt` のディレクティブを使用してください。
+* **IP アドレス**: Firecrawl は送信元 IP アドレスを固定していません。
 
 <div id="allowing-your-application-to-call-the-firecrawl-api">
   ### アプリケーションから Firecrawl API への呼び出しを許可する

@@ -1,18 +1,20 @@
 ---
 title: 'Suivi des modifications'
-description: 'Détecter et surveiller les changements dans le contenu web entre les extractions'
+description: 'Détecter et surveiller les changements dans le contenu web entre les scrape'
 og:title: "Change Tracking | Firecrawl"
 sidebarTitle: "Suivi des modifications"
-og:description: "Détecter et surveiller les changements dans le contenu web entre les extractions"
+og:description: "Détecter et surveiller les changements dans le contenu web entre les scrape"
 ---
 
 ![Change Tracking](/images/launch-week/lw3d12.webp)
 
-Le suivi des modifications compare le contenu actuel d’une page à celui de la dernière fois où vous l’avez extraite. Ajoutez `changeTracking` à votre tableau `formats` pour détecter si une page est nouvelle, inchangée ou modifiée et, si vous le souhaitez, obtenir un diff structuré de ce qui a changé.
+Le suivi des modifications compare le contenu actuel d’une page à celui de la dernière fois où vous l’avez extraite. Ajoutez `suiviDesModifications` à votre tableau `formats` pour détecter si une page est nouvelle, inchangée ou modifiée et, si vous le souhaitez, obtenir un diff structuré de ce qui a changé.
 
 * Fonctionne avec `/scrape`, `/crawl` et `/batch/scrape`
-* Deux modes de diff : `git-diff` pour les changements au niveau des lignes, `json` pour la comparaison au niveau des champs
+* Deux modes de diff : `git-diff` pour les changements au niveau des lignes, `json` pour la comparaison au niveau des champs
 * Limité à votre équipe, et éventuellement limité à un tag que vous fournissez
+
+Le suivi des modifications est la primitive de diff appliquée à chaque scrape. Si vous souhaitez que Firecrawl exécute les vérifications selon une planification et vous notifie par webhook, e-mail ou Slack lorsque quelque chose change, utilisez le [monitoring](/fr/features/monitoring) plutôt que d’appeler `/scrape` vous-même à intervalles réguliers.
 
 <div id="how-it-works">
   ## Comment ça fonctionne
@@ -478,7 +480,7 @@ Utilisez le [scrape par lot](/fr/features/batch-scrape) pour surveiller un ensem
   ## Planification du suivi des modifications
 </div>
 
-Le suivi des modifications est particulièrement utile lorsque vous effectuez du scraping à intervalles réguliers. Vous pouvez l&#39;automatiser à l&#39;aide de cron, d&#39;ordonnanceurs cloud ou d&#39;outils de workflow.
+Le suivi des modifications est particulièrement utile lorsque vous effectuez du scraping à intervalles réguliers. Le [monitoring](/fr/features/monitoring) gère cette planification à votre place, jusqu&#39;à un intervalle de 5 minutes, et envoie des notifications par webhook, e-mail ou Slack. Utilisez les options ci-dessous si vous préférez gérer vous-même la planification à l&#39;aide de cron, de planificateurs cloud ou d&#39;outils de workflow.
 
 <div id="cron-job">
   ### Tâche cron

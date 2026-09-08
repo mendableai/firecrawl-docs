@@ -1,8 +1,16 @@
 ---
 title: "Obtenir l’état d’un crawl"
 openapi: '/fr/v0/api-reference/v0-openapi.json GET /crawl/status/{jobId}'
+canonical: "https://docs.firecrawl.dev/api-reference/endpoint/crawl-get"
 ---
+
+<Warning>
+  **Cette page documente l’API v0, dépréciée le 1er avril 2025.** Elle est conservée à
+  titre de référence historique et ne décrit pas le fonctionnement actuel de Firecrawl. Documentation
+  actuelle : [Obtenir l’état d’un crawl](/fr/api-reference/endpoint/crawl-get). Pour migrer une intégration v0 existante, consultez
+  [Migrer depuis la v0](/fr/migrating-from-v0).
+</Warning>
 
 Ce point de terminaison renvoie l’état d’un job de crawl. Si le job n’est pas terminé, la réponse inclut du contenu dans `partial_data`. Une fois le job terminé, le contenu est disponible dans `data`.
 
-**Nous vous recommandons de suivre vos jobs de crawl, car les résultats d’état peuvent expirer au bout de 24&nbsp;heures.**
+**Nous vous recommandons de suivre vos jobs de crawl, car les résultats d’état peuvent expirer au bout de 24 heures.**

@@ -4,7 +4,15 @@ description: "Transformez n’importe quelle URL en données propres"
 icon: "markdown"
 og:title: "Scrape | Firecrawl"
 og:description: "Transformez n’importe quelle URL en données propres"
+canonical: "https://docs.firecrawl.dev/features/scrape"
 ---
+
+<Warning>
+  **Cette page documente l’API v0, dépréciée le 1er avril 2025.** Elle est conservée à
+  titre de référence historique et ne décrit pas le fonctionnement actuel de Firecrawl.
+  Documentation à jour : [Scrape](/fr/features/scrape). Pour migrer une intégration v0 existante, consultez
+  [Migration depuis la v0](/fr/migrating-from-v0).
+</Warning>
 
 <div id="scraping-with-firecrawl">
   ## Scraping avec Firecrawl
@@ -69,75 +77,73 @@ Utilisé pour récupérer le contenu d’une URL.
 </div>
 
 <CodeGroup>
+  ```python Python
+  from firecrawl import FirecrawlApp
 
-```python Python
-from firecrawl import FirecrawlApp
+  app = FirecrawlApp(api_key="YOUR_API_KEY")
 
-app = FirecrawlApp(api_key="YOUR_API_KEY")
+  content = app.scrape_url("https://mendable.ai")
+  ```
 
-content = app.scrape_url("https://mendable.ai")
-```
+  ```JavaScript JavaScript
+  import { FirecrawlApp } from 'firecrawl-js';
 
-```JavaScript JavaScript
-import { FirecrawlApp } from 'firecrawl-js';
+  const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
 
-const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
+  const content = await app.scrapeUrl('https://mendable.ai');
+  ```
 
-const content = await app.scrapeUrl('https://mendable.ai');
-```
+  ```go Go
+  import (
+    "fmt"
+    "log"
 
-```go Go
-import (
-  "fmt"
-  "log"
+    "github.com/mendableai/firecrawl-go"
+  )
 
-  "github.com/mendableai/firecrawl-go"
-)
+  func main() {
+    app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
+    if err != nil {
+      log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+    }
 
-func main() {
-  app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
-  if err != nil {
-    log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
+    content, err := app.ScrapeURL("mendable.ai", nil)
+    if err != nil {
+      log.Fatalf("Failed to scrape URL: %v", err)
+    }
+    fmt.Println(content)
   }
+  ```
 
-  content, err := app.ScrapeURL("mendable.ai", nil)
-  if err != nil {
-    log.Fatalf("Failed to scrape URL: %v", err)
+  ```rust Rust
+  use firecrawl::FirecrawlApp;
+
+  #[tokio::main]
+  async fn main() {
+      // Initialiser FirecrawlApp avec la clé API
+      let api_key = "YOUR_API_KEY";
+      let api_url = "https://api.firecrawl.dev";
+      let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
+
+      // Récupérer le contenu de l’URL
+      let scrape_result = app.scrape_url("https://mendable.ai", None).await;
+
+      // Afficher le résultat
+    match scrape_result {
+      Ok(data) => println!("Résultat du scraping:\n{}", data["markdown"]),
+      Err(e) => eprintln!("Échec du scraping : {}", e),
+    }
   }
-  fmt.Println(content)
-}
-```
+  ```
 
-```rust Rust
-use firecrawl::FirecrawlApp;
-
-#[tokio::main]
-async fn main() {
-    // Initialiser FirecrawlApp avec la clé API
-    let api_key = "YOUR_API_KEY";
-    let api_url = "https://api.firecrawl.dev";
-    let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
-
-    // Récupérer le contenu de l’URL
-    let scrape_result = app.scrape_url("https://mendable.ai", None).await;
-
-    // Afficher le résultat
-  match scrape_result {
-    Ok(data) => println!("Résultat du scraping:\n{}", data["markdown"]),
-    Err(e) => eprintln!("Échec du scraping : {}", e),
-  }
-}
-```
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v0/scrape \
-    -H 'Content-Type: application/json' \
-    -H 'Authorization: Bearer YOUR_API_KEY' \
-    -d '{
-      "url": "https://mendable.ai"
-    }'
-```
-
+  ```bash cURL
+  curl -X POST https://api.firecrawl.dev/v0/scrape \
+      -H 'Content-Type: application/json' \
+      -H 'Authorization: Bearer YOUR_API_KEY' \
+      -d '{
+        "url": "https://mendable.ai"
+      }'
+  ```
 </CodeGroup>
 
 <div id="response">

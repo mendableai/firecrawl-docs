@@ -1,5 +1,12 @@
 ```bash cURL
+# まずスクレイピングして scrapeId を取得します
 # 開始にAPIキーは不要です — より高いrate limitsを利用するには -H "Authorization: Bearer $FIRECRAWL_API_KEY" を追加してください:
+RESPONSE=$(curl -s -X POST "https://api.firecrawl.dev/v2/scrape" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "formats": ["markdown"]}')
+
+SCRAPE_ID=$(echo $RESPONSE | jq -r '.data.metadata.scrapeId')
+
 curl -s -X POST "https://api.firecrawl.dev/v2/scrape/$SCRAPE_ID/interact" \
   -H "Content-Type: application/json" \
   -d '{

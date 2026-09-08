@@ -1,7 +1,15 @@
 ---
 title: 'Obter status do crawl'
 openapi: '/pt-BR/v0/api-reference/v0-openapi.json GET /crawl/status/{jobId}'
+canonical: "https://docs.firecrawl.dev/api-reference/endpoint/crawl-get"
 ---
+
+<Warning>
+  **Esta página documenta a API v0, descontinuada em 1º de abril de 2025.** Ela é mantida como
+  referência histórica e não descreve como o Firecrawl funciona atualmente. Documentação
+  atual: [Obter status do crawl](/pt-BR/api-reference/endpoint/crawl-get). Para migrar uma integração v0 existente, consulte
+  [Migrando da v0](/pt-BR/migrating-from-v0).
+</Warning>
 
 Este endpoint obtém o status de um job de crawl. Se o job não estiver concluído, a resposta incluirá conteúdo em `partial_data`. Quando o job for concluído, o conteúdo ficará disponível em `data`.
 

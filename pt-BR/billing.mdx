@@ -71,12 +71,14 @@ Alguns casos ainda geram cobrança mesmo quando nenhum documento é retornado. E
 | FIRE-1 (Agente)                        | Baseado em uso, pela navegação que o agente já realizou                                                                                            |
 | Cache miss de `lockdown`               | 1 crédito                                                                                                                                          |
 | Monitor check                          | Uma página que apresenta erro durante uma verificação é cobrada pelo valor base de 1 crédito por página                                            |
-| Sessões de Interact e Browser          | Cobradas por minuto de navegador de tempo de sessão, com mínimo de um minuto, independentemente de a sessão ter obtido ou não o resultado esperado |
+| Sessões de Interact e navegador        | Cobradas por minuto de navegador de tempo de sessão, com mínimo de um minuto, independentemente de a sessão ter obtido ou não o resultado esperado |
 
 Para jobs de **extração em lote** e **rastreamento**, os créditos são debitados de forma assíncrona à medida que cada página conclui o processamento, não quando o job é submetido. Isso significa que pode haver um atraso entre a submissão de um job e ver o custo total de créditos refletido na sua conta. Se um batch contiver muitas URLs ou se as páginas forem enfileiradas durante períodos de alto tráfego, os créditos podem continuar aparecendo minutos ou horas após a submissão. Realizar polling ou verificar o status do batch não consome créditos.
 
 <Note>
-  **Verificação prévia de créditos do rastreamento:** Antes de um job de rastreamento começar, o Firecrawl verifica se o saldo de créditos restante é suficiente para cobrir todo o parâmetro `limit` solicitado. Se o seu saldo for menor que `limit`, a request retorna um 402 mesmo que o rastreamento tivesse descoberto menos páginas. O `limit` padrão é **10.000**, portanto omiti-lo exige que 10.000 créditos estejam disponíveis antecipadamente. Para evitar isso, passe um `limit` explícito que corresponda ao número de páginas que você realmente pretende rastrear (por exemplo, `limit: 100`).
+  **Verificação prévia de créditos do rastreamento:** Quando você passa um `limit` explícito, o Firecrawl verifica se a request é permitida para aquela quantidade. Se for permitida, inclusive por meio de excedente, o limite não é reduzido ao seu saldo restante. Se for negada, o Firecrawl tenta reduzir o limite ao saldo restante e verifica novamente a request ajustada. Um 402 é retornado se nenhum limite positivo puder ser usado ou se a request ajustada for negada, inclusive por um limite de gastos por chave de API.
+
+  Omitir o `limit` não exige **10.000** créditos antecipadamente. A verificação inicial de créditos usa **1 crédito**; ela não reserva créditos para o rastreamento completo. Se a request for permitida, o limite padrão de **10.000** não é reduzido para caber no saldo, embora outras opções de rastreamento possam alterar o limite efetivo. As páginas são cobradas à medida que são processadas. Passe um `limit` explícito quando quiser definir um número máximo de páginas (por exemplo, `limit: 100`).
 </Note>
 
 <div id="tracking-your-usage">

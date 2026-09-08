@@ -36,9 +36,9 @@ import ExtractWithoutURLsCURL from "/snippets/pt-BR/v2/extract/without-urls/curl
   Estamos lançando [`/agent`](/pt-BR/features/agent) — o sucessor de `/extract`. Ele é mais rápido, mais confiável e não exige URLs. Basta descrever o que você precisa e deixar o agente de IA encontrar e extrair os dados para você. [Experimente o Agent agora →](/pt-BR/features/agent)
 </Note>
 
-O endpoint `/extract` simplifica a coleta de dados estruturados de qualquer número de URLs ou de domínios inteiros. Forneça uma lista de URLs, opcionalmente com curingas (por exemplo, `example.com/*`), e um prompt ou schema descrevendo as informações desejadas. O Firecrawl cuida dos detalhes de rastrear, analisar e agregar conjuntos de dados, grandes ou pequenos.
+O endpoint `/extract` simplifica a coleta de dados estruturados de qualquer número de URLs ou de domínios inteiros. Forneça uma lista de URLs, opcionalmente com curingas (por exemplo, `example.com/*`), e um prompt ou schema descrevendo as informações desejadas. O Firecrawl cuida dos detalhes de rastreamento, analisar e agregar conjuntos de dados, grandes ou pequenos.
 
-<Info>Simplificamos a cobrança: agora o Extract usa créditos, assim como os outros endpoints. Cada crédito equivale a 15 tokens.</Info>
+<Info>Simplificamos a cobrança: agora o Extract usa créditos, assim como os outros endpoints. Cada crédito equivale a 15 tokens. Veja [Cobrança](/pt-BR/billing) para entender como os créditos se relacionam com o preço dos planos; scrape e rastreamento são cobrados a 1 crédito por página ([Custo do Scrape](/pt-BR/features/scrape#scraping-a-url-with-firecrawl)).</Info>
 
 <div id="using-extract">
   ## Usando `/extract`
@@ -241,7 +241,7 @@ curl -X POST https://api.firecrawl.dev/v2/extract \
   ## Cobrança e acompanhamento de uso
 </div>
 
-Simplificamos a cobrança: o Extract agora usa créditos, assim como os demais endpoints. Cada crédito equivale a 15 tokens.
+Simplificamos a cobrança: o Extract agora usa créditos, assim como os demais endpoints. Cada crédito equivale a 15 tokens. Consulte [Cobrança](/pt-BR/billing) para saber como os créditos se relacionam com o preço dos planos; scrape e rastreamento são cobrados a 1 crédito por página ([Custo do Scrape](/pt-BR/features/scrape#scraping-a-url-with-firecrawl)).
 
 Você pode acompanhar o uso do Extract pelo [dashboard](https://www.firecrawl.dev/app/extract).
 

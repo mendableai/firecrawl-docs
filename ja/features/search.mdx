@@ -659,6 +659,20 @@ curl -X POST https://api.firecrawl.dev/v2/search \
 
 > Firecrawl API キーが必要な AI エージェントですか？ 自動オンボーディング手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) を参照してください。
 
+<div id="measured-performance">
+  ## 計測されたパフォーマンス
+</div>
+
+第三者の評価機関が、Firecrawl Search と他の検索 API を比較するベンチマークを実施しています。以下の数値は、各評価機関が公表した結果から、記載の日付時点のものをそのまま引用しています。
+
+| 指標                                     | 値                                                     | ソース                                                                            | 日付                            | n / ±                                                                                                                                         |
+| -------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent Score (Mean Relevant × Quality)  | 14.58、8 件中 2 位 (Mean Relevant 4.30/5、Quality 3.39/5)  | [AIMultiple — Agentic Search Benchmark](https://aimultiple.com/agentic-search) | 2025年12月 (ソースは2026年5月25日に更新)  | 95% 信頼区間 13.12–15.98、n=100 (AIMultiple 自身のオーガニック検索トラフィックから抽出した AI/LLM ドメインのクエリ、ブートストラップ再標本抽出 10,000 回) 。なお、この結果は他のドメインには一般化できないとソース側で注記されています |
+
+<Note>
+  これらは第三者による計測であり、それぞれ独自の harness、タスクセット、方法論に基づいています。そのため、相互の直接比較はできず、Firecrawl 自身のベンチマークとも比較できません。点推定でのランクは 8 件中 2 位ですが、ペアードブートストラップ検定では Brave、Exa、Parallel Search Pro との間に統計的に有意な差は見られませんでした。オープンソースの Developer Index 評価を含む Firecrawl 自身のファーストパーティベンチマークのページは [firecrawl.dev/benchmarks](https://www.firecrawl.dev/benchmarks) をご覧ください。
+</Note>
+
 <div id="search-feedback">
   ## 検索フィードバック
 </div>

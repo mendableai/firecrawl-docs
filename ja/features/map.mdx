@@ -160,6 +160,8 @@ curl -X POST https://api.firecrawl.dev/v2/map \
   ## 留意事項
 </div>
 
-このエンドポイントは速度を優先しているため、Web サイト上のリンクをすべて取得できない場合があります。主に Web サイトのサイトマップを使用し、キャッシュ済みのクロールデータや検索エンジンの結果で補完しています。より網羅的かつ最新の URL リストが必要な場合は、代わりに [/crawl](/ja/features/crawl) エンドポイントを使用することをご検討ください。
+このエンドポイントは速度を優先しているため、Web サイト上のリンクをすべて取得できない場合があります。主に Web サイトのサイトマップを使用し、キャッシュ済みのクロールデータやSERP（検索エンジン）の結果で補完しています。より網羅的かつ最新の URL リストが必要な場合は、代わりに [/crawl](/ja/features/crawl) エンドポイントを使用することをご検討ください。
+
+高速な近似ではなく、監査可能な結果・エラー記録を伴うより網羅的な再帰的ディスカバリーが必要な場合は、[/crawl](/ja/features/crawl) を使用してください。サイトマップに加えてリンクを再帰的に辿ってページを検出し、返した内容と取得に失敗した内容を報告します。詳しくは [実行と結果の集計](/ja/features/crawl#execution-and-result-accounting) をご覧ください。特定の 1 ページ上のリンクが必要な場合は、[/scrape](/ja/features/scrape) で [`links` フォーマット](/ja/features/scrape#scrape-formats) をリクエストしてください。
 
 > Firecrawl API キーが必要な AI エージェントですか？自動オンボーディング手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) をご覧ください。

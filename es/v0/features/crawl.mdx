@@ -4,7 +4,15 @@ description: 'Firecrawl puede explorar recursivamente los subdominios de una URL
 icon: 'spider'
 og:title: "Crawl | Firecrawl"
 og:description: "Firecrawl puede explorar recursivamente los subdominios de una URL y recopilar su contenido"
+canonical: "https://docs.firecrawl.dev/features/crawl"
 ---
+
+<Warning>
+  **Esta página documenta la API v0, obsoleta desde el 1 de abril de 2025.** Se mantiene como
+  referencia histórica y no describe el funcionamiento actual de Firecrawl. Documentación
+  actual: [Crawl](/es/features/crawl). Para migrar una integración existente de v0, consulta
+  [Migrar desde v0](/es/migrating-from-v0).
+</Warning>
 
 Firecrawl rastrea sitios web a fondo, garantizando una extracción de datos completa mientras gestiona infraestructuras web complejas. Así es como funciona:
 
@@ -12,7 +20,7 @@ Firecrawl rastrea sitios web a fondo, garantizando una extracción de datos comp
    Empieza con una URL específica, identifica enlaces revisando el sitemap y luego rastrea el sitio. Si no se encuentra un sitemap, rastrea el sitio siguiendo los enlaces.
 
 2. **Recorrido recursivo:**
-   Sigue cada enlace de forma recursiva para descubrir todas las subpáginas.
+   Sigue cada enlace de forma recursiva para descubrir todas las subpáginas. Esto describe únicamente el modelo de rastreo de v0. Para saber cómo el rastreo descubre y cubre las URL actualmente, consulta [Crawl](/es/features/crawl).
 
 3. **Extracción de contenido:**
    Recopila contenido de cada página visitada y maneja complejidades como el renderizado de JavaScript o los límites de tasa.
@@ -176,37 +184,35 @@ Con cURL, /crawl siempre devolverá un jobId que puedes usar para verificar el e
 Se usa para comprobar el estado de un trabajo de rastreo y obtener su resultado.
 
 <CodeGroup>
+  ```python Python
+  status = app.check_crawl_status(job_id)
+  ```
 
-```python Python
-status = app.check_crawl_status(job_id)
-```
+  ```js JavaScript
+  const status = await app.checkCrawlStatus(jobId);
+  ```
 
-```js JavaScript
-const status = await app.checkCrawlStatus(jobId);
-```
+  ```go Go
+  status, err := app.CheckCrawlStatus(jobId)
+  if err != nil {
+    log.Fatalf("Failed to check crawl status: %v", err)
+  }
+  ```
 
-```go Go
-status, err := app.CheckCrawlStatus(jobId)
-if err != nil {
-  log.Fatalf("Failed to check crawl status: %v", err)
-}
-```
+  ```rust Rust
+  let status = match app.check_crawl_status(jobId).await {
+      Ok(status) => status,
+      Err(e) => panic!("Failed to check crawl status: {:?}", e),
+  };
 
-```rust Rust
-let status = match app.check_crawl_status(jobId).await {
-    Ok(status) => status,
-    Err(e) => panic!("Failed to check crawl status: {:?}", e),
-};
+  println!("Crawl Status: {:?}", status);
+  ```
 
-println!("Crawl Status: {:?}", status);
-```
-
-```bash cURL
-curl -X GET https://api.firecrawl.dev/v0/crawl/status/1234-5678-9101 \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer YOUR_API_KEY'
-```
-
+  ```bash cURL
+  curl -X GET https://api.firecrawl.dev/v0/crawl/status/1234-5678-9101 \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY'
+  ```
 </CodeGroup>
 
 <div id="response">

@@ -713,8 +713,9 @@ curl -X POST https://api.firecrawl.dev/v2/map \
   ### 允许 Firecrawl 抓取你的网站
 </div>
 
-* **User Agent (用户代理)&#x20;**：请在防火墙或安全规则中允许 `FirecrawlAgent`。
-* **IP addresses (IP 地址)&#x20;**：Firecrawl 不使用固定的对外 IP 地址集合。
+* **robots.txt**：Firecrawl 在爬取站点前会读取 `robots.txt`，并同时应用针对 user-agent 令牌 `FirecrawlAgent` 编写的规则和针对 `*` 编写的规则。在 `robots.txt` 中使用 `FirecrawlAgent` 即可允许或禁止 Firecrawl。
+* **User agent**：`FirecrawlAgent` 是 Firecrawl 在应用 `robots.txt` 规则时所匹配的令牌，但不要假定实际抓取请求的 `User-Agent` 头也是这个值。请通过 `robots.txt` 指令将 Firecrawl 加入允许列表，而不要依赖匹配 `User-Agent` 字符串的防火墙或 WAF 规则。
+* **IP 地址**：Firecrawl 没有固定的出站 IP 范围。
 
 <div id="allowing-your-application-to-call-the-firecrawl-api">
   ### 允许你的应用调用 Firecrawl API
