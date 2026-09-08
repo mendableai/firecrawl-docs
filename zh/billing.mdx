@@ -42,14 +42,14 @@ Credits 是 Firecrawl 中的用量单位。每个方案都包含每月的 Credit
 
 某些抓取选项会在每页基础消耗之外额外增加额度：
 
-| Option                    | Additional Cost      | 描述                                                                                                                                                                              |
-| ------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| PDF parsing               | +1 credit / PDF page | 从 PDF 文档中提取内容                                                                                                                                                                   |
-| JSON 格式 (LLM 提取)          | +4 credits / page    | 使用 LLM 从页面中提取结构化 JSON 数据                                                                                                                                                        |
-| Prompt 注入检查               | +4 credits / page    | 面向 JSON 格式的可选 `checkPromptInjection` 防护检查 (请参见 [Prompt 注入检测](/zh/features/llm-extract#prompt-injection-detection)) 。如果检查执行后抓取失败，将收取 5 额度，而非抓取失败通常收取的 0 额度。这包括因检测到注入而被 403 封禁的抓取请求。 |
-| Zero Data Retention (ZDR) | +1 credit / page     | 确保除本次请求外不会持久保存任何数据 (参见 [Scrape ZDR](/zh/features/scrape#zero-data-retention-zdr))                                                                                                  |
+| 选项                    | Additional Cost      | 描述                                                                                                                                                                             |
+| ------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| PDF parsing               | +1 credit / PDF page | 从 PDF 文档中提取内容                                                                                                                                                                  |
+| JSON 格式 (LLM 提取)          | +4 credits / page    | 使用 LLM 从页面中提取结构化 JSON 数据                                                                                                                                                       |
+| Prompt 注入检查               | +4 credits / page    | 面向 JSON 格式的可选 `checkPromptInjection` 防护检查 (请参见 [Prompt 注入检测](/zh/features/llm-extract#prompt-injection-detection)) 。如果检查执行后抓取失败，将收取 5 额度。请参见 [何时收取额度](#when-credits-are-charged)。 |
+| 零数据保留 (ZDR) | +1 credit / page     | 确保除本次请求外不会持久保存任何数据 (参见 [Scrape ZDR](/zh/features/scrape#zero-data-retention-zdr))                                                                                                 |
 
-这些费用加成可以叠加。例如，同时使用 JSON 格式 和 Zero Data Retention 抓取同一页面时，每页将消耗 **1 + 4 + 1 = 6 额度**。由于 Crawl 和 Search 端点在内部会对每个页面调用 scrape，这些端点同样适用上述费用加成。
+这些费用加成可以叠加。例如，同时使用 JSON 格式 和 零数据保留 抓取同一页面时，每页将消耗 **1 + 4 + 1 = 6 额度**。由于 Crawl 和 Search 端点在内部会对每个页面调用 scrape，这些端点同样适用上述费用加成。
 
 对 `x.com` 和其他 X/Twitter URL 的请求会使用 Grok API，并采用单独的定价。请参见本页底部的 [X (x.com) 计费](#x-xcom-billing)。
 
@@ -57,7 +57,21 @@ Credits 是 Firecrawl 中的用量单位。每个方案都包含每月的 Credit
   ### 何时扣除额度
 </div>
 
-每当 Firecrawl 的基础设施处理一次请求时，都会扣除额度，即使目标站点返回 `403 Forbidden` 或 `404 Not Found` 这类 HTTP 错误状态码也是如此。这是因为无论目标站点的响应如何，抓取基础设施 (浏览器渲染、代理等) 都会被完全占用。你可以检查 API 响应中的 `metadata.statusCode` 字段来识别这些情况，并避免重试那些持续被封禁的 URL。
+决定是否扣费的是 Firecrawl 是否返回了文档，而不是目标站点是否返回了成功的 HTTP 状态码。
+
+* **Firecrawl 返回了文档：每页 1 额度**，再加上上文列出的各项选项成本。这也包括那些返回错误状态码 (例如 403 Forbidden 或 404 Not Found) 的页面。目标站点做出了响应，Firecrawl 捕获了该响应，并将其作为文档返回给你。请检查响应中的 `metadata.statusCode` 字段来识别这些情况，并停止重试那些持续被封禁的 URL。
+* **Firecrawl 未返回文档：0 额度。** 彻底失败的抓取不会计费，例如站点始终没有响应，或所有渲染尝试均失败。
+
+仍有少数情况即使没有返回文档也会扣费，它们对应 Firecrawl 在抓取结束前已经为你完成的工作。
+
+| 情况                    | 扣费内容                                    |
+| --------------------- | --------------------------------------- |
+| 威胁防护扫描                | 每个被扫描的 URL 2 额度，包括因扫描本身而被封禁的抓取          |
+| Prompt 注入检查           | 5 额度，只要 `checkPromptInjection` 防护已运行即扣费 |
+| FIRE-1 代理             | 按使用量计费，对应代理已完成的导航操作                     |
+| `lockdown` 缓存未命中      | 1 额度                                    |
+| 监控检查                  | 在检查过程中出错的页面按每页 1 额度的基础费用扣费              |
+| 交互 与 Browser 会话 | 按会话的浏览器分钟数计费，最低一分钟，无论会话是否取得你期望的结果       |
 
 对于 **batch scrape** 和 **crawl** 任务，额度是在每个页面完成处理后异步计费，而不是在提交作业时一次性计费。这意味着从提交作业到在你的账户中看到完整的额度消耗，中间可能会有一段延迟。如果一个批次包含大量 URL，或者在高流量时段页面被排队处理，额度可能会在提交后持续数分钟甚至数小时内才陆续显示。轮询或查看批次状态本身不会消耗额度。
 
@@ -82,7 +96,7 @@ Credits 是 Firecrawl 中的用量单位。每个方案都包含每月的 Credit
   ## 方案
 </div>
 
-订阅方案支持按月或按年计费。付费自助方案还可以使用按量付费。当方案额度用尽时，按量付费会补充额度。请参见[按量付费](#auto-reload)。
+订阅方案支持按月或按年计费。付费自助方案还可以使用按量付费。当方案额度用尽时，按量付费会补充额度。请参见[按量付费](#pay-as-you-go)。
 
 <div id="paid-plans">
   ### 付费方案
@@ -101,6 +115,21 @@ Credits 是 Firecrawl 中的用量单位。每个方案都包含每月的 Credit
 
 所有付费方案均支持**月度计费**或**年度计费**。年度计费相比月度计费享有折扣。各方案的最新价格请访问 [价格页面](https://www.firecrawl.dev/pricing)。
 
+<div id="free-plan">
+  ### Free 套餐
+</div>
+
+新账户默认使用 Free 套餐。它完全免费，也无需绑定银行卡。具体包含以下内容：
+
+* **每月 1,000 额度。** 配额在每个月度周期开始时重置，未用完的免费额度不会顺延到下一周期。
+* **2 个并发浏览器**，队列任务上限与付费自助套餐相同，均为 50,000 个。
+* `/scrape`、`/map` 和 `/search` 的**限流为每分钟 10 次请求**，`/crawl`、`/agent` 和 `/interact` 为**每分钟 2 次请求**。Batch scrape 与 scrape 共用限流额度，extract 与 agent 共用限流额度。完整表格请参见 [Rate Limits](/zh/rate-limits)。
+* **全部核心产品端点。** Scrape、crawl、map、search、extract、batch scrape、交互 和 monitor 在 Free 套餐上均可使用。部分团队管理和企业功能按团队而非按套餐开启，包括威胁防护、SIEM 日志记录和零数据保留 search。各套餐的额度成本相同，因此上方的[各端点额度成本](#credit-costs-per-endpoint)表格同样适用。
+
+Free 套餐不支持按量付费，因此月度配额用尽后，请求会返回 HTTP 402。请参见 [Running Out of Credits](#running-out-of-credits)。此外也不包含额度顺延、数据处理协议和 Slack 支持，仅提供社区支持。
+
+Scrape、Search 和 交互 还可以完全不使用 API 密钥，通过免密钥免费档位调用，其上限按每个 IP 地址每天计算，而非按额度配额计算。请参见 [Keyless (no API key)](/zh/rate-limits#keyless-no-api-key)。
+
 <div id="billing-cycle">
   ### 计费周期
 </div>
@@ -113,9 +142,11 @@ Credits 是 Firecrawl 中的用量单位。每个方案都包含每月的 Credit
   ### 并发浏览器
 </div>
 
-并发浏览器表示 Firecrawl 可以同时为你处理多少个网页。你的套餐决定了这一上限。如果超出该限制，额外任务会在队列中等待，直到有空闲的并发位。有关并发和 API 速率限制的完整说明，请参阅 [Rate Limits](/zh/rate-limits)。
+并发浏览器表示 Firecrawl 可以同时为你处理多少个网页。你的方案决定了这一上限。如果超出该限制，额外任务会在队列中等待，直到有空闲的并发位。有关并发和 API 速率限制的完整说明，请参阅 [Rate Limits](/zh/rate-limits)。
 
-## 按量付费 {#auto-reload}
+<a id="auto-reload" />
+
+## 按量付费 {#pay-as-you-go}
 
 当方案额度用尽时，按量付费可确保你的请求继续运行。它会自动为你的账户添加额度。
 
@@ -177,7 +208,7 @@ Credits 是 Firecrawl 中的用量单位。每个方案都包含每月的 Credit
 
 要在强制停止后恢复使用，你可以：
 
-1. 设置**每月按量付费限额**，以自动购买额度。请参见[按量付费](#auto-reload)。
+1. 设置**每月按量付费限额**，以自动购买额度。请参见[按量付费](#pay-as-you-go)。
 2. 手动升级到更高的方案
 3. 等待额度在下一个计费周期重置
 

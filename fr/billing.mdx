@@ -40,14 +40,14 @@ Les crédits sont l’unité d’utilisation dans Firecrawl. Chaque offre inclut
   ### Coûts en crédits supplémentaires pour les options d’extraction
 </div>
 
-Certaines options d’extraction ajoutent des crédits en plus du coût de base par page :
+Certaines options d’extraction ajoutent des crédits en plus du coût de base par page :
 
-| Option                             | Coût supplémentaire  | Description                                                                                                                                                                                                                                                                                                                                                                                             |
-| ---------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| PDF parsing                        | +1 crédit / page PDF | Extraire le contenu de documents PDF                                                                                                                                                                                                                                                                                                                                                                    |
-| format JSON (extraction LLM)       | +4 crédits / page    | Utiliser un LLM pour extraire des données JSON structurées à partir de la page                                                                                                                                                                                                                                                                                                                          |
-| Vérification d’injection de prompt | +4 crédits / page    | Protection facultative `checkPromptInjection` pour le format JSON (voir [Détection d’injection de prompt](/fr/features/llm-extract#prompt-injection-detection)). Si l’extraction échoue après l’exécution de la vérification, 5 crédits sont facturés au lieu des 0 habituels pour une extraction ayant échoué. Cela inclut une extraction bloquée avec un code 403 parce qu’une injection a été détectée. |
-| Zero Data Retention (ZDR)          | +1 crédit / page     | Garantit qu’aucune donnée n’est conservée au-delà de la requête (voir [Scrape ZDR](/fr/features/scrape#zero-data-retention-zdr))                                                                                                                                                                                                                                                                           |
+| Option                             | Coût supplémentaire  | Description                                                                                                                                                                                                                                                                                                            |
+| ---------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PDF parsing                        | +1 crédit / page PDF | Extraire le contenu de documents PDF                                                                                                                                                                                                                                                                                   |
+| format JSON (extraction LLM)       | +4 crédits / page    | Utiliser un LLM pour extraire des données JSON structurées à partir de la page                                                                                                                                                                                                                                         |
+| Vérification d’injection de prompt | +4 crédits / page    | Protection facultative `checkPromptInjection` pour le format JSON (voir [Détection d’injection de prompt](/fr/features/llm-extract#prompt-injection-detection)). Si l’extraction échoue après l’exécution de la vérification, 5 crédits sont facturés. Voir [Quand les crédits sont facturés](#when-credits-are-charged). |
+| Zero Data Retention (ZDR)          | +1 crédit / page     | Garantit qu’aucune donnée n’est conservée au-delà de la requête (voir [Scrape ZDR](/fr/features/scrape#zero-data-retention-zdr))                                                                                                                                                                                          |
 
 Ces modificateurs se cumulent. Par exemple, scraper une page avec à la fois le format JSON et Zero Data Retention coûte **1 + 4 + 1 = 6 crédits** par page. Ces mêmes modificateurs s’appliquent aux points de terminaison Crawl et Search, puisqu’ils utilisent `scrape` en interne pour chaque page.
 
@@ -57,12 +57,26 @@ Les requêtes vers `x.com` et les autres URL X/Twitter utilisent l’API Grok et
   ### Quand les crédits sont débités
 </div>
 
-Les crédits sont débités chaque fois que l’infrastructure de Firecrawl traite une requête, même si le site cible renvoie un code d’erreur HTTP tel que 403 Forbidden ou 404 Not Found. En effet, l’infrastructure de scraping (rendu du navigateur, proxy, etc.) est entièrement mobilisée, quelle que soit la réponse du site cible. Vous pouvez vérifier le champ `metadata.statusCode` dans la réponse de l’API pour détecter ces cas et éviter de relancer des URL systématiquement bloquées.
+Ce qui détermine la facturation, c’est le fait que Firecrawl ait renvoyé un document, et non que le site cible ait renvoyé un code d’état HTTP de succès.
+
+* **Firecrawl a renvoyé un document : 1 crédit par page**, plus les éventuels coûts d’options ci-dessus. Cela inclut les pages renvoyées avec un état d’erreur tel que 403 Forbidden ou 404 Not Found. La cible a répondu, Firecrawl a capturé cette réponse, et vous la récupérez sous forme de document. Vérifiez le champ `metadata.statusCode` dans la réponse pour repérer ces cas et cesser de relancer des URL systématiquement bloquées.
+* **Firecrawl n’a renvoyé aucun document : 0 crédit.** Un scrape qui échoue complètement, par exemple parce que le site n’a jamais répondu ou que toutes les tentatives de rendu ont échoué, n’est pas facturé.
+
+Quelques cas sont malgré tout facturés lorsqu’aucun document n’est renvoyé. Ils couvrent le travail que Firecrawl a déjà effectué pour vous avant la fin du scrape.
+
+| Cas                                   | Ce qui est facturé                                                                                            |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Scan de protection contre les menaces | 2 crédits par URL scannée, y compris pour un scrape que le scan lui-même a bloqué                             |
+| Vérification d’injection de prompt    | 5 crédits, dès que la protection `checkPromptInjection` a été exécutée                                        |
+| FIRE-1 agent                          | À l’usage, pour la navigation déjà effectuée par l’agent                                                      |
+| Défaut de cache `lockdown`            | 1 crédit                                                                                                      |
+| Vérification du monitor               | Une page en erreur pendant une vérification est facturée au tarif de base de 1 crédit par page                |
+| Sessions Interact et Browser          | Facturées par minute de navigateur de session, avec un minimum d’une minute, que la session ait abouti ou non |
 
 Pour les tâches de **batch scrape** et de **crawl**, les crédits sont facturés de manière asynchrone à mesure que chaque page est traitée, et non au moment où la tâche est soumise. Cela signifie qu’il peut y avoir un délai entre l’envoi d’une tâche et le moment où le coût total en crédits apparaît sur votre compte. Si un batch contient de nombreuses URL ou si des pages sont mises en file d’attente pendant des périodes de fort trafic, des crédits peuvent continuer à être débités et à apparaître minutes ou heures après la soumission. Le polling ou la consultation du statut d’un batch ne consomment pas de crédits.
 
 <Note>
-  **Vérification préalable des crédits pour le crawl :** Avant qu’une tâche de crawl ne démarre, Firecrawl vérifie que votre solde de crédits restant peut couvrir l’intégralité du paramètre `limit` demandé. Si votre solde est inférieur à `limit`, la requête renvoie un 402, même si le crawl aurait découvert moins de pages. La valeur par défaut de `limit` est **10,000** ; l’omettre exige donc de disposer de 10,000 crédits à l’avance. Pour éviter cela, transmettez un `limit` explicite correspondant au nombre de pages que vous avez réellement l’intention de parcourir (par exemple, `limit: 100`).
+  **Vérification préalable des crédits pour le crawl :** Avant qu’une tâche de crawl ne démarre, Firecrawl vérifie que votre solde de crédits restant peut couvrir l’intégralité du paramètre `limit` demandé. Si votre solde est inférieur à `limit`, la requête renvoie un 402, même si le crawl aurait découvert moins de pages. La valeur par défaut de `limit` est **10,000** ; l’omettre exige donc de disposer de 10,000 crédits à l’avance. Pour éviter cela, transmettez un `limit` explicite correspondant au nombre de pages que vous avez réellement l’intention de parcourir (par exemple, `limit: 100`).
 </Note>
 
 <div id="tracking-your-usage">
@@ -82,7 +96,7 @@ Vous pouvez suivre votre consommation de crédits de deux manières :
   ## Offres
 </div>
 
-Les offres d’abonnement sont facturées au mois ou à l’année. Les offres payantes en libre-service peuvent aussi utiliser le paiement à l’usage. Le paiement à l’usage ajoute des crédits lorsque le quota de votre offre est épuisé. Consultez [Paiement à l’usage](#auto-reload).
+Les offres d’abonnement sont facturées au mois ou à l’année. Les offres payantes en libre-service peuvent aussi utiliser le paiement à l’usage. Le paiement à l’usage ajoute des crédits lorsque le quota de votre offre est épuisé. Consultez [Paiement à l’usage](#pay-as-you-go).
 
 <div id="paid-plans">
   ### Offres payantes
@@ -101,6 +115,21 @@ Les offres d’abonnement sont facturées au mois ou à l’année. Les offres p
 
 Toutes les offres payantes sont disponibles avec une facturation **mensuelle** ou **annuelle**. La facturation annuelle propose une remise par rapport au paiement mensuel. Pour les tarifs actuels de chaque offre, consultez la [page de tarification](https://www.firecrawl.dev/pricing).
 
+<div id="free-plan">
+  ### Offre Free
+</div>
+
+Les nouveaux comptes démarrent sur l&#39;offre Free. Elle est gratuite et ne nécessite aucune carte bancaire. Voici ce qu&#39;elle inclut :
+
+* **1 000 crédits par mois.** Le quota est réinitialisé au début de chaque cycle mensuel. Les crédits gratuits non utilisés ne sont pas reportés.
+* **2 navigateurs concurrents**, avec le même maximum de 50 000 tâches en file d&#39;attente que les offres payantes en libre-service.
+* **Des limites de débit de 10 requêtes par minute** sur `/scrape`, `/map` et `/search`, et de **2 requêtes par minute** sur `/crawl`, `/agent` et `/interact`. Le batch scrape partage la limite du scrape et extract partage celle de l&#39;agent. Consultez les [limites de débit](/fr/rate-limits) pour le tableau complet.
+* **Tous les points de terminaison principaux du produit.** Scrape, crawl, map, search, extract, batch scrape, interact et monitor fonctionnent tous avec l&#39;offre Free. Certaines fonctionnalités d&#39;administration d&#39;équipe et d&#39;entreprise sont activées par équipe plutôt que par offre, notamment la protection contre les menaces, la journalisation SIEM et la recherche zero data retention. Les coûts en crédits sont identiques sur toutes les offres : le tableau des [coûts en crédits par point de terminaison](#credit-costs-per-endpoint) ci-dessus s&#39;applique donc tel quel.
+
+L&#39;offre Free n&#39;inclut pas le paiement à l&#39;usage : les requêtes renvoient donc un HTTP 402 dès que le quota mensuel est épuisé. Consultez [Épuisement des crédits](#running-out-of-credits). Elle n&#39;inclut pas non plus le report de crédits, d&#39;accord de traitement des données, ni de support Slack. Le support est assuré par la communauté.
+
+Scrape, Search et Interact fonctionnent également sans aucune API key, via le niveau gratuit sans clé, plafonné par adresse IP et par jour plutôt que par un quota de crédits. Consultez [Sans clé (aucune API key)](/fr/rate-limits#keyless-no-api-key).
+
 <div id="billing-cycle">
   ### Cycle de facturation
 </div>
@@ -110,12 +139,14 @@ Toutes les offres payantes sont disponibles avec une facturation **mensuelle** o
 * **Par défaut, les crédits d’offre inutilisés ne sont pas reportés** : votre quota mensuel est réinitialisé chaque mois. **Les offres annuelles Scale reportent les crédits d’offre inutilisés pendant 1 mois**, et **les offres annuelles Enterprise les reportent pendant 2 mois**.
 
 <div id="concurrent-browsers">
-  ### Navigateurs simultanés
+  ### Navigateurs concurrents
 </div>
 
-Les navigateurs simultanés correspondent au nombre de pages web que Firecrawl peut traiter en parallèle pour vous. Votre offre détermine cette limite. Si vous la dépassez, les tâches supplémentaires attendent dans une file d’attente jusqu’à ce qu’un créneau se libère. Consultez [Limites de débit](/fr/rate-limits) pour tous les détails sur la concurrence et les limites de débit de l’API.
+Les navigateurs concurrents correspondent au nombre de pages web que Firecrawl peut traiter en parallèle pour vous. Votre offre détermine cette limite. Si vous la dépassez, les tâches supplémentaires attendent dans une file d’attente jusqu’à ce qu’un créneau se libère. Consultez [Limites de débit](/fr/rate-limits) pour tous les détails sur la concurrence et les limites de débit de l’API.
 
-## Paiement à l’usage {#auto-reload}
+<a id="auto-reload" />
+
+## Paiement à l’usage {#pay-as-you-go}
 
 Le paiement à l’usage permet à vos requêtes de continuer à s&#39;exécuter lorsque les crédits de votre offre sont épuisés. Il ajoute automatiquement des crédits à votre compte.
 
@@ -177,7 +208,7 @@ Si le paiement à l&#39;usage est activé, nous ajoutons un nouvel incrément de
 
 Pour reprendre l&#39;utilisation après un arrêt forcé, vous pouvez :
 
-1. Définir une **limite mensuelle de paiement à l&#39;usage** pour acheter des crédits automatiquement. Voir [Paiement à l&#39;usage](#auto-reload).
+1. Définir une **limite mensuelle de paiement à l&#39;usage** pour acheter des crédits automatiquement. Voir [Paiement à l&#39;usage](#pay-as-you-go).
 2. Passer manuellement à une offre supérieure
 3. Attendre la réinitialisation de vos crédits au prochain cycle de facturation
 

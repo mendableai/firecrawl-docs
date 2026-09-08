@@ -4,7 +4,15 @@ description: 'Firecrawl can recursively search through a urls subdomains, and ga
 icon: 'spider'
 og:title: "Crawl | Firecrawl"
 og:description: "Firecrawl can recursively search through a urls subdomains, and gather the content"
+canonical: "https://docs.firecrawl.dev/features/crawl"
 ---
+
+<Warning>
+  **This page documents the v0 API, deprecated on April 1, 2025.** It is kept for
+  historical reference and does not describe how Firecrawl works today. Current
+  documentation: [Crawl](/features/crawl). To move an existing v0 integration, see
+  [Migrating from v0](/migrating-from-v0).
+</Warning>
 
 Firecrawl thoroughly crawls websites, ensuring comprehensive data extraction while handling complex web infrastructure. Here's how it works:
 
@@ -12,7 +20,7 @@ Firecrawl thoroughly crawls websites, ensuring comprehensive data extraction whi
    Begins with a specified URL, identifying links by looking at the sitemap and then crawling the website. If no sitemap is found, it will crawl the website following the links.
 
 2. **Recursive Traversal:**
-   Recursively follows each link to uncover all subpages.
+   Recursively follows each link to uncover all subpages. This describes the v0 crawl model only. For how crawl discovers and covers URLs today, see [Crawl](/features/crawl).
 
 3. **Content Scraping:**
    Gathers content from every visited page while handling any complexities like JavaScript rendering or rate limits.

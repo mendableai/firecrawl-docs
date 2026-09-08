@@ -22,11 +22,20 @@ Choose how the connection will authenticate. Signing in and adding an API key ar
 
 ## Add an API key
 
-[Create a Firecrawl API key](https://www.firecrawl.dev/app/api-keys), then send it as a bearer token:
+[Create a Firecrawl API key](https://www.firecrawl.dev/app/api-keys), then add it as a bearer token in your client config:
 
-```text
-URL: https://mcp.firecrawl.dev/v2/mcp
-Authorization: Bearer <FIRECRAWL_API_KEY>
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
 ```
 
 Configure the key through an environment variable or your client's secret storage, never in the MCP URL.

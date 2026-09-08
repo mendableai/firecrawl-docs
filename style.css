@@ -297,7 +297,7 @@ nav ul li:has(a[href="https://github.com/firecrawl/firecrawl"])
     min-width: 0;
     overflow: hidden;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
     padding: 14px 10px;
     border: 0;
@@ -305,7 +305,7 @@ nav ul li:has(a[href="https://github.com/firecrawl/firecrawl"])
     background: transparent;
     color: var(--fc-text);
     cursor: pointer;
-    text-align: left;
+    text-align: center;
     transition: background-color 160ms ease;
 }
 
@@ -336,9 +336,7 @@ nav ul li:has(a[href="https://github.com/firecrawl/firecrawl"])
     width: 26px;
     height: 26px;
     flex: none;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
+    object-fit: contain;
 }
 
 .dark .fc-client-icon-mono {

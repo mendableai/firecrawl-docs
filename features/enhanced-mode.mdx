@@ -39,8 +39,16 @@ Set the `proxy` parameter to choose a proxy strategy. The following example uses
 
 </CodeGroup>
 
+## When Firecrawl escalates
+
+Firecrawl starts on basic proxies. If the target responds with **401, 403, or 429**, Firecrawl treats that as a sign the proxy was not good enough and retries the same URL through enhanced proxies. Other status codes, including 404 and 5xx, do not trigger an escalation, because a different proxy would not change the answer.
+
+The escalation happens at most once per request. Once a request is already on enhanced proxies, a further 401, 403, or 429 is returned to you as the result rather than retried again.
+
+You do not need to detect this or handle it. The retry is part of the same request and the response you receive is the final one.
+
 <Info>
-Enhanced proxy requests now cost the same as basic requests — **1 credit per request**. There is no longer any extra charge when `auto` escalates to an enhanced retry.
+Enhanced proxy requests cost the same as basic requests — **1 credit per request**. An escalated retry is not charged separately, so a request that starts on basic and finishes on enhanced still costs 1 credit.
 </Info>
 
 > Are you an AI agent that needs a Firecrawl API key? See [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) for automated onboarding instructions.

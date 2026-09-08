@@ -38,7 +38,7 @@ Certain scrape options add credits on top of the base cost per page:
 |--------|----------------|-------------|
 | PDF parsing | +1 credit / PDF page | Extract content from PDF documents |
 | JSON format (LLM extraction) | +4 credits / page | Use an LLM to extract structured JSON data from the page |
-| Prompt injection check | +4 credits / page | Opt-in `checkPromptInjection` guard for JSON format (see [Prompt injection detection](/features/llm-extract#prompt-injection-detection)). If the scrape fails after the check has run, 5 credits are billed instead of the usual 0 for a failed scrape. That includes a scrape blocked with a 403 because an injection was detected. |
+| Prompt injection check | +4 credits / page | Opt-in `checkPromptInjection` guard for JSON format (see [Prompt injection detection](/features/llm-extract#prompt-injection-detection)). If the scrape fails after the check has run, 5 credits are billed. See [When credits are charged](#when-credits-are-charged). |
 | Zero Data Retention (ZDR) | +1 credit / page | Ensures no data is persisted beyond the request (see [Scrape ZDR](/features/scrape#zero-data-retention-zdr)) |
 
 These modifiers stack. For example, scraping a page with both JSON format and Zero Data Retention costs **1 + 4 + 1 = 6 credits** per page. These same modifiers apply to the Crawl and Search endpoints since they use scrape internally for each page.
@@ -47,12 +47,28 @@ Requests to `x.com` and other X/Twitter URLs use the Grok API and have separate 
 
 ### When credits are charged
 
-Credits are charged whenever Firecrawl's infrastructure processes a request, even if the target site returns an HTTP error status code such as 403 Forbidden or 404 Not Found. This is because the scraping infrastructure (browser rendering, proxy, etc.) is fully utilized regardless of the target site's response. You can check the `metadata.statusCode` field in the API response to detect these cases and avoid retrying URLs that are consistently blocked.
+What decides the charge is whether Firecrawl returned a document, not whether the target site returned a successful HTTP status code.
+
+- **Firecrawl returned a document: 1 credit per page**, plus any of the option costs above. This includes pages that come back with an error status such as 403 Forbidden or 404 Not Found. The target responded, Firecrawl captured that response, and you get it back as a document. Check the `metadata.statusCode` field in the response to spot these cases and stop retrying URLs that are consistently blocked.
+- **Firecrawl returned no document: 0 credits.** A scrape that fails outright, for example because the site never responded or every rendering attempt failed, is not charged.
+
+A few cases still charge when no document comes back. They cover work that Firecrawl already performed on your behalf before the scrape ended.
+
+| Case | What is charged |
+|------|-----------------|
+| Threat protection scan | 2 credits per scanned URL, including a scrape that the scan itself blocked |
+| Prompt injection check | 5 credits, once the `checkPromptInjection` guard has run |
+| FIRE-1 agent | Usage-based, for the navigation the agent already did |
+| `lockdown` cache miss | 1 credit |
+| Monitor check | A page that errors during a check is charged the base 1 credit per page |
+| Interact and Browser sessions | Charged per browser minute of session time, with a one-minute minimum, whether or not the session got what you wanted |
 
 For **batch scrape** and **crawl** jobs, credits are billed asynchronously as each page completes processing, not when the job is submitted. This means there can be a delay between submitting a job and seeing the full credit cost reflected on your account. If a batch contains many URLs or pages are queued during high-traffic periods, credits may continue to appear minutes or hours after submission. Polling or checking batch status does not consume credits.
 
 <Note>
-**Crawl pre-flight credit check:** Before a crawl job starts, Firecrawl verifies that your remaining credit balance can cover the full `limit` parameter you've requested. If your balance is lower than `limit`, the request returns a 402 even if the crawl would have discovered fewer pages. The default `limit` is **10,000**, so omitting it requires 10,000 credits available up front. To avoid this, pass an explicit `limit` that matches the number of pages you actually intend to crawl (e.g., `limit: 100`).
+**Crawl pre-flight credit check:** When you pass an explicit `limit`, Firecrawl checks whether the request is allowed for that amount. If it is allowed, including through overage, the limit is not reduced to your remaining balance. If it is denied, Firecrawl attempts to lower the limit to the remaining balance and checks the adjusted request again. A 402 is returned if no positive limit can be used or the adjusted request is denied, including by a per-API-key spend limit.
+
+Omitting `limit` does not require **10,000** credits up front. The initial credit check uses **1 credit**; it does not reserve credits for the full crawl. If the request is allowed, the default limit of **10,000** is not reduced to fit the balance, although other crawl options can change the effective limit. Pages are billed as they are processed. Pass an explicit `limit` when you want to set a maximum number of pages (e.g., `limit: 100`).
 </Note>
 
 ### Tracking your usage
@@ -68,7 +84,7 @@ We are actively working on improvements to make credit usage easier to understan
 
 ## Plans
 
-Subscription plans bill monthly or yearly. Paid self-serve plans can also use pay-as-you-go. Pay-as-you-go adds credits when your plan allotment runs out. See [Pay-as-you-go](#auto-reload).
+Subscription plans bill monthly or yearly. Paid self-serve plans can also use pay-as-you-go. Pay-as-you-go adds credits when your plan allotment runs out. See [Pay-as-you-go](#pay-as-you-go).
 
 ### Paid plans
 
@@ -85,6 +101,19 @@ For needs beyond Scale, Firecrawl offers **Enterprise** plans with custom credit
 
 All paid plans are available with **monthly** or **yearly** billing. Yearly billing offers a discount compared to paying month-to-month. For current pricing on each plan, visit the [pricing page](https://www.firecrawl.dev/pricing).
 
+### Free plan
+
+New accounts start on the free plan. It costs nothing and does not need a card. Here is what it includes:
+
+- **1,000 credits per month.** The allotment resets at the start of each monthly cycle. Unused free credits do not roll over.
+- **2 concurrent browsers**, with the same 50,000 maximum queued jobs as the paid self-serve plans.
+- **Rate limits of 10 requests per minute** on `/scrape`, `/map` and `/search`, and **2 requests per minute** on `/crawl`, `/agent` and `/interact`. Batch scrape shares the scrape limit and extract shares the agent limit. See [Rate Limits](/rate-limits) for the full table.
+- **Every core product endpoint.** Scrape, crawl, map, search, extract, batch scrape, interact and monitor all work on the free plan. Some team administration and enterprise features are enabled per team rather than by plan, including threat protection, SIEM logging and zero data retention search. Credit costs are the same on every plan, so the [credit costs per endpoint](#credit-costs-per-endpoint) table above applies unchanged.
+
+The free plan does not include pay-as-you-go, so requests return an HTTP 402 once the monthly allotment runs out. See [Running Out of Credits](#running-out-of-credits). It also does not include credit rollover, a Data Processing Agreement, or Slack support. Support is community support.
+
+Scrape, Search and Interact also work with no API key at all, through the keyless free tier, which is capped per IP address per day rather than by a credit allotment. See [Keyless (no API key)](/rate-limits#keyless-no-api-key).
+
 ### Billing cycle
 
 - **Monthly plans**: Credits reset on your monthly renewal date
@@ -95,7 +124,9 @@ All paid plans are available with **monthly** or **yearly** billing. Yearly bill
 
 Concurrent browsers represent how many web pages Firecrawl can process for you simultaneously. Your plan determines this limit. If you exceed it, additional jobs wait in a queue until a slot opens. See [Rate Limits](/rate-limits) for full details on concurrency and API rate limits.
 
-## Pay-as-you-go {#auto-reload}
+<a id="auto-reload"></a>
+
+## Pay-as-you-go {#pay-as-you-go}
 
 Pay-as-you-go keeps your requests running when your plan credits run out. It adds credits to your account automatically.
 
@@ -149,7 +180,7 @@ If pay-as-you-go is on, we add a new 5 USD increment of credits when your balanc
 
 To resume usage after a hard stop, you can:
 
-1. Set a **Monthly pay-as-you-go limit** to buy credits automatically. See [Pay-as-you-go](#auto-reload).
+1. Set a **Monthly pay-as-you-go limit** to buy credits automatically. See [Pay-as-you-go](#pay-as-you-go).
 2. Upgrade to a higher plan manually
 3. Wait for your credits to reset at the next billing cycle
 

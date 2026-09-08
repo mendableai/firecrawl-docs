@@ -35,11 +35,20 @@ import { McpClientSelector } from "/snippets/shared/agent-first-onboarding.jsx";
   ## APIキーを追加する
 </div>
 
-[Firecrawl APIキーを作成](https://www.firecrawl.dev/app/api-keys)し、同じエンドポイントにBearerトークンとして送信します。
+[Firecrawl APIキーを作成](https://www.firecrawl.dev/app/api-keys)し、クライアント設定内の同じエンドポイントにBearerトークンとして追加します。
 
-```text
-URL: https://mcp.firecrawl.dev/v2/mcp
-Authorization: Bearer <FIRECRAWL_API_KEY>
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
 ```
 
 <div id="verify-your-connection">
