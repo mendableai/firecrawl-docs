@@ -1,0 +1,36 @@
+name: Docs checks
+
+# No `branches` filter. A stacked pull request targets the branch of the pull
+# request below it, not main, so a `branches: [main]` filter would skip every
+# stacked change and only run on the last one in a stack.
+on:
+  pull_request:
+
+# Read-only. This workflow runs code from the pull request branch, so it is
+# `pull_request` rather than `pull_request_target` and it is given no write
+# scope and no secrets.
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Locale literals and extraction-hostile markdown
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the pull request branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Keep API literals untranslated
+        run: sh scripts/check-locale-api-literals.sh
+
+      - name: Keep published samples runnable
+        run: sh scripts/check-extraction-hostile-markdown.sh

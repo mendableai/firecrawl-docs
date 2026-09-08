@@ -41,7 +41,7 @@ Usando o formato `changeTracking`, você pode monitorar mudanças em um site e r
   ### Uso básico
 </div>
 
-Para usar o rastreioDeMudanças no SDK JavaScript, inclua `'changeTracking'` no array de formatos ao fazer o scraping de uma URL:
+Para usar o rastreio de mudanças no SDK JavaScript, inclua `'changeTracking'` no array de formatos ao fazer o scraping de uma URL:
 
 ```javascript
 const app = new FirecrawlApp({ apiKey: 'sua-api-key' });
@@ -187,7 +187,7 @@ interface ScrapeParams {
   ### Uso básico
 </div>
 
-Para usar o rastreioDeMudanças no SDK Python, inclua &#39;changeTracking&#39; na lista de formatos ao extrair dados de uma URL:
+Para usar o rastreio de mudanças no SDK Python, inclua &#39;changeTracking&#39; na lista de formatos ao extrair dados de uma URL:
 
 ```python
 from firecrawl import FirecrawlApp, ChangeTrackingOptions
@@ -256,10 +256,10 @@ class ChangeTrackingData(pydantic.BaseModel):
 ```
 
 <div id="change-tracking-modes">
-  ## Modos de rastreioDeMudanças
+  ## Modos de rastreio de mudanças
 </div>
 
-O recurso de rastreioDeMudanças oferece suporte a dois modos:
+O recurso de rastreio de mudanças oferece suporte a dois modos:
 
 <div id="git-diff-mode">
   ### Modo Git-Diff
@@ -308,20 +308,20 @@ Para usar o modo JSON, você precisa fornecer um esquema que defina os campos qu
   ## Fatos importantes
 </div>
 
-Aqui estão alguns pontos importantes ao usar o recurso de rastreioDeMudanças:
+Aqui estão alguns pontos importantes ao usar o recurso de rastreio de mudanças:
 
 - **Método de comparação**: As coletas (scrapes) são sempre comparadas pela resposta em markdown.
-  - O formato `markdown` também deve ser especificado ao usar o formato `rastreioDeMudanças`. Outros formatos podem ser especificados adicionalmente.
+  - O formato `markdown` também deve ser especificado ao usar o formato `changeTracking`. Outros formatos podem ser especificados adicionalmente.
   - O algoritmo de comparação é resistente a mudanças em espaços em branco e na ordem do conteúdo. URLs de origem de iframes são atualmente ignoradas para resistir a captchas e antibots com URLs aleatórias.
 
 - **Correspondência com coletas anteriores**: As coletas anteriores usadas para comparação são atualmente correspondidas pela URL de origem, pelo ID da equipe, pelo formato `markdown` e pelo parâmetro `tag`.
   - Para uma comparação eficaz, a URL de entrada deve ser exatamente a mesma da solicitação anterior para o mesmo conteúdo.
-  - Rastear as mesmas URLs com `includePaths`/`excludePaths` diferentes pode gerar inconsistências ao usar `rastreioDeMudanças`.
-  - Fazer scrape das mesmas URLs com `includeTags`/`excludeTags`/`onlyMainContent` diferentes pode gerar inconsistências ao usar `rastreioDeMudanças`.
-  - As páginas também serão comparadas com coletas anteriores que tenham apenas o formato `markdown`, sem o formato `rastreioDeMudanças`.
+  - Rastear as mesmas URLs com `includePaths`/`excludePaths` diferentes pode gerar inconsistências ao usar `changeTracking`.
+  - Fazer scrape das mesmas URLs com `includeTags`/`excludeTags`/`onlyMainContent` diferentes pode gerar inconsistências ao usar `changeTracking`.
+  - As páginas também serão comparadas com coletas anteriores que tenham apenas o formato `markdown`, sem o formato `changeTracking`.
   - As comparações são restritas à sua equipe. Se você fizer o scrape de uma URL pela primeira vez com sua chave de API, o `changeStatus` será sempre `new`, mesmo que outros usuários do Firecrawl já a tenham coletado antes.
 
-- **Tratamento de erros**: Recomenda-se monitorar o campo `warning` do documento resultante e tratar a possível ausência do objeto `rastreioDeMudanças` na resposta.
+- **Tratamento de erros**: Recomenda-se monitorar o campo `warning` do documento resultante e tratar a possível ausência do objeto `changeTracking` na resposta.
   - Isso pode ocorrer quando a busca no banco de dados pelo scrape anterior para comparação excede o tempo limite.
 
 <div id="examples">
@@ -450,4 +450,4 @@ if result.changeTracking.changeStatus == 'changed':
   ## Cobrança
 </div>
 
-Usar a funcionalidade básica de rastreioDeMudanças e o modo `git-diff` não tem custo adicional. Porém, se você usar o modo `json` para comparação de dados estruturados, a raspagem da página custará 5 créditos por página.
+Usar a funcionalidade básica de rastreio de mudanças e o modo `git-diff` não tem custo adicional. Porém, se você usar o modo `json` para comparação de dados estruturados, a raspagem da página custará 5 créditos por página.

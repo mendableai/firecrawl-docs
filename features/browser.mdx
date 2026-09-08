@@ -342,6 +342,8 @@ Every session exposes a CDP WebSocket URL. The execute API and `--bash` flag cov
 
 ```bash agent-browser
 # Use the cdpUrl from the session response
+CDP_URL=YOUR_SESSION_CDP_URL
+
 agent-browser open https://example.com --cdp "$CDP_URL"
 agent-browser snapshot --cdp "$CDP_URL"
 ```

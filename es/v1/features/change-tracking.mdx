@@ -14,14 +14,14 @@ El seguimiento de cambios te permite supervisar y detectar modificaciones en el 
   ## Descripción general
 </div>
 
-El seguimientoDeCambios te permite:
+El seguimiento de cambios te permite:
 
 - Detectar si una página web ha cambiado desde el último scrape
 - Ver los cambios específicos entre scrapes
 - Obtener datos estructurados sobre lo que ha cambiado
 - Controlar la visibilidad de los cambios
 
-Usando el formato `seguimientoDeCambios`, puedes supervisar cambios en un sitio web y recibir información sobre:
+Usando el formato `changeTracking`, puedes supervisar cambios en un sitio web y recibir información sobre:
 
 - `previousScrapeAt`: La marca de tiempo del scrape anterior con el que se compara la página actual (`null` si no hubo scrape previo)
 - `changeStatus`: El resultado de la comparación entre las dos versiones de la página
@@ -41,7 +41,7 @@ Usando el formato `seguimientoDeCambios`, puedes supervisar cambios en un sitio 
   ### Uso básico
 </div>
 
-Para usar el seguimientoDeCambios en el SDK de JavaScript, incluye `'changeTracking'` en el array de formatos al hacer scraping de una URL:
+Para usar el seguimiento de cambios en el SDK de JavaScript, incluye `'changeTracking'` en el array de formatos al hacer scraping de una URL:
 
 ```javascript
 const app = new FirecrawlApp({ apiKey: 'your-api-key' });
@@ -187,7 +187,7 @@ interface ScrapeParams {
   ### Uso básico
 </div>
 
-Para usar el seguimientoDeCambios en el SDK de Python, incluye &#39;changeTracking&#39; en la lista de formatos al extraer una URL:
+Para usar el seguimiento de cambios en el SDK de Python, incluye &#39;changeTracking&#39; en la lista de formatos al extraer una URL:
 
 ```python
 from firecrawl import FirecrawlApp, ChangeTrackingOptions
@@ -256,10 +256,10 @@ class ChangeTrackingData(pydantic.BaseModel):
 ```
 
 <div id="change-tracking-modes">
-  ## Modos de seguimientoDeCambios
+  ## Modos de seguimiento de cambios
 </div>
 
-La función de seguimientoDeCambios admite dos modos:
+La función de seguimiento de cambios admite dos modos:
 
 <div id="git-diff-mode">
   ### Modo Git-Diff
@@ -336,7 +336,7 @@ Estos son algunos detalles importantes que debes conocer al usar la función de 
 // Solicitud
 {
     "url": "https://firecrawl.dev",
-    "formats": ["markdown", "seguimientoDeCambios"]
+    "formats": ["markdown", "changeTracking"]
 }
 
 // Respuesta
@@ -375,7 +375,7 @@ Estos son algunos detalles importantes que debes conocer al usar la función de 
 ```javascript
 // JavaScript
 const result = await app.scrapeUrl('https://example.com/product', {
-  formatos: ['markdown', 'seguimientoDeCambios'],
+  formatos: ['markdown', 'changeTracking'],
   changeTrackingOptions: {
     modes: ['json'],
     schema: {
@@ -450,4 +450,4 @@ if result.changeTracking.changeStatus == 'changed':
   ## Facturación
 </div>
 
-Usar la funcionalidad básica de seguimientoDeCambios y el modo `git-diff` no tiene costo adicional. Sin embargo, si usas el modo `json` para comparar datos estructurados, el scraping de la página costará 5 créditos por página.
+Usar la funcionalidad básica de seguimiento de cambios y el modo `git-diff` no tiene costo adicional. Sin embargo, si usas el modo `json` para comparar datos estructurados, el scraping de la página costará 5 créditos por página.

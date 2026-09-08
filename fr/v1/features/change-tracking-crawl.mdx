@@ -29,7 +29,7 @@ const result = await app.crawl('https://example.com', {
 app = FirecrawlApp(api_key='votre-clé-api')
 result = app.crawl_url('https://firecrawl.dev',
     scrape_options={
-        'formats': ['markdown', 'suiviDesModifications']
+        'formats': ['markdown', 'changeTracking']
     }
 )
 ```

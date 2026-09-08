@@ -43,7 +43,7 @@ La respuesta incluye estos campos en el objeto `changeTracking`:
   ## Uso básico
 </div>
 
-Incluye tanto `markdown` como `seguimientoDeCambios` en el array `formats`. El formato `markdown` es obligatorio porque seguimientoDeCambios compara las páginas según su contenido en markdown.
+Incluye tanto `markdown` como `changeTracking` en el array `formats`. El formato `markdown` es obligatorio porque el seguimiento de cambios compara las páginas según su contenido en markdown.
 
 <CodeGroup>
   ```python Python
@@ -551,7 +551,7 @@ Plataformas sin código como **n8n**, **Zapier** y **Make** pueden llamar perió
   ## Webhooks
 </div>
 
-Para operaciones asíncronas como `crawl` y *batch scrape*, usa [webhooks](/es/webhooks/overview) para recibir resultados de seguimientoDeCambios a medida que llegan en lugar de hacer *polling*.
+Para operaciones asíncronas como `crawl` y *batch scrape*, usa [webhooks](/es/webhooks/overview) para recibir resultados de seguimiento de cambios a medida que llegan en lugar de hacer *polling*.
 
 <CodeGroup>
   ```python Python
@@ -643,7 +643,7 @@ Para más detalles sobre la configuración de webhooks (encabezados, metadatos, 
   ## Referencia de configuración
 </div>
 
-El conjunto completo de opciones disponibles al pasar un objeto de formato `seguimientoDeCambios`:
+El conjunto completo de opciones disponibles al pasar un objeto de formato `changeTracking`:
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
