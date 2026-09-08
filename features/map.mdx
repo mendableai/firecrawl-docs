@@ -139,4 +139,6 @@ For more details about supported locations, refer to the [Proxies documentation]
 
 This endpoint prioritizes speed, so it may not capture all website links. It primarily relies on the website's sitemap, supplemented by cached crawl data and search engine results. For a more thorough and up-to-date list of URLs, consider using the [/crawl](/features/crawl) endpoint instead.
 
+If you need more thorough recursive discovery with auditable result and error records rather than a fast approximation, use [/crawl](/features/crawl), which discovers pages by recursive link traversal as well as the sitemap and reports what it returned and what it failed to fetch — see [Execution and result accounting](/features/crawl#execution-and-result-accounting). For the links on one specific page, request the [`links` format](/features/scrape#scrape-formats) from [/scrape](/features/scrape).
+
 > Are you an AI agent that needs a Firecrawl API key? See [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) for automated onboarding instructions.
