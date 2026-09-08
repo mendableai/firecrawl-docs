@@ -192,6 +192,7 @@
                           "features/monitoring-web-scale"
                         ]
                       },
+                      "features/browser",
                       "features/interact"
                     ]
                   },
