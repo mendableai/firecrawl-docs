@@ -779,6 +779,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "Documentation"
               },
               {
@@ -809,6 +810,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "SDKs"
               },
               {
@@ -1573,6 +1575,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "Documentación"
               },
               {
@@ -1603,6 +1606,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "SDKs"
               },
               {
@@ -2367,6 +2371,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "Documentation"
               },
               {
@@ -2397,6 +2402,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "SDKs"
               },
               {
@@ -3161,6 +3167,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "ドキュメント"
               },
               {
@@ -3191,6 +3198,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "SDK"
               },
               {
@@ -3955,6 +3963,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "Documentação"
               },
               {
@@ -3985,6 +3994,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "SDKs"
               },
               {
@@ -4749,6 +4759,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "文档"
               },
               {
@@ -4779,6 +4790,7 @@
                   }
                 ],
                 "hidden": true,
+                "searchable": true,
                 "tab": "SDK"
               },
               {
