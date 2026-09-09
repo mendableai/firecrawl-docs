@@ -329,6 +329,7 @@
                           "integrations/hermes",
                           "integrations/replit",
                           "integrations/lovable",
+                          "integrations/stripe-projects",
                           "integrations/langchain",
                           "integrations/llamaindex",
                           "integrations/crewai",

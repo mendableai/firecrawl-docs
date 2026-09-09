@@ -1,0 +1,65 @@
+---
+title: "Stripe Projects"
+description: "Provision Firecrawl from the Stripe Projects CLI with stripe projects add firecrawl/api. Credentials sync to .env."
+og:title: "Stripe Projects Integration | Firecrawl"
+og:description: "Provision Firecrawl from the Stripe Projects CLI. One command creates a Firecrawl account and syncs credentials into your project."
+---
+
+Firecrawl is a [Stripe Projects](https://projects.dev/) provider. [Stripe Projects](https://docs.stripe.com/projects) provisions third-party services from the terminal and syncs credentials to `.env`.
+
+Use this guide when you want Firecrawl credentials through Stripe Projects instead of the dashboard or CLI browser auth flow.
+
+## Quickstart
+
+Install the Projects plugin, create a project, add Firecrawl, and pull credentials:
+
+```bash
+stripe plugin install projects
+stripe projects init
+stripe projects add firecrawl/api
+stripe projects env --pull
+```
+
+Install the Stripe CLI first if you do not have it: [Stripe CLI install](https://docs.stripe.com/stripe-cli/install).
+
+`stripe projects add firecrawl/api` is the catalog slug for Firecrawl. Confirm with `stripe projects catalog firecrawl` if needed.
+
+`add` associates a Firecrawl account (or creates one), provisions the resource, and syncs credentials to `.env`. `env --pull` writes the active environment’s credentials to the configured output file (`.env` by default). List variable names with `stripe projects env`.
+
+Firecrawl SDKs, the CLI, and MCP read `FIRECRAWL_API_KEY`. After provisioning, continue with any [quickstart](/introduction) or the [agent onboarding skill](https://www.firecrawl.dev/agent-onboarding/SKILL.md).
+
+The resource lives in a Firecrawl account you own. Manage usage, keys, and billing in the [Firecrawl dashboard](https://www.firecrawl.dev/app), or open it with `stripe projects open firecrawl`.
+
+## Link an existing Firecrawl account
+
+Associate an existing Firecrawl account without provisioning first. This is the recommended first step in agent-driven workflows:
+
+```bash
+stripe projects link firecrawl
+stripe projects add firecrawl/api
+```
+
+## Provision from your coding agent
+
+`stripe projects init` writes Stripe Projects agent skills into the project directory. You can let the agent run the same CLI flow:
+
+```
+Use Stripe Projects to add Firecrawl and wire up the API key.
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Scrape docs" icon="file-lines" href="/features/scrape">
+    Convert webpages into Markdown, JSON, screenshots, and more
+  </Card>
+  <Card title="Search docs" icon="magnifying-glass" href="/features/search">
+    Search the web and get page content from results
+  </Card>
+  <Card title="Agent onboarding" icon="robot" href="https://www.firecrawl.dev/agent-onboarding/SKILL.md">
+    Auth, CLI, skills, and MCP after you have a key
+  </Card>
+  <Card title="Stripe Projects docs" icon="book" href="https://docs.stripe.com/projects">
+    CLI reference, environments, and billing
+  </Card>
+</CardGroup>
