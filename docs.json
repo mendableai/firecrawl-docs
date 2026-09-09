@@ -121,7 +121,6 @@
                     "group": "Get Started",
                     "pages": [
                       "introduction",
-                      "capabilities",
                       {
                         "group": "MCP",
                         "pages": [
