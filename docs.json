@@ -916,7 +916,6 @@
                     "group": "Primeros pasos",
                     "pages": [
                       "es/introduction",
-                      "es/capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -1712,7 +1711,6 @@
                     "group": "Prise en main",
                     "pages": [
                       "fr/introduction",
-                      "fr/capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -2508,7 +2506,6 @@
                     "group": "はじめに",
                     "pages": [
                       "ja/introduction",
-                      "ja/capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -3304,7 +3301,6 @@
                     "group": "Primeiros passos",
                     "pages": [
                       "pt-BR/introduction",
-                      "pt-BR/capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -4100,7 +4096,6 @@
                     "group": "快速上手",
                     "pages": [
                       "zh/introduction",
-                      "zh/capabilities",
                       {
                         "group": "MCP",
                         "pages": [
@@ -4114,7 +4109,7 @@
                       "zh/ai-onboarding",
                       "zh/advanced-scraping-guide",
                       {
-                        "group": "套餐和计费",
+                        "group": "套餐与计费",
                         "pages": [
                           "zh/billing",
                           "zh/rate-limits",
