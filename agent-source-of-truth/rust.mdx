@@ -11,7 +11,7 @@ Canonical Firecrawl Rust source of truth for agents. Generated from SDK source a
 cargo add firecrawl
 ```
 
-Crate: **`firecrawl`** on crates.io. The current SDK version is **2.0.0** (verify the latest release on crates.io before pinning).
+Crate: **`firecrawl`** on crates.io. The current SDK version is **2.18.0** (verify the latest release on crates.io before pinning).
 
 ## Authenticate
 
@@ -22,6 +22,8 @@ let client = Client::new("fc-your-api-key")?;
 // Self-hosted example:
 // let client = Client::new_selfhosted("http://localhost:3002", Some("fc-your-api-key"))?;
 ```
+
+Keyless mode is allowed for scrape, search, and interact.
 
 ## When To Use What
 
@@ -40,6 +42,8 @@ Use search to discover relevant pages from a query, then pick URLs to scrape or 
 ### Preferred SDK method
 
 `client.search(query, options)` → `Result<SearchResponse, FirecrawlError>`
+
+Also: `client.search_and_scrape(query, limit)` → `Result<Vec<Document>, FirecrawlError>` (convenience helper that calls `search` with default `ScrapeOptions` and returns `Vec<Document>` built from `SearchResultOrDocument::Document` entries in `data.web`).
 
 ### Simple Example
 
@@ -64,7 +68,10 @@ let options = SearchOptions {
     limit: Some(10),
     tbs: Some("qdr:m".to_string()),
     location: Some("San Francisco,California,United States".to_string()),
+    include_domains: Some(vec!["docs.firecrawl.dev".to_string()]),
+    exclude_domains: Some(vec!["reddit.com".to_string()]),
     ignore_invalid_urls: Some(true),
+    highlights: Some(true),
     timeout: Some(60000),
     scrape_options: Some(ScrapeOptions {
         formats: Some(vec![Format::Markdown, Format::Links, Format::Json]),
@@ -92,7 +99,7 @@ let results = client
   - `data: SearchData`
   - `warning: Option<String>`
 - `SearchData`
-  - `web: Option<Vec<SearchResultOrDocument>>` — each item is either `SearchResultOrDocument::WebResult(SearchResultWeb)` (url, title, description, …) or `SearchResultOrDocument::Document(Document)` when the API returned scraped content for that row (detected when markdown, html, rawHtml, or metadata is present).
+  - `web: Option<Vec<SearchResultOrDocument>>` — each item is either `SearchResultOrDocument::WebResult(SearchResultWeb)` (url, title, description, ...) or `SearchResultOrDocument::Document(Document)` when the API returned scraped content for that row (detected when markdown, html, rawHtml, or metadata is present).
   - `news: Option<Vec<SearchResultNews>>`
   - `images: Option<Vec<SearchResultImage>>`
 
@@ -111,11 +118,19 @@ let results = client
 - `options.categories`
   - Type: `Vec<SearchCategory>`
   - Use when: you want to filter results by category.
-  - Confirmed values: `Research`, `Pdf`
+  - Confirmed values: `Github`, `Research`, `Pdf`
 
 - `options.limit`
   - Type: u32
   - Use when: you want to cap results.
+
+- `options.include_domains`
+  - Type: `Vec<String>`
+  - Use when: you want to restrict results to specific domains.
+
+- `options.exclude_domains`
+  - Type: `Vec<String>`
+  - Use when: you want to exclude results from specific domains.
 
 - `options.tbs`
   - Type: String
@@ -133,6 +148,10 @@ let results = client
   - Type: u32
   - Use when: you need a request timeout in milliseconds.
 
+- `options.highlights`
+  - Type: bool
+  - Use when: you want highlighted snippets in results.
+
 - `options.scrape_options`
   - Type: `ScrapeOptions`
   - Use when: you want to scrape each search result (see Scrape parameters for fields).
@@ -140,6 +159,11 @@ let results = client
 - `options.integration`
   - Type: `Option<String>`
   - Use when: you need an integration identifier for server-side tracking.
+  - Notes: omit in agent-oriented examples unless your product intentionally sets it.
+
+- `options.origin`
+  - Type: `Option<String>`
+  - Use when: you need an origin label for telemetry.
   - Notes: omit in agent-oriented examples unless your product intentionally sets it.
 
 ## Scrape
@@ -151,6 +175,8 @@ Use scrape when you already have a URL and want structured content in one or mor
 ### Preferred SDK method
 
 `client.scrape(url, options)` → `Result<Document, FirecrawlError>` (the HTTP response `data` field is unwrapped in the SDK).
+
+Also: `client.scrape_with_schema(url, schema, prompt)` → `Result<Value, FirecrawlError>` (convenience helper that scrapes with `Format::Json` and the given JSON schema and prompt, returning the extracted JSON value directly).
 
 ### Simple Example
 
@@ -165,12 +191,35 @@ let doc = client
     .await?;
 ```
 
+### Schema Extraction Example
+
+```rust
+use firecrawl::Client;
+use serde_json::json;
+
+let schema = json!({
+    "type": "object",
+    "properties": {
+        "title": { "type": "string" },
+        "price": { "type": "number" }
+    }
+});
+
+let extracted = client
+    .scrape_with_schema(
+        "https://example.com/product",
+        schema,
+        Some("Extract the product title and price.".to_string()),
+    )
+    .await?;
+```
+
 ### Complex Example
 
 ```rust
 use firecrawl::{
     Client, ScrapeOptions, Format, JsonOptions, ScreenshotOptions, ChangeTrackingOptions,
-    ChangeTrackingMode, AttributeSelector, Action, ParserConfig, ProxyType,
+    ChangeTrackingMode, AttributeSelector, Action, ParserConfig, ProxyType, AuditMetadata,
 };
 
 let doc = client
@@ -182,9 +231,11 @@ let doc = client
             Format::Screenshot,
             Format::ChangeTracking,
             Format::Attributes,
+            Format::Product,
         ]),
         json_options: Some(JsonOptions {
             prompt: Some("Extract plan names and prices.".to_string()),
+            check_prompt_injection: Some(true),
             ..Default::default()
         }),
         screenshot_options: Some(ScreenshotOptions {
@@ -203,7 +254,11 @@ let doc = client
         }]),
         parsers: Some(vec![ParserConfig::Pdf {
             parser_type: "pdf".to_string(),
+            mode: None,
             max_pages: Some(5),
+            pages: None,
+            blocks: None,
+            page_markers: None,
         }]),
         actions: Some(vec![
             Action::Click { selector: "#accept".to_string() },
@@ -211,6 +266,11 @@ let doc = client
             Action::Scrape,
         ]),
         proxy: Some(ProxyType::Auto),
+        lockdown: Some(false),
+        redact_pii: Some(false),
+        audit_metadata: Some(AuditMetadata {
+            username: "agent-user".to_string(),
+        }),
         ..Default::default()
     })
     .await?;
@@ -225,7 +285,7 @@ let doc = client
 - `options.formats`
   - Type: `Vec<Format>`
   - Use when: you want multiple output formats.
-  - Confirmed values: `Markdown`, `Html`, `RawHtml`, `Links`, `Images`, `Screenshot`, `Summary`, `ChangeTracking`, `Json`, `Attributes`, `Branding`, `Audio`, `Video`
+  - Confirmed values: `Markdown`, `Html`, `RawHtml`, `Links`, `Images`, `Screenshot`, `Summary`, `ChangeTracking`, `Json`, `Attributes`, `Branding`, `Product`, `Menu`, `Audio`, `Video`, `Question(QuestionFormat)`, `Highlights(HighlightsFormat)`, `Query(QueryFormat)` (deprecated)
 
 - `options.headers`
   - Type: `HashMap<String, String>`
@@ -260,7 +320,7 @@ let doc = client
   - Use when: you need file parsing controls.
   - Confirmed values:
     - `ParserConfig::Simple("pdf".to_string())`
-    - `ParserConfig::Pdf { parser_type: "pdf", max_pages: Some(n) }`
+    - `ParserConfig::Pdf { parser_type, mode, max_pages, pages, blocks, page_markers }`
 
 - `options.actions`
   - Type: `Vec<Action>`
@@ -314,6 +374,20 @@ let doc = client
   - Type: bool
   - Use when: you want Firecrawl to cache the result.
 
+- `options.lockdown`
+  - Type: bool
+  - Use when: you want to enable lockdown mode for the scrape.
+
+- `options.redact_pii`
+  - Type: bool
+  - Use when: you want personally identifiable information redacted from the output.
+  - Notes: serialized as `"redactPII"` over the wire.
+
+- `options.audit_metadata`
+  - Type: `AuditMetadata`
+  - Use when: you need to attach audit context to the scrape request.
+  - Confirmed fields: `username: String`
+
 - `options.profile`
   - Type: `ProfileConfig`
   - Use when: you want a persistent browser profile shared across scrapes and interactions.
@@ -324,10 +398,15 @@ let doc = client
   - Use when: you need an integration identifier for server-side tracking.
   - Notes: omit in agent-oriented examples unless your product intentionally sets it.
 
+- `options.origin`
+  - Type: `Option<String>`
+  - Use when: you need an origin label for telemetry.
+  - Notes: omit in agent-oriented examples unless your product intentionally sets it.
+
 - `options.json_options`
   - Type: `JsonOptions`
   - Use when: you want to configure JSON extraction.
-  - Confirmed fields: `schema`, `system_prompt`, `prompt`
+  - Confirmed fields: `schema`, `system_prompt`, `prompt`, `check_prompt_injection`
 
 - `options.screenshot_options`
   - Type: `ScreenshotOptions`
@@ -442,6 +521,7 @@ The v2 OpenAPI spec currently models the interact request body with `code` as re
 - Deprecated aliases: `scrape_execute`, `stop_interactive_browser`, and `delete_scrape_browser` map to `interact` and `stop_interaction`.
 - `ScrapeOptions` includes dedicated `json_options`, `screenshot_options`, and `change_tracking_options` for advanced formats.
 - `search_and_scrape(query, limit)` is a convenience helper: it calls `search` with default `ScrapeOptions` and returns `Vec<Document>` built from `SearchResultOrDocument::Document` entries in `data.web` (see `search.rs`).
+- `scrape_with_schema(url, schema, prompt)` is a convenience helper: it calls `scrape` with `Format::Json` and the given schema/prompt, returning the extracted `Value` directly.
 - v2 SDK exports all types at the crate root: `use firecrawl::Client` (not `use firecrawl::v2::Client`).
 - Error types simplified in v2: `CrawlJobFailed(String, CrawlStatus)` → `JobFailed(String)`, `Missuse` → `Misuse`.
 
@@ -452,9 +532,9 @@ The v2 OpenAPI spec currently models the interact request body with `code` as re
 - `firecrawl/apps/rust-sdk/src/client.rs`
 - `firecrawl/apps/rust-sdk/src/scrape.rs`
 - `firecrawl/apps/rust-sdk/src/search.rs`
+- `firecrawl/apps/rust-sdk/src/types.rs`
 - `firecrawl/apps/rust-sdk/src/crawl.rs`
 - `firecrawl/apps/rust-sdk/src/map.rs`
 - `firecrawl/apps/rust-sdk/src/batch_scrape.rs`
 - `firecrawl/apps/rust-sdk/src/agent.rs`
-- `firecrawl/apps/rust-sdk/src/types.rs`
 - `firecrawl-docs/api-reference/v2-openapi.json`

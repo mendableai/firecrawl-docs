@@ -47,13 +47,16 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "query": "site:docs.firecrawl.dev crawl webhooks",
+    "query": "firecrawl crawl webhooks",
     "sources": [{"type": "web"}, {"type": "news"}],
     "categories": [{"type": "research"}],
     "limit": 10,
     "tbs": "qdr:m",
     "location": "San Francisco,California,United States",
     "country": "US",
+    "safe": true,
+    "includeDomains": ["docs.firecrawl.dev", "firecrawl.dev"],
+    "highlights": true,
     "ignoreInvalidURLs": true,
     "timeout": 60000,
     "enterprise": ["anon"],
@@ -90,55 +93,84 @@ Successful responses include `success`, `data`, optional `warning`, `id`, and `c
   - Notes: use `site:example.com` to limit results to a domain.
 
 - `sources`
-  - Type: array of typed source objects
+  - Type: array of strings or typed source objects
+  - Default: `[{"type": "web"}]`
   - Use when: you want to control which sources are searched.
   - Confirmed object shapes:
     - `{ "type": "web" }` with optional per-source `tbs` and `location`
     - `{ "type": "news" }`
     - `{ "type": "images" }`
+  - String shorthand: `"web"`, `"news"`, `"images"`
 
 - `categories`
-  - Type: array of typed category objects
+  - Type: array of strings or typed category objects
   - Use when: you want to filter results by category.
   - Confirmed object shapes:
     - `{ "type": "developer" }`
     - `{ "type": "research" }`
     - `{ "type": "pdf" }`
+  - String shorthand: `"developer"`, `"research"`, `"pdf"`
 
 - `limit`
-  - Type: integer (minimum 1, maximum 100, default 5)
-  - Use when: you want to cap results.
+  - Type: integer (minimum 1, maximum 100, default 10)
+  - Use when: you want to cap results per source type.
+
+- `includeDomains`
+  - Type: array of strings
+  - Use when: you want to restrict results to specific domains.
+  - Notes: cannot be combined with `excludeDomains`.
+
+- `excludeDomains`
+  - Type: array of strings
+  - Use when: you want to exclude specific domains from results.
+  - Notes: cannot be combined with `includeDomains`.
 
 - `tbs`
   - Type: string
-  - Use when: you need a time-based filter (for example `qdr:d`, `qdr:w`, `sbd:1,qdr:m`).
+  - Use when: you need a time-based filter.
+  - Predefined values: `qdr:h` (past hour), `qdr:d` (past day), `qdr:w` (past week), `qdr:m` (past month), `qdr:y` (past year).
+  - Custom range: `cdr:1,cd_min:MM/DD/YYYY,cd_max:MM/DD/YYYY`
+  - Sort by date: `sbd:1`
+  - Combinable: for example `sbd:1,qdr:m`
 
 - `location`
   - Type: string
-  - Use when: you want localized results.
+  - Use when: you want geo-targeted results (for example `"San Francisco,California,United States"`).
 
 - `country`
   - Type: string (default `"US"`)
-  - Use when: you want ISO 3166-1 alpha-2 targeting (for example `"US"`).
+  - Use when: you want ISO 3166-1 alpha-2 country targeting.
+
+- `safe`
+  - Type: boolean
+  - Use when: you want to filter explicit content (SafeSearch).
 
 - `ignoreInvalidURLs`
   - Type: boolean (default false)
   - Use when: you want to drop URLs that cannot be scraped by other endpoints.
+
+- `highlights`
+  - Type: boolean (default true)
+  - Use when: you want query-relevant highlights in results.
 
 - `timeout`
   - Type: integer (milliseconds, default 60000)
   - Use when: you need a request timeout in milliseconds.
 
 - `enterprise`
-  - Type: array of strings (`"anon"` or `"zdr"` per item)
+  - Type: array of strings
   - Use when: you need enterprise search controls.
   - Values:
-    - `"zdr"`: end-to-end zero data retention
-    - `"anon"`: anonymized zero data retention
+    - `"zdr"`: zero data retention
+    - `"anon"`: anonymized
 
 - `scrapeOptions`
   - Type: object
   - Use when: you want to scrape each search result (see Scrape parameters for fields).
+
+- `threatProtection`
+  - Type: object
+  - Use when: you need per-request threat protection override (enterprise).
 
 ## Scrape
 
@@ -173,14 +205,19 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
     "formats": [
       "markdown",
       "links",
-      {"type": "json", "prompt": "Extract plan names and prices."},
+      "product",
+      {"type": "json", "prompt": "Extract plan names and prices.", "checkPromptInjection": true},
+      {"type": "question", "question": "What is the enterprise plan price?"},
+      {"type": "highlights", "query": "pricing tiers"},
       {"type": "screenshot", "fullPage": true, "quality": 80, "viewport": {"width": 1280, "height": 720}},
-      {"type": "changeTracking", "modes": ["git-diff"], "tag": "pricing"}
+      {"type": "changeTracking", "modes": ["git-diff"], "tag": "pricing"},
+      {"type": "attributes", "selectors": [{"selector": ".price", "attribute": "data-amount"}]}
     ],
     "headers": {"User-Agent": "FirecrawlDocsBot/1.0"},
     "onlyMainContent": true,
+    "onlyCleanContent": false,
     "waitFor": 1000,
-    "parsers": [{"type": "pdf", "mode": "auto", "maxPages": 5}],
+    "parsers": [{"type": "pdf", "mode": "auto", "maxPages": 5, "pageMarkers": true}],
     "actions": [
       {"type": "click", "selector": "#accept"},
       {"type": "wait", "milliseconds": 750},
@@ -193,7 +230,11 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
     "maxAge": 86400000,
     "minAge": 1,
     "storeInCache": true,
+    "lockdown": false,
+    "redactPII": {"mode": "accurate", "entities": ["EMAIL", "PHONE"], "replaceStyle": "tag"},
     "profile": {"name": "docs-session", "saveChanges": true},
+    "threatProtection": {"mode": "normal", "failurePolicy": "closed"},
+    "auditMetadata": {"username": "agent-bot"},
     "zeroDataRetention": false
   }'
 ```
@@ -204,23 +245,25 @@ Successful responses include `success` and `data`. Common `data` fields (dependi
 
 - `markdown`, `summary`, `html`, `rawHtml`, `screenshot`, `audio`, `video`, `links`
 - `actions`: when the request included scrape-time `actions`, contains ordered results such as `screenshots`, `scrapes`, `javascriptReturns`, and `pdfs`
-- `metadata`: page metadata (`title`, `sourceURL`, `url`, `statusCode`, `error`, and other extracted fields)
+- `metadata`: page metadata (`title`, `description`, `sourceURL`, `url`, `statusCode`, and other extracted fields)
 - `warning`: optional extraction or formatting notice
 - `changeTracking`: present when the `changeTracking` format is requested
 
 ### Parameters
 
 - `url`
-  - Type: string
+  - Type: string (required, URI format)
   - Use when: you want to scrape a specific page.
 
 - `formats`
   - Type: array of format strings or format objects
+  - Default: `["markdown"]`
   - Use when: you want multiple output formats.
   - Confirmed format strings:
     - `"markdown"`: markdown content
     - `"html"`: cleaned HTML
     - `"rawHtml"`: raw HTML
+    - `"rawBase64"`: raw page as base64
     - `"links"`: page links
     - `"images"`: image URLs
     - `"screenshot"`: screenshot output
@@ -228,13 +271,17 @@ Successful responses include `success` and `data`. Common `data` fields (dependi
     - `"changeTracking"`: change tracking output
     - `"json"`: JSON extraction
     - `"branding"`: branding profile output
+    - `"product"`: structured product data extraction
+    - `"menu"`: structured menu/navigation extraction
     - `"audio"`: audio extraction
     - `"video"`: video extraction
-  - Format object fields:
-    - `type`: one of the format strings above
-    - `prompt`, `schema`: JSON extraction options for `type: "json"`
-    - `modes`, `schema`, `prompt`, `tag`: change tracking options for `type: "changeTracking"`
-    - `fullPage`, `quality`, `viewport`: screenshot options for `type: "screenshot"`
+  - Format object shapes:
+    - `{ "type": "json", "schema": ..., "prompt": "...", "checkPromptInjection": true|false }`: JSON extraction with optional schema, prompt, and prompt injection check
+    - `{ "type": "question", "question": "..." }`: ask a question about the page
+    - `{ "type": "highlights", "query": "..." }`: extract query-relevant highlights
+    - `{ "type": "screenshot", "fullPage": true|false, "quality": number, "viewport": {"width": number, "height": number} }`: screenshot options
+    - `{ "type": "changeTracking", "modes": [...], "schema": ..., "prompt": "...", "tag": "..." }`: change tracking options
+    - `{ "type": "attributes", "selectors": [{"selector": "...", "attribute": "..."}] }`: extract HTML attributes from elements
 
 - `headers`
   - Type: object
@@ -249,25 +296,33 @@ Successful responses include `success` and `data`. Common `data` fields (dependi
   - Use when: you want to exclude specific HTML tags.
 
 - `onlyMainContent`
-  - Type: boolean
+  - Type: boolean (default true)
   - Use when: you want to strip nav, footer, and other boilerplate.
 
+- `onlyCleanContent`
+  - Type: boolean (default false)
+  - Use when: you want LLM-based boilerplate removal (beta).
+
 - `timeout`
-  - Type: number
-  - Use when: you need a timeout in milliseconds.
+  - Type: integer (milliseconds, default 60000, min 1000, max 300000)
+  - Use when: you need a request timeout in milliseconds.
 
 - `waitFor`
-  - Type: number
-  - Use when: you need to wait for the page to render (milliseconds).
+  - Type: integer (milliseconds, default 0)
+  - Use when: you need to wait for the page to render before fetching.
 
 - `mobile`
-  - Type: boolean
-  - Use when: you want a mobile viewport.
+  - Type: boolean (default false)
+  - Use when: you want a mobile device viewport.
+
+- `skipTlsVerification`
+  - Type: boolean (default true)
+  - Use when: you need to control TLS verification.
 
 - `parsers`
-  - Type: array of objects
+  - Type: array of objects (default `["pdf"]`)
   - Use when: you need file parsing controls.
-  - Confirmed shape: `{ "type": "pdf", "mode": "fast" | "auto" | "ocr", "maxPages": number }` (`type` required; other fields optional with defaults per spec)
+  - Confirmed shape: `{ "type": "pdf", "mode": "fast"|"auto"|"ocr", "maxPages": number, "pages": ..., "blocks": ..., "pageMarkers": boolean }` (`type` required; other fields optional)
 
 - `actions`
   - Type: array of action objects
@@ -278,50 +333,67 @@ Successful responses include `success` and `data`. Common `data` fields (dependi
     - `click`: `selector` required, `all` optional
     - `write`: `text` required (click to focus the input first)
     - `press`: `key` required
-    - `scroll`: `type` required; `direction` (`up` or `down`, default `down`); optional `selector`
+    - `scroll`: `direction` (`up` or `down`, default `down`); optional `selector`
     - `scrape`: no additional fields
     - `executeJavascript`: `script` required
     - `pdf`: `format` (A0, A1, A2, A3, A4, A5, A6, Letter, Legal, Tabloid, Ledger), `landscape`, `scale` optional
 
 - `location`
-  - Type: object with `country` and `languages`
+  - Type: object with `country` (default `"US"`) and `languages` array
   - Use when: you need geo or language-aware scraping.
 
-- `skipTlsVerification`
-  - Type: boolean
-  - Use when: you need to skip TLS verification.
-
 - `removeBase64Images`
-  - Type: boolean
-  - Use when: you want to drop base64 images from markdown output.
+  - Type: boolean (default true)
+  - Use when: you want to control base64 image removal from markdown output.
 
 - `blockAds`
-  - Type: boolean
+  - Type: boolean (default true)
   - Use when: you want ad and cookie popup blocking.
 
 - `proxy`
-  - Type: string
+  - Type: string (default `"auto"`)
   - Use when: you need proxy control.
   - Confirmed values: `"basic"`, `"enhanced"`, `"auto"`
 
 - `maxAge`
-  - Type: number
-  - Use when: you want cached data up to a maximum age (milliseconds).
+  - Type: integer (milliseconds, default 172800000 = 2 days)
+  - Use when: you want cached data up to a maximum age.
 
 - `minAge`
-  - Type: number
-  - Use when: you want cached data only if it is at least this old (milliseconds).
+  - Type: integer (milliseconds)
+  - Use when: you want cache-only mode, serving data only if it is at least this old.
 
 - `storeInCache`
-  - Type: boolean
+  - Type: boolean (default true)
   - Use when: you want Firecrawl to cache the result.
 
+- `lockdown`
+  - Type: boolean (default false)
+  - Use when: you want to serve from cache only (no live fetching).
+
+- `redactPII`
+  - Type: boolean or object
+  - Use when: you want to redact personally identifiable information.
+  - Object shape: `{ "mode": "accurate"|"aggressive"|"fast", "entities": ["PERSON","EMAIL","PHONE","LOCATION","FINANCIAL","SECRET"], "replaceStyle": "tag"|"mask"|"remove" }`
+  - Pass `true` for defaults or an object for fine-grained control.
+
 - `profile`
-  - Type: object with `name` and optional `saveChanges`
+  - Type: object
   - Use when: you want a persistent browser profile shared across scrapes and interactions.
+  - Shape: `{ "name": "..." (required, 1-128 chars), "saveChanges": true|false (default true) }`
+
+- `threatProtection`
+  - Type: object
+  - Use when: you need per-request threat protection (enterprise).
+  - Shape: `{ "mode": "off"|"normal", "riskScoreThreshold": number, "blacklist": [...], "whitelist": [...], "blockedTlds": [...], "failurePolicy": "open"|"closed" }`
+
+- `auditMetadata`
+  - Type: object
+  - Use when: you need to attach audit metadata to the request.
+  - Shape: `{ "username": "..." (required, max 1024 chars) }`
 
 - `zeroDataRetention`
-  - Type: boolean
+  - Type: boolean (default false)
   - Use when: you want zero data retention for this scrape.
 
 ## Interact
@@ -354,7 +426,8 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   -d '{
     "code": "const title = await page.title();\nconst h1 = await page.locator(\"h1\").first().textContent().catch(() => null);\nconsole.log(JSON.stringify({ title, h1 }));",
     "language": "node",
-    "timeout": 120
+    "timeout": 120,
+    "origin": "docs-agent"
   }'
 ```
 
@@ -365,21 +438,25 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   - Use when: you have the scrape job id for the live browser session.
 
 - `code` (JSON body)
-  - Type: string (required in OpenAPI; min length 1, max length 100000)
+  - Type: string (required; min length 1, max length 100000)
   - Use when: you want to run code in the scrape-bound browser sandbox.
 
 - `language` (JSON body)
-  - Type: string
+  - Type: string (default `"node"`)
   - Use when: you need a specific runtime.
-  - Confirmed values: `"python"`, `"node"`, `"bash"` (default `"node"`)
+  - Confirmed values: `"python"`, `"node"`, `"bash"`
 
 - `timeout` (JSON body)
   - Type: integer (seconds; minimum 1, maximum 300, default 30)
   - Use when: you need an execution timeout.
 
+- `origin` (JSON body)
+  - Type: string
+  - Use when: you want to label the origin of the interaction.
+
 ### Response
 
-Successful responses include `success` plus execution fields such as `stdout`, `result` (alias of stdout), `stderr`, `exitCode`, `killed`, and `error` (nullable).
+Successful responses include `success` plus optional fields: `cdpUrl`, `liveViewUrl`, `interactiveLiveViewUrl`, `output`, `stdout`, `result`, `stderr`, `exitCode`, `killed`, and `error` (nullable).
 
 ### DELETE /scrape/{jobId}/interact
 
@@ -390,7 +467,7 @@ curl -X DELETE "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY"
 ```
 
-No JSON body. A successful response includes `success`.
+No JSON body. A successful response includes `success`, `sessionDurationMs`, and `creditsBilled`.
 
 ## Ask (Agentic Debugging)
 
@@ -483,6 +560,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/docs-search" \
 - Search result rows are nested under `data.web`, `data.images`, or `data.news`, not as a flat `data` array.
 - Use `POST /scrape/{jobId}/interact` for multi-step browser workflows; scrape `actions` are best for small pre-scrape steps.
 - The published OpenAPI schema requires `code` for interact. Some SDKs and clients also accept a `prompt` field for natural-language instructions; that alias is not in `v2-openapi.json`.
+- Key scrape defaults: `onlyMainContent: true`, `blockAds: true`, `removeBase64Images: true`, `proxy: "auto"`, `storeInCache: true`, `skipTlsVerification: true`, `maxAge: 172800000` (2 days), `formats: ["markdown"]`.
 
 ## Source Of Truth
 
