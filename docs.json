@@ -133,6 +133,16 @@
                       },
                       "sdks/cli",
                       "ai-onboarding",
+                      {
+                        "group": "Agent Quickstarts",
+                        "pages": [
+                          "agent-quickstart/node",
+                          "agent-quickstart/python",
+                          "agent-quickstart/rust",
+                          "agent-quickstart/java",
+                          "agent-quickstart/elixir"
+                        ]
+                      },
                       "advanced-scraping-guide",
                       {
                         "group": "Plans and Billing",
