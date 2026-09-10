@@ -113,20 +113,20 @@ SDKs 会直接返回数据对象。cURL 会返回完整的负载。
 你可以在一次调用中请求多个 source (例如 `sources: ["web", "news"]`) 。此时，`limit` 参数会**按每种 source 类型分别生效**——因此，当 `limit: 5` 且 `sources: ["web", "news"]` 时，会分别返回最多 5 条 web 结果和最多 5 条 news 结果 (合计最多 10 条) 。如果你需要为不同的 source 设置不同的参数 (例如不同的 `limit` 值或不同的 `scrapeOptions`) ，请分别发起独立的调用。
 
 <div id="search-categories">
-  ## 搜索类别
+  ## 搜索分类
 </div>
 
-使用 `categories` 参数按特定类别筛选搜索结果：
+使用 `categories` 参数按特定分类筛选搜索结果：
 
-* `research`：将网页搜索限定为学术与科研类网站 (arxiv.org、nature.com、ieee.org、pubmed.ncbi.nlm.nih.gov、biorxiv.org、medrxiv.org 等) 。返回带有 snippet 的普通网页结果，而非论文记录。要搜索论文本身，请使用 [研究索引](/zh/features/research)
+* `research`：将网页搜索限制在学术与科研类网站 (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov 等) 。自 2026-11-16 起，该分类将改为搜索[研究索引](/zh/features/research)并返回 paper 记录，请参见下方警告
 * `pdf`：搜索 PDF
-* `developer`：搜索 [Developer Index](/zh/features/developer)——涵盖公开代码仓库中的 issue、已合并的 pull request 和 README，以及精选文档网站
+* `developer`：搜索[Developer Index](/zh/features/developer)——来自公共代码仓库的 issue、已合并的 pull request 和 README，以及精选的文档站点
 
-<Note>
-  **`research` 是网站筛选器，而非论文索引。**它会将普通网页搜索限定在固定的学术域名列表中，并返回这些网站的页面 snippet。
+<Warning>
+  **`research` 分类将于 2026-11-16 发生变更。** 它将搜索[研究索引](/zh/features/research) (PubMed、bioRxiv、medRxiv、arXiv) ，而不再将网页结果限定在 14 个学术网站内。结果将从 `data.web` 移至 `data.research`，并以 paper 记录形式返回：`paperId`、`primaryId`、`ids`、`title`、`abstract`、`score`。在此之前，凡是使用该分类的响应都会附带一个 `warnings` 条目。
 
-  如果您想搜索科学文献——包括完整摘要、论文内段落，以及在涵盖 PubMed、bioRxiv、medRxiv 和 arXiv 的论文索引中扩展 citation 图谱——请改用 [研究索引](/zh/features/research)。
-</Note>
+  如果你需要 paper 记录，请在该日期前更新解析逻辑，或现在就改用 [`GET /search/research/papers`](/zh/api-reference/endpoint/research-search-papers)。如果你需要来自学术网站的网页，请改用 [`includeDomains`](#domain-filters)。
+</Warning>
 
 <div id="research-category-search">
   ### 研究类别搜索

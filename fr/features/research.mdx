@@ -27,17 +27,21 @@ L&#39;index couvre environ 43 millions de résumés d&#39;articles. La majorit�
   ## Comparaison avec `/search`
 </div>
 
-Firecrawl propose deux fonctionnalités appelées « research », mais il ne s’agit pas de la même fonctionnalité :
+<Note>
+  À partir du 2026-11-16, `categories: ["research"]` sur `/search` interrogera cet index et renverra les mêmes fiches d’articles dans `data.research`. Le tableau ci-dessous décrit le comportement en vigueur jusqu’à cette date. Consultez les [catégories de recherche](/fr/features/search#search-categories).
+</Note>
 
-|                                              | index de recherche (cette page)                                                                                              | `/search` avec `categories: ["research"]`                                                                           |
+Firecrawl propose deux fonctionnalités appelées « research », mais il ne s’agit pas de la même fonctionnalité :
+
+|                                              | index de recherche (cette page)                                                                                          | `/search` avec `categories: ["research"]`                                                                           |
 | :------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| Ce qui est recherché                         | Un index de publications contenant environ 43 M de résumés — PubMed, bioRxiv, medRxiv, arXiv                             | Le Web ouvert, restreint à environ 14 **sites web** académiques (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov, …) |
-| Ce que vous obtenez                          | Fiches de publications classées : `paperId` canonique, `primaryId`, identifiants de source, titre, résumé complet, score | Résultats Web classiques : URL, titre, snippet                                                                      |
-| Peut-il lire le contenu d’une publication ?  | Oui — lecture au niveau des passages via `GET /search/research/papers/{id}`                                              | Non                                                                                                                 |
-| Peut-il étendre la recherche par citations ? | Oui — `GET /search/research/papers/{id}/similar`                                                                         | Non                                                                                                                 |
+| Ce qui est recherché                         | Un index d’articles contenant environ 43 M de résumés — PubMed, bioRxiv, medRxiv, arXiv                             | Le Web ouvert, restreint à environ 14 **sites web** académiques (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov, …) |
+| Ce que vous obtenez                          | Fiches d’articles classées : `paperId` canonique, `primaryId`, identifiants de source, titre, résumé complet, score | Résultats Web classiques : URL, titre, snippet                                                                      |
+| Peut-il lire le contenu d’un article ?  | Oui — lecture au niveau des passages via `GET /search/research/papers/{id}`                                              | Non                                                                                                                 |
+| Peut-il étendre la recherche par citations ? | Oui — `GET /search/research/papers/{id}/similar`                                                                         | Non                                                                                                                 |
 | Point de terminaison                         | `GET /search/research/papers`                                                                                            | `POST /search`                                                                                                      |
 
-Utilisez l’index de recherche pour vos recherches bibliographiques : trouver des publications, les lire et suivre les citations. Utilisez [`categories: ["research"]`](/fr/features/search#search-categories) si vous recherchez des pages Web classiques hébergées sur des domaines académiques.
+Utilisez l’index de recherche pour vos recherches bibliographiques : trouver des articles, les lire et suivre les citations. Utilisez [`categories: ["research"]`](/fr/features/search#search-categories) si vous recherchez des pages Web classiques hébergées sur des domaines académiques.
 
 <div id="endpoints">
   ## Points de terminaison

@@ -116,17 +116,17 @@ Puedes solicitar varias fuentes en una sola llamada (por ejemplo, `sources: ["we
   ## Categorías de búsqueda
 </div>
 
-Filtra los resultados de búsqueda por categorías específicas con el parámetro `categories`:
+Filtra los resultados de búsqueda por categorías específicas mediante el parámetro `categories`:
 
-* `research`: Limita la búsqueda web a **sitios web** académicos y de investigación (arxiv.org, nature.com, ieee.org, pubmed.ncbi.nlm.nih.gov, biorxiv.org, medrxiv.org y similares). Devuelve resultados de páginas web normales con fragmentos, no registros de artículos. Para buscar los propios artículos, usa el [Research Index](/es/features/research)
-* `pdf`: Busca archivos PDF
-* `developer`: Busca en el [Developer Index](/es/features/developer): issues, pull requests fusionadas y archivos README de repositorios de código públicos, además de sitios de documentación seleccionados
+* `research`: restringe la búsqueda web a sitios web académicos y de investigación (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov y similares). A partir del 2026-11-16 pasará a buscar en el [Research Index](/es/features/research) y a devolver registros de artículos; consulta la advertencia más abajo
+* `pdf`: busca PDF
+* `developer`: busca en el [Developer Index](/es/features/developer): issues, pull requests fusionados y READMEs de repositorios de código públicos, junto con sitios de documentación seleccionados
 
-<Note>
-  **`research` es un filtro de sitios web, no el índice de artículos.** Limita la búsqueda web normal a una lista fija de dominios académicos y devuelve fragmentos de páginas de esos dominios.
+<Warning>
+  **La categoría `research` cambia el 2026-11-16.** Buscará en el [Research Index](/es/features/research) (PubMed, bioRxiv, medRxiv, arXiv) en lugar de limitar los resultados web a 14 sitios académicos. Los resultados pasarán de `data.web` a `data.research` y se devolverán como registros de artículos: `paperId`, `primaryId`, `ids`, `title`, `abstract`, `score`. Hasta entonces, cada respuesta que la utilice incluirá una entrada `warnings`.
 
-  Si quieres buscar literatura científica —resúmenes completos, lectura de pasajes dentro de artículos y expansión del grafo de citas en un índice de artículos de PubMed, bioRxiv, medRxiv y arXiv—, usa el [Research Index](/es/features/research).
-</Note>
+  Si necesitas registros de artículos, actualiza tu parsing antes de esa fecha o llama hoy mismo a [`GET /search/research/papers`](/es/api-reference/endpoint/research-search-papers). Si lo que necesitas son páginas web de sitios académicos, cambia a [`includeDomains`](#domain-filters).
+</Warning>
 
 <div id="research-category-search">
   ### Búsqueda por categoría de investigación
