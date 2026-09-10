@@ -104,15 +104,15 @@ You can request multiple sources in a single call (e.g., `sources: ["web", "news
 
 Filter search results by specific categories using the `categories` parameter:
 
-- `research`: Restrict web search to academic and research **websites** (arxiv.org, nature.com, ieee.org, pubmed.ncbi.nlm.nih.gov, biorxiv.org, medrxiv.org, and similar). Returns ordinary web page results with snippets — not paper records. To search papers themselves, use the [Research Index](/features/research)
+- `research`: Restrict web search to academic and research websites (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov, and similar). Changes on 2026-11-16 to search the [Research Index](/features/research) and return paper records, see the warning below
 - `pdf`: Search for PDFs
 - `developer`: Search the [Developer Index](/features/developer) — issues, merged pull requests, and READMEs from public code repositories, alongside curated documentation sites
 
-<Note>
-**`research` is a website filter, not the paper index.** It narrows ordinary web search to a fixed list of academic domains and returns page snippets from them.
+<Warning>
+**The `research` category changes on 2026-11-16.** It will search the [Research Index](/features/research) (PubMed, bioRxiv, medRxiv, arXiv) instead of filtering web results to 14 academic websites. Results will move from `data.web` to `data.research` and come back as paper records: `paperId`, `primaryId`, `ids`, `title`, `abstract`, `score`. Until then every response that uses it carries a `warnings` entry.
 
-If you want to search scientific literature — full abstracts, in-paper passage reads, and citation-graph expansion over a paper index of PubMed, bioRxiv, medRxiv, and arXiv — use the [Research Index](/features/research) instead.
-</Note>
+If you want paper records, update your parsing before that date or call [`GET /search/research/papers`](/api-reference/endpoint/research-search-papers) today. If you want web pages from academic sites, switch to [`includeDomains`](#domain-filters).
+</Warning>
 
 ### Research Category Search
 
