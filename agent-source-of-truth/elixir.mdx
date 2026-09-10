@@ -3,25 +3,29 @@ title: "Elixir Source of Truth"
 description: "Canonical Firecrawl Elixir source of truth for agents using key endpoints like search, scrape, and interact."
 ---
 
-Canonical Firecrawl Elixir source of truth for agents. Generated from SDK source and the v2 OpenAPI spec.
+Canonical Firecrawl Elixir source of truth for agents. Generated from SDK source (`:firecrawl` hex package **1.11.0**) and the v2 OpenAPI spec. Function names and parameter keys are auto-generated from the OpenAPI spec via `generate.exs`.
 
 ## Install
 
 Add to `mix.exs`:
 
 ```elixir
-{:firecrawl, "~> 1.0.0"}
+defp deps do
+  [{:firecrawl, "~> 1.11"}]
+end
 ```
 
 ## Authenticate
 
 ```elixir
-# config/runtime.exs or config.exs
-config :firecrawl, api_key: System.get_env("FIRECRAWL_API_KEY")
+# config/config.exs
+config :firecrawl, api_key: "fc-YOUR_API_KEY"
 
-# or pass api_key per call
-{:ok, res} = Firecrawl.search_and_scrape([query: "site:docs.firecrawl.dev webhook retries"], api_key: "fc-your-api-key")
+# or per-request via opts:
+Firecrawl.search_and_scrape([query: "test"], api_key: "fc-YOUR_API_KEY")
 ```
+
+The `opts` keyword list also accepts `:base_url` for self-hosted instances and any `Req` options.
 
 ## When To Use What
 
@@ -37,12 +41,20 @@ Use search to discover relevant pages from a query, then pick URLs to scrape or 
 
 ### Preferred SDK method
 
-`Firecrawl.search_and_scrape(params \\ [], opts \\ [])`
+`Firecrawl.search_and_scrape(params \\ [], opts \\ [])` → `{:ok, Req.Response.t()} | {:error, Exception.t()}`
+
+Bang variant: `Firecrawl.search_and_scrape!(params \\ [], opts \\ [])` → `Req.Response.t()`
 
 ### Simple Example
 
 ```elixir
 {:ok, res} = Firecrawl.search_and_scrape(query: "site:docs.firecrawl.dev webhook retries")
+
+# Access results from the response body
+web_results = res.body["web"] || []
+Enum.each(web_results, fn item ->
+  IO.puts("#{item["url"]} — #{item["title"]}")
+end)
 ```
 
 ### Complex Example
@@ -50,14 +62,17 @@ Use search to discover relevant pages from a query, then pick URLs to scrape or 
 ```elixir
 {:ok, res} = Firecrawl.search_and_scrape(
   query: "site:docs.firecrawl.dev crawl webhooks",
-  sources: [:web, :news],
-  categories: [:research],
+  sources: ["web", "news"],
+  categories: ["research"],
+  include_domains: ["docs.firecrawl.dev"],
+  exclude_domains: ["old.firecrawl.dev"],
   limit: 10,
   tbs: "qdr:m",
   location: "San Francisco,California,United States",
   country: "US",
   ignore_invalid_urls: true,
   timeout: 60000,
+  highlights: true,
   scrape_options: [
     formats: [
       "markdown",
@@ -72,65 +87,95 @@ Use search to discover relevant pages from a query, then pick URLs to scrape or 
 )
 ```
 
+### Return value
+
+Returns `{:ok, Req.Response.t()}`. Parse `res.body` for the JSON response. The body contains optional keys:
+
+- `"web"` — web hits (list of result maps, or full document maps when `scrape_options` hydrates content)
+- `"news"` — news hits
+- `"images"` — image hits
+
+Omitted keys are absent when the API did not return that source.
+
+**Wrong turn to avoid:** `search_and_scrape` does not return `%{"data" => [...]}`. Do not access `res.body["data"]`. Web results are in `res.body["web"]`, news in `res.body["news"]`, images in `res.body["images"]`.
+
 ### Parameters
 
 - `query`
   - Type: string
+  - Required: yes
   - Use when: you need a search query.
   - Notes: use `site:example.com` to limit results to a domain.
 
 - `sources`
-  - Type: list of atoms, strings, or maps
+  - Type: list of any (strings or maps)
+  - JSON key: `sources`
   - Use when: you want to control which sources are searched.
-  - Confirmed values:
-    - `"web"` or `:web`
-    - `"news"` or `:news`
-    - `"images"` or `:images`
-    - `%{type: "web" | "news" | "images"}`
+  - Confirmed values: `"web"`, `"news"`, `"images"`
 
 - `categories`
-  - Type: list of atoms, strings, or maps
+  - Type: list of any (strings or maps)
+  - JSON key: `categories`
   - Use when: you want to filter results by category.
-  - Confirmed values:
-    - `"developer"` or `:developer`
-    - `"research"` or `:research`
-    - `"pdf"` or `:pdf`
-    - `%{type: "developer" | "research" | "pdf"}`
+  - Confirmed values: `"developer"`, `"research"`, `"pdf"`
+
+- `include_domains`
+  - Type: list of strings
+  - JSON key: `includeDomains`
+  - Use when: you want to restrict results to specific domains.
+
+- `exclude_domains`
+  - Type: list of strings
+  - JSON key: `excludeDomains`
+  - Use when: you want to exclude results from specific domains.
 
 - `limit`
   - Type: integer
+  - JSON key: `limit`
   - Use when: you want to cap results.
 
 - `tbs`
   - Type: string
+  - JSON key: `tbs`
   - Use when: you need a time-based filter (for example `qdr:d`, `qdr:w`, `sbd:1,qdr:m`).
 
 - `location`
   - Type: string
+  - JSON key: `location`
   - Use when: you want localized results.
 
 - `country`
   - Type: string
+  - JSON key: `country`
   - Use when: you want ISO 3166-1 alpha-2 targeting (for example `"US"`).
 
 - `ignore_invalid_urls`
   - Type: boolean
+  - JSON key: `ignoreInvalidURLs`
   - Use when: you want to drop URLs that cannot be scraped by other endpoints.
 
 - `timeout`
   - Type: integer
+  - JSON key: `timeout`
   - Use when: you need a request timeout in milliseconds.
+
+- `highlights`
+  - Type: boolean
+  - JSON key: `highlights`
+  - Use when: you want highlighted snippets in results. API default is `true`.
+
+- `scrape_options`
+  - Type: keyword list
+  - JSON key: `scrapeOptions`
+  - Use when: you want to scrape each search result (see Scrape parameters for fields).
 
 - `enterprise`
   - Type: list of strings
+  - JSON key: `enterprise`
   - Use when: you need enterprise search controls.
   - Confirmed values:
     - `"zdr"`: end-to-end zero data retention
     - `"anon"`: anonymized zero data retention
-
-- `scrape_options`
-  - Type: keyword list
-  - Use when: you want to scrape each search result (see Scrape parameters for fields).
 
 ## Scrape
 
@@ -140,7 +185,9 @@ Use scrape when you already have a URL and want structured content in one or mor
 
 ### Preferred SDK method
 
-`Firecrawl.scrape_and_extract_from_url(params \\ [], opts \\ [])`
+`Firecrawl.scrape_and_extract_from_url(params \\ [], opts \\ [])` → `{:ok, Req.Response.t()} | {:error, Exception.t()}`
+
+Bang variant: `Firecrawl.scrape_and_extract_from_url!(params \\ [], opts \\ [])` → `Req.Response.t()`
 
 ### Simple Example
 
@@ -149,6 +196,8 @@ Use scrape when you already have a URL and want structured content in one or mor
   url: "https://docs.firecrawl.dev",
   formats: ["markdown"]
 )
+
+markdown = res.body["data"]["markdown"]
 ```
 
 ### Complex Example
@@ -164,8 +213,12 @@ Use scrape when you already have a URL and want structured content in one or mor
     %{type: "changeTracking", modes: ["git-diff"], tag: "pricing"}
   ],
   headers: %{"User-Agent" => "FirecrawlDocsBot/1.0"},
+  include_tags: ["main", "article"],
+  exclude_tags: ["nav", "footer"],
   only_main_content: true,
+  timeout: 30000,
   wait_for: 1000,
+  mobile: false,
   parsers: [%{type: "pdf", mode: "auto", maxPages: 5}],
   actions: [
     %{type: "click", selector: "#accept"},
@@ -173,12 +226,16 @@ Use scrape when you already have a URL and want structured content in one or mor
     %{type: "scrape"}
   ],
   location: [country: "US", languages: ["en-US"]],
+  skip_tls_verification: false,
   remove_base64_images: true,
   block_ads: true,
   proxy: :auto,
   max_age: 86400000,
   min_age: 1,
   store_in_cache: true,
+  lockdown: false,
+  redact_pii: false,
+  audit_metadata: [username: "agent@example.com"],
   profile: [name: "docs-session", save_changes: true],
   zero_data_retention: false
 )
@@ -188,10 +245,12 @@ Use scrape when you already have a URL and want structured content in one or mor
 
 - `url`
   - Type: string
+  - Required: yes
   - Use when: you want to scrape a specific page.
 
 - `formats`
-  - Type: list of format strings or format maps
+  - Type: list of any (format strings or format maps)
+  - JSON key: `formats`
   - Use when: you want multiple output formats.
   - Confirmed format strings:
     - `"markdown"`: markdown content
@@ -213,42 +272,51 @@ Use scrape when you already have a URL and want structured content in one or mor
     - `fullPage`, `quality`, `viewport`: screenshot options for `type: "screenshot"`
 
 - `headers`
-  - Type: map
+  - Type: any (map)
+  - JSON key: `headers`
   - Use when: you need custom request headers.
 
 - `include_tags`
   - Type: list of strings
+  - JSON key: `includeTags`
   - Use when: you want to include only specific HTML tags.
 
 - `exclude_tags`
   - Type: list of strings
+  - JSON key: `excludeTags`
   - Use when: you want to exclude specific HTML tags.
 
 - `only_main_content`
   - Type: boolean
+  - JSON key: `onlyMainContent`
   - Use when: you want to strip nav, footer, and other boilerplate.
 
 - `timeout`
   - Type: integer
+  - JSON key: `timeout`
   - Use when: you need a timeout in milliseconds.
 
 - `wait_for`
   - Type: integer
+  - JSON key: `waitFor`
   - Use when: you need to wait for the page to render (milliseconds).
 
 - `mobile`
   - Type: boolean
+  - JSON key: `mobile`
   - Use when: you want a mobile viewport.
 
 - `parsers`
-  - Type: list of parser strings or maps
+  - Type: list of any (parser strings or maps)
+  - JSON key: `parsers`
   - Use when: you need file parsing controls.
   - Confirmed values:
     - `"pdf"`
     - `%{type: "pdf", mode: "fast" | "auto" | "ocr", maxPages: integer}`
 
 - `actions`
-  - Type: list of action maps
+  - Type: list of any (action maps)
+  - JSON key: `actions`
   - Use when: you need lightweight pre-scrape actions.
   - Confirmed action types:
     - `wait`: `milliseconds` or `selector` required
@@ -263,43 +331,70 @@ Use scrape when you already have a URL and want structured content in one or mor
 
 - `location`
   - Type: keyword list (for example `country:` and `languages:`)
+  - JSON key: `location`
   - Use when: you need geo or language-aware scraping.
 
 - `skip_tls_verification`
   - Type: boolean
+  - JSON key: `skipTlsVerification`
   - Use when: you need to skip TLS verification.
 
 - `remove_base64_images`
   - Type: boolean
+  - JSON key: `removeBase64Images`
   - Use when: you want to drop base64 images from markdown output.
 
 - `block_ads`
   - Type: boolean
+  - JSON key: `blockAds`
   - Use when: you want ad and cookie popup blocking.
 
 - `proxy`
-  - Type: atom or string
+  - Type: atom
+  - JSON key: `proxy`
   - Use when: you need proxy control.
   - Confirmed values: `:basic`, `:enhanced`, `:auto`
+  - Notes: `:stealth` is NOT in the Elixir SDK's NimbleOptions validation.
 
 - `max_age`
   - Type: integer
+  - JSON key: `maxAge`
   - Use when: you want cached data up to a maximum age (milliseconds).
 
 - `min_age`
   - Type: integer
+  - JSON key: `minAge`
   - Use when: you want cached data only if it is at least this old (milliseconds).
 
 - `store_in_cache`
   - Type: boolean
+  - JSON key: `storeInCache`
   - Use when: you want Firecrawl to cache the result.
 
+- `lockdown`
+  - Type: boolean
+  - JSON key: `lockdown`
+  - Use when: you want to enable lockdown mode for the scrape.
+
+- `redact_pii`
+  - Type: boolean
+  - JSON key: `redactPII`
+  - Use when: you want to redact personally identifiable information from the output.
+
+- `audit_metadata`
+  - Type: keyword list (keys: `username` string, required)
+  - JSON key: `auditMetadata`
+  - Use when: you need to attach audit metadata to the scrape.
+
 - `profile`
-  - Type: keyword list with `name:` and optional `save_changes:` (or `saveChanges:`)
+  - Type: keyword list
+  - JSON key: `profile`
   - Use when: you want a persistent browser profile shared across scrapes and interactions.
+  - Keys: `name` (string), `save_changes` (boolean)
 
 - `zero_data_retention`
   - Type: boolean
+  - JSON key: `zeroDataRetention`
   - Use when: you want zero data retention for this scrape.
 
 ## Interact
@@ -310,17 +405,31 @@ Use interact when a page requires browser actions or code execution after a scra
 
 ### Preferred SDK method
 
-`Firecrawl.interact_with_scrape_browser_session(job_id, params \\ [], opts \\ [])`
+`Firecrawl.interact_with_scrape_browser_session(job_id, params \\ [], opts \\ [])` → `{:ok, Req.Response.t()} | {:error, Exception.t()}`
+
+Bang variant: `Firecrawl.interact_with_scrape_browser_session!(job_id, params, opts)` → `Req.Response.t()`
+
+**Important:** The Elixir SDK interact is code-only based on the NimbleOptions schema. There is no `prompt` parameter — use `code` with a browser automation script instead.
 
 ### Simple Example
 
 ```elixir
+# First scrape to get a job ID
+{:ok, scrape_res} = Firecrawl.scrape_and_extract_from_url(
+  url: "https://example.com",
+  formats: ["markdown"]
+)
+job_id = scrape_res.body["data"]["metadata"]["scrapeId"]
+
+# Then interact with the browser session
 {:ok, res} = Firecrawl.interact_with_scrape_browser_session(
-  "<scrapeJobId>",
+  job_id,
   code: "console.log(await page.title());",
   language: :node,
   timeout: 60
 )
+
+IO.inspect(res.body)
 ```
 
 ### Complex Example
@@ -328,7 +437,17 @@ Use interact when a page requires browser actions or code execution after a scra
 ```elixir
 {:ok, res} = Firecrawl.interact_with_scrape_browser_session(
   "<scrapeJobId>",
-  code: "// Use Playwright page methods here",
+  code: """
+  await page.click('#pricing-tab');
+  await page.waitForSelector('.plan-card');
+  const plans = await page.$$eval('.plan-card', cards =>
+    cards.map(c => ({
+      name: c.querySelector('h3')?.textContent,
+      price: c.querySelector('.price')?.textContent
+    }))
+  );
+  console.log(JSON.stringify(plans));
+  """,
   language: :node,
   timeout: 120
 )
@@ -337,29 +456,50 @@ Use interact when a page requires browser actions or code execution after a scra
 ### Parameters
 
 - `job_id`
-  - Type: string
-  - Use when: you have a scrape job ID.
+  - Type: String.t()
+  - Required: yes (first argument, path parameter)
+  - Use when: you have a scrape job ID from the scrape response metadata.
 
 - `code`
   - Type: string
+  - Required: yes
   - Use when: you want to run code in the browser session.
 
 - `language`
-  - Type: atom or string
+  - Type: atom
+  - JSON key: `language`
   - Use when: you need a specific runtime.
-  - Confirmed values: `:python`, `:node`, `:bash` (or the string equivalents)
+  - Confirmed values: `:python`, `:node`, `:bash`
 
 - `timeout`
   - Type: integer
+  - JSON key: `timeout`
   - Use when: you need an execution timeout in seconds.
 
 - `origin`
   - Type: string
+  - JSON key: `origin`
   - Use when: you want an optional origin label for execution telemetry.
 
-### Stop interactive session
+### Return value
 
-`Firecrawl.stop_interactive_scrape_browser_session(job_id, opts \\ [])` issues `DELETE /scrape/{jobId}/interact` and tears down the browser session for that scrape job. A bang variant `stop_interactive_scrape_browser_session!/2` is also available.
+Returns `{:ok, Req.Response.t()}`. Parse `res.body` for the JSON response. The body may contain:
+
+- `"success"` — boolean
+- `"output"` — string output from the executed code
+- `"stdout"` — standard output
+- `"stderr"` — standard error
+- `"exitCode"` — exit code of the execution
+- `"killed"` — whether the process was killed (timeout)
+- `"error"` — error message if execution failed
+- `"liveViewUrl"` — URL to view the browser session live
+- `"interactiveLiveViewUrl"` — URL to interact with the browser session live
+
+### Stop session
+
+`Firecrawl.stop_interactive_scrape_browser_session(job_id, opts \\ [])` issues `DELETE /scrape/{jobId}/interact` and tears down the browser session for that scrape job.
+
+Bang variant: `Firecrawl.stop_interactive_scrape_browser_session!(job_id, opts \\ [])` → `Req.Response.t()`
 
 ```elixir
 {:ok, res} = Firecrawl.stop_interactive_scrape_browser_session("<scrapeJobId>")
@@ -367,9 +507,15 @@ Use interact when a page requires browser actions or code execution after a scra
 
 ## Notes
 
-- The Elixir client is OpenAPI-shaped; function names and parameter keys are generated from the spec.
-- Each public function has a bang (`!`) variant that raises on error instead of returning `{:error, _}`.
-- This SDK exposes code-based interactions only (no `prompt` parameter on `interact_with_scrape_browser_session`).
+- Auto-generated from the OpenAPI spec via `generate.exs`. Do not rename functions.
+- All public functions have bang (`!`) variants that raise on error instead of returning `{:error, _}`.
+- Params are validated at call time via NimbleOptions.
+- Snake_case Elixir keys are mapped to camelCase JSON keys automatically.
+- SDK version is embedded at compile time and sent as `origin` in every request.
+- Returns raw `Req.Response.t()` — parse `.body` for the JSON response.
+- `:stealth` proxy is NOT in the Elixir SDK's NimbleOptions validation (only `:basic`, `:enhanced`, `:auto`).
+- No `fast_mode` parameter in the Elixir SDK.
+- No `prompt` parameter on `interact_with_scrape_browser_session` — the Elixir SDK is code-only for interact.
 
 ## Source Of Truth
 
