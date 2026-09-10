@@ -54,17 +54,17 @@ openapi: '/zh/api-reference/v2-openapi.json POST /search'
   ## Categories 参数
 </div>
 
-使用 `categories` 参数按特定类别筛选搜索结果：
+使用 `categories` 参数按特定分类筛选搜索结果：
 
-* **`research`**：将网页搜索限定为学术和研究**网站** (arxiv.org、nature.com、ieee.org、pubmed.ncbi.nlm.nih.gov、biorxiv.org、medrxiv.org 等) 。返回带 snippet 的常规网页结果，而非论文记录
+* **`research`**：将网页搜索限定在学术与科研类网站 (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov 等) 。自 2026-11-16 起将改为搜索[研究索引](/zh/features/research)并返回论文记录，请参见下方警告
 * **`pdf`**：搜索 PDF
-* **`developer`**：搜索 [Developer Index](/zh/features/developer)——包括公开代码仓库中的 issue、已合并的 pull request 和 README，以及精选文档网站
+* **`developer`**：搜索[开发者索引](/zh/features/developer)——公开代码仓库中的 issue、已合并的 pull request 和 README，以及经过精选的文档站点
 
-<Note>
-  **`research` 是网站筛选条件，不是论文索引。**它会将此端点的网页结果限定在固定的学术域名列表中。
+<Warning>
+  **`research` 分类将自 2026-11-16 起变更。** 它将搜索[研究索引](/zh/features/research) (PubMed、bioRxiv、medRxiv、arXiv) ，而不再把网页结果限定在 14 个学术网站。结果将从 `data.web` 移至 `data.research`，并以论文记录的形式返回：`paperId`、`primaryId`、`ids`、`title`、`abstract`、`score`。在此之前，凡使用该分类的响应都会附带一个 `warnings` 条目。
 
-  如需直接搜索科学文献——包括 PubMed、bioRxiv、medRxiv 和 arXiv 中的论文摘要，以及读取论文内段落和扩展引用图谱——请使用 [研究索引](/zh/features/research) 的 [`GET /search/research/papers`](/zh/api-reference/endpoint/research-search-papers)。
-</Note>
+  如果你需要论文记录，请在该日期前更新解析逻辑，或现在就改用 [`GET /search/research/papers`](/zh/api-reference/endpoint/research-search-papers)。如果你需要来自学术网站的网页，请改用 [`includeDomains`](#domain-filters)。
+</Warning>
 
 <div id="example-usage">
   ### 使用示例

@@ -56,15 +56,15 @@ Ejemplos: `"US"`, `"DE"`, `"FR"`, `"JP"`, `"UK"`, `"CA"`.
 
 Filtra los resultados de búsqueda por categorías específicas mediante el parámetro `categories`:
 
-* **`research`**: Limita la búsqueda web a **sitios web** académicos y de investigación (arxiv.org, nature.com, ieee.org, pubmed.ncbi.nlm.nih.gov, biorxiv.org, medrxiv.org y similares). Devuelve resultados de páginas web convencionales con fragmentos, no registros de artículos
-* **`pdf`**: Busca archivos PDF
-* **`developer`**: Busca en el [Developer Index](/es/features/developer): issues, pull requests fusionadas y archivos README de repositorios de código públicos, además de sitios de documentación seleccionados
+* **`research`**: Restringe la búsqueda web a sitios académicos y de investigación (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov y similares). A partir del 2026-11-16 buscará en el [Research Index](/es/features/research) y devolverá registros de artículos; consulta la advertencia más abajo
+* **`pdf`**: Busca PDFs
+* **`developer`**: Busca en el [Developer Index](/es/features/developer): issues, pull requests fusionados y archivos README de repositorios de código públicos, además de sitios de documentación seleccionados
 
-<Note>
-  **`research` es un filtro de sitios web, no el índice de artículos.** Limita los resultados web de este endpoint a una lista fija de dominios académicos.
+<Warning>
+  **La categoría `research` cambia el 2026-11-16.** Buscará en el [Research Index](/es/features/research) (PubMed, bioRxiv, medRxiv, arXiv) en lugar de limitar los resultados web a 14 sitios académicos. Los resultados pasarán de `data.web` a `data.research` y se devolverán como registros de artículos: `paperId`, `primaryId`, `ids`, `title`, `abstract`, `score`. Hasta entonces, cada respuesta que la utilice incluirá una entrada `warnings`.
 
-  Para buscar literatura científica directamente —resúmenes de artículos de PubMed, bioRxiv, medRxiv y arXiv, además de la lectura de pasajes dentro de artículos y la expansión del grafo de citas—, utiliza el [Research Index](/es/features/research) en [`GET /search/research/papers`](/es/api-reference/endpoint/research-search-papers).
-</Note>
+  Si necesitas registros de artículos, actualiza tu parsing antes de esa fecha o llama hoy mismo a [`GET /search/research/papers`](/es/api-reference/endpoint/research-search-papers). Si necesitas páginas web de sitios académicos, cambia a [`includeDomains`](#domain-filters).
+</Warning>
 
 <div id="example-usage">
   ### Ejemplo de uso

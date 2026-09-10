@@ -51,20 +51,20 @@ openapi: '/ja/api-reference/v2-openapi.json POST /search'
 ```
 
 <div id="categories-parameter">
-  ## Categories パラメータ
+  ## Categories Parameter
 </div>
 
-`categories` パラメータを使用して、特定のカテゴリで検索結果を絞り込みます。
+`categories` パラメータを使うと、search results を特定のカテゴリで絞り込めます。
 
-* **`research`**: Web 検索を学術・研究 **Web サイト** (arxiv.org、nature.com、ieee.org、pubmed.ncbi.nlm.nih.gov、biorxiv.org、medrxiv.org など) に限定します。論文レコードではなく、スニペット付きの通常の Web ページ結果を返します
-* **`pdf`**: PDF を検索
-* **`developer`**: [Developer Index](/ja/features/developer) を検索 — 公開コードリポジトリの Issue、マージ済みのプルリクエスト、README、および厳選されたドキュメントサイトを対象に検索します
+* **`research`**: web search を学術・研究 Web サイト (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov など) に限定します。2026-11-16 より [Research Index](/ja/features/research) を検索して paper レコードを返す仕様に変わります。詳細は以下の警告を参照してください
+* **`pdf`**: PDF を検索します
+* **`developer`**: [Developer Index](/ja/features/developer) を検索します — 公開コードリポジトリの issues、マージ済みのプルリクエスト、README に加え、厳選されたドキュメントサイトが対象です
 
-<Note>
-  **`research` は論文インデックスではなく、Web サイト用のフィルターです。** このエンドポイントの Web 検索結果を、あらかじめ定められた学術ドメインのリストに絞り込みます。
+<Warning>
+  **`research` カテゴリは 2026-11-16 に変更されます。** web の結果を 14 の学術 Web サイトに絞り込むのではなく、[Research Index](/ja/features/research) (PubMed、bioRxiv、medRxiv、arXiv) を検索するようになります。結果は `data.web` から `data.research` へ移り、paper レコードとして返されます: `paperId`、`primaryId`、`ids`、`title`、`abstract`、`score`。それまでの間、このカテゴリを使用するレスポンスにはすべて `warnings` エントリが含まれます。
 
-  科学文献を直接検索するには、PubMed、bioRxiv、medRxiv、arXiv の論文要旨に加え、論文内のパッセージ読み取りや引用グラフの展開を利用できる [Research Index](/ja/features/research) の [`GET /search/research/papers`](/ja/api-reference/endpoint/research-search-papers) を使用してください。
-</Note>
+  paper レコードが必要な場合は、この日付までに parsing を更新するか、今すぐ [`GET /search/research/papers`](/ja/api-reference/endpoint/research-search-papers) を呼び出してください。学術サイトの Web ページが必要な場合は、[`includeDomains`](#domain-filters) に切り替えてください。
+</Warning>
 
 <div id="example-usage">
   ### 使い方の例

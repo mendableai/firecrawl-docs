@@ -51,20 +51,20 @@ Exemples : `"US"`, `"DE"`, `"FR"`, `"JP"`, `"UK"`, `"CA"`.
 ```
 
 <div id="categories-parameter">
-  ## Paramètre Categories
+  ## Paramètre categories
 </div>
 
-Filtrez les résultats de recherche par catégories spécifiques à l’aide du paramètre `categories` :
+Filtrez les résultats de recherche par catégories spécifiques à l&#39;aide du paramètre `categories` :
 
-* **`research`** : limitez la recherche web aux **sites web** académiques et de recherche (arxiv.org, nature.com, ieee.org, pubmed.ncbi.nlm.nih.gov, biorxiv.org, medrxiv.org et similaires). Renvoie des résultats de pages web classiques avec des snippets, et non des enregistrements de publications
-* **`pdf`** : recherchez des PDF
-* **`developer`** : recherchez dans le [Developer Index](/fr/features/developer) — tickets, pull requests fusionnées et README de dépôts de code publics, ainsi que des sites de documentation sélectionnés
+* **`research`** : restreint la recherche web aux sites universitaires et de recherche (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov et similaires). À partir du 2026-11-16, cette catégorie interrogera le [Research Index](/fr/features/research) et renverra des enregistrements de publications ; voir l&#39;avertissement ci-dessous
+* **`pdf`** : recherche des PDF
+* **`developer`** : interroge le [Developer Index](/fr/features/developer) — tickets, pull requests fusionnées et README de dépôts de code publics, ainsi que des sites de documentation sélectionnés
 
-<Note>
-  **`research` est un filtre de sites web, et non l’index des publications.** Il limite les résultats web de ce point de terminaison à une liste fixe de domaines académiques.
+<Warning>
+  **La catégorie `research` change le 2026-11-16.** Elle interrogera le [Research Index](/fr/features/research) (PubMed, bioRxiv, medRxiv, arXiv) au lieu de restreindre les résultats web à 14 sites universitaires. Les résultats passeront de `data.web` à `data.research` et seront renvoyés sous forme d&#39;enregistrements de publications : `paperId`, `primaryId`, `ids`, `title`, `abstract`, `score`. D&#39;ici là, chaque réponse qui l&#39;utilise comporte une entrée `warnings`.
 
-  Pour rechercher directement la littérature scientifique — résumés de publications sur PubMed, bioRxiv, medRxiv et arXiv, lecture de passages dans les publications et extension du graphe de citations — utilisez le [Research Index](/fr/features/research) via [`GET /search/research/papers`](/fr/api-reference/endpoint/research-search-papers).
-</Note>
+  Si vous souhaitez obtenir des enregistrements de publications, adaptez votre parsing avant cette date ou appelez dès aujourd&#39;hui [`GET /search/research/papers`](/fr/api-reference/endpoint/research-search-papers). Si vous souhaitez des pages web issues de sites universitaires, basculez sur [`includeDomains`](#domain-filters).
+</Warning>
 
 <div id="example-usage">
   ### Exemple d’utilisation

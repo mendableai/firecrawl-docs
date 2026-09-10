@@ -113,20 +113,20 @@ SDKs は data オブジェクトを直接返します。cURL は完全なペイ�
 1 回の呼び出しで複数のソースを指定できます (例: `sources: ["web", "news"]`) 。この場合、`limit` パラメータは**ソースタイプごと**に適用されます。そのため、`limit: 5` かつ `sources: ["web", "news"]` の場合、最大 5 件の web 結果と最大 5 件の news 結果 (合計 10 件) が返されます。ソースごとに異なるパラメータ (たとえば、異なる `limit` 値や異なる `scrapeOptions`) が必要な場合は、別々の呼び出しを行ってください。
 
 <div id="search-categories">
-  ## 検索カテゴリ
+  ## Search Categories
 </div>
 
-`categories` パラメータを使用して、検索結果を特定のカテゴリに絞り込めます。
+`categories` パラメータを使って、特定のカテゴリで検索結果を絞り込みます:
 
-* `research`: Web 検索を学術・研究 **Web サイト** (arxiv.org、nature.com、ieee.org、pubmed.ncbi.nlm.nih.gov、biorxiv.org、medrxiv.org など) に限定します。論文レコードではなく、スニペット付きの通常の Web ページ結果を返します。論文自体を検索するには、[Research Index](/ja/features/research) を使用してください
-* `pdf`: PDF を検索
-* `developer`: [Developer Index](/ja/features/developer) を検索 — 公開コードリポジトリの Issue、マージ済みのプルリクエスト、README と、厳選されたドキュメントサイトが対象です
+* `research`: web search を学術・研究 Web サイト (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov など) に限定します。2026-11-16 に [Research Index](/ja/features/research) を検索して paper レコードを返す仕様に変更されます。下記の警告を参照してください
+* `pdf`: PDF を検索します
+* `developer`: [Developer Index](/ja/features/developer) を検索します — 公開コードリポジトリの issues、マージ済みのプルリクエスト、README に加えて、厳選されたドキュメントサイトが対象です
 
-<Note>
-  **`research` は論文インデックスではなく、Web サイトのフィルターです。** 通常の Web 検索を固定の学術ドメイン一覧に限定し、それらのページのスニペットを返します。
+<Warning>
+  **`research` カテゴリは 2026-11-16 に変更されます。** web の結果を 14 の学術 Web サイトに絞り込むのではなく、[Research Index](/ja/features/research) (PubMed、bioRxiv、medRxiv、arXiv) を検索するようになります。結果は `data.web` から `data.research` に移り、paper レコード (`paperId`、`primaryId`、`ids`、`title`、`abstract`、`score`) として返されます。それまでの間、このカテゴリを使用したレスポンスにはすべて `warnings` エントリが含まれます。
 
-  PubMed、bioRxiv、medRxiv、arXiv の論文インデックスで、完全なアブストラクト、論文内の本文箇所、citation グラフの拡張を含む科学文献を検索するには、[Research Index](/ja/features/research) を使用してください。
-</Note>
+  paper レコードが必要な場合は、その日付までに parsing を更新するか、今すぐ [`GET /search/research/papers`](/ja/api-reference/endpoint/research-search-papers) を呼び出してください。学術サイトの web ページが必要な場合は、[`includeDomains`](#domain-filters) に切り替えてください。
+</Warning>
 
 <div id="research-category-search">
   ### 研究カテゴリ検索

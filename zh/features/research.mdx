@@ -27,15 +27,19 @@ Firecrawl Research 是一个专为科学与工程研究代理构建的专用索�
   ## 与 `/search` 的关系
 </div>
 
+<Note>
+  自 2026-11-16 起，`/search` 上的 `categories: ["research"]` 将搜索该索引，并在 `data.research` 中返回相同的论文记录。下表描述的是在此之前的行为。请参见[搜索类别](/zh/features/search#search-categories)。
+</Note>
+
 Firecrawl 中有两个名为“research”的功能，它们并不是同一项功能：
 
-|          | 研究索引 (本页)                                                | 使用 `categories: ["research"]` 的 `/search`                                 |
-| :------- | -------------------------------------------------------- | ------------------------------------------------------------------------- |
-| 搜索范围     | 包含约 4300 万篇摘要的论文索引——PubMed、bioRxiv、medRxiv、arXiv         | 开放网页，但仅限约 14 个学术**网站** (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov、……)  |
-| 返回内容     | 排序后的论文记录：规范的 `paperId`、`primaryId`、来源 ID、标题、完整摘要、评分 | 普通网页结果：URL、标题、snippet                                                     |
-| 能否阅读论文内容 | 可以——通过 `GET /search/research/papers/{id}` 按段落阅读          | 不可以                                                                       |
-| 能否通过引用扩展 | 可以——`GET /search/research/papers/{id}/similar`           | 不可以                                                                       |
-| 端点 | `GET /search/research/papers`                            | `POST /search`                                                            |
+|          | 研究索引 (本页)                                           | 使用 `categories: ["research"]` 的 `/search`                                |
+| :------- | --------------------------------------------------- | ------------------------------------------------------------------------ |
+| 搜索范围     | 包含约 4300 万篇摘要的论文索引——PubMed、bioRxiv、medRxiv、arXiv    | 开放网页，但仅限约 14 个学术**网站** (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov、……) |
+| 返回内容     | 排序后的论文记录：规范的 `paperId`、`primaryId`、来源 ID、标题、完整摘要、评分 | 普通网页结果：URL、标题、snippet                                                    |
+| 能否阅读论文内容 | 可以——通过 `GET /search/research/papers/{id}` 按段落阅读     | 不可以                                                                      |
+| 能否通过引用扩展 | 可以——`GET /search/research/papers/{id}/similar`      | 不可以                                                                      |
+| 端点       | `GET /search/research/papers`                       | `POST /search`                                                           |
 
 进行文献研究时——查找论文、阅读论文、追踪引用——请使用研究索引。如果您想获取位于学术域名上的普通网页，请使用 [`categories: ["research"]`](/zh/features/search#search-categories)。
 

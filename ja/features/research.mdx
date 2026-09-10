@@ -27,15 +27,19 @@ Firecrawl Research は、科学・工学分野の研究エージェント向け�
   ## `/search` との違い
 </div>
 
+<Note>
+  2026-11-16 以降、`/search` の `categories: ["research"]` はこのインデックスを検索し、同じ論文レコードを `data.research` に返します。以下の表は、それまでの動作について説明したものです。[検索カテゴリ](/ja/features/search#search-categories)を参照してください。
+</Note>
+
 Firecrawl には「research」という名前の機能が 2 つありますが、同じものではありません。
 
-|                  | Research Index (このページ)                                        | `categories: ["research"]` を指定した `/search`                                          |
-| :--------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+|                  | Research Index (このページ)                                             | `categories: ["research"]` を指定した `/search`                                          |
+| :--------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
 | 検索対象             | PubMed、bioRxiv、medRxiv、arXiv を含む、約 4,300 万件のアブストラクトを収録した論文インデックス   | 約 14 の学術 **Web サイト** (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov、…) に限定したオープン Web |
 | 返される内容           | ランク付けされた論文レコード: 正規 `paperId`、`primaryId`、ソース ID、タイトル、全文アブストラクト、スコア | 通常の Web 検索結果: URL、タイトル、スニペット                                                        |
-| 論文の内容を読めるか       | はい — `GET /search/research/papers/{id}` による本文箇所単位の取得         | いいえ                                                                                 |
-| 引用をたどって関連論文を探せるか | はい — `GET /search/research/papers/{id}/similar`               | いいえ                                                                                 |
-| エンドポイント          | `GET /search/research/papers`                                 | `POST /search`                                                                      |
+| 論文の内容を読めるか       | はい — `GET /search/research/papers/{id}` による本文箇所単位の取得               | いいえ                                                                                 |
+| 引用をたどって関連論文を探せるか | はい — `GET /search/research/papers/{id}/similar`                    | いいえ                                                                                 |
+| エンドポイント          | `GET /search/research/papers`                                      | `POST /search`                                                                      |
 
 論文の検索や閲覧、引用の追跡など、文献調査には Research Index を使用してください。学術ドメイン上の通常の Web ページを検索したい場合は、[`categories: ["research"]`](/ja/features/search#search-categories) を使用してください。
 
