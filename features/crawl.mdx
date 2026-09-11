@@ -301,6 +301,7 @@ Coverage is bounded by the scope parameters you set, all documented in the [conf
 
 - **Children only by default.** Crawl ignores sublinks that are not children of the URL you provide. Use `crawlEntireDomain` for sibling and parent paths, `allowSubdomains` for subdomains, and `allowExternalLinks` to follow links off the domain.
 - **`includePaths` / `excludePaths` match the URL pathname**, as regex patterns — not the full URL, and not query parameters. Set `regexOnFullURL: true` to match against the full URL including query strings instead. The starting URL is also checked against `includePaths`: if it does not match, the crawl may return 0 pages.
+- **Path patterns are Rust regex (RE2-style) and are validated up front.** Look-around and backreferences are not supported, and a pattern that does not compile is rejected with a `400` instead of being silently ignored. Each field accepts at most 1000 patterns of at most 2000 characters each, and `includePaths` and `excludePaths` together may contain at most 1000 patterns and 100,000 characters. For keyword-style filtering, send one short pattern per term (`["pricing", "docs", "blog"]`) rather than combining terms into one long alternation.
 - **Sitemap mode.** With the default `sitemap: "include"`, URLs come from the sitemap plus recursive link discovery. `"skip"` uses HTML links only, so sitemap-only pages such as PDFs or deeply nested pages are missed. `"only"` crawls the sitemap plus the start URL and does not discover links from HTML.
 - **`maxDiscoveryDepth`** caps how many link-discovery hops from the root are followed. Pages at the maximum depth are still scraped, but links found on them are not followed.
 - **`limit`** caps the number of pages, and defaults to `10000`.
@@ -331,8 +332,8 @@ The full set of parameters available when submitting a crawl job:
 | `url` | `string` | (required) | The starting URL to crawl from |
 | `limit` | `integer` | `10000` | Maximum number of pages to crawl |
 | `maxDiscoveryDepth` | `integer` | (none) | Maximum depth from the root URL based on link-discovery hops, not the number of `/` segments in the URL. Each time a new URL is found on a page, it is assigned a depth one higher than the page it was discovered on. The root site and sitemapped pages have a discovery depth of 0. Pages at the max depth are still scraped, but links on them are not followed. |
-| `includePaths` | `string[]` | (none) | URL pathname regex patterns to include. Only matching paths are crawled. |
-| `excludePaths` | `string[]` | (none) | URL pathname regex patterns to exclude from the crawl |
+| `includePaths` | `string[]` | (none) | URL pathname regex patterns to include. Only matching paths are crawled. At most 1000 patterns of 2000 characters each; see [scope](#what-the-crawler-is-scoped-to-reach) for the combined limit and regex syntax. |
+| `excludePaths` | `string[]` | (none) | URL pathname regex patterns to exclude from the crawl. Same limits as `includePaths`. |
 | `regexOnFullURL` | `boolean` | `false` | Match `includePaths`/`excludePaths` against the full URL (including query parameters) instead of just the pathname |
 | `crawlEntireDomain` | `boolean` | `false` | Follow internal links to sibling or parent URLs, not just child paths |
 | `allowSubdomains` | `boolean` | `false` | Follow links to subdomains of the main domain |
