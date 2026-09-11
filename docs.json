@@ -5188,8 +5188,16 @@
       "source": "/api-reference/v1/crawl"
     },
     {
-      "destination": "/api-reference/introduction",
+      "destination": "/api-reference/v2-introduction",
       "source": "/api-reference/v1-introduction"
+    },
+    {
+      "destination": "/api-reference/v2-introduction",
+      "source": "/api-reference/introduction"
+    },
+    {
+      "destination": "/api-reference/v2-introduction",
+      "source": "/api-reference"
     },
     {
       "destination": "/api-reference/endpoint/activity",
