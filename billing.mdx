@@ -40,8 +40,15 @@ Certain scrape options add credits on top of the base cost per page:
 | JSON format (LLM extraction) | +4 credits / page | Use an LLM to extract structured JSON data from the page |
 | Prompt injection check | +4 credits / page | Opt-in `checkPromptInjection` guard for JSON format (see [Prompt injection detection](/features/llm-extract#prompt-injection-detection)). If the scrape fails after the check has run, 5 credits are billed. See [When credits are charged](#when-credits-are-charged). |
 | Zero Data Retention (ZDR) | +1 credit / page | Ensures no data is persisted beyond the request (see [Scrape ZDR](/features/scrape#zero-data-retention-zdr)) |
+| `question` or `query` format | +4 credits / page | LLM-generated answer to a question about the page (see [Scrape](/features/scrape)) |
+| `highlights` format | +4 credits / page | LLM-selected relevant passages from the page (see [Scrape](/features/scrape)) |
+| `audio` format | +4 credits / page | Transcribe audio found on the page (see [Scrape](/features/scrape)) |
+| `video` format | +4 credits / page | Transcribe video found on the page (see [Scrape](/features/scrape)) |
+| PII redaction (`redactPII`) | +4 credits / page | Redact personal data from the returned markdown. Each additional PDF page adds another +4 on top of its +1 parsing cost (see [PII redaction](/features/pii-redaction)) |
+| `lockdown` (cache hit) | +4 credits / page | Serve from cache only, never fetching the target. A cache miss returns no document and bills 1 credit (see [Lockdown](/features/lockdown) and the table below) |
+| Enhanced proxy (`proxy: "enhanced"` or `auto` escalation) | +0 | Billed at the same 1 credit as a basic request. An escalated retry is not charged separately (see [Enhanced Mode](/features/enhanced-mode)) |
 
-These modifiers stack. For example, scraping a page with both JSON format and Zero Data Retention costs **1 + 4 + 1 = 6 credits** per page. These same modifiers apply to the Crawl and Search endpoints since they use scrape internally for each page.
+These modifiers stack. For example, scraping a page with both JSON format and Zero Data Retention costs **1 + 4 + 1 = 6 credits** per page, and JSON format with PII redaction costs **1 + 4 + 4 = 9 credits**. These same modifiers apply to the Crawl and Search endpoints since they use scrape internally for each page.
 
 Requests to `x.com` and other X/Twitter URLs use the Grok API and have separate pricing. See [X (x.com) billing](#x-xcom-billing) at the bottom of this page.
 
@@ -94,6 +101,8 @@ Subscription plans bill monthly or yearly. Paid self-serve plans can also use pa
 | **Standard** | 100,000 / 130,000 / 160,000 | 25 |
 | **Growth** | 500,000 / 650,000 | 50 |
 | **Scale** | 1,000,000 | 100 |
+
+Where a tier lists more than one figure, it is sold in several credit rungs (for example Hobby at 5,000, 6,500, or 8,000 credits per month). Pick the rung on the pricing page. Concurrency is the same for every rung of a tier.
 
 <Note>
 For needs beyond Scale, Firecrawl offers **Enterprise** plans with custom credits, dedicated support, SLAs, bulk discounts, zero-data retention, and SSO. Visit the [Enterprise page](https://www.firecrawl.dev/enterprise) for details.
@@ -174,9 +183,17 @@ Credits that you buy manually do not count toward this limit.
 
 ## Running Out of Credits
 
-If your credits run out and pay-as-you-go is off, requests that consume credits return an **HTTP 402 (Payment Required)** error.
+What happens when your balance reaches zero depends on your plan and on your pay-as-you-go setting.
 
-If pay-as-you-go is on, we add a new 5 USD increment of credits when your balance reaches zero. Your requests continue.
+| Plan | Pay-as-you-go | At zero balance |
+|------|---------------|-----------------|
+| **Free** | Not available | Requests that consume credits return **HTTP 402 (Payment Required)** until the monthly reset. |
+| **Hobby, Standard, Growth, Scale** | Off (limit set to `0`) | Requests that consume credits return **HTTP 402**. Your card is not charged. |
+| **Hobby, Standard, Growth, Scale** | On | Firecrawl charges your card for one 5 USD increment and adds its credits. Your requests continue. This repeats each time the balance reaches zero, until your **monthly pay-as-you-go limit** is reached. Leave the limit blank for no cap. |
+
+While pay-as-you-go is on, requests are not cut off at exactly zero. Your plan carries an overage allowance so that a burst of requests keeps running while a top-up settles: **1,500 credits on Hobby, 30,000 on Standard, 150,000 on Growth, and 600,000 on Scale**. Once the monthly limit is reached and the allowance is used, requests return **HTTP 402** until the next billing cycle. The allowance is headroom, not extra credits you keep.
+
+Manually purchased credits (**Load more credits**) are spent before any of this applies and do not count toward the monthly pay-as-you-go limit.
 
 To resume usage after a hard stop, you can:
 
