@@ -596,6 +596,8 @@ When using the `/v2/crawl` endpoint, you can customize crawling behavior with th
 The starting URL is also checked against `includePaths`. If it does not match any of the patterns, the crawl may return 0 pages.
 </Warning>
 
+Patterns use Rust regex (RE2-style) syntax, so look-around and backreferences are not supported; a pattern that does not compile is rejected with a `400`. Each field accepts at most 1000 patterns of at most 2000 characters each, and `includePaths` and `excludePaths` together may contain at most 1000 patterns and 100,000 characters. For keyword-based filtering, send one short pattern per term instead of combining terms into a single long alternation.
+
 #### Crawl scope
 
 | Parameter | Type | Default | Description |
