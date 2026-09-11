@@ -148,7 +148,8 @@
                           "features/ip-restrictions",
                           "features/key-restrictions",
                           "features/threat-protection",
-                          "features/siem"
+                          "features/siem",
+                          "features/prompt-injection-screening"
                         ]
                       }
                     ]
@@ -718,7 +719,8 @@
                           "features/ip-restrictions",
                           "features/key-restrictions",
                           "features/threat-protection",
-                          "features/siem"
+                          "features/siem",
+                          "features/prompt-injection-screening"
                         ]
                       }
                     ]
