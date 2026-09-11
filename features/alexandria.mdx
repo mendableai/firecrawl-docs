@@ -1,0 +1,350 @@
+---
+title: "Alexandria"
+description: "The knowledge library for superintelligence"
+og:title: "Alexandria | Firecrawl"
+og:description: "Discover and use data tools through Firecrawl, with just the context your agent needs."
+icon: "books"
+---
+
+import AlexandriaJourney from "/snippets/alexandria-journey.mdx";
+
+<AlexandriaJourney />
+
+Use Alexandria through the Firecrawl MCP server, CLI, SDKs, or API. Discover tools, inspect their inputs, and retrieve data with the same workflow.
+
+<Steps>
+  <Step title="Find the right tool">
+    Describe what you need. Alexandria returns relevant tools alongside your web results.
+
+<CodeGroup>
+```javascript JavaScript
+const result = await firecrawl.search(
+  "podcast conversations about AI agents",
+  {
+    sources: ["web", "alexandria"],
+    limit: 2,
+  },
+);
+```
+
+```python Python
+result = firecrawl.search(
+    "podcast conversations about AI agents",
+    sources=["web", "alexandria"],
+    limit=2,
+)
+```
+
+```bash cURL
+curl https://api.firecrawl.dev/v2/search \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "query": "podcast conversations about AI agents",
+  "sources": [
+    "web",
+    "alexandria"
+  ],
+  "limit": 2
+}'
+```
+</CodeGroup>
+
+    <Accordion title="Response: web pages and tools">
+      Web pages are in `result.web`. Tools are in `result.tools`, ranked by relevance and returned with their input and response contracts. This shows one complete Particle tool item using its live contract and the billing branch’s generated request examples. The web result is illustrative; `limit: 2` allows up to two results. No recorded `example` is included because this tool does not publish one.
+
+```json Complete tool item (illustrative search response)
+{
+  "web": [
+    {
+      "title": "A conversation about AI agents",
+      "url": "https://example.com/podcasts/ai-agents"
+    }
+  ],
+  "tools": [
+    {
+      "id": "particle/podcasts/episodes/search",
+      "provider": "particle",
+      "capability": "podcasts/episodes/search",
+      "name": "Episode search",
+      "description": "Use to find episodes that discussed something. This is the entry point: it returns ids the other podcast capabilities take.",
+      "creditsCost": 15,
+      "perRecord": false,
+      "options": [
+        {
+          "name": "semantic_search",
+          "type": "string",
+          "about": "What was talked about, in your own words. Paraphrase-tolerant, so it finds dialogue that means this without containing these exact words."
+        },
+        {
+          "name": "keyword_search",
+          "type": "string",
+          "about": "Exact tokens or phrases to match in the transcript, ranked BM25. Use when the wording itself matters."
+        },
+        {
+          "name": "entity_id",
+          "type": "string",
+          "about": "Restrict to dialogue about one person or company, by entity id. Combines with either search."
+        },
+        {
+          "name": "podcast_id",
+          "type": "string",
+          "about": "Restrict to one show, by podcast id."
+        },
+        {
+          "name": "published_after",
+          "type": "string",
+          "about": "Earliest publication date, as YYYY-MM-DD."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "default": 25,
+          "about": "Maximum records to return.",
+          "max": 100
+        },
+        {
+          "name": "cursor",
+          "type": "string",
+          "about": "Opaque cursor from a previous page. Omit for the first page."
+        }
+      ],
+      "requiresOneOf": [
+        [
+          "semantic_search",
+          "keyword_search"
+        ]
+      ],
+      "response": {
+        "about": "Matching episodes, each with the show it belongs to and the passage that matched. Several matching segments of one episode collapse to a single result, so a page can return fewer than the limit.",
+        "key": "data",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "about": "Episode id, the input to podcasts/episodes."
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "about": "Episode title."
+          },
+          {
+            "name": "podcast",
+            "type": "object",
+            "about": "The show this episode belongs to."
+          },
+          {
+            "name": "published_at",
+            "type": "string",
+            "about": "Publication date."
+          },
+          {
+            "name": "excerpt",
+            "type": "string",
+            "about": "The passage that matched the query."
+          }
+        ],
+        "paginated": true
+      },
+      "examples": {
+        "javascript": "const requestId = \"<unique-request-id>\";\nconst response = await fetch(\"https://api.firecrawl.dev/v2/scrape\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer \" + process.env.FIRECRAWL_API_KEY,\n    \"Content-Type\": \"application/json\",\n    \"x-request-id\": requestId\n  },\n  body: JSON.stringify({\n  \"exchange\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n})\n});\nconst result = await response.json();\nif (!response.ok) throw new Error(result.error ?? \"Request failed\");",
+        "python": "import os\nimport requests\n\nrequest_id = \"<unique-request-id>\"\nresponse = requests.post(\n  \"https://api.firecrawl.dev/v2/scrape\",\n  headers={\n    \"Authorization\": \"Bearer \" + os.environ[\"FIRECRAWL_API_KEY\"],\n    \"x-request-id\": request_id\n  },\n  json={\n  \"exchange\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n},\n  timeout=120\n)\nresponse.raise_for_status()\nresult = response.json()",
+        "curl": "curl https://api.firecrawl.dev/v2/scrape \\\n  -H \"Authorization: Bearer $FIRECRAWL_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-request-id: <unique-request-id>\" \\\n  --data '{\n  \"exchange\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n}'"
+      },
+      "concept": "podcasts",
+      "cohorts": [
+        "podcasts"
+      ],
+      "matchedBy": [
+        "semantic"
+      ],
+      "matchedUrls": []
+    }
+  ]
+}
+```
+    </Accordion>
+  </Step>
+
+  <Step title="Check what it needs">
+    Open the top-ranked tool to see what inputs it accepts, what data it returns, and how to call it. These details are already included in the search result.
+
+<CodeGroup>
+```javascript JavaScript
+const tool = result.tools[0];
+
+console.log("Accepted inputs:", tool.options);
+console.log("Response structure:", tool.response);
+console.log("JavaScript request example:", tool.examples.javascript);
+```
+
+```python Python
+tool = result.tools[0]
+
+print("Accepted inputs:", tool.options)
+print("Response structure:", tool.response)
+print("Python request example:", tool.examples["python"])
+```
+</CodeGroup>
+
+    `options` describes the inputs you can send. `response` describes the output structure, rather than actual provider data. `examples.javascript` is a request example you can adapt and run in the next step.
+
+    `semantic_search` is an input specific to Particle's episode-search tool. It searches podcast content; Alexandria's earlier search finds which tool to use. Particle also accepts `keyword_search` for exact wording.
+  </Step>
+
+  <Step title="Get the data">
+    Use `scrape` to call the tool with the inputs from its contract. Supply the provider and capability under `exchange`; no page URL is needed.
+
+<CodeGroup>
+```javascript JavaScript
+const episodes = await firecrawl.scrape({
+  exchange: {
+    provider: "particle",
+    capability: "podcasts/episodes/search",
+    options: {
+      semantic_search: "AI agents",
+      limit: 2,
+    },
+  },
+});
+
+console.log(episodes.exchange[0].data);
+```
+
+```python Python
+episodes = firecrawl.scrape(
+    exchange={
+        "provider": "particle",
+        "capability": "podcasts/episodes/search",
+        "options": {
+            "semantic_search": "AI agents",
+            "limit": 2,
+        },
+    },
+)
+
+print(episodes.exchange[0].data)
+```
+
+```bash cURL
+REQUEST_ID="$(uuidgen)"
+
+curl https://api.firecrawl.dev/v2/scrape \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "x-request-id: $REQUEST_ID" \
+  -d '{
+  "exchange": {
+    "provider": "particle",
+    "capability": "podcasts/episodes/search",
+    "options": {
+      "semantic_search": "AI agents",
+      "limit": 2
+    }
+  }
+}'
+```
+</CodeGroup>
+
+    <Accordion title="Response: matching episodes">
+```json SDK result (shortened, illustrative)
+{
+  "exchange": [
+    {
+      "provider": "particle",
+      "capability": "podcasts/episodes/search",
+      "creditsCost": 15,
+      "data": {
+        "data": [
+          {
+            "id": "example-episode-001",
+            "title": "Building reliable AI agents",
+            "podcast": {
+              "id": "example-show-001",
+              "title": "The Agent Workshop"
+            },
+            "published_at": "2026-09-01",
+            "excerpt": "We let the agent discover the tools it needs, then read their contracts."
+          }
+        ]
+      }
+    }
+  ],
+  "creditsCost": 15
+}
+```
+      `episodes.exchange[0]` contains the first tool result and its execution price. Its `data` follows Particle's response contract. Raw `/v2/scrape` responses wrap this SDK result in `data`.
+    </Accordion>
+  </Step>
+</Steps>
+
+
+
+Tool discovery is free. Web search, scraping, and tool execution have their own charges; each tool shows its execution price. A batch can contain per-tool errors, so check each result before using its `data`.
+
+The SDK generates an execution request ID and keeps it across automatic retries. To retry later, reuse `requestId` in JavaScript or `request_id` in Python with the identical request. For cURL, keep the same `$REQUEST_ID`.
+
+<Card title="Explore Alexandria" icon="books" href="https://www.firecrawl.dev/app/alexandria">
+  Browse tools and copy a request in the dashboard.
+</Card>
+
+## Use Alexandria from the CLI or MCP
+
+Agents can discover tools, read their contracts, and retrieve data from the terminal or an MCP client. The examples below describe the preview integrations and require the matching release and team access.
+
+<Tabs>
+  <Tab title="Firecrawl CLI">
+```bash
+firecrawl search "podcast conversations about AI agents" --sources web,alexandria --limit 2
+
+firecrawl find-tools --providers particle --capabilities podcasts/episodes/search --expand options,response
+
+firecrawl find-tools https://podcasts.apple.com --limit 2
+```
+    Use `search` for semantic discovery and `find-tools` for contextual lookup or progressive disclosure. Pass a returned `next` request to `firecrawl find-tools --request '<json>'` to continue. Execution uses `firecrawl scrape --exchange <provider/capability> --options '<json>'`.
+  </Tab>
+  <Tab title="MCP">
+    Connect the [Firecrawl MCP server](/mcp-server) to your agent. With Alexandria support enabled, the agent can discover relevant tools, inspect their inputs and price, and retrieve data through the same workflow.
+
+    Try asking: “Find Particle's podcast tools, inspect the episode-search inputs and price, and show me the request before executing it.”
+
+    `firecrawl_search` returns contracts in `data.tools`. `firecrawl_find_tools` provides the free contextual lookup: start from a URL or provider, then follow the returned requests to reveal groups, tools, and contracts.
+  </Tab>
+</Tabs>
+
+## Find Tools
+
+**Find Tools** is a free discovery tool that lets agents explore the catalogue step by step. Start with a page URL or a provider, then follow the returned `next` requests:
+
+**Particle → Podcasts → Episode search → inputs and response**
+
+Each step reveals just the detail the agent needs. Once it has the contract, it can call the selected tool through `scrape`. Find Tools costs 0 credits; executing the selected tool uses that tool's published price.
+
+<CodeGroup>
+```javascript JavaScript
+const catalogue = await firecrawl.findTools({
+  providers: ["particle"],
+  limit: 2,
+});
+
+// Each next request reveals another part of the catalogue.
+const next = catalogue.items[0]?.next;
+if (next) {
+  const details = await firecrawl.scrape({ exchange: next });
+  console.log(details.exchange[0].data);
+}
+```
+
+```python Python
+catalogue = firecrawl.find_tools(providers=["particle"], limit=2)
+
+if catalogue.items and catalogue.items[0].get("next"):
+    details = firecrawl.scrape(exchange=catalogue.items[0]["next"])
+    print(details.exchange[0].data)
+```
+</CodeGroup>
+
+An item's `next` reveals more detail. The catalogue's top-level `next` advances to the next page while preserving the filters. Supply `categories`, `groups`, or `capabilities` when you already know what to look for; `level` is inferred from those selectors.
+
+For contextual matches beside web results, add `skills: true` to a Search request. Semantic and domain matches share the `tools` array; `matchedBy` and `matchedUrls` explain why each tool appeared. Search still requires a query. After scraping a page, pass its URL to Find Tools to discover relevant tools.

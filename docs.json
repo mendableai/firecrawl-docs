@@ -165,8 +165,7 @@
                         "pages": [
                           "features/search",
                           "features/search-highlights",
-                          "features/research",
-                          "features/exchange"
+                          "features/research"
                         ]
                       },
                       {
@@ -201,6 +200,7 @@
                   {
                     "group": "More",
                     "pages": [
+                      "features/alexandria",
                       "features/parse",
                       "features/map",
                       "features/crawl",
@@ -4938,6 +4938,10 @@
     ]
   },
   "redirects": [
+    {
+      "source": "/features/exchange",
+      "destination": "/features/alexandria"
+    },
     {
       "destination": "/features/browser",
       "source": "/api-reference/endpoint/browser"

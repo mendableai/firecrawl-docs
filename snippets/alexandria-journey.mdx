@@ -1,0 +1,352 @@
+<iframe
+  title="An illustrative agent journey with Alexandria"
+  sandbox="allow-scripts"
+  style={{ width: "100%", height: "580px", border: "0", borderRadius: "12px", colorScheme: "dark" }}
+  srcDoc={`<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;padding:12px 0 10px;display:flex;flex-direction:column;
+  font:13px/1.85 ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  background:#26313B;color:#E4E9ED;border-radius:10px;overflow:hidden}
+#controls{display:flex;align-items:center;justify-content:space-between;padding-right:14px}
+#playback{min-width:46px}
+button:focus-visible{outline:2px solid #FA5D19;outline-offset:3px}
+.paused .live,.paused .cur{animation:none}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+#tabs{display:flex;gap:12px;justify-content:center;margin:0 14px 14px;flex:0 0 auto}
+button{position:relative;font:inherit;font-size:11px;letter-spacing:.03em;cursor:pointer;
+  padding:0 0 7px;border:0;background:transparent;color:#7C8794;transition:color .2s;
+  min-width:78px}
+button:hover{color:#C3CCD4}
+button.on{color:#E4E9ED}
+button .track{position:absolute;left:0;right:0;bottom:0;height:2px;background:#3C4854;
+  border-radius:2px;overflow:hidden}
+button .seg{display:block;height:100%;width:0;background:#FA5D19;border-radius:2px}
+button.on .seg{transition:width .6s cubic-bezier(.4,0,.2,1)}
+#b{flex:1 1 auto;min-height:0;overflow:hidden;display:flex;flex-direction:column;
+  justify-content:flex-end;padding:0 14px;mask-image:linear-gradient(transparent,#000 8%);
+  transition:opacity .55s ease}
+#b.fade{opacity:0}
+.row,.sp,.user{flex:0 0 auto}
+.row{white-space:pre-wrap}
+.user{background:#323E49;margin:0 -14px;padding:1px 14px;white-space:pre-wrap;color:#E4E9ED}
+.chev{color:#7C8794}
+.dot{color:#E4E9ED}
+.dotg{color:#7C8794}
+.g{color:#94A1AD}
+.d{color:#6E7A86}
+.ok{color:#63C89B}
+.hd{color:#E4E9ED;font-weight:600}
+.mk{display:inline-block;width:3ch}
+.acc{color:#FA5D19}
+.ind{padding-left:20px}
+.sp{height:10px}
+.live{color:#FA5D19;animation:pulse 1.15s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.cur{display:inline-block;width:7px;height:14px;background:#FA5D19;vertical-align:-2px;
+  animation:blink 1.1s steps(2,start) infinite}
+@keyframes blink{50%{opacity:0}}
+#status{flex:0 0 auto;padding:6px 14px 0;color:#FA5D19;min-height:22px}
+</style></head><body>
+<div id="controls"><div id="tabs"></div><button id="playback" aria-label="Pause animation">Pause</button></div>
+<div id="b"></div>
+<div id="status"></div>
+<script>
+var SCENES = [{"id": "Podcasts", "prompt": "Find podcast conversations about AI agents, then summarize what the speakers said.", "think": "I need a tool that searches what people said, not just episode titles.", "findQ": "podcast conversations about AI agents · sources: alexandria", "found": [["particle/podcasts/episodes/search", "Episode search"]], "inspect": "semantic_search or keyword_search · returns episode IDs and matching excerpts", "callQ": "provider: particle · capability: podcasts/episodes/search · semantic_search: AI agents", "calls": 1, "rows": [["Particle", "Episode IDs, titles, dates, and matching passages"]], "credits": "Execution uses the published tool price.", "done": "The matching passages give me evidence for a summary. I can follow episode IDs for more detail.", "after": "Writing the podcast brief…"}, {"id": "Finance", "prompt": "Find a source for cryptocurrency prices and prepare a market snapshot.", "think": "First I will discover the right data tool, then check its inputs and response.", "findQ": "cryptocurrency market prices · sources: alexandria", "found": [["coingecko/prices/simple", "Coin prices"]], "inspect": "Read supported identifiers and quote currencies before calling.", "callQ": "provider: coingecko · capability: prices/simple · options from the contract", "calls": 1, "rows": [["CoinGecko", "Price data for the requested coins and currencies"]], "credits": "Execution uses the published tool price.", "done": "The response gives me structured prices for the snapshot, with the source attached.", "after": "Preparing the market snapshot…"}, {"id": "Retail", "prompt": "Find Pizza Hut stores near a Canadian postal code.", "think": "I need store data for this location. I will inspect the location options first.", "findQ": "Pizza Hut Canada nearby stores · sources: alexandria", "found": [["pizzahut-ca/restaurants/stores", "Find nearby stores"]], "inspect": "postal_code · returns nearby stores and available store details", "callQ": "provider: pizzahut-ca · capability: restaurants/stores · postal_code: M5V 2T6", "calls": 1, "rows": [["Pizza Hut Canada", "Stores matching the requested location"]], "credits": "Execution uses the published tool price.", "done": "I can present nearby stores using the returned details without guessing which locations serve this area.", "after": "Preparing the nearby store list…"}];
+
+var SPIN = ['✻','✳','✶','✻'];
+var WORDS = ['Kindling','Smouldering','Crackling','Stoking','Crawling','Percolating','Simmering'];
+var host = document.getElementById('b');
+var tabs = document.getElementById('tabs');
+var statusEl = document.getElementById('status');
+var run = 0, tokens = 0, t0 = 0, statusTimer = null, word = 'Flowing';
+
+function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+var sceneIndex = 0;
+function segs(){ return tabs.querySelectorAll('.seg'); }
+
+
+function mark(f){
+  var all = segs();
+  for (var i = 0; i < all.length; i++){
+    all[i].style.width = i < sceneIndex ? '100%' : (i === sceneIndex ? (f * 100).toFixed(1) + '%' : '0%');
+  }
+}
+function el(cls, mine){
+  var d = document.createElement('div');
+  d.className = (cls || 'row');
+
+  if (mine !== undefined && run !== mine) return d;
+  host.appendChild(d); trim(); return d;
+}
+function gap(mine){ if (mine !== undefined && run !== mine) return; var d = document.createElement('div'); d.className = 'sp'; host.appendChild(d); }
+function pad(s, n){ while (s.length < n) s += ' '; return s; }
+function fmt(n){ return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n); }
+
+function startStatus(){
+  clearInterval(statusTimer);
+  statusEl.textContent = '✻ Exploring Alexandria…';
+}
+function stopStatus(){ clearInterval(statusTimer); statusEl.innerHTML = ''; }
+
+async function stream(target, segs, cps, mine){
+  for (var i = 0; i < segs.length; i++){
+    var span = document.createElement('span');
+    if (segs[i][1]) span.className = segs[i][1];
+    target.appendChild(span);
+    var txt = segs[i][0];
+    for (var j = 0; j < txt.length; j++){
+      if (run !== mine) return;
+      span.textContent += txt[j];
+      if (j % 2 === 0) await wait(cps);
+    }
+  }
+}
+
+function toolLine(name, times, mine){
+  var d = el('row', mine);
+  var suffix = times > 1 ? ' ' + times + ' times' : '';
+  d.innerHTML = '<span class="live">●</span> <span class="g">Calling ' + name + suffix +
+    '… </span><span class="d"></span>';
+  return { node: d, name: name, suffix: suffix };
+}
+function toolDone(t){
+  t.node.innerHTML = '<span class="dot">●</span> <span>Called ' + t.name + t.suffix +
+    '</span> <span class="d"></span>';
+}
+
+
+
+function trim(){
+  while (host.children.length > 42) host.removeChild(host.firstChild);
+}
+
+function repeat(ch, n){ var out = ''; for (var i = 0; i < n; i++) out += ch; return out; }
+
+async function renderTable(rows, mine){
+  var w = [];
+  rows.forEach(function(r){
+    r.forEach(function(cell, i){ if (!w[i] || cell.length > w[i]) w[i] = cell.length; });
+  });
+
+  function rule(l, m, r){
+    var out = l;
+    for (var i = 0; i < w.length; i++){
+      out += repeat('─', w[i] + 2) + (i === w.length - 1 ? r : m);
+    }
+    return out;
+  }
+
+
+  function paint(target, row, cls){
+    function bar(){
+      var b = document.createElement('span');
+      b.className = 'd';
+      b.textContent = '│';
+      target.appendChild(b);
+    }
+    bar();
+    for (var i = 0; i < w.length; i++){
+      var c = document.createElement('span');
+      if (cls) c.className = cls;
+      c.textContent = ' ' + pad(row[i], w[i]) + ' ';
+      target.appendChild(c);
+      bar();
+    }
+  }
+
+  var top = el('row ind d', mine); top.textContent = rule('┌', '┬', '┐');
+  await wait(90); if (run !== mine) return;
+
+  var head = el('row ind', mine);
+  paint(head, rows[0], 'hd');
+  await wait(130); if (run !== mine) return;
+
+  var mid = el('row ind d', mine); mid.textContent = rule('├', '┼', '┤');
+  await wait(110); if (run !== mine) return;
+
+  for (var i = 1; i < rows.length; i++){
+    var line = el('row ind', mine);
+    paint(line, rows[i], '');
+    await wait(130); if (run !== mine) return;
+  }
+
+  var bot = el('row ind d', mine); bot.textContent = rule('└', '┴', '┘');
+  await wait(200);
+}
+
+async function play(scene, mine){
+  word = WORDS[Math.floor(Math.random() * WORDS.length)];
+
+  var u = el('user', mine);
+  u.innerHTML = '<span class="chev">〉</span> ';
+  await stream(u, [[scene.prompt, '']], 20, mine);
+  await wait(950); if (run !== mine) return;
+  mark(0.08);
+  startStatus();
+
+  gap(mine);
+  var a = el('row', mine); a.innerHTML = '<span class="live">●</span> ';
+  await stream(a, [[scene.think, '']], 14, mine);
+  a.firstChild.className = 'dot';
+  await wait(900); if (run !== mine) return;
+
+
+  var pre = scene.pre || (scene.read ? [{ tool:'Read', args:'(' + scene.read.file + ')', result: scene.read.result }] : []);
+  for (var pi = 0; pi < pre.length; pi++){
+    gap(mine);
+    var pd = el('row', mine); pd.innerHTML = '<span class="live">●</span> ';
+    await stream(pd, [[pre[pi].tool, 't'], [pre[pi].args, 'g']], 9, mine);
+    await wait(600); if (run !== mine) return;
+    pd.firstChild.className = 'dot';
+    var pr2 = el('row ind g', mine);
+    pr2.innerHTML = '<span class="d mk">⎿</span>';
+    await stream(pr2, [[pre[pi].result, 'g']], 8, mine);
+    await wait(700); if (run !== mine) return;
+  }
+
+  gap(mine);
+  var t1 = toolLine('firecrawl.search', 1, mine);
+  var q1 = el('row ind g', mine);
+  q1.innerHTML = '<span class="d mk">⎿</span>';
+  await stream(q1, [['"' + scene.findQ + '"', 'd']], 11, mine);
+  await wait(2300); if (run !== mine) return;
+  toolDone(t1);
+  q1.innerHTML = '<span class="d mk">⎿</span><span class="g">found ' + scene.found.length + ' ' +
+    (scene.found.length === 1 ? 'capability' : 'capabilities') + ' · 0 credits</span>';
+  var fw = 0;
+  scene.found.forEach(function(r){ if (r[0].length > fw) fw = r[0].length; });
+  fw += 2;
+  for (var k = 0; k < scene.found.length; k++){
+    var fr = el('row ind g', mine); fr.innerHTML = '<span class="mk"></span>';
+    await stream(fr, [[pad(scene.found[k][0], fw), 'd'], [scene.found[k][1], 'd']], 8, mine);
+    await wait(420); if (run !== mine) return;
+  }
+  await wait(1100); if (run !== mine) return;
+  mark(0.42);
+
+  gap(mine);
+  var inspection = toolLine('Read tool contract', 1, mine);
+  var contract = el('row ind g', mine);
+  await stream(contract, [['Inputs, response, and examples included in the search result', 'd']], 8, mine);
+  await wait(700); if (run !== mine) return;
+  toolDone(inspection);
+  var details = el('row ind g', mine);
+  await stream(details, [[scene.inspect, 'g']], 8, mine);
+  await wait(900); if (run !== mine) return;
+  mark(0.6);
+
+  gap(mine);
+  var t2 = toolLine('firecrawl.scrape', scene.calls, mine);
+  var q2 = el('row ind g', mine);
+  q2.innerHTML = '<span class="d mk">⎿</span>';
+  await stream(q2, [['exchange: { ' + scene.callQ + ' }', 'd']], 11, mine);
+  await wait(3000); if (run !== mine) return;
+  toolDone(t2);
+
+  var w = 0;
+  scene.rows.forEach(function(r){ if (r[0].length > w) w = r[0].length; });
+  w += 2;
+  q2.innerHTML = '<span class="d mk">⎿</span>';
+  await stream(q2, [[pad(scene.rows[0][0], w), 'g'], [scene.rows[0][1], 'g']], 8, mine);
+  await wait(560); if (run !== mine) return;
+  for (var i = 1; i < scene.rows.length; i++){
+    var r = el('row ind g', mine); r.innerHTML = '<span class="mk"></span>';
+    await stream(r, [[pad(scene.rows[i][0], w), 'g'], [scene.rows[i][1], 'g']], 8, mine);
+    await wait(560); if (run !== mine) return;
+  }
+  var cr = el('row ind d', mine); cr.innerHTML = '<span class="mk"></span>';
+  await stream(cr, [[scene.credits, 'd']], 8, mine);
+  mark(0.74);
+  await wait(1200); if (run !== mine) return;
+
+  if (scene.table){
+    mark(0.84);
+    gap(mine);
+    await renderTable(scene.table, mine);
+    if (run !== mine) return;
+    await wait(900);
+  }
+
+  stopStatus();
+  gap(mine);
+  var d = el('row', mine); d.innerHTML = '<span class="live">●</span> ';
+  await stream(d, [[scene.done, '']], 5, mine);
+  d.firstChild.className = 'dot';
+  await wait(700); if (run !== mine) return;
+
+  mark(1);
+  var n = el('row', mine); n.innerHTML = '<span class="live">●</span> ';
+  await stream(n, [[scene.after, 'g']], 14, mine);
+  var cur = document.createElement('span'); cur.className = 'cur'; n.appendChild(cur);
+  await wait(1800); if (run !== mine) return;
+
+  host.className = 'fade';
+  await wait(650); if (run !== mine) return;
+  host.innerHTML = '';
+  host.className = '';
+  await wait(350);
+}
+
+function highlight(idx){
+  [].forEach.call(tabs.children, function(btn, i){ btn.className = i === idx ? 'on' : ''; });
+}
+
+
+function select(idx){
+  run++; stopStatus(); host.innerHTML = ''; host.className = '';
+  sceneIndex = idx; mark(0);
+  var mine = run, current = idx;
+  (async function(){
+    while (run === mine){
+      highlight(current);
+      sceneIndex = current;
+      if (current === 0) mark(0);
+      await play(SCENES[current], mine);
+      if (run !== mine) return;
+      current = (current + 1) % SCENES.length;
+    }
+  })();
+}
+
+SCENES.forEach(function(sc, i){
+  var btn = document.createElement('button');
+  btn.appendChild(document.createTextNode(sc.id));
+  var track = document.createElement('span');
+  track.className = 'track';
+  var seg = document.createElement('i');
+  seg.className = 'seg';
+  track.appendChild(seg);
+  btn.appendChild(track);
+  btn.onclick = function(){ if (paused) still(i); else select(i); };
+  tabs.appendChild(btn);
+});
+var playback = document.getElementById('playback');
+var paused = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function still(idx){
+  run++; stopStatus(); host.innerHTML = ''; host.className = '';
+  sceneIndex = idx; highlight(idx); mark(1);
+  var scene = SCENES[idx];
+  el('user').textContent = '〉' + scene.prompt;
+  gap(); el('row').textContent = '1. Discover with firecrawl.search';
+  el('row ind g').textContent = scene.found[0][0];
+  gap(); el('row').textContent = '2. Inspect the contract';
+  el('row ind g').textContent = scene.inspect;
+  gap(); el('row').textContent = '3. Retrieve with firecrawl.scrape';
+  el('row ind g').textContent = scene.rows[0][1];
+  gap(); el('row').textContent = scene.done;
+}
+function labelPlayback(){
+  playback.textContent = paused ? 'Replay' : 'Pause';
+  playback.setAttribute('aria-label', paused ? 'Replay animation' : 'Pause animation');
+  document.body.classList.toggle('paused', paused);
+}
+playback.onclick = function(){
+  paused = !paused; labelPlayback();
+  if (paused){ run++; stopStatus(); } else select(sceneIndex);
+};
+labelPlayback();
+if (paused) still(0); else select(0);
+</script></body></html>`}
+/>
