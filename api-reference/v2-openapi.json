@@ -10106,9 +10106,97 @@
                               },
                               "optionGroups": {
                                 "type": "array",
-                                "description": "Option/modifier groups for the item.",
+                                "description": "Modifier groups for the item (e.g. size, toppings).",
                                 "items": {
-                                  "type": "object"
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "description": "The group identifier."
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "description": "The group name, e.g. \"Size\" or \"Add-ons\"."
+                                    },
+                                    "selectionType": {
+                                      "type": "string",
+                                      "enum": ["single", "multi"],
+                                      "description": "Whether the customer picks one option (\"single\") or many (\"multi\")."
+                                    },
+                                    "required": {
+                                      "type": "boolean",
+                                      "description": "Whether a selection is required."
+                                    },
+                                    "minSelections": {
+                                      "type": "integer",
+                                      "description": "Minimum number of selections required."
+                                    },
+                                    "maxSelections": {
+                                      "type": "integer",
+                                      "nullable": true,
+                                      "description": "Maximum number of selections allowed. Null means unlimited."
+                                    },
+                                    "options": {
+                                      "type": "array",
+                                      "description": "The choices in this group.",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string",
+                                            "description": "The option identifier."
+                                          },
+                                          "name": {
+                                            "type": "string",
+                                            "description": "The option name, e.g. \"Large\" or \"Extra Cheese\"."
+                                          },
+                                          "description": {
+                                            "type": "string",
+                                            "nullable": true,
+                                            "description": "The option description."
+                                          },
+                                          "priceDelta": {
+                                            "type": "object",
+                                            "nullable": true,
+                                            "description": "Price adjustment for choosing this option.",
+                                            "properties": {
+                                              "amount": {
+                                                "type": "number",
+                                                "description": "The numeric price adjustment."
+                                              },
+                                              "currency": {
+                                                "type": "string",
+                                                "nullable": true,
+                                                "description": "The currency code."
+                                              },
+                                              "formatted": {
+                                                "type": "string",
+                                                "nullable": true,
+                                                "description": "The price adjustment as displayed on the page."
+                                              }
+                                            }
+                                          },
+                                          "default": {
+                                            "type": "boolean",
+                                            "description": "Whether this option is selected by default."
+                                          },
+                                          "available": {
+                                            "type": "boolean",
+                                            "description": "Whether this option is currently available."
+                                          },
+                                          "optionGroups": {
+                                            "type": "array",
+                                            "description": "Nested modifier groups — present when this option is itself customizable (e.g. a combo slot).",
+                                            "items": {
+                                              "type": "object"
+                                            }
+                                          }
+                                        },
+                                        "required": ["id", "name", "description", "priceDelta", "default", "available", "optionGroups"]
+                                      }
+                                    }
+                                  },
+                                  "required": ["id", "name", "selectionType", "required", "minSelections", "maxSelections", "options"]
                                 }
                               },
                               "identifiers": {

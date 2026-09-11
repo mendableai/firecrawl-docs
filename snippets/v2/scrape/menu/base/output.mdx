@@ -4,7 +4,7 @@
   "data": {
     "menu": {
       "isMenu": true,
-      "confidence": 0.85,
+      "confidence": 0.95,
       "merchant": {
         "name": "Joe's Diner",
         "type": "restaurant"
@@ -12,34 +12,103 @@
       "currency": "USD",
       "sections": [
         {
-          "id": "appetizers",
-          "name": "Appetizers",
+          "id": "burgers",
+          "name": "Burgers",
           "description": null,
           "items": [
             {
-              "id": "pretzel-bites",
-              "name": "Pretzel Bites",
-              "description": "warm, salted",
+              "id": "classic-burger",
+              "name": "Classic Burger",
+              "description": "Beef patty with lettuce, tomato, and pickles",
               "images": [
                 {
-                  "url": "https://joesdiner.com/images/pretzel-bites.jpg",
+                  "url": "https://joesdiner.com/images/classic-burger.jpg",
                   "alt": null
                 }
               ],
               "price": {
-                "amount": 7.99,
+                "amount": 12.99,
                 "currency": "USD",
-                "formatted": "$7.99"
+                "formatted": "$12.99"
               },
               "availability": {
                 "inStock": true,
                 "text": null
               },
-              "dietary": ["vegetarian"],
-              "calories": 490,
-              "optionGroups": [],
+              "dietary": [],
+              "calories": 650,
+              "optionGroups": [
+                {
+                  "id": "patty-size",
+                  "name": "Size",
+                  "selectionType": "single",
+                  "required": true,
+                  "minSelections": 1,
+                  "maxSelections": 1,
+                  "options": [
+                    {
+                      "id": "",
+                      "name": "Regular",
+                      "description": null,
+                      "priceDelta": null,
+                      "default": true,
+                      "available": true,
+                      "optionGroups": []
+                    },
+                    {
+                      "id": "",
+                      "name": "Double",
+                      "description": "Two beef patties",
+                      "priceDelta": {
+                        "amount": 3.00,
+                        "currency": "USD",
+                        "formatted": null
+                      },
+                      "default": false,
+                      "available": true,
+                      "optionGroups": []
+                    }
+                  ]
+                },
+                {
+                  "id": "add-ons",
+                  "name": "Add-ons",
+                  "selectionType": "multi",
+                  "required": false,
+                  "minSelections": 0,
+                  "maxSelections": null,
+                  "options": [
+                    {
+                      "id": "",
+                      "name": "Extra Cheese",
+                      "description": null,
+                      "priceDelta": {
+                        "amount": 1.00,
+                        "currency": "USD",
+                        "formatted": null
+                      },
+                      "default": false,
+                      "available": true,
+                      "optionGroups": []
+                    },
+                    {
+                      "id": "",
+                      "name": "Bacon",
+                      "description": null,
+                      "priceDelta": {
+                        "amount": 1.50,
+                        "currency": "USD",
+                        "formatted": null
+                      },
+                      "default": false,
+                      "available": true,
+                      "optionGroups": []
+                    }
+                  ]
+                }
+              ],
               "identifiers": {
-                "merchantItemId": "abc123"
+                "merchantItemId": "burger-001"
               },
               "url": null,
               "sourceUrl": "https://joesdiner.com/menu"

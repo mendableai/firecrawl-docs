@@ -63,7 +63,21 @@ The `menu` object contains the following properties:
       - `text`: The raw availability text from the page (optional)
     - `dietary`: array of dietary tags, e.g. `["vegetarian"]` (optional)
     - `calories`: The item's calorie count (optional)
-    - `optionGroups`: Array of option/modifier groups for the item (optional)
+    - `optionGroups`: Array of modifier groups for the item. Each group has:
+      - `id`: The group identifier
+      - `name`: The group name, e.g. `"Size"` or `"Add-ons"`
+      - `selectionType`: `"single"` (pick one) or `"multi"` (pick many)
+      - `required`: Whether a selection is required
+      - `minSelections`: Minimum number of selections required
+      - `maxSelections`: Maximum number of selections allowed (optional)
+      - `options`: Array of choices. Each option has:
+        - `id`: The option identifier
+        - `name`: The option name, e.g. `"Large"` or `"Extra Cheese"`
+        - `description`: The option description (optional)
+        - `priceDelta`: Price adjustment for this option — same structure as `price` (optional)
+        - `default`: Whether this option is selected by default
+        - `available`: Whether this option is currently available
+        - `optionGroups`: Nested modifier groups — present when an option is itself customizable, e.g. a combo meal slot where each slot has its own choices. Same structure as the parent `optionGroups`.
     - `identifiers`: merchant-specific identifiers for the item (optional):
       - `merchantItemId`: The merchant's own item ID (optional)
     - `url`: The canonical URL of the item (optional)
