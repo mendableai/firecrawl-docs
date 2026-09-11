@@ -619,15 +619,17 @@ Ao usar o endpoint `/v2/crawl`, você pode configurar o comportamento do crawler
   #### Filtragem de caminhos
 </div>
 
-| Parâmetro | Tipo | Padrão | Descrição |
-|-----------|------|--------|-----------|
-| `includePaths` | `array` | — | Padrões regex para URLs a serem incluídas (apenas o pathname por padrão). |
-| `excludePaths` | `array` | — | Padrões regex para URLs a serem excluídas (apenas o pathname por padrão). |
-| `regexOnFullURL` | `boolean` | `false` | Aplica os padrões à URL completa em vez de apenas ao pathname. |
+| Parâmetro        | Tipo      | Padrão  | Descrição                                                                 |
+| ---------------- | --------- | ------- | ------------------------------------------------------------------------- |
+| `includePaths`   | `array`   | —       | Padrões regex para URLs a serem incluídas (apenas o pathname por padrão). |
+| `excludePaths`   | `array`   | —       | Padrões regex para URLs a serem excluídas (apenas o pathname por padrão). |
+| `regexOnFullURL` | `boolean` | `false` | Aplica os padrões à URL completa em vez de apenas ao pathname.            |
 
 <Warning>
   A URL inicial também é verificada em relação a `includePaths`. Se ela não corresponder a nenhum dos padrões, o rastreamento poderá retornar 0 páginas.
 </Warning>
+
+Os padrões usam a sintaxe de regex do Rust (estilo RE2), portanto look-around e retrorreferências não são suportados; um padrão que não compila é rejeitado com um `400`. Cada campo aceita no máximo 1000 padrões de até 2000 caracteres cada, e `includePaths` e `excludePaths` juntos podem conter no máximo 1000 padrões e 100.000 caracteres. Para filtragem baseada em palavras-chave, envie um padrão curto por termo em vez de combinar os termos em uma única alternância longa.
 
 <div id="crawl-scope">
   #### Escopo do rastreamento

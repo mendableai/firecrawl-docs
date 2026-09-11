@@ -619,15 +619,17 @@ Lorsque vous utilisez l’endpoint `/v2/crawl`, vous pouvez personnaliser le com
   #### Filtrage des chemins
 </div>
 
-| Paramètre | Type | Valeur par défaut | Description |
-|-----------|------|-------------------|-------------|
-| `includePaths` | `array` | — | Motifs regex pour les URL à inclure (pathname uniquement par défaut). |
-| `excludePaths` | `array` | — | Motifs regex pour les URL à exclure (pathname uniquement par défaut). |
-| `regexOnFullURL` | `boolean` | `false` | Faire correspondre les motifs sur l’URL complète plutôt que seulement sur le pathname. |
+| Paramètre        | Type      | Valeur par défaut | Description                                                                            |
+| ---------------- | --------- | ----------------- | -------------------------------------------------------------------------------------- |
+| `includePaths`   | `array`   | —                 | Motifs regex pour les URL à inclure (pathname uniquement par défaut).                  |
+| `excludePaths`   | `array`   | —                 | Motifs regex pour les URL à exclure (pathname uniquement par défaut).                  |
+| `regexOnFullURL` | `boolean` | `false`           | Faire correspondre les motifs sur l’URL complète plutôt que seulement sur le pathname. |
 
 <Warning>
-  L’URL de départ est également vérifiée par rapport à `includePaths`. Si elle ne correspond à aucun motif, le crawl peut renvoyer 0 page.
+  L’URL de départ est également vérifiée par rapport à `includePaths`. Si elle ne correspond à aucun motif, le crawl peut renvoyer 0 page.
 </Warning>
+
+Les motifs utilisent la syntaxe regex de Rust (de type RE2) : les assertions look-around et les références arrière ne sont donc pas prises en charge ; un motif qui ne compile pas est rejeté avec une erreur `400`. Chaque champ accepte au maximum 1000 motifs de 2000 caractères chacun, et `includePaths` et `excludePaths` réunis peuvent contenir au maximum 1000 motifs et 100 000 caractères. Pour un filtrage par mots-clés, envoyez un motif court par terme plutôt que de regrouper les termes dans une seule longue alternance.
 
 <div id="crawl-scope">
   #### Portée du crawl

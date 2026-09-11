@@ -619,15 +619,17 @@ curl -X POST https://api.firecrawl.dev/v2/crawl/params-preview \
   #### 路径过滤
 </div>
 
-| 参数 | 类型 | 默认值 | 说明 |
-|-----------|------|---------|-------------|
-| `includePaths` | `array` | — | 要包含的 URL 的正则表达式模式 (默认仅匹配路径名) 。 |
-| `excludePaths` | `array` | — | 要排除的 URL 的正则表达式模式 (默认仅匹配路径名) 。 |
-| `regexOnFullURL` | `boolean` | `false` | 在完整 URL 上进行模式匹配，而不仅仅是路径名。 |
+| 参数               | 类型        | 默认值     | 描述                             |
+| ---------------- | --------- | ------- | ------------------------------ |
+| `includePaths`   | `array`   | —       | 要包含的 URL 的正则表达式模式 (默认仅匹配路径名) 。 |
+| `excludePaths`   | `array`   | —       | 要排除的 URL 的正则表达式模式 (默认仅匹配路径名) 。 |
+| `regexOnFullURL` | `boolean` | `false` | 在完整 URL 上进行模式匹配，而不仅仅是路径名。      |
 
 <Warning>
   起始 URL 也会与 `includePaths` 进行匹配。如果它不匹配任何模式，爬取结果可能会返回 0 个页面。
 </Warning>
+
+模式采用 Rust 正则表达式 (RE2 风格) 语法，因此不支持环视和反向引用；无法编译的模式将返回 `400` 并被拒绝。每个字段最多接受 1000 个模式，每个模式最多 2000 个字符；`includePaths` 与 `excludePaths` 合计最多包含 1000 个模式、100,000 个字符。若要按关键词过滤，请为每个词分别发送一个简短模式，不要把多个词合并成一个冗长的选择分支。
 
 <div id="crawl-scope">
   #### 爬取范围

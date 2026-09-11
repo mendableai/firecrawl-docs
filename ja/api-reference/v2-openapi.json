@@ -6625,10 +6625,12 @@
                     "type": "number"
                   },
                   "excludePaths": {
-                    "description": "クロールから除外する URL パス名の正規表現パターンです。たとえば、ベース URL が firecrawl.dev の場合に `\"excludePaths\": [\"blog/.*\"]` を設定すると、`https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap` のようにそのパターンにマッチする URL はすべて除外されます。",
+                    "description": "クロールから除外する URL パス名の正規表現パターンです。たとえば、ベース URL が firecrawl.dev の場合に `\"excludePaths\": [\"blog/.*\"]` を設定すると、`https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap` のようにそのパターンにマッチする URL はすべて除外されます。パターンには Rust の正規表現（RE2 スタイル）構文を使用します。先読み・後読みおよび後方参照はサポートされておらず、コンパイルできないパターンは 400 エラーで拒否されます。各フィールドには、1 パターンあたり最大 2,000 文字、最大 1,000 パターンを指定できます。また、includePaths と excludePaths を合わせて、最大 1,000 パターン、合計 100,000 文字まで指定できます。キーワード形式で絞り込む場合は、複数の語句を 1 つの長い選択パターンにまとめるのではなく、語句ごとに短いパターンを 1 つ指定してください。",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "ignoreQueryParameters": {
@@ -6642,10 +6644,12 @@
                     "type": "boolean"
                   },
                   "includePaths": {
-                    "description": "クロールに含めるURLを指定するための、URLパス名に対する正規表現パターンです。指定したパターンにマッチしたパスのみがレスポンスに含まれます。注意：開始URLもこれらのパターンでチェックされるため、マッチしない場合は1ページもクロールされず、ページ数が0になる可能性があります。例えば、ベースURLが firecrawl.dev/blog のときに \"includePaths\": [\"blog/.*\"] を指定すると、/blog/ 配下のページのみが結果に含まれます（例：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap）。",
+                    "description": "クロールに含める一致URLを指定するための、URLパス名に対する正規表現パターンです。指定したパターンにマッチしたパスのみがレスポンスに含まれます。注意：開始URLもこれらのパターンでチェックされるため、マッチしない場合はクロールで0ページが返される可能性があります。例えば、ベースURLが firecrawl.dev/blog のときに \"includePaths\": [\"blog/.*\"] を指定すると、/blog/ 配下のページのみが結果に含まれます（例：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap）。パターンにはRust の正規表現（RE2形式）の構文を使用します。先読み・後読みと後方参照はサポートされておらず、コンパイルできないパターンは400エラーで拒否されます。各フィールドには、最大2,000文字のパターンを最大1,000個指定できます。また、includePaths と excludePaths を合わせて、パターン数は最大1,000個、合計文字数は最大100,000文字です。キーワード形式で絞り込む場合は、複数の用語を1つの長い選択パターンにまとめるのではなく、用語ごとに短いパターンを1つ送信してください。",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "limit": {

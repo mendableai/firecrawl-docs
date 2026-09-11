@@ -6625,10 +6625,12 @@
                     "type": "number"
                   },
                   "excludePaths": {
-                    "description": "Padrões de regex para o pathname da URL que excluem URLs correspondentes do rastreamento. Por exemplo, se você definir `\"excludePaths\": [\"blog/.*\"]` para a URL base firecrawl.dev, quaisquer resultados que correspondam a esse padrão serão excluídos, como https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap.",
+                    "description": "Padrões de regex para pathname da URL que excluem URLs correspondentes do rastreamento. Por exemplo, se você definir \"excludePaths\": [\"blog/.*\"] para a URL base firecrawl.dev, quaisquer resultados que correspondam a esse padrão serão excluídos, como https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap. Os padrões usam a sintaxe de regex do Rust (no estilo RE2): look-around e retroreferências não são compatíveis, e um padrão que não compila é rejeitado com um erro 400. Cada campo aceita no máximo 1000 padrões de até 2000 caracteres cada, e includePaths e excludePaths juntos podem conter no máximo 1000 padrões e 100.000 caracteres no total. Para filtragem por palavras-chave, envie um padrão curto por termo em vez de combinar termos em uma única alternância longa.",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "ignoreQueryParameters": {
@@ -6642,10 +6644,12 @@
                     "type": "boolean"
                   },
                   "includePaths": {
-                    "description": "Padrões de regex para paths de URL que definem quais URLs serão incluídas no crawl. Apenas os paths que corresponderem aos padrões especificados serão incluídos na resposta. Observação: a URL inicial também é validada em relação a esses padrões — se ela não corresponder, o crawl pode retornar zero páginas. Por exemplo, se você configurar \"includePaths\": [\"blog/.*\"] tendo como URL base firecrawl.dev/blog, apenas as páginas em /blog/ serão incluídas nos resultados, como https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap.",
+                    "description": "Padrões de regex para pathname da URL que incluem URLs correspondentes no rastreamento. Apenas os pathnames que corresponderem aos padrões especificados serão incluídos na resposta. Observação: a URL inicial também é verificada em relação a esses padrões — se ela não corresponder, o rastreamento poderá retornar 0 páginas. Por exemplo, se você configurar \"includePaths\": [\"blog/.*\"] para a URL base firecrawl.dev/blog, apenas as páginas em /blog/ serão incluídas nos resultados, como https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap. Os padrões usam sintaxe de regex do Rust (no estilo RE2): look-around e retroreferências não são compatíveis, e um padrão que não compila é rejeitado com um erro 400. Cada campo aceita no máximo 1000 padrões de até 2000 caracteres cada, e includePaths e excludePaths juntos podem conter no máximo 1000 padrões e 100.000 caracteres no total. Para filtragem por palavras-chave, envie um padrão curto por termo em vez de combinar termos em uma única alternância longa.",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "limit": {

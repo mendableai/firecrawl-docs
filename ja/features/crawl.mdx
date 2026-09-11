@@ -340,17 +340,18 @@ JavaScript と Python による完全な実装例については、[Webhook セ�
   ### クローラーが到達できる範囲
 </div>
 
-到達範囲は設定した scope パラメータによって決まります。詳細は [設定リファレンス](#configuration-reference) と [Crawl エンドポイントリファレンス](/ja/api-reference/endpoint/crawl-post) を参照してください:
+到達範囲は設定した スコープ パラメータによって決まります。詳細は [設定リファレンス](#configuration-reference) と [クロールエンドポイントリファレンス](/ja/api-reference/endpoint/crawl-post) を参照してください:
 
 * **デフォルトでは子ページのみ。** クロールは、指定した URL の子ではないサブリンクを無視します。兄弟パスや親パスをたどるには `crawlEntireDomain`、サブドメインには `allowSubdomains`、ドメイン外へのリンクをたどるには `allowExternalLinks` を使用します。
 * **`includePaths` / `excludePaths` は URL のパス名に対して**正規表現パターンとして照合されます。完全な URL やクエリパラメータは対象外です。クエリ文字列を含む完全な URL に対して照合したい場合は `regexOnFullURL: true` を設定します。開始 URL も `includePaths` と照合されるため、一致しない場合はクロール結果が 0 ページになることがあります。
-* **sitemap モード。** デフォルトの `sitemap: "include"` では、URL は sitemap と再帰的なリンク探索の両方から取得されます。`"skip"` は HTML のリンクのみを使用するため、PDF や深い階層のページなど sitemap にしかないページは取得できません。`"only"` は sitemap と開始 URL をクロールし、HTML からのリンク探索は行いません。
+* **パスのパターンは Rust の正規表現 (RE2 形式) で、事前に検証されます。** 先読み・後読みや後方参照はサポートされておらず、コンパイルできないパターンは黙って無視されるのではなく `400` で拒否されます。各フィールドには最大 1000 個、1 個あたり最大 2000 文字までのパターンを指定でき、`includePaths` と `excludePaths` を合わせて最大 1000 個のパターンかつ 100,000 文字までです。キーワード的な絞り込みを行う場合は、複数の語を 1 つの長い選択パターンにまとめるのではなく、語ごとに短いパターンを 1 つずつ送信してください (`["pricing", "docs", "blog"]`) 。
+* **サイトマップ モード。** デフォルトの `sitemap: "include"` では、URL は サイトマップ と再帰的なリンク探索の両方から取得されます。`"skip"` は HTML のリンクのみを使用するため、PDF や深い階層のページなど サイトマップ にしかないページは取得できません。`"only"` は サイトマップ と開始 URL をクロールし、HTML からのリンク探索は行いません。
 * **`maxDiscoveryDepth`** は、ルートからたどるリンク探索のホップ数の上限です。最大深度のページ自体はスクレイピングされますが、そこで見つかったリンクはたどりません。
 * **`limit`** はページ数の上限で、デフォルトは `10000` です。
 * **`ignoreQueryParameters`** は、クエリパラメータのみが異なる同一パスの再スクレイピングを回避します。
 * **robots.txt は尊重されます** (`ignoreRobotsTxt` を有効にした場合を除く。Enterprise のみ) 。
 
-`maxConcurrency` のデフォルトは、プランによって決まるチームの concurrency 上限です — [Rate limits](/ja/rate-limits) を参照してください。
+`maxConcurrency` のデフォルトは、プランによって決まるチームの 同時実行数の上限 です — [Rate limits](/ja/rate-limits) を参照してください。
 
 <div id="when-results-vary-between-runs">
   ### 実行ごとに結果が異なる場合
@@ -379,9 +380,9 @@ JavaScript と Python による完全な実装例については、[Webhook セ�
 | ----------------------- | ---------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `url`                   | `string`   | (required)  | クロール開始元の URL                                                                                                                                                                            |
 | `limit`                 | `integer`  | `10000`     | クロールするページの最大数                                                                                                                                                                           |
-| `maxDiscoveryDepth`     | `integer`  | (none)      | URL 内の `/` セグメント数ではなく、リンクの発見ホップ数に基づくルート URL からの最大深度。ページ上で新しい URL が見つかるたびに、その URL には発見元のページより 1 つ深い深度が割り当てられます。ルートサイトおよびサイトマップに含まれるページの発見深度は 0 です。最大深度のページもスクレイプされますが、そのページ上のリンクはたどりません。 |
-| `includePaths`          | `string[]` | (none)      | 含める URL パスの正規表現パターン。一致するパスのみをクロールします。                                                                                                                                                   |
-| `excludePaths`          | `string[]` | (none)      | クロール対象から除外する URL パスの正規表現パターン                                                                                                                                                            |
+| `maxDiscoveryDepth`     | `integer`  | (none)      | URL 内の `/` セグメント数ではなく、リンクの検出ホップ数に基づくルート URL からの最大深度。ページ上で新しい URL が見つかるたびに、その URL には発見元のページより 1 つ深い深度が割り当てられます。ルートサイトおよびサイトマップに含まれるページの発見深度は 0 です。最大深度のページもスクレイプされますが、そのページ上のリンクはたどりません。 |
+| `includePaths`          | `string[]` | (none)      | 含める URL パス名の正規表現パターン。一致するパスのみをクロールします。パターンは最大 1000 個、各 2000 文字までです。合計の上限と正規表現の構文については [スコープ](#what-the-crawler-is-scoped-to-reach) を参照してください。                                            |
+| `excludePaths`          | `string[]` | (none)      | クロール対象から除外する URL パス名の正規表現パターン。上限は `includePaths` と同じです。                                                                                                                                  |
 | `regexOnFullURL`        | `boolean`  | `false`     | `includePaths`/`excludePaths` を、パスのみではなく完全な URL (クエリパラメータを含む) に対して照合します                                                                                                                 |
 | `crawlEntireDomain`     | `boolean`  | `false`     | 子パスだけでなく、同一ドメイン内の兄弟 URL や親 URL への内部リンクもたどります                                                                                                                                            |
 | `allowSubdomains`       | `boolean`  | `false`     | メインドメインのサブドメインへのリンクもたどります                                                                                                                                                               |
@@ -391,7 +392,7 @@ JavaScript と Python による完全な実装例については、[Webhook セ�
 | `ignoreRobotsTxt`       | `boolean`  | `false`     | Web サイトの robots.txt のルールを無視します。**Enterprise only** — 有効化するには support@firecrawl.com にお問い合わせください。                                                                                         |
 | `robotsUserAgent`       | `string`   | (none)      | robots.txt の評価に使用するカスタム User-Agent 文字列。設定すると、robots.txt はこの User-Agent で取得され、デフォルトではなくこの User-Agent に対してルールが照合されます。**Enterprise only** — 有効化するには support@firecrawl.com にお問い合わせください。     |
 | `delay`                 | `number`   | (none)      | レート制限を順守するためのスクレイプ間の遅延 (秒)。これを設定すると、同時実行数は 1 に固定されます。                                                                                                                                   |
-| `maxConcurrency`        | `integer`  | (none)      | 同時スクレイプの最大数。デフォルトでは、チームの同時実行数上限が使用されます。                                                                                                                                                 |
+| `maxConcurrency`        | `integer`  | (none)      | 同時スクレイピングの最大数。デフォルトでは、チームの同時実行数の上限が使用されます。                                                                                                                                                 |
 | `scrapeOptions`         | `object`   | (none)      | すべてのスクレイプ対象ページに適用されるオプション (フォーマット、プロキシ、キャッシュ、アクションなど)                                                                                                                                   |
 | `webhook`               | `object`   | (none)      | リアルタイム通知用の webhook 設定                                                                                                                                                                   |
 | `prompt`                | `string`   | (none)      | クロールオプションを生成するための自然言語プロンプト。明示的に設定したパラメータは、生成された対応項目より優先されます。                                                                                                                            |

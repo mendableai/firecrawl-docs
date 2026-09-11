@@ -342,14 +342,15 @@ watcher 方法会在页面爬取过程中提供实时更新。启动爬取后，
 覆盖范围受你设置的范围参数限制，这些参数均记录在[配置参考](#configuration-reference)和 [爬取 endpoint 参考](/zh/api-reference/endpoint/crawl-post)中：
 
 * **默认仅抓取子路径。** 爬取会忽略不属于所提供 URL 子级的链接。使用 `crawlEntireDomain` 抓取同级和上级路径，使用 `allowSubdomains` 抓取子域名，使用 `allowExternalLinks` 跟随跨域名的链接。
-* **`includePaths` / `excludePaths` 以正则表达式匹配 URL 的 pathname** —— 而非完整 URL，也不包含查询参数。设置 `regexOnFullURL: true` 可改为匹配包含查询字符串的完整 URL。起始 URL 同样会与 `includePaths` 进行匹配：若不匹配，爬取可能返回 0 个页面。
+* **`includePaths` / `excludePaths` 以正则表达式匹配 URL 的 URL 路径** —— 而非完整 URL，也不包含查询参数。设置 `regexOnFullURL: true` 可改为匹配包含查询字符串的完整 URL。起始 URL 同样会与 `includePaths` 进行匹配：若不匹配，爬取可能返回 0 个页面。
+* **路径模式采用 Rust 正则 (RE2 风格) ，并会提前校验。** 不支持环视和反向引用，无法编译的模式会以 `400` 被拒绝，而不是被静默忽略。每个字段最多接受 1000 个模式，每个模式最多 2000 个字符；`includePaths` 与 `excludePaths` 合计最多包含 1000 个模式和 100,000 个字符。若要做关键词式过滤，请为每个词分别发送一个简短模式 (`["pricing", "docs", "blog"]`) ，而不要把多个词合并成一个很长的择一表达式。
 * **sitemap 模式。** 使用默认的 `sitemap: "include"` 时，URL 来自 sitemap 以及递归的链接发现。`"skip"` 仅使用 HTML 链接，因此会遗漏仅存在于 sitemap 中的页面，例如 PDF 或层级很深的页面。`"only"` 则只抓取 sitemap 加起始 URL，不从 HTML 中发现链接。
 * **`maxDiscoveryDepth`** 限制从根节点起可跟随的链接发现跳数。处于最大深度的页面仍会被抓取，但不会再跟随其中发现的链接。
 * **`limit`** 限制页面数量，默认值为 `10000`。
 * **`ignoreQueryParameters`** 可避免对查询参数不同的同一路径重复抓取。
-* **遵守 robots.txt**，除非启用 `ignoreRobotsTxt` (仅限企业版) 。
+* **遵守 robots.txt**，除非启用 `ignoreRobotsTxt` (仅限 Enterprise) 。
 
-`maxConcurrency` 默认为你团队的 concurrency 上限，该上限由你的 plan 决定 —— 请参见[限流](/zh/rate-limits)。
+`maxConcurrency` 默认为你团队的并发限制，该上限由你的 plan 决定 —— 请参见[限流](/zh/rate-limits)。
 
 <div id="when-results-vary-between-runs">
   ### 当多次运行结果不一致时
@@ -374,26 +375,26 @@ watcher 方法会在页面爬取过程中提供实时更新。启动爬取后，
 
 提交爬取任务时可用的完整参数集：
 
-| 参数                      | 类型         | 默认值         | 说明                                                                                                                                       |
-| ----------------------- | ---------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `url`                   | `string`   | (必填)        | 开始爬取的起始 URL                                                                                                                              |
-| `limit`                 | `integer`  | `10000`     | 最大爬取页面数                                                                                                                                  |
+| 参数                      | 类型         | 默认值         | 说明                                                                                                                                            |
+| ----------------------- | ---------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`                   | `string`   | (必填)        | 开始爬取的起始 URL                                                                                                                                   |
+| `limit`                 | `integer`  | `10000`     | 最大爬取页面数                                                                                                                                       |
 | `maxDiscoveryDepth`     | `integer`  | (无)         | 基于链接发现跳数、相对于根 URL 的最大深度，而不是 URL 中 `/` 分段的数量。每当在某个页面上发现一个新 URL 时，其深度都会被设为比发现它的页面高 1。根站点和通过 sitemap 发现的页面，其发现深度为 0。处于最大深度的页面仍会被抓取，但不会继续跟踪其上的链接。 |
-| `includePaths`          | `string[]` | (无)         | 要包含的 URL 路径正则表达式模式。仅爬取匹配的路径。                                                                                                             |
-| `excludePaths`          | `string[]` | (无)         | 要从爬取中排除的 URL 路径正则表达式模式                                                                                                                   |
-| `regexOnFullURL`        | `boolean`  | `false`     | 让 `includePaths`/`excludePaths` 针对完整 URL (包括查询参数) 进行匹配，而不只是路径部分                                                                          |
-| `crawlEntireDomain`     | `boolean`  | `false`     | 跟踪指向同级或上级 URL 的站内链接，而不只是子路径                                                                                                              |
-| `allowSubdomains`       | `boolean`  | `false`     | 跟踪指向主域名下子域名的链接                                                                                                                           |
-| `allowExternalLinks`    | `boolean`  | `false`     | 跟踪指向外部网站的链接。外部链接仅跟踪一跳 (不会爬取其自身的链接) ，并会跳过指向外部网站首页的链接 — 请参见 [外部链接](#external-links)。                                                       |
-| `sitemap`               | `string`   | `"include"` | sitemap 处理方式：`"include"` (默认) 、`"skip"` 或 `"only"`                                                                                           |
-| `ignoreQueryParameters` | `boolean`  | `false`     | 避免因查询参数不同而对同一路径重复抓取                                                                                                                      |
-| `ignoreRobotsTxt`       | `boolean`  | `false`     | 忽略网站的 robots.txt 规则。**仅限 Enterprise** — 请联系 support@firecrawl.com 启用。                                                                    |
-| `robotsUserAgent`       | `string`   | (无)         | 用于评估 robots.txt 的自定义 User-Agent 字符串。设置后，将使用此 User-Agent 获取 robots.txt，并根据它而不是默认值来匹配规则。**仅限 Enterprise** — 请联系 support@firecrawl.com 启用。  |
-| `delay`                 | `number`   | (无)         | 每次抓取之间的延迟时间 (秒) ，以遵守速率限制。设置此项会强制并发数为 1。                                                                                                  |
-| `maxConcurrency`        | `integer`  | (无)         | 最大并发抓取数。默认使用你团队的并发限制。                                                                                                                    |
-| `scrapeOptions`         | `object`   | (无)         | 应用于每个抓取页面的选项 (formats、代理、缓存、actions 等)                                                                                                   |
-| `webhook`               | `object`   | (无)         | 用于实时通知的 webhook 配置                                                                                                                       |
-| `prompt`                | `string`   | (无)         | 用于生成爬取选项的自然语言提示。显式设置的参数会覆盖自动生成的对应参数。                                                                                                     |
+| `includePaths`          | `string[]` | (无)         | 要包含的 URL 路径正则表达式模式。仅爬取匹配的路径。最多 1000 个模式，每个最长 2000 个字符；有关组合限制和正则语法，请参见 [scope](#what-the-crawler-is-scoped-to-reach)。                          |
+| `excludePaths`          | `string[]` | (无)         | 要从爬取中排除的 URL 路径正则表达式模式。限制与 `includePaths` 相同。                                                                                                 |
+| `regexOnFullURL`        | `boolean`  | `false`     | 让 `includePaths`/`excludePaths` 针对完整 URL (包括查询参数) 进行匹配，而不只是路径部分                                                                               |
+| `crawlEntireDomain`     | `boolean`  | `false`     | 跟踪指向同级或上级 URL 的站内链接，而不只是子路径                                                                                                                   |
+| `allowSubdomains`       | `boolean`  | `false`     | 跟踪指向主域名下子域名的链接                                                                                                                                |
+| `allowExternalLinks`    | `boolean`  | `false`     | 跟踪指向外部网站的链接。外部链接仅跟踪一跳 (不会爬取其自身的链接) ，并会跳过指向外部网站首页的链接 — 请参见 [外部链接](#external-links)。                                                            |
+| `sitemap`               | `string`   | `"include"` | sitemap 处理方式：`"include"` (默认) 、`"skip"` 或 `"only"`                                                                                            |
+| `ignoreQueryParameters` | `boolean`  | `false`     | 避免因查询参数不同而对同一路径重复抓取                                                                                                                           |
+| `ignoreRobotsTxt`       | `boolean`  | `false`     | 忽略网站的 robots.txt 规则。**仅限 Enterprise** — 请联系 support@firecrawl.com 启用。                                                                         |
+| `robotsUserAgent`       | `string`   | (无)         | 用于评估 robots.txt 的自定义 User-Agent 字符串。设置后，将使用此 User-Agent 获取 robots.txt，并根据它而不是默认值来匹配规则。**仅限 Enterprise** — 请联系 support@firecrawl.com 启用。       |
+| `delay`                 | `number`   | (无)         | 每次抓取之间的延迟时间 (秒) ，以遵守限流。设置此项会强制并发数为 1。                                                                                                       |
+| `maxConcurrency`        | `integer`  | (无)         | 最大并发抓取数。默认使用你团队的并发限制。                                                                                                                         |
+| `scrapeOptions`         | `object`   | (无)         | 应用于每个抓取页面的选项 (formats、代理、缓存、actions 等)                                                                                                        |
+| `webhook`               | `object`   | (无)         | 用于实时通知的 webhook 配置                                                                                                                            |
+| `prompt`                | `string`   | (无)         | 用于生成爬取选项的自然语言提示。显式设置的参数会覆盖自动生成的对应参数。                                                                                                          |
 
 <div id="important-details">
   ## 重要说明

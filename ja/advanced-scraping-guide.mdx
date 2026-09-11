@@ -616,18 +616,20 @@ curl -X POST https://api.firecrawl.dev/v2/crawl/params-preview \
 `/v2/crawl` エンドポイントでは、次のオプションでクロールの挙動をカスタマイズできます。
 
 <div id="path-filtering">
-  #### パスフィルタリング
+  #### パスの絞り込み
 </div>
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `includePaths` | `array` | — | デフォルトでは URL のパス名のみに適用される、インクルード対象とする URL の正規表現パターン。 |
-| `excludePaths` | `array` | — | デフォルトでは URL のパス名のみに適用される、除外対象とする URL の正規表現パターン。 |
-| `regexOnFullURL` | `boolean` | `false` | パス名ではなく、完全な URL に対してパターンをマッチさせます。 |
+| Parameter        | Type      | Default | Description                                         |
+| ---------------- | --------- | ------- | --------------------------------------------------- |
+| `includePaths`   | `array`   | —       | デフォルトでは URL のパス名のみに適用される、インクルード対象とする URL の正規表現パターン。 |
+| `excludePaths`   | `array`   | —       | デフォルトでは URL のパス名のみに適用される、除外対象とする URL の正規表現パターン。     |
+| `regexOnFullURL` | `boolean` | `false` | パス名ではなく、完全な URL に対してパターンをマッチさせます。                   |
 
 <Warning>
   開始 URL も `includePaths` に対してチェックされます。いずれのパターンにもマッチしない場合、クロールの結果が 0 ページになる可能性があります。
 </Warning>
+
+パターンは Rust の正規表現 (RE2 形式) 構文を使用するため、先読み・後読みや後方参照はサポートされません。コンパイルできないパターンは `400` で拒否されます。各フィールドで指定できるのは最大 1000 パターン、1 パターンあたり最大 2000 文字までで、`includePaths` と `excludePaths` を合わせて最大 1000 パターン・100,000 文字までです。キーワードで絞り込む場合は、複数の語を 1 つの長い選択構文にまとめるのではなく、語ごとに短いパターンを 1 つずつ送信してください。
 
 <div id="crawl-scope">
   #### クロール範囲
