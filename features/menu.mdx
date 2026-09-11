@@ -15,9 +15,9 @@ import ScrapeMenuCombinedCURL from "/snippets/v2/scrape/menu/combined/curl.mdx";
   **Private beta.** The `menu` format is enabled per team. This page is unlisted (not linked from the navigation or the Scrape feature page) so it can be shared for reference while the feature is in beta.
 </Note>
 
-The `menu` format extracts a structured restaurant menu **deterministically** — the same kind of structured output as the [`json` format](/features/scrape#extract-structured-data), but without an LLM call or a schema you define, purpose-built for restaurant menu pages. If you've been pulling menu fields with a `json` schema, use `formats: ["menu"]` instead — it's faster and cheaper, just limited to menus.
+The `menu` format extracts a structured restaurant menu **deterministically**: the same kind of structured output as the [`json` format](/features/scrape#extract-structured-data), but without an LLM call or a schema you define, built specifically for restaurant menu pages. If you have been pulling menu fields with a `json` schema, use `formats: ["menu"]` instead. It is faster and cheaper, just limited to menus.
 
-It returns a `menu` object with the merchant, currency, and a list of sections — where each section carries items, and each item carries description, images, price, availability, dietary tags, calories, and option groups — useful for menu ingestion, price monitoring, or food-delivery and ordering tools.
+It returns a `menu` object with the merchant, currency, and a list of sections, where each section carries items, and each item carries description, images, price, availability, dietary tags, calories, and option groups. Useful for menu ingestion, price monitoring, or food delivery and ordering tools.
 
 ## /scrape (with menu) endpoint
 
@@ -63,23 +63,37 @@ The `menu` object contains the following properties:
       - `text`: The raw availability text from the page (optional)
     - `dietary`: array of dietary tags, e.g. `["vegetarian"]` (optional)
     - `calories`: The item's calorie count (optional)
-    - `optionGroups`: Array of option/modifier groups for the item (optional)
-    - `identifiers`: merchant-specific identifiers for the item (optional):
+    - `category`: Coarse classification, either `"food"` or `"drink"`. `null` when the page gives no signal.
+    - `subcategory`: Finer type when clearly signalled, e.g. `"wine"`, `"cocktail"`, `"beer"`, `"non_alcoholic"`, `"dessert"`. `null` otherwise.
+    - `allergens`: Array of normalized allergen tokens parsed from the item's disclaimer, e.g. `["milk", "peanut"]`; `[]` when none.
+    - `mealPeriods`: Array of meal periods the item belongs to, e.g. `["lunch", "dinner"]`; `[]` when none.
+    - `optionGroups`: Array of option or modifier groups for the item (optional). Each group carries a `role`: `"variation"` (a required, item defining choice that sets the price or variant, mapping to a Square Item Variation) or `"modifier"` (an optional extra, mapping to a Square Modifier List); `null` when unknown.
+    - `identifiers`: identifiers specific to the merchant for the item (optional):
       - `merchantItemId`: The merchant's own item ID (optional)
     - `url`: The canonical URL of the item (optional)
     - `sourceUrl`: The URL the item was extracted from (optional)
 - `sourceUrl`: The URL the menu was extracted from (optional)
 
+## Modifiers (beta, opt in)
+
+By default the `menu` format returns items without per item modifiers, since many sites load an item's options only when you open it. To also capture modifier and option groups, request the format in object form with `modifiers` enabled:
+
+```json
+{ "formats": [{ "type": "menu", "modifiers": true }] }
+```
+
+Modifier capture is **best effort** and adds latency (the scraper fetches each item's options in the same browser session that loaded the page). It is currently supported on select delivery and ordering platforms; items whose modifiers cannot be fetched are returned with an empty `optionGroups`.
+
 ## How menu extraction works
 
-The menu format extracts the menu through a deterministic chain, tried in order: **platform adapters (e.g. Toast) > schema.org JSON-LD > microdata / embedded JSON state > a visible-text/markdown parser**. It returns the richest result the chain produces and only falls back to a last-resort LLM pass when the deterministic chain finds nothing or a low-quality result. Item names and prices are always grounded in the page — extraction never fabricates items. Currency is reported only when the page sources it.
+The menu format extracts the menu through a deterministic chain, tried in order: **platform adapters (e.g. Toast) > schema.org JSON-LD > microdata / embedded JSON state > a visible text or markdown parser**. It returns the richest result the chain produces and only falls back to a last resort LLM pass when the deterministic chain finds nothing or a weak result. Item names and prices are always grounded in the page; extraction never fabricates items. Currency is reported only when the page sources it.
 
 <Note>
-  Menu extraction is fail-closed: pages that aren't menus yield no menu. On a page with no extractable menu, the response omits the `menu` object and adds a `warning`.
+  Menu extraction is fail closed: pages that aren't menus yield no menu. On a page with no extractable menu, the response omits the `menu` object and adds a `warning`.
 </Note>
 
 <Note>
-  **Self-hosting:** the `menu` format is backed by a dedicated menu-extraction service. On Firecrawl Cloud it works out of the box. If you self-host, set `MENU_EXTRACTION_SERVICE_URL` to point at that service — when it is unset, requesting the `menu` format returns a "Menu format is not available" warning and no `menu` field (the scrape still succeeds).
+  **Self hosting:** the `menu` format is backed by a dedicated menu extraction service. On Firecrawl Cloud it works out of the box. If you run it yourself, set `MENU_EXTRACTION_SERVICE_URL` to point at that service. When it is unset, requesting the `menu` format returns a "Menu format is not available" warning and no `menu` field (the scrape still succeeds).
 </Note>
 
 ## Combining with other formats
