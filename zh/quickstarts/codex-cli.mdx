@@ -4,84 +4,65 @@ description: "为 OpenAI Codex CLI 添加 Firecrawl 的网页抓取与搜索功�
 sidebarTitle: "Codex CLI"
 ---
 
-通过 MCP，为 [OpenAI Codex CLI](https://github.com/openai/codex) 添加 Firecrawl 的搜索、抓取、爬取和浏览器工具。
+通过托管的 OAuth MCP 服务器将 [OpenAI Codex CLI](https://github.com/openai/codex) 连接到 Firecrawl。
 
 <div id="quick-setup">
   ## 快速开始
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. 获取 API 密钥
+<div id="1-add-firecrawl">
+  ### 1. 添加 Firecrawl
 </div>
 
-前往 [firecrawl.dev/app](https://www.firecrawl.dev/app) 注册并复制你的 API 密钥。
-
-<div id="2-add-firecrawl-to-codex">
-  ### 2. 将 Firecrawl 添加到 Codex
-</div>
-
-Codex 会从 `~/.codex/config.toml` 读取 MCP 服务器配置。添加 Firecrawl 服务器：
-
-```toml
-[mcp_servers.firecrawl]
-command = "npx"
-args = ["-y", "firecrawl-mcp"]
-
-[mcp_servers.firecrawl.env]
-FIRECRAWL_API_KEY = "fc-YOUR-API-KEY"
+```bash
+codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp-oauth
+codex mcp login firecrawl
 ```
 
-将 `fc-YOUR-API-KEY` 替换为你的 Firecrawl API 密钥。
+该 URL 是客户端配置值，不是可在浏览器中直接打开的页面。Codex 会启动 Firecrawl 登录流程，你可在其中选择团队并授权连接。
 
-<div id="3-start-codex">
-  ### 3. 启动 Codex
+<div id="2-start-codex-and-verify">
+  ### 2. 启动 Codex 并验证
 </div>
 
 ```bash
 codex
 ```
 
-Codex 启动时会检测到 Firecrawl 工具。请确认它们已成功加载：
+输入 `/mcp`，确认 `firecrawl` 已连接。如果你修改了现有的 Firecrawl 连接，请在重试前新建一个 Codex 会话。
 
-```bash
-/mcp
+试试：
+
+```text
+Search the web for the latest Next.js App Router release notes and summarize the sources.
 ```
 
-你应该会看到已列出的 `firecrawl`，以及 `firecrawl_search`、`firecrawl_scrape`、`firecrawl_crawl` 和 `firecrawl_extract` 等工具。
-
-<div id="quick-demo">
-  ## 快速演示
-</div>
-
-试试以下 prompt：
-
-```
-Search the web for the latest Next.js App Router release notes and summarize.
-```
-
-```
+```text
 Scrape https://docs.firecrawl.dev and list the top-level sections.
 ```
 
-```
-Crawl https://example.com and save the markdown for every page under /blog.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## 远程托管 URL (无需 Node.js)
+<div id="other-connection-modes">
+  ## 其他连接方式
 </div>
 
-如果你不想在本地运行 `npx`：
+* 使用[免密钥 MCP](/zh/mcp-server/keyless#try-keyless)试用 Search、Scrape 和 Parse，无需账户或密钥。
+* 使用 `bearer_token_env_var` [配置 API 密钥](/zh/mcp-server/keyless#add-an-api-key)，以便无人值守运行。请勿在代理聊天或源代码管理中泄露密钥。
+* 仅在需要本地进程或自托管 Firecrawl API 时，[在本地运行 MCP](/zh/mcp-server/local)。本地软件包要求 Node.js 22 或更高版本。
 
-```toml
-[mcp_servers.firecrawl]
-url = "https://mcp.firecrawl.dev/v2/mcp-oauth"
+<div id="optional-literature-research">
+  ## 可选：文献研究
+</div>
+
+处理论文和文献相关任务时，research-index 技能会将这些查询转发至 `firecrawl_research_*` 工具和[研究索引](/zh/features/research)，而非通用网页搜索：
+
+```bash
+npx skills add firecrawl/skills@firecrawl-research-index
 ```
 
 <div id="troubleshooting">
-  ## 故障排查
+  ## 故障排除
 </div>
 
-* **Codex 无法识别这些工具** — 运行 `codex --version`，确认你使用的是支持 MCP 的版本；编辑 `config.toml` 后，请重启 CLI。
-* **`spawn npx ENOENT`** — 安装 Node.js 18+，并确保 `npx` 已加入你的 `PATH`；或者改用上方的远程托管 URL。
-* **401 / 密钥无效** — 前往 [firecrawl.dev/app/api-keys](https://www.firecrawl.dev/app/api-keys) 重新生成 API 密钥。
+* **Codex 看不到工具：**运行 `codex mcp list`，确认只有一个 `firecrawl` 条目，然后重启 Codex。
+* **OAuth 返回 `401`：**运行 `codex mcp login firecrawl` 并完成登录。身份验证前，直接请求 OAuth 服务器预期会返回 `401`。
+* **使用 API 密钥的连接返回 `401`：**替换用于启动 Codex 的环境中的密钥，然后启动新会话。

@@ -1,87 +1,68 @@
 ---
-title: "Codex CLI での MCP Web Search & Scrape"
+title: "Codex CLI での MCP Web Search & スクレイピング"
 description: "OpenAI Codex CLI に Firecrawl の Web スクレイピングと検索を追加"
 sidebarTitle: "Codex CLI"
 ---
 
-MCP を介して、Firecrawl の検索、スクレイピング、クロール、ブラウザツールを [OpenAI Codex CLI](https://github.com/openai/codex) に追加します。
+ホスト型 OAuth MCP サーバーを介して、[OpenAI Codex CLI](https://github.com/openai/codex) を Firecrawl に接続します。
 
 <div id="quick-setup">
   ## クイックスタート
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. APIキーを取得する
+<div id="1-add-firecrawl">
+  ### 1. Firecrawl を追加する
 </div>
 
-[firecrawl.dev/app](https://www.firecrawl.dev/app) で登録し、APIキーをコピーします。
-
-<div id="2-add-firecrawl-to-codex">
-  ### 2. Codex に Firecrawl を追加する
-</div>
-
-Codex は `~/.codex/config.toml` から MCP Server の設定を読み込みます。Firecrawl サーバーを追加してください。
-
-```toml
-[mcp_servers.firecrawl]
-command = "npx"
-args = ["-y", "firecrawl-mcp"]
-
-[mcp_servers.firecrawl.env]
-FIRECRAWL_API_KEY = "fc-YOUR-API-KEY"
+```bash
+codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp-oauth
+codex mcp login firecrawl
 ```
 
-`fc-YOUR-API-KEY` をお使いの Firecrawl APIキーに置き換えてください。
+URL はクライアントの構成値であり、ブラウザで直接開くページではありません。Codex を使用すると Firecrawl のサインインフローが開くので、そこでチームを選択し、接続を承認します。
 
-<div id="3-start-codex">
-  ### 3. Codex を起動する
+<div id="2-start-codex-and-verify">
+  ### 2. Codexを起動して動作を確認する
 </div>
 
 ```bash
 codex
 ```
 
-Codex は起動時に Firecrawl ツールを検出します。正しく読み込まれていることを確認してください。
+`/mcp` を入力し、`firecrawl` が接続されていることを確認してください。既存のFirecrawl接続を変更した場合は、再試行する前に新しいCodexセッションを開始してください。
 
-```bash
-/mcp
+次を試してください：
+
+```text
+Next.js App Routerの最新リリースノートをウェブで検索し、ソースを要約してください。
 ```
 
-`firecrawl_search`、`firecrawl_scrape`、`firecrawl_crawl`、`firecrawl_extract` などのツールとともに、`firecrawl` が一覧に表示されているはずです。
-
-<div id="quick-demo">
-  ## クイックデモ
-</div>
-
-次のプロンプトを試してください：
-
-```
-Next.js App Routerの最新リリースノートをウェブで検索し、要約してください。
-```
-
-```
+```text
 スクレイピング https://docs.firecrawl.dev and list the top-level sections.
 ```
 
-```
-クロール https://example.com and save the markdown for every page under /blog.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## リモートホストのURL (Node.js不要)
+<div id="other-connection-modes">
+  ## その他の接続モード
 </div>
 
-ローカルで `npx` を実行したくない場合:
+* アカウントやキーを使わずに 検索、スクレイピング、解析を試すには、[keyless MCP を試す](/ja/mcp-server/keyless#try-keyless)を参照してください。
+* ユーザー操作なしで使用する場合は、`bearer_token_env_var` を使用して [API キーを設定](/ja/mcp-server/keyless#add-an-api-key)します。シークレットは Agent のチャットやソース管理には含めないでください。
+* ローカルプロセスまたはセルフホスト型 Firecrawl API が必要な場合にのみ、[MCP をローカルで実行](/ja/mcp-server/local)してください。ローカルパッケージには Node.js 22 以降が必要です。
 
-```toml
-[mcp_servers.firecrawl]
-url = "https://mcp.firecrawl.dev/v2/mcp-oauth"
+<div id="optional-literature-research">
+  ## 任意: 文献調査
+</div>
+
+論文・文献関連の作業では、research-index スキルにより、これらのクエリは一般的なウェブ検索ではなく、`firecrawl_research_*` ツールと [Research Index](/ja/features/research) に振り分けられます。
+
+```bash
+npx skills add firecrawl/skills@firecrawl-research-index
 ```
 
 <div id="troubleshooting">
   ## トラブルシューティング
 </div>
 
-* **Codex でツールを認識できない** — `codex --version` を実行して、MCP をサポートするバージョンを使用していることを確認し、`config.toml` を編集した後に CLI を再起動してください。
-* **`spawn npx ENOENT`** — Node.js 18 以降をインストールし、`npx` が `PATH` に含まれていることを確認するか、上記のリモートホストのURLに切り替えてください。
-* **401 / 無効なキー** — [firecrawl.dev/app/api-keys](https://www.firecrawl.dev/app/api-keys) で API キーを再生成してください。
+* **Codex にツールが表示されない:** `codex mcp list` を実行し、`firecrawl` エントリが 1 つだけ存在することを確認してから、Codex を再起動します。
+* **OAuth が `401` を返す:** `codex mcp login firecrawl` を実行してサインインを完了します。認証前に OAuth サーバーへ直接リクエストすると `401` が返るのは想定どおりです。
+* **API キー接続で `401` が返る:** Codex を起動する環境のキーを置き換え、新しいセッションを開始します。

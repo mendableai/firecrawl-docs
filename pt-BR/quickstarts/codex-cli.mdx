@@ -4,84 +4,65 @@ description: "Adicione a busca e o scraping na web do Firecrawl ao OpenAI Codex 
 sidebarTitle: "Codex CLI"
 ---
 
-Adicione as ferramentas de busca, scraping, rastreamento e navegador do Firecrawl ao [OpenAI Codex CLI](https://github.com/openai/codex) via MCP.
+Conecte o [OpenAI Codex CLI](https://github.com/openai/codex) ao Firecrawl por meio do servidor MCP hospedado com OAuth.
 
 <div id="quick-setup">
   ## Configuração rápida
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. Obtenha sua chave de API
+<div id="1-add-firecrawl">
+  ### 1. Adicione o Firecrawl
 </div>
 
-Cadastre-se em [firecrawl.dev/app](https://www.firecrawl.dev/app) e copie sua chave de API.
-
-<div id="2-add-firecrawl-to-codex">
-  ### 2. Adicione o Firecrawl ao Codex
-</div>
-
-O Codex lê a configuração do servidor MCP em `~/.codex/config.toml`. Adicione o servidor Firecrawl:
-
-```toml
-[mcp_servers.firecrawl]
-command = "npx"
-args = ["-y", "firecrawl-mcp"]
-
-[mcp_servers.firecrawl.env]
-FIRECRAWL_API_KEY = "fc-YOUR-API-KEY"
+```bash
+codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp-oauth
+codex mcp login firecrawl
 ```
 
-Substitua `fc-YOUR-API-KEY` pela sua chave de API do Firecrawl.
+A URL é um valor de configuração do cliente, não uma página para ser aberta diretamente no navegador. O Codex abre o fluxo de login do Firecrawl, no qual você escolhe uma equipe e aprova a conexão.
 
-<div id="3-start-codex">
-  ### 3. Iniciar o Codex
+<div id="2-start-codex-and-verify">
+  ### 2. Inicie o Codex e verifique
 </div>
 
 ```bash
 codex
 ```
 
-O Codex detecta as ferramentas do Firecrawl ao iniciar. Confirme se elas foram carregadas:
+Digite `/mcp` e confirme que `firecrawl` está conectado. Se você alterou uma conexão existente do Firecrawl, inicie uma nova sessão do Codex antes de tentar novamente.
 
-```bash
-/mcp
+Experimente:
+
+```text
+Search the web for the latest Next.js App Router release notes and summarize the sources.
 ```
 
-Você deverá ver `firecrawl` listado com ferramentas como `firecrawl_search`, `firecrawl_scrape`, `firecrawl_crawl` e `firecrawl_extract`.
-
-<div id="quick-demo">
-  ## Demonstração rápida
-</div>
-
-Experimente estes prompts:
-
-```
-Search the web for the latest Next.js App Router release notes and summarize.
-```
-
-```
+```text
 Scrape https://docs.firecrawl.dev and list the top-level sections.
 ```
 
-```
-Crawl https://example.com and save the markdown for every page under /blog.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## URL hospedada remotamente (sem necessidade de Node.js)
+<div id="other-connection-modes">
+  ## Outras formas de conexão
 </div>
 
-Se preferir não executar `npx` localmente:
+* [Experimente o MCP sem chave](/pt-BR/mcp-server/keyless#try-keyless) para busca, scraping e parse sem conta nem chave.
+* [Configure uma chave de API](/pt-BR/mcp-server/keyless#add-an-api-key) com `bearer_token_env_var` para uso não assistido. Mantenha o segredo fora do chat do agente e do controle de versão.
+* [Execute o MCP localmente](/pt-BR/mcp-server/local) apenas se precisar de um processo local ou de uma API do Firecrawl auto-hospedada. O pacote local requer o Node.js 22 ou mais recente.
 
-```toml
-[mcp_servers.firecrawl]
-url = "https://mcp.firecrawl.dev/v2/mcp-oauth"
+<div id="optional-literature-research">
+  ## Opcional: pesquisa bibliográfica
+</div>
+
+Para trabalhos com artigos científicos e literatura, a skill research-index direciona essas queries para as ferramentas `firecrawl_research_*` e o [Research Index](/pt-BR/features/research), em vez da busca geral na web:
+
+```bash
+npx skills add firecrawl/skills@firecrawl-research-index
 ```
 
 <div id="troubleshooting">
   ## Solução de problemas
 </div>
 
-* **O Codex não reconhece as ferramentas** — execute `codex --version` para confirmar que você está usando uma versão com suporte a MCP e, em seguida, reinicie a CLI após editar `config.toml`.
-* **`spawn npx ENOENT`** — instale o Node.js 18+ e verifique se `npx` está no seu `PATH`, ou use a URL hospedada remotamente acima.
-* **401 / chave inválida** — gere uma nova chave de API em [firecrawl.dev/app/api-keys](https://www.firecrawl.dev/app/api-keys).
+* **O Codex não detecta as ferramentas:** execute `codex mcp list`, confirme que há apenas uma entrada `firecrawl` e reinicie o Codex.
+* **O OAuth retorna `401`:** execute `codex mcp login firecrawl` e faça login. É esperado que uma solicitação sem credenciais ao servidor OAuth retorne `401` antes da autenticação.
+* **Uma conexão com chave de API retorna `401`:** substitua a chave no ambiente que inicia o Codex e inicie uma nova sessão.

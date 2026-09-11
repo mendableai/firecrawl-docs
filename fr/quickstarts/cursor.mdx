@@ -3,99 +3,13 @@ title: "Recherche et scraping web MCP dans Cursor"
 description: "Ajoutez le scraping web et la recherche à Cursor en 2 minutes"
 ---
 
-Ajoutez des capacités de scraping et de recherche web à Cursor avec Firecrawl MCP.
+Ajoutez les outils sans clé recherche, Scrape et Parse de Firecrawl à Cursor via le serveur MCP hébergé.
 
 <div id="quick-setup">
   ## Configuration rapide
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. Obtenez votre clé d’API
-</div>
-
-Inscrivez-vous sur [firecrawl.dev/app](https://firecrawl.dev/app) et copiez votre clé d’API.
-
-<div id="2-add-to-cursor">
-  ### 2. Ajouter à Cursor
-</div>
-
-Ouvrez les préférences (`Cmd+,`), recherchez « MCP », puis ajoutez :
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "votre_cle_api_ici"
-      }
-    }
-  }
-}
-```
-
-Remplacez `your_api_key_here` par votre clé API Firecrawl.
-
-<div id="3-restart-cursor">
-  ### 3. Redémarrer Cursor
-</div>
-
-C’est tout ! Vous pouvez maintenant rechercher et scraper le web directement depuis Cursor.
-
-<div id="quick-demo">
-  ## Démo rapide
-</div>
-
-Essayez ceci dans Cursor Chat (`Cmd+K`) :
-
-**Recherche :**
-
-```
-Rechercher les bonnes pratiques TypeScript 2025
-```
-
-**Extraction :**
-
-```
-Scrape firecrawl.dev et dis-moi ce que c'est
-```
-
-**Obtenir la doc :**
-
-```
-Scrape la documentation des hooks React et explique useEffect
-```
-
-Cursor utilisera automatiquement les outils de Firecrawl.
-
-<div id="windows-troubleshooting">
-  ## Dépannage sous Windows
-</div>
-
-Si vous voyez l’erreur `spawn npx ENOENT` ou « No server info found » sous Windows, cela signifie que Cursor ne trouve pas `npx` dans votre PATH. Essayez l’une de ces solutions :
-
-**Option A : utiliser le chemin complet vers `npx.cmd`**
-
-Exécutez `where npx` dans l’Invite de commandes pour obtenir le chemin complet, puis mettez à jour votre configuration :
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "command": "C:\\Program Files\\nodejs\\npx.cmd",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "your_api_key_here"
-      }
-    }
-  }
-}
-```
-
-Remplacez le chemin `command` par le résultat de `where npx`.
-
-**Option B : Utiliser l’URL hébergée à distance (Node.js non requis)**
+Ouvrez les paramètres de Cursor, sélectionnez **MCP**, puis ajoutez :
 
 ```json
 {
@@ -107,6 +21,25 @@ Remplacez le chemin `command` par le résultat de `where npx`.
 }
 ```
 
-Cette configuration utilise l’ensemble d’outils Firecrawl sans clé. Pour une configuration connectée à un compte ou sans intervention, suivez les [modes de connexion MCP hébergés](/fr/developer-guides/mcp-setup-guides/oauth) ; conservez les clés API dans un en-tête Authorization ou un gestionnaire de secrets sécurisé, jamais dans une URL.
+Redémarrez Cursor et vérifiez que `firecrawl_search`, `firecrawl_scrape` et `firecrawl_parse` sont disponibles.
 
-Remplacez `YOUR-API-KEY` par votre clé API Firecrawl.
+L’accès sans clé est soumis à des limites partagées entre les utilisateurs ayant la même adresse IP publique. Connectez-vous depuis un client interactif via [Pour les humains](/fr/mcp-server/oauth), ou [ajoutez une clé API](/fr/mcp-server/keyless#add-an-api-key) pour une utilisation sans intervention.
+
+<div id="try-it">
+  ## Essayez
+</div>
+
+```text
+Recherche les notes de la dernière release de TypeScript et résume les sources.
+```
+
+```text
+Scrape https://firecrawl.dev et explique ce que fait ce site.
+```
+
+<div id="troubleshooting">
+  ## Dépannage
+</div>
+
+* **Le serveur ne se connecte pas :** vérifiez que l’URL est exactement `https://mcp.firecrawl.dev/v2/mcp` et consultez l’état MCP dans Cursor.
+* **Crawl ou un autre outil est indisponible :** le mode sans clé donne accès uniquement à recherche, Scrape et Parse. Connectez-vous via OAuth ou avec une clé API pour accéder à davantage d’outils.

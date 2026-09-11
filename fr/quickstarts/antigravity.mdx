@@ -4,85 +4,43 @@ description: "Ajoutez le scraping web et la recherche Firecrawl à Google Antigr
 sidebarTitle: "Antigravity"
 ---
 
-Ajoutez à [Google Antigravity](https://antigravity.google/) les outils Firecrawl de recherche, de scraping, de crawl et de navigateur via MCP.
+Ajoutez à [Google Antigravity](https://antigravity.google/) les outils sans clé Search, Scrape et Parse de Firecrawl via le serveur MCP hébergé.
 
 <div id="quick-setup">
   ## Configuration rapide
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. Obtenez votre clé API
-</div>
-
-Inscrivez-vous sur [firecrawl.dev/app](https://www.firecrawl.dev/app), puis copiez votre clé API.
-
-<div id="2-add-firecrawl-to-antigravity">
-  ### 2. Ajouter Firecrawl à Antigravity
-</div>
-
-Ouvrez les paramètres d’Antigravity (`Cmd/Ctrl + ,`), recherchez **MCP Servers**, puis ajoutez un nouveau serveur avec :
+Ouvrez les paramètres d’Antigravity (`Cmd/Ctrl + ,`), recherchez **Serveurs MCP** et ajoutez :
 
 ```json
 {
   "mcpServers": {
     "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
+      "serverUrl": "https://mcp.firecrawl.dev/v2/mcp"
     }
   }
 }
 ```
 
-Remplacez `fc-YOUR-API-KEY` par votre clé API Firecrawl.
+Actualisez la fenêtre et vérifiez que `firecrawl_search`, `firecrawl_scrape` et `firecrawl_parse` sont disponibles.
 
-<div id="3-reload-antigravity">
-  ### 3. Recharger Antigravity
+L’accès sans clé est soumis à des limites partagées entre les utilisateurs d’une même adresse IP publique. Connectez-vous depuis un client interactif avec [For Humans](/fr/mcp-server/oauth), ou [ajoutez une clé API](/fr/mcp-server/keyless#add-an-api-key) pour une utilisation sans intervention.
+
+<div id="try-it">
+  ## Essayez
 </div>
 
-Rechargez la fenêtre (`Cmd/Ctrl + Shift + P` → `Reload Window`). L’agent a désormais accès aux outils web de Firecrawl.
-
-<div id="quick-demo">
-  ## Démo rapide
-</div>
-
-Dans une conversation avec un agent Antigravity :
-
-```
-Search the web for "Vercel AI SDK v5 release notes" and summarize.
+```text
+Use Firecrawl to search for the latest Vercel AI SDK release notes and summarize the sources.
 ```
 
+```text
+Scrape https://docs.firecrawl.dev/ai-onboarding and list the linked guides.
 ```
-Scrape https://docs.firecrawl.dev/ai-onboarding and list every linked guide.
-```
-
-```
-Crawl https://example.com and extract every page title.
-```
-
-Antigravity achemine automatiquement ces appels d’outils via Firecrawl MCP.
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## URL hébergée à distance (sans Node.js)
-</div>
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "url": "https://mcp.firecrawl.dev/v2/mcp"
-    }
-  }
-}
-```
-
-Cette configuration utilise l’ensemble d’outils Firecrawl sans clé API. Pour une configuration connectée à un compte ou sans intervention, suivez les [modes de connexion MCP hébergés](/fr/developer-guides/mcp-setup-guides/oauth) ; conservez les clés API dans un en-tête Authorization ou un gestionnaire de secrets sécurisé, jamais dans une URL.
 
 <div id="troubleshooting">
   ## Dépannage
 </div>
 
-* **Le serveur apparaît comme « failed »** — consultez le panneau de sortie MCP pour `stderr`. La plupart des échecs sont dus à une clé API manquante ou à l’absence de `npx` dans le `PATH`.
-* **Outils non appelés** — mentionnez explicitement Firecrawl (par exemple, « Utilisez Firecrawl pour faire du scraping… ») dans votre premier prompt afin que l’agent choisisse le bon outil.
+* **Le serveur est signalé comme ayant échoué :** vérifiez l’URL hébergée et consultez le panneau de sortie MCP.
+* **Crawl ou un autre outil est absent :** le mode sans clé propose uniquement Search, Scrape et Parse. Connectez-vous via OAuth ou avec une clé API pour accéder à un ensemble d’outils plus complet.

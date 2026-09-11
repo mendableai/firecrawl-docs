@@ -372,6 +372,8 @@ firecrawl browser "click @e5"
 
   ```bash agent-browser
   # 使用会话响应中的 cdpUrl
+  CDP_URL=YOUR_SESSION_CDP_URL
+
   agent-browser open https://example.com --cdp "$CDP_URL"
   agent-browser snapshot --cdp "$CDP_URL"
   ```
@@ -398,10 +400,10 @@ firecrawl browser "click @e5"
 * **市场调研** - 启动并行浏览器会话，从招聘网站、房产列表或法律数据库中构建数据集
 
 <div id="pricing">
-  ## 价格
+  ## 定价
 </div>
 
-计费简单明了：每个浏览器使用分钟 2 个积分。免费用户可享有 5 小时的免费使用额度。
+定价取决于驱动 会话 的方式：如果 会话 使用 `prompt`，每浏览器分钟消耗 7 个额度；如果不使用 (仅使用 Playwright `code`) ，每浏览器分钟消耗 2 个额度。按浏览器分钟计费，最低计费时长为 1 分钟。
 
 <div id="rate-limits">
   ## 速率限制

@@ -38,7 +38,7 @@ Más integraciones están en camino; si echas en falta alguna, nos encantará sa
 
 ![Firecrawl MCP](/images/launch-week/lw3-d6-1.webp)
 
-<div id="overview">
+<div id="overview-2">
   ### Descripción general
 </div>
 
@@ -50,7 +50,9 @@ También incorporamos compatibilidad con Server-Sent Events (SSE) para uso local
 
 Estas mejoras simplifican el envío de datos web a canalizaciones de LLM, con agentes inteligentes que se encargan del trabajo pesado.
 
-### Funciones clave
+<div id="key-features">
+  ### Funciones clave
+</div>
 
 * Compatibilidad con FIRE-1: Usa el agente de acciones web a través de los extremos /scrape y /extract de MCP.
 * Consciente de la interacción: Navega automáticamente barreras web complejas.
@@ -63,7 +65,7 @@ Estas mejoras simplifican el envío de datos web a canalizaciones de LLM, con ag
 
 ![Día del Desarrollador](/images/launch-week/lw3-d5-1.webp)
 
-<div id="overview">
+<div id="overview-3">
   ### Descripción general
 </div>
 
@@ -72,7 +74,9 @@ Hoy es para desarrolladores. Estamos lanzando mejoras que hacen que crear con Fi
 Hemos presentado un SDK de Python totalmente asíncrono con parámetros con nombre y tipos de retorno, nuevas y potentes funciones en el SDK de Rust, soporte de equipo ampliado en todos los planes y un nuevo tema oscuro de Firecrawl para VSCode y editores compatibles.
 ![Python Named Params](/images/launch-week/lw3-d5-3.webp)
 
-### Funciones clave
+<div id="key-features-2">
+  ### Funciones clave
+</div>
 
 - **Importantes mejoras del SDK de Python**: Se añadieron parámetros con nombre, tipos de retorno y soporte Async a nuestro SDK de Python.
 - **Actualizaciones del SDK de Rust**: Raspado en lote, cancelación de tareas, generación de llms.txt y búsqueda más inteligente.
@@ -85,7 +89,7 @@ Hemos presentado un SDK de Python totalmente asíncrono con parámetros con nomb
 
 ![Página principal de LLMs.txt](/images/launch-week/lw3-d4-1.webp)
 
-<div id="overview">
+<div id="overview-4">
   ### Descripción general
 </div>
 
@@ -97,7 +101,7 @@ Basado en Firecrawl, esta herramienta facilita preparar contenido web del mundo 
 
 ![Interfaz del Generador de LLMs.txt](/images/launch-week/lw3-d4-2.webp)
 
-<div id="key-features">
+<div id="key-features-3">
   ### Características clave
 </div>
 
@@ -112,7 +116,7 @@ Basado en Firecrawl, esta herramienta facilita preparar contenido web del mundo 
 
 ![Extract v2 principal](/images/launch-week/lw3-d3-l.webp)
 
-<div id="overview">
+<div id="overview-5">
   ### Descripción general
 </div>
 
@@ -124,7 +128,9 @@ Hemos reconstruido el núcleo desde cero: modelos mejorados, una arquitectura su
 
 ![Extract v2 en acción](/images/launch-week/lw3-d3-2.webp)
 
-### Funciones clave  
+<div id="key-features-4">
+  ### Funciones clave  
+</div>
 
 - **Integración con FIRE-1**: Gestiona automáticamente las acciones, la navegación y la interacción en la página.  
 - **Extracción multipágina**: Extrae datos en flujos paginados o por pasos.  
@@ -137,7 +143,7 @@ Hemos reconstruido el núcleo desde cero: modelos mejorados, una arquitectura su
 
 ![Visualización de FIRE-1 (Agente)](/images/launch-week/lw3d2-1.webp)
 
-<div id="overview">
+<div id="overview-6">
   ### Descripción general
 </div>
 
@@ -146,7 +152,9 @@ Te presentamos **FIRE-1**, el primer Agente de IA de Firecrawl, diseñado para l
 Desde gestionar la paginación hasta interactuar con elementos dinámicos del sitio, como botones y enlaces, FIRE-1 habilita flujos de trabajo potentes de scraping y extracción con conocimiento del contexto.
 ![FIRE-1 Agent Visualization](/images/launch-week/lw3-d2-4.webp)
 
-### Funcionalidades clave
+<div id="key-features-5">
+  ### Funcionalidades clave
+</div>
 
 - **Navegación inteligente**: Avanza automáticamente por contenido paginado o de varios pasos.
 - **Interacción dinámica**: Haz clic en botones, sigue enlaces e interactúa con componentes renderizados con JavaScript.
@@ -157,21 +165,23 @@ Desde gestionar la paginación hasta interactuar con elementos dinámicos del si
 
 ![Vista principal de seguimiento de cambios](/images/launch-week/lw3d1.webp)
 
-<div id="overview">
+<div id="overview-7">
   ### Descripción general
 </div>
 
 El seguimiento de cambios es una función potente que te permite supervisar y detectar modificaciones en el contenido web a lo largo del tiempo. Está disponible tanto en los SDK de JavaScript como de Python.
 ![Seguimiento de cambios](/images/launch-week/lw3d12.webp)
 
-### Funciones clave
+<div id="key-features-6">
+  ### Funciones clave
+</div>
 
 - **Detectar cambios**: Identifica si una página web ha cambiado desde el último scraping.
 - **Ver cambios específicos**: Accede a información detallada sobre lo que ha cambiado entre scrapes.
 - **Datos estructurados**: Recibe datos estructurados sobre los cambios.
 - **Control de visibilidad**: Gestiona la visibilidad de los cambios en tu sitio web.
 
-Usando el formato `seguimientoDeCambios`, puedes monitorear eficazmente los cambios en un sitio web y recibir información completa sobre la marca de tiempo del scraping anterior, el resultado de la comparación entre las dos versiones de la página y la visibilidad de la página/URL actual.
+Usando el formato `changeTracking`, puedes monitorear eficazmente los cambios en un sitio web y recibir información completa sobre la marca de tiempo del scraping anterior, el resultado de la comparación entre las dos versiones de la página y la visibilidad de la página/URL actual.
 
 <div id="day-0-firecrawl-editor-theme">
   ## Día 0 - Tema del editor de Firecrawl
@@ -179,11 +189,15 @@ Usando el formato `seguimientoDeCambios`, puedes monitorear eficazmente los camb
 
 ![Tema del editor de Firecrawl](/images/launch-week/lw3d0.webp)
 
-### Información general
+<div id="overview-8">
+  ### Información general
+</div>
 
 ¡Nos complace presentar nuestro tema oficial de Firecrawl para editores! Ya disponible para la mayoría de los editores, incluidos Cursor, Windsurf y más.
 
-### Funciones clave
+<div id="key-features-7">
+  ### Funciones clave
+</div>
 
 El tema del editor de Firecrawl ofrece una experiencia de programación limpia y enfocada para todos. Nuestra paleta de colores prioriza la legibilidad sin perder la identidad de marca de Firecrawl.
 

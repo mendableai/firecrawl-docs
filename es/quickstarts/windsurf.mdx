@@ -3,68 +3,43 @@ title: "Búsqueda y scraping web con MCP en Windsurf"
 description: "Añade scraping y búsqueda web a Windsurf en 2 minutos"
 ---
 
-Añade capacidades de scraping y búsqueda web a Windsurf con Firecrawl MCP.
+Añade las herramientas keyless Search, scraping y Parse de Firecrawl a Windsurf mediante el MCP Server alojado.
 
 <div id="quick-setup">
   ## Configuración rápida
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. Obtén tu clave de API
-</div>
-
-Regístrate en [firecrawl.dev/app](https://firecrawl.dev/app) y copia tu clave de API.
-
-<div id="2-add-to-windsurf">
-  ### 2. Añadir a Windsurf
-</div>
-
-Añade esto a `./codeium/windsurf/model_config.json`:
+Abre **Configuración → Herramientas → Configuración de Windsurf → Añadir servidor** o edita `~/.codeium/windsurf/mcp_config.json`:
 
 ```json
 {
   "mcpServers": {
     "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "TU_API_KEY"
-      }
+      "url": "https://mcp.firecrawl.dev/v2/mcp"
     }
   }
 }
 ```
 
-Reemplaza `YOUR_API_KEY` por tu clave real de la API de Firecrawl.
+Reinicia Windsurf y confirma que `firecrawl_search`, `firecrawl_scrape` y `firecrawl_parse` estén disponibles.
 
-<div id="3-restart-windsurf">
-  ### 3. Reinicia Windsurf
+El acceso keyless tiene límites compartidos entre los usuarios con la misma IP pública. Inicia sesión desde un cliente interactivo con [For Humans](/es/mcp-server/oauth) o [añade una clave de API](/es/mcp-server/keyless#add-an-api-key) para uso desatendido.
+
+<div id="try-it">
+  ## Pruébalo
 </div>
 
-¡Listo! Windsurf ahora puede buscar y hacer scraping en la web.
+```text
+Busca las notas de la última release de Tailwind CSS y resume las fuentes.
+```
 
-<div id="quick-demo">
-  ## Demostración rápida
+```text
+Haz scraping de https://firecrawl.dev y explica qué hace.
+```
+
+<div id="troubleshooting">
+  ## Solución de problemas
 </div>
 
-Pruébalos en Windsurf:
-
-**Búsqueda:**
-
-```
-Busca las últimas funcionalidades de Tailwind CSS
-```
-
-**Extracción:**
-
-```
-Extrae datos de firecrawl.dev y explica qué hace
-```
-
-**Obtener docs:**
-
-```
-Busca y extrae la documentación de autenticación de Supabase
-```
-
-Los agentes de IA de Windsurf usarán automáticamente las herramientas de Firecrawl.
+* **El servidor no se conecta:** confirma la URL alojada e inspecciona el estado de MCP en Windsurf.
+* **Falta Crawl u otra herramienta:** el modo keyless expone únicamente Search, scraping y Parse. Conéctate mediante OAuth o una clave de API para acceder a un conjunto más amplio de herramientas.

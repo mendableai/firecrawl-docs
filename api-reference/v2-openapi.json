@@ -351,7 +351,8 @@
                 "completed",
                 "failed",
                 "partial",
-                "skipped_overlap"
+                "skipped_overlap",
+                "skipped_no_credits"
               ]
             },
             "description": "Filter checks by status."
@@ -965,7 +966,7 @@
                   "file": {
                     "type": "string",
                     "format": "binary",
-                    "description": "The file bytes to parse. Supported extensions: .html, .htm, .pdf, .docx, .doc, .odt, .rtf, .xlsx, .xls."
+                    "description": "The file bytes to parse. Supported extensions: .html, .htm, .xhtml, .pdf, .docx, .doc, .docm, .odt, .ods, .odp, .rtf, .xlsx, .xls, .xlsm, .xlsb, .pptx, .ppt, .pptm, .epub, .csv."
                   },
                   "options": {
                     "$ref": "#/components/schemas/ParseOptions"
@@ -1790,7 +1791,7 @@
                   },
                   "allowExternalLinks": {
                     "type": "boolean",
-                    "description": "Allows the crawler to follow links to external websites.",
+                    "description": "Allows the crawler to follow links to external websites. External links are followed one hop (the links found on those external pages are not crawled). Links pointing to an external site's homepage (a root URL with no path) are skipped and reported in Get Crawl Errors with the code EXTERNAL_LINK; redirects to an external homepage are skipped for the same reason.",
                     "default": false
                   },
                   "allowSubdomains": {
@@ -2464,6 +2465,154 @@
       }
     },
     "/agent": {
+      "get": {
+        "summary": "List agent runs",
+        "operationId": "listAgents",
+        "tags": [
+          "Agent"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": "Only return agent runs created before this unix millisecond timestamp. Pages are fixed at 20 runs; use the `before` value from the previous page's `next` URL to fetch the next page."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of agent runs, most recent first",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "agents": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "targetHint": {
+                            "type": "string",
+                            "description": "Short hint describing the run's target (first URL or prompt)"
+                          },
+                          "origin": {
+                            "type": "string",
+                            "description": "Origin of the run (e.g. \"api\")"
+                          },
+                          "integration": {
+                            "type": "string",
+                            "description": "Integration identifier, if the run was started with one"
+                          },
+                          "settings": {
+                            "type": "object",
+                            "properties": {
+                              "hidden": {
+                                "type": "boolean"
+                              },
+                              "starred": {
+                                "type": "boolean"
+                              },
+                              "label": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "processing",
+                              "completed",
+                              "failed"
+                            ]
+                          },
+                          "options": {
+                            "type": "object",
+                            "description": "Options the run was started with",
+                            "properties": {
+                              "urls": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "format": "uri"
+                                }
+                              },
+                              "prompt": {
+                                "type": "string"
+                              },
+                              "schema": {
+                                "type": "object"
+                              },
+                              "model": {
+                                "type": "string",
+                                "enum": [
+                                  "spark-2",
+                                  "spark-1-pro",
+                                  "spark-1-mini"
+                                ],
+                                "description": "Model preset used for the agent run. Every new run executes on spark-2; Spark 1 names only appear on legacy runs."
+                              },
+                              "effort": {
+                                "type": "string",
+                                "enum": [
+                                  "low",
+                                  "medium",
+                                  "high"
+                                ],
+                                "description": "Reasoning budget used for the agent run (only present for runs that set effort)"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "next": {
+                      "type": "string",
+                      "description": "Absolute URL of the next page. Only present when more pages exist."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — the before timestamp is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid before timestamp."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "summary": "Start an agent task for agentic data extraction",
         "operationId": "startAgent",
@@ -2510,11 +2659,70 @@
                   "model": {
                     "type": "string",
                     "enum": [
+                      "spark-2",
                       "spark-1-mini",
                       "spark-1-pro"
                     ],
-                    "default": "spark-1-mini",
-                    "description": "The model to use for the agent task. spark-1-mini (default) is 60% cheaper, spark-1-pro offers higher accuracy for complex tasks"
+                    "default": "spark-2",
+                    "description": "The model to use for the agent task. spark-2 is the default and the model every run executes on. The Spark 1 model names remain accepted for backwards compatibility but are deprecated and route to spark-2."
+                  },
+                  "effort": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ],
+                    "description": "Reasoning budget for the agent task. Every run executes on spark-2, so effort can be sent with or without model."
+                  },
+                  "webhook": {
+                    "type": "object",
+                    "description": "A webhook specification object. Subscribes to agent lifecycle events (agent.started, agent.action, agent.completed, agent.failed, agent.cancelled).",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "The URL to send webhook events to."
+                      },
+                      "headers": {
+                        "type": "object",
+                        "description": "Headers to send to the webhook URL.",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
+                      "metadata": {
+                        "type": "object",
+                        "description": "Custom metadata that will be included in all webhook payloads for this agent job.",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
+                      "events": {
+                        "type": "array",
+                        "description": "The events to send to the webhook URL. Defaults to all events.",
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "started",
+                            "action",
+                            "completed",
+                            "failed",
+                            "cancelled"
+                          ]
+                        },
+                        "default": [
+                          "started",
+                          "action",
+                          "completed",
+                          "failed",
+                          "cancelled"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ]
                   },
                   "auditMetadata": {
                     "$ref": "#/components/schemas/AuditMetadata"
@@ -2550,6 +2758,22 @@
               }
             }
           },
+          "400": {
+            "description": "Bad request — the request body failed validation (for example an invalid JSON schema).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid JSON schema: ..."
+                    }
+                  }
+                }
+              }
+            }
+          },
           "402": {
             "description": "Payment required",
             "content": {
@@ -2566,6 +2790,22 @@
               }
             }
           },
+          "403": {
+            "description": "Forbidden — a provided URL is blocked by the team's threat protection policy.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "This URL (https://example.com) is blocked by your organization's threat protection policy (rule: blocklist). If you believe this is a mistake, contact your organization administrator to adjust the policy (e.g. whitelist the domain)."
+                    }
+                  }
+                }
+              }
+            }
+          },
           "429": {
             "description": "Too many requests",
             "content": {
@@ -2576,6 +2816,22 @@
                     "error": {
                       "type": "string",
                       "example": "Rate limit exceeded."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error — the agent service could not be reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to passthrough agent request."
                     }
                   }
                 }
@@ -2635,11 +2891,21 @@
                     "model": {
                       "type": "string",
                       "enum": [
+                        "spark-2",
                         "spark-1-pro",
                         "spark-1-mini"
                       ],
-                      "default": "spark-1-pro",
-                      "description": "Model preset used for the agent run"
+                      "default": "spark-2",
+                      "description": "Model preset used for the agent run. Every new run executes on spark-2; Spark 1 names only appear on legacy runs."
+                    },
+                    "effort": {
+                      "type": "string",
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high"
+                      ],
+                      "description": "Reasoning budget used for the agent run (only present for runs that set effort)"
                     },
                     "error": {
                       "type": "string",
@@ -2651,6 +2917,38 @@
                     },
                     "creditsUsed": {
                       "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — the job ID is not a valid UUID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid job ID format. Job ID must be a valid UUID."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agent job not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Agent job not found"
                     }
                   }
                 }
@@ -2680,6 +2978,282 @@
                   "properties": {
                     "success": {
                       "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — the job ID is not a valid UUID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid job ID format. Job ID must be a valid UUID."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agent job not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Agent job not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — the agent job has already finished or has already been cancelled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Agent already finished"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent/{jobId}/trace": {
+      "parameters": [
+        {
+          "name": "jobId",
+          "in": "path",
+          "description": "The ID of the agent job",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get the execution trace of an agent job",
+        "operationId": "getAgentTrace",
+        "tags": [
+          "Agent"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "liveView",
+            "in": "query",
+            "description": "If \"true\", include the currently active browser sessions with live view URLs.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "events": {
+                      "type": "array",
+                      "description": "Canonical execution events for the run; group by agent.id, then order each group by producerSequence, which is monotonic per emitting agent. artifact.updated events carry the snapshotId values used by the snapshots endpoint.",
+                      "items": {
+                        "$ref": "#/components/schemas/AgentTraceEvent"
+                      }
+                    },
+                    "creditsUsed": {
+                      "type": "number",
+                      "description": "Credits consumed so far, capped at maxCredits if one was set."
+                    },
+                    "activeBrowserSessions": {
+                      "type": "array",
+                      "description": "Currently active browser sessions (only present when liveView=true).",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "liveViewUrl": {
+                            "type": "string"
+                          },
+                          "viewport": {
+                            "type": "object",
+                            "properties": {
+                              "width": {
+                                "type": "number"
+                              },
+                              "height": {
+                                "type": "number"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — the job ID is not a valid UUID, or the job did not run on spark-2 (traces are only available for spark-2 agent jobs).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Trace is only available for Spark 2 extracts"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agent job not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Agent job not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agent/{jobId}/snapshots/{snapshotId}": {
+      "parameters": [
+        {
+          "name": "jobId",
+          "in": "path",
+          "description": "The ID of the agent job",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "name": "snapshotId",
+          "in": "path",
+          "description": "The ID of the snapshot, from an artifact.updated trace event",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get an output snapshot of an agent job",
+        "operationId": "getAgentSnapshot",
+        "tags": [
+          "Agent"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "snapshotId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "snapshot": {
+                      "type": "string",
+                      "description": "The snapshot content as a JSON-encoded string — the agent's working output artifact at that point in the run."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — the job ID or snapshot ID is not a valid UUID, or the job did not run on spark-2 (snapshots are only available for spark-2 agent jobs).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Snapshots are only available for Spark 2 extracts"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agent job not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Agent job not found"
                     }
                   }
                 }
@@ -2857,7 +3431,7 @@
                         },
                         "planCredits": {
                           "type": "number",
-                          "description": "Number of credits in the plan. This does not include coupon credits, credit packs, or auto recharge credits.",
+                          "description": "Number of credits in the plan. This does not include coupon credits or credits added by pay-as-you-go.",
                           "example": 500000
                         },
                         "billingPeriodStart": {
@@ -3499,12 +4073,12 @@
                       "oneOf": [
                         {
                           "type": "object",
-                          "title": "GitHub",
+                          "title": "Developer",
                           "properties": {
                             "type": {
                               "type": "string",
                               "enum": [
-                                "github"
+                                "developer"
                               ]
                             }
                           },
@@ -3574,6 +4148,10 @@
                     "type": "string",
                     "description": "ISO country code for geo-targeting search results (e.g. `US`). For best results, set both this and the `location` parameter.",
                     "default": "US"
+                  },
+                  "safe": {
+                    "type": "boolean",
+                    "description": "When `true`, filters explicit content from search results (SafeSearch). Omit to keep the default behavior, which does not apply the filter."
                   },
                   "timeout": {
                     "type": "integer",
@@ -5050,12 +5628,12 @@
         }
       }
     },
-    "/search/research/github": {
+    "/search/developer": {
       "get": {
-        "summary": "Search GitHub history",
-        "operationId": "researchSearchGitHub",
+        "summary": "Search the developer index",
+        "operationId": "developerSearch",
         "tags": [
-          "Research"
+          "Developer"
         ],
         "security": [
           {
@@ -5067,7 +5645,7 @@
             "name": "query",
             "in": "query",
             "required": true,
-            "description": "Natural-language query for GitHub issues, pull requests, discussions, and repository READMEs.",
+            "description": "Natural-language question or search phrase.",
             "schema": {
               "type": "string",
               "minLength": 1
@@ -5077,47 +5655,332 @@
             "name": "k",
             "in": "query",
             "required": false,
-            "description": "Maximum number of GitHub results to return.",
+            "description": "Number of ranked results to return.",
             "schema": {
               "type": "integer",
               "minimum": 1,
               "maximum": 100,
-              "default": 20
+              "default": 10
+            }
+          },
+          {
+            "name": "types",
+            "in": "query",
+            "required": false,
+            "description": "Result kinds to search. Defaults to all four. Accepts a repeated parameter (`types=issue&types=pull_request`) or one comma-separated value (`types=issue,pull_request`).",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "doc",
+                  "issue",
+                  "pull_request",
+                  "readme"
+                ]
+              }
+            }
+          },
+          {
+            "name": "repos",
+            "in": "query",
+            "required": false,
+            "description": "Repository slugs to scope the repository half of the index to, such as `firecrawl/firecrawl`. Applies to the `issue`, `pull_request`, and `readme` types only. Sent together with `sources`, the two halves are combined rather than intersected, so matching results come back from either. Returns 400 when no repository type is in `types`, reporting that `repos` cannot match any requested type and that you should add repository types or drop `repos`.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "sources",
+            "in": "query",
+            "required": false,
+            "description": "Documentation source ids to scope the documentation half to, at most 20. Applies to the `doc` type only. Not a fixed enum: ids reflect the documentation sites in the index and the set grows over time, so confirm an id resolves by sending it and reading the `sources` array on the response. Returns 400 with `sources cannot match any requested type; add doc or drop sources` when `doc` is not in `types`.",
+            "schema": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              }
+            }
+          },
+          {
+            "name": "skills",
+            "in": "query",
+            "required": false,
+            "description": "Set to `only` to limit the search to indexed agent-skill files.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "only"
+              ]
+            }
+          },
+          {
+            "name": "passages",
+            "in": "query",
+            "required": false,
+            "description": "Matched passages to return per result.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "default": 1
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "description": "Repository primary language, such as `Rust`. Applies to repository results only; sending it with no `sources` scope returns no `doc` results. See [how the repository filters scope a search](/api-reference/endpoint/developer-search#how-the-repository-filters-scope-a-search).",
+            "schema": {
+              "type": "string",
+              "example": "Rust"
+            }
+          },
+          {
+            "name": "topic",
+            "in": "query",
+            "required": false,
+            "description": "Repository topic, such as `async`. Applies to repository results only; sending it with no `sources` scope returns no `doc` results.",
+            "schema": {
+              "type": "string",
+              "example": "async"
+            }
+          },
+          {
+            "name": "license",
+            "in": "query",
+            "required": false,
+            "description": "Repository license, such as `MIT`. Applies to repository results only; sending it with no `sources` scope returns no `doc` results.",
+            "schema": {
+              "type": "string",
+              "example": "MIT"
+            }
+          },
+          {
+            "name": "min_stars",
+            "in": "query",
+            "required": false,
+            "description": "Lower bound on repository stars. Applies to repository results only; sending it with no `sources` scope returns no `doc` results.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "max_stars",
+            "in": "query",
+            "required": false,
+            "description": "Upper bound on repository stars. Applies to repository results only; sending it with no `sources` scope returns no `doc` results.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "archived",
+            "in": "query",
+            "required": false,
+            "description": "Include or exclude archived repositories. Applies to repository results only; sending it with no `sources` scope returns no `doc` results.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "fork",
+            "in": "query",
+            "required": false,
+            "description": "Include or exclude forks. Applies to repository results only; sending it with no `sources` scope returns no `doc` results.",
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Ranked GitHub history/readme results.",
+            "description": "Ranked developer results with matched passages.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchGitHubSearchResponse"
+                  "$ref": "#/components/schemas/DeveloperSearchResponse"
                 },
                 "example": {
                   "success": true,
                   "results": [
                     {
-                      "resultType": "issue",
-                      "repo": "firecrawl/firecrawl",
-                      "url": "https://github.com/firecrawl/firecrawl/issues/123",
-                      "pageType": "issue",
-                      "number": 123,
-                      "segmentCount": 2,
-                      "title": "Worker shutdown race",
-                      "snippet": "Queue worker shutdown can lose completion signals...",
-                      "contentMd": "Full matched markdown content when available.",
-                      "scores": {
-                        "semantic": 0.82
-                      }
+                      "id": "issue:firecrawl/firecrawl#1234",
+                      "type": "issue",
+                      "url": "https://github.com/firecrawl/firecrawl/issues/1234",
+                      "title": "Retries are not applied to 429 responses",
+                      "passages": [
+                        {
+                          "text": "The client treats 429 as a terminal status, so the backoff never runs."
+                        }
+                      ]
                     }
-                  ]
+                  ],
+                  "coverage": {
+                    "doc": "ok",
+                    "issue": "ok",
+                    "pull_request": "ok",
+                    "readme": "ok"
+                  },
+                  "reranked": true
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid request"
+            "description": "Invalid request, including a filter that cannot match any requested type"
+          },
+          "401": {
+            "description": "Missing or invalid bearer token"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Search the developer index",
+        "operationId": "developerSearchPost",
+        "tags": [
+          "Developer"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "query"
+                ],
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "k": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 10
+                  },
+                  "types": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "doc",
+                        "issue",
+                        "pull_request",
+                        "readme"
+                      ]
+                    }
+                  },
+                  "repos": {
+                    "type": "array",
+                    "description": "Repository slugs to scope the repository half of the index to. Applies to the `issue`, `pull_request`, and `readme` types only. Sent together with `sources`, the two halves are combined rather than intersected. Returns 400 when no repository type is in `types`, reporting that `repos` cannot match any requested type and that you should add repository types or drop `repos`.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "sources": {
+                    "type": "array",
+                    "description": "Documentation source ids to scope the documentation half to, at most 20. Applies to the `doc` type only. Not a fixed enum: ids reflect the documentation sites in the index and the set grows over time. Returns 400 with `sources cannot match any requested type; add doc or drop sources` when `doc` is not in `types`.",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    }
+                  },
+                  "skills": {
+                    "type": "string",
+                    "description": "Set to `only` to limit the search to indexed agent-skill files.",
+                    "enum": [
+                      "only"
+                    ]
+                  },
+                  "passages": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 5,
+                    "default": 1
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "Repository primary language, such as `Rust`. Applies to repository results only; sending it with no `sources` scope returns no `doc` results. See [how the repository filters scope a search](/api-reference/endpoint/developer-search#how-the-repository-filters-scope-a-search).",
+                    "example": "Rust"
+                  },
+                  "topic": {
+                    "type": "string",
+                    "description": "Repository topic, such as `async`. Applies to repository results only; sending it with no `sources` scope returns no `doc` results.",
+                    "example": "async"
+                  },
+                  "license": {
+                    "type": "string",
+                    "description": "Repository license, such as `MIT`. Applies to repository results only; sending it with no `sources` scope returns no `doc` results.",
+                    "example": "MIT"
+                  },
+                  "min_stars": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Lower bound on repository stars. Applies to repository results only; sending it with no `sources` scope returns no `doc` results."
+                  },
+                  "max_stars": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Upper bound on repository stars. Applies to repository results only; sending it with no `sources` scope returns no `doc` results."
+                  },
+                  "archived": {
+                    "type": "boolean",
+                    "description": "Include or exclude archived repositories. Applies to repository results only; sending it with no `sources` scope returns no `doc` results."
+                  },
+                  "fork": {
+                    "type": "boolean",
+                    "description": "Include or exclude forks. Applies to repository results only; sending it with no `sources` scope returns no `doc` results."
+                  }
+                }
+              },
+              "example": {
+                "query": "how do I configure retries",
+                "k": 10,
+                "types": [
+                  "issue",
+                  "pull_request"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ranked developer results with matched passages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeveloperSearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request, including a filter that cannot match any requested type"
           },
           "401": {
             "description": "Missing or invalid bearer token"
@@ -5548,6 +6411,889 @@
             "maxLength": 1024,
             "description": "The username associated with the request."
           }
+        }
+      },
+      "AgentTraceAgent": {
+        "type": "object",
+        "description": "Identity of the agent that emitted the event.",
+        "required": [
+          "id",
+          "role",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "orchestrator",
+              "subagent",
+              "system"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the parent agent (present on subagents)."
+          }
+        }
+      },
+      "AgentTraceError": {
+        "type": "object",
+        "description": "Structured error attached to terminal and error events.",
+        "required": [
+          "code",
+          "source",
+          "retryable",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "cancelled",
+              "credit_limit_reached",
+              "parent_finished",
+              "refused",
+              "internal"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "agent",
+              "tool",
+              "billing",
+              "system"
+            ]
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "AgentTraceArtifact": {
+        "type": "object",
+        "description": "Descriptor for a change to an output artifact.",
+        "required": [
+          "kind",
+          "artifactId",
+          "snapshotId",
+          "change"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "json",
+              "markdown",
+              "html",
+              "screenshot",
+              "text"
+            ]
+          },
+          "artifactId": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string",
+            "description": "Workspace path of the artifact, e.g. /workspace/data.json."
+          },
+          "snapshotId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Pass to GET /agent/{jobId}/snapshots/{snapshotId} to fetch this snapshot's content."
+          },
+          "change": {
+            "type": "string",
+            "enum": [
+              "init",
+              "partial",
+              "append",
+              "modify",
+              "update"
+            ]
+          },
+          "changedFields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "itemCount": {
+            "type": "integer"
+          },
+          "sourceToolCallId": {
+            "type": "string",
+            "description": "The tool call that produced this change, when applicable."
+          }
+        }
+      },
+      "AgentTraceEvent": {
+        "description": "A canonical execution event from an agent run. Every event carries the envelope fields schemaVersion, eventId, runId, occurredAt, producerSequence and agent; the type field discriminates the variant. usage.recorded events are internal and never exposed, and agent.started events omit the model field.",
+        "oneOf": [
+          {
+            "title": "run.started",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "run.started"
+                ],
+                "description": "Emitted when the run starts."
+              }
+            }
+          },
+          {
+            "title": "run.cancel_requested",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "reason"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "run.cancel_requested"
+                ],
+                "description": "Emitted when cancellation is requested (via DELETE /agent/{jobId})."
+              },
+              "reason": {
+                "type": "string",
+                "enum": [
+                  "user"
+                ]
+              }
+            }
+          },
+          {
+            "title": "run.finished",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "outcome",
+              "error"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "run.finished"
+                ],
+                "description": "Terminal event for the run."
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "succeeded",
+                  "failed",
+                  "cancelled",
+                  "refused",
+                  "credit_limit_reached"
+                ]
+              },
+              "error": {
+                "nullable": true,
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AgentTraceError"
+                  }
+                ],
+                "description": "Null when outcome is succeeded; otherwise the structured error."
+              }
+            }
+          },
+          {
+            "title": "agent.started",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "agent.started"
+                ],
+                "description": "Emitted when an agent (orchestrator or subagent) starts."
+              }
+            }
+          },
+          {
+            "title": "agent.finished",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "outcome",
+              "durationMs",
+              "error"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "agent.finished"
+                ],
+                "description": "Emitted when an agent finishes."
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "succeeded",
+                  "failed",
+                  "cancelled",
+                  "refused"
+                ]
+              },
+              "durationMs": {
+                "type": "integer"
+              },
+              "error": {
+                "nullable": true,
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AgentTraceError"
+                  }
+                ],
+                "description": "Null when outcome is succeeded; otherwise the structured error."
+              }
+            }
+          },
+          {
+            "title": "browser.session.started",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "sessionId"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "browser.session.started"
+                ],
+                "description": "Emitted when a browser session starts."
+              },
+              "sessionId": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "title": "browser.session.finished",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "sessionId",
+              "durationMs"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "browser.session.finished"
+                ],
+                "description": "Emitted when a browser session finishes."
+              },
+              "sessionId": {
+                "type": "string"
+              },
+              "durationMs": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "title": "progress.reported",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "phase",
+              "message"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "progress.reported"
+                ],
+                "description": "Emitted when the orchestrator reports progress."
+              },
+              "phase": {
+                "type": "string",
+                "enum": [
+                  "planning",
+                  "working",
+                  "finalizing"
+                ]
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "title": "reasoning.summary",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "text"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "reasoning.summary"
+                ],
+                "description": "A summary of the agent's reasoning."
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "title": "tool_call.started",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "toolCallId",
+              "toolName",
+              "parameters"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "tool_call.started"
+                ],
+                "description": "Emitted when a tool call starts."
+              },
+              "toolCallId": {
+                "type": "string"
+              },
+              "toolName": {
+                "type": "string"
+              },
+              "parameters": {
+                "description": "The input passed to the tool (arbitrary JSON)."
+              }
+            }
+          },
+          {
+            "title": "tool_call.finished",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "toolCallId",
+              "toolName",
+              "result"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "tool_call.finished"
+                ],
+                "description": "Emitted when a tool call finishes."
+              },
+              "toolCallId": {
+                "type": "string"
+              },
+              "toolName": {
+                "type": "string"
+              },
+              "result": {
+                "description": "The result returned by the tool (arbitrary JSON)."
+              }
+            }
+          },
+          {
+            "title": "artifact.updated",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "artifact"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "artifact.updated"
+                ],
+                "description": "Emitted when an output artifact changes."
+              },
+              "artifact": {
+                "$ref": "#/components/schemas/AgentTraceArtifact"
+              }
+            }
+          },
+          {
+            "title": "error.occurred",
+            "type": "object",
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "error"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "eventId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Unique ID of this event."
+              },
+              "runId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The agent job ID this event belongs to."
+              },
+              "occurredAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "producerSequence": {
+                "type": "integer",
+                "description": "Monotonic sequence number from the emitting agent; order events by it."
+              },
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "error.occurred"
+                ],
+                "description": "Emitted when a non-fatal error occurs during the run."
+              },
+              "error": {
+                "$ref": "#/components/schemas/AgentTraceError"
+              }
+            }
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type"
         }
       },
       "SuccessResponse": {
@@ -6004,7 +7750,8 @@
               "completed",
               "failed",
               "partial",
-              "skipped_overlap"
+              "skipped_overlap",
+              "skipped_no_credits"
             ]
           },
           "trigger": {
@@ -6358,6 +8105,21 @@
             },
             {
               "type": "object",
+              "title": "Raw Base64",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "rawBase64"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            {
+              "type": "object",
               "title": "Links",
               "properties": {
                 "type": {
@@ -6444,6 +8206,11 @@
                 "prompt": {
                   "type": "string",
                   "description": "The prompt to use for the JSON output"
+                },
+                "checkPromptInjection": {
+                  "type": "boolean",
+                  "description": "When enabled, scans the scraped page content for prompt injection attempts before running the extraction. If an injection is detected, the request fails with a 403 and error code SCRAPE_PROMPT_INJECTION_DETECTED. Adds 4 credits when the check runs. Defaults to false.",
+                  "default": false
                 }
               },
               "required": [
@@ -6807,6 +8574,21 @@
                       "minimum": 1,
                       "maximum": 10000,
                       "description": "Maximum number of pages to parse from the PDF."
+                    },
+                    "pages": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Include physical per-page markdown alongside the document markdown. Populates the `pages` field on the document as an array of { pageNumber, markdown }. No additional cost."
+                    },
+                    "blocks": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Include per-page typed layout blocks alongside the document markdown. Populates the `blocks` field on the document: typed blocks (title, section_header, text, table, formula, figure, caption, ...) with normalized bounding boxes, reading order, character-span links into the markdown, and per-block confidence. No additional cost."
+                    },
+                    "pageMarkers": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Annotate page breaks in the document markdown: pages are joined with `\\n\\n---\\n\\n<!-- page N -->\\n\\n`, where N is the 1-based physical page of the content that follows. Markers appear between pages only (no leading marker for page 1), and numbering may skip pages merged across a page break — use `pages: true` when every physical page is needed. No new response field; no additional cost."
                     }
                   },
                   "required": [
@@ -6969,6 +8751,21 @@
                       "minimum": 1,
                       "maximum": 10000,
                       "description": "Maximum number of pages to parse from the PDF. Must be a positive integer up to 10000."
+                    },
+                    "pages": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Include physical per-page markdown alongside the document markdown. Populates the `pages` field on the document as an array of { pageNumber, markdown }. No additional cost."
+                    },
+                    "blocks": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Include per-page typed layout blocks alongside the document markdown. Populates the `blocks` field on the document: typed blocks (title, section_header, text, table, formula, figure, caption, ...) with normalized bounding boxes, reading order, character-span links into the markdown, and per-block confidence. No additional cost."
+                    },
+                    "pageMarkers": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Annotate page breaks in the document markdown: pages are joined with `\\n\\n---\\n\\n<!-- page N -->\\n\\n`, where N is the 1-based physical page of the content that follows. Markers appear between pages only (no leading marker for page 1), and numbering may skip pages merged across a page break — use `pages: true` when every physical page is needed. No new response field; no additional cost."
                     }
                   },
                   "required": [
@@ -7304,7 +9101,7 @@
               "enhanced",
               "auto"
             ],
-            "description": "Specifies the type of proxy to use.\n\n - **basic**: Proxies for scraping sites with none to basic anti-bot solutions. Fast and usually works.\n - **enhanced**: Enhanced proxies for scraping sites with advanced anti-bot solutions. Slower, but more reliable on certain sites. Costs up to 5 credits per request.\n - **auto**: Firecrawl will automatically retry scraping with enhanced proxies if the basic proxy fails. If the retry with enhanced is successful, 5 credits will be billed for the scrape. If the first attempt with basic is successful, only the regular cost will be billed.",
+            "description": "Specifies the type of proxy to use.\n\n - **basic**: Proxies for scraping sites with none to basic anti-bot solutions. Fast and usually works.\n - **enhanced**: Enhanced proxies for scraping sites with advanced anti-bot solutions. Slower, but more reliable on certain sites. Billed at the same credit cost as basic.\n - **auto**: Firecrawl will automatically retry scraping with enhanced proxies if the basic proxy fails. Enhanced proxies carry no credit surcharge, so either way only the regular cost is billed.",
             "default": "auto"
           },
           "storeInCache": {
@@ -7369,6 +9166,119 @@
               "markdown": {
                 "type": "string"
               },
+              "pages": {
+                "type": "array",
+                "nullable": true,
+                "description": "Physical per-page markdown for PDFs. Present only when the request set the `pages` PDF parser option.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "pageNumber": {
+                      "type": "integer",
+                      "description": "1-based physical PDF page number."
+                    },
+                    "markdown": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "blocks": {
+                "type": "array",
+                "nullable": true,
+                "description": "Per-page typed layout blocks for PDFs. Present only when the request set the `blocks` PDF parser option.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "pageNumber": {
+                      "type": "integer",
+                      "description": "1-based physical PDF page number."
+                    },
+                    "width": {
+                      "type": "number",
+                      "nullable": true,
+                      "description": "Page render width in px — the anchor for denormalizing bbox coordinates. Null for pages that never rendered."
+                    },
+                    "height": {
+                      "type": "number",
+                      "nullable": true,
+                      "description": "Page render height in px. Null for pages that never rendered."
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Page-level rollup: ok | partial | failed."
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Stable within a response: p<page>.b<index in reading order>."
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Block type: title, section_header, text, table, formula, figure, caption, page_number, page_header, page_footer. New types may appear over time."
+                          },
+                          "label": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "Raw layout-model label, passthrough for forward compatibility."
+                          },
+                          "bbox": {
+                            "type": "array",
+                            "nullable": true,
+                            "minItems": 4,
+                            "maxItems": 4,
+                            "items": {
+                              "type": "number"
+                            },
+                            "description": "[x0, y0, x1, y1] normalized 0-1 relative to the page width/height. Multiply by the page width/height to get pixel coordinates. Null when the page has no known dimensions."
+                          },
+                          "content": {
+                            "type": "string",
+                            "description": "Markdown fragment this block contributed to the document markdown."
+                          },
+                          "markdownSpan": {
+                            "type": "array",
+                            "nullable": true,
+                            "minItems": 2,
+                            "maxItems": 2,
+                            "items": {
+                              "type": "integer"
+                            },
+                            "description": "[start, end) character offsets into the document markdown covering this block's fragment. Null when a post-processing transform rewrote the fragment."
+                          },
+                          "readingOrder": {
+                            "type": "integer"
+                          },
+                          "source": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "Pipeline path that produced the block (for example native_text, layout_ocr, tsr, formula_model, full_page)."
+                          },
+                          "confidence": {
+                            "type": "object",
+                            "properties": {
+                              "layout": {
+                                "type": "number",
+                                "nullable": true,
+                                "description": "Layout-model detection score (0-1). Null when the page bypassed layout analysis."
+                              },
+                              "ocr": {
+                                "type": "number",
+                                "nullable": true,
+                                "description": "Text confidence when the source path provides one; null otherwise."
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
               "summary": {
                 "type": "string",
                 "nullable": true,
@@ -7383,6 +9293,11 @@
                 "type": "string",
                 "nullable": true,
                 "description": "The exact, unmodified HTML as received from the page if `rawHtml` is in `formats`. No cleaning or filtering is applied."
+              },
+              "rawBase64": {
+                "type": "string",
+                "nullable": true,
+                "description": "The Base64-encoded original HTTP response body if `rawBase64` is in `formats`. A bare Base64 string, not a data URI. The MIME type is in `metadata.contentType`."
               },
               "screenshot": {
                 "type": "string",
@@ -8296,6 +10211,119 @@
                 "markdown": {
                   "type": "string"
                 },
+                "pages": {
+                  "type": "array",
+                  "nullable": true,
+                  "description": "Physical per-page markdown for PDFs. Present only when the request set the `pages` PDF parser option.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "pageNumber": {
+                        "type": "integer",
+                        "description": "1-based physical PDF page number."
+                      },
+                      "markdown": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "blocks": {
+                  "type": "array",
+                  "nullable": true,
+                  "description": "Per-page typed layout blocks for PDFs. Present only when the request set the `blocks` PDF parser option.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "pageNumber": {
+                        "type": "integer",
+                        "description": "1-based physical PDF page number."
+                      },
+                      "width": {
+                        "type": "number",
+                        "nullable": true,
+                        "description": "Page render width in px — the anchor for denormalizing bbox coordinates. Null for pages that never rendered."
+                      },
+                      "height": {
+                        "type": "number",
+                        "nullable": true,
+                        "description": "Page render height in px. Null for pages that never rendered."
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Page-level rollup: ok | partial | failed."
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Stable within a response: p<page>.b<index in reading order>."
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "Block type: title, section_header, text, table, formula, figure, caption, page_number, page_header, page_footer. New types may appear over time."
+                            },
+                            "label": {
+                              "type": "string",
+                              "nullable": true,
+                              "description": "Raw layout-model label, passthrough for forward compatibility."
+                            },
+                            "bbox": {
+                              "type": "array",
+                              "nullable": true,
+                              "minItems": 4,
+                              "maxItems": 4,
+                              "items": {
+                                "type": "number"
+                              },
+                              "description": "[x0, y0, x1, y1] normalized 0-1 relative to the page width/height. Multiply by the page width/height to get pixel coordinates. Null when the page has no known dimensions."
+                            },
+                            "content": {
+                              "type": "string",
+                              "description": "Markdown fragment this block contributed to the document markdown."
+                            },
+                            "markdownSpan": {
+                              "type": "array",
+                              "nullable": true,
+                              "minItems": 2,
+                              "maxItems": 2,
+                              "items": {
+                                "type": "integer"
+                              },
+                              "description": "[start, end) character offsets into the document markdown covering this block's fragment. Null when a post-processing transform rewrote the fragment."
+                            },
+                            "readingOrder": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string",
+                              "nullable": true,
+                              "description": "Pipeline path that produced the block (for example native_text, layout_ocr, tsr, formula_model, full_page)."
+                            },
+                            "confidence": {
+                              "type": "object",
+                              "properties": {
+                                "layout": {
+                                  "type": "number",
+                                  "nullable": true,
+                                  "description": "Layout-model detection score (0-1). Null when the page bypassed layout analysis."
+                                },
+                                "ocr": {
+                                  "type": "number",
+                                  "nullable": true,
+                                  "description": "Text confidence when the source path provides one; null otherwise."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
                 "html": {
                   "type": "string",
                   "nullable": true,
@@ -8305,6 +10333,11 @@
                   "type": "string",
                   "nullable": true,
                   "description": "Raw HTML content of the page if `includeRawHtml`  is true"
+                },
+                "rawBase64": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "The Base64-encoded original HTTP response body if `rawBase64` is in `formats`. A bare Base64 string, not a data URI. The MIME type is in `metadata.contentType`."
                 },
                 "links": {
                   "type": "array",
@@ -8519,6 +10552,119 @@
                 "markdown": {
                   "type": "string"
                 },
+                "pages": {
+                  "type": "array",
+                  "nullable": true,
+                  "description": "Physical per-page markdown for PDFs. Present only when the request set the `pages` PDF parser option.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "pageNumber": {
+                        "type": "integer",
+                        "description": "1-based physical PDF page number."
+                      },
+                      "markdown": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "blocks": {
+                  "type": "array",
+                  "nullable": true,
+                  "description": "Per-page typed layout blocks for PDFs. Present only when the request set the `blocks` PDF parser option.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "pageNumber": {
+                        "type": "integer",
+                        "description": "1-based physical PDF page number."
+                      },
+                      "width": {
+                        "type": "number",
+                        "nullable": true,
+                        "description": "Page render width in px — the anchor for denormalizing bbox coordinates. Null for pages that never rendered."
+                      },
+                      "height": {
+                        "type": "number",
+                        "nullable": true,
+                        "description": "Page render height in px. Null for pages that never rendered."
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Page-level rollup: ok | partial | failed."
+                      },
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Stable within a response: p<page>.b<index in reading order>."
+                            },
+                            "type": {
+                              "type": "string",
+                              "description": "Block type: title, section_header, text, table, formula, figure, caption, page_number, page_header, page_footer. New types may appear over time."
+                            },
+                            "label": {
+                              "type": "string",
+                              "nullable": true,
+                              "description": "Raw layout-model label, passthrough for forward compatibility."
+                            },
+                            "bbox": {
+                              "type": "array",
+                              "nullable": true,
+                              "minItems": 4,
+                              "maxItems": 4,
+                              "items": {
+                                "type": "number"
+                              },
+                              "description": "[x0, y0, x1, y1] normalized 0-1 relative to the page width/height. Multiply by the page width/height to get pixel coordinates. Null when the page has no known dimensions."
+                            },
+                            "content": {
+                              "type": "string",
+                              "description": "Markdown fragment this block contributed to the document markdown."
+                            },
+                            "markdownSpan": {
+                              "type": "array",
+                              "nullable": true,
+                              "minItems": 2,
+                              "maxItems": 2,
+                              "items": {
+                                "type": "integer"
+                              },
+                              "description": "[start, end) character offsets into the document markdown covering this block's fragment. Null when a post-processing transform rewrote the fragment."
+                            },
+                            "readingOrder": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "type": "string",
+                              "nullable": true,
+                              "description": "Pipeline path that produced the block (for example native_text, layout_ocr, tsr, formula_model, full_page)."
+                            },
+                            "confidence": {
+                              "type": "object",
+                              "properties": {
+                                "layout": {
+                                  "type": "number",
+                                  "nullable": true,
+                                  "description": "Layout-model detection score (0-1). Null when the page bypassed layout analysis."
+                                },
+                                "ocr": {
+                                  "type": "number",
+                                  "nullable": true,
+                                  "description": "Text confidence when the source path provides one; null otherwise."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
                 "html": {
                   "type": "string",
                   "nullable": true,
@@ -8528,6 +10674,11 @@
                   "type": "string",
                   "nullable": true,
                   "description": "Raw HTML content of the page if `includeRawHtml`  is true"
+                },
+                "rawBase64": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "The Base64-encoded original HTTP response body if `rawBase64` is in `formats`. A bare Base64 string, not a data URI. The MIME type is in `metadata.contentType`."
                 },
                 "links": {
                   "type": "array",
@@ -9243,63 +11394,48 @@
           }
         }
       },
-      "ResearchGitHubScoreBreakdown": {
-        "type": "object",
-        "additionalProperties": {
-          "type": "number"
-        },
-        "description": "Component scores such as semantic, lexical, fusion, rrf, or rerank."
-      },
-      "ResearchGitHubItem": {
+      "DeveloperSearchResult": {
         "type": "object",
         "properties": {
-          "resultType": {
+          "id": {
             "type": "string",
-            "description": "Result class, such as issue, pull, discussion, or repo_readme."
+            "description": "Stable result id, such as `issue:owner/repo#123`.",
+            "example": "issue:firecrawl/firecrawl#1234"
           },
-          "repo": {
+          "type": {
             "type": "string",
-            "description": "Repository in owner/name form."
+            "enum": [
+              "doc",
+              "issue",
+              "pull_request",
+              "readme"
+            ],
+            "description": "Result kind."
           },
           "url": {
             "type": "string",
             "format": "uri"
           },
-          "pageType": {
-            "type": "string",
-            "description": "History page type for issue/PR/discussion results."
-          },
-          "number": {
-            "type": "integer"
-          },
-          "segmentCount": {
-            "type": "integer"
-          },
-          "readmeUrl": {
-            "type": "string",
-            "format": "uri"
-          },
           "title": {
-            "type": "string"
-          },
-          "snippet": {
-            "type": "string"
-          },
-          "contentMd": {
             "type": "string",
-            "description": "Full matched markdown content when available."
+            "description": "Frequently absent on `doc` results, where the source page carries no usable title. Fall back to `url`."
           },
-          "scores": {
-            "$ref": "#/components/schemas/ResearchGitHubScoreBreakdown"
+          "passages": {
+            "type": "array",
+            "description": "Matched passages in markdown, so tables and code blocks survive.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
-      "ResearchGitHubSearchResponse": {
+      "DeveloperSearchResponse": {
         "type": "object",
-        "required": [
-          "success",
-          "results"
-        ],
         "properties": {
           "success": {
             "type": "boolean"
@@ -9307,8 +11443,120 @@
           "results": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ResearchGitHubItem"
+              "$ref": "#/components/schemas/DeveloperSearchResult"
             }
+          },
+          "coverage": {
+            "type": "object",
+            "description": "Outcome for each result type. Check this when an expected result type is missing: `skipped` means your `types` value did not ask for that type, while `degraded` or `unavailable` means the gap came from the index or from a filter, not from the query. A repository filter is one such cause — see [how the repository filters scope a search](/api-reference/endpoint/developer-search#how-the-repository-filters-scope-a-search).",
+            "properties": {
+              "doc": {
+                "type": "string",
+                "enum": [
+                  "ok",
+                  "degraded",
+                  "unavailable",
+                  "skipped"
+                ]
+              },
+              "issue": {
+                "type": "string",
+                "enum": [
+                  "ok",
+                  "degraded",
+                  "unavailable",
+                  "skipped"
+                ]
+              },
+              "pull_request": {
+                "type": "string",
+                "enum": [
+                  "ok",
+                  "degraded",
+                  "unavailable",
+                  "skipped"
+                ]
+              },
+              "readme": {
+                "type": "string",
+                "enum": [
+                  "ok",
+                  "degraded",
+                  "unavailable",
+                  "skipped"
+                ]
+              }
+            }
+          },
+          "reranked": {
+            "type": "boolean",
+            "description": "Whether the ranked list went through the reranking stage."
+          },
+          "repos": {
+            "type": "array",
+            "description": "Present only when `repos` was sent. Echoes each slug with whether it is indexed, plus a per-type breakdown under `types`.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "repo": {
+                  "type": "string"
+                },
+                "indexed": {
+                  "type": "boolean"
+                },
+                "types": {
+                  "type": "object",
+                  "description": "Which result types are indexed for this repository: `issue`, `pullRequest`, and `readme`.",
+                  "properties": {
+                    "issue": {
+                      "type": "boolean"
+                    },
+                    "pullRequest": {
+                      "type": "boolean"
+                    },
+                    "readme": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            },
+            "example": [
+              {
+                "repo": "firecrawl/firecrawl",
+                "indexed": true,
+                "types": {
+                  "issue": true,
+                  "pullRequest": true,
+                  "readme": true
+                }
+              }
+            ]
+          },
+          "sources": {
+            "type": "array",
+            "description": "Present only when `sources` was sent. Reports each id exactly as requested along with whether it is indexed. `indexed: true` means the source has a published generation, so documentation evidence from it may appear; `indexed: false` means nothing from that id can match, which distinguishes an id that is not in the index from a query that simply found nothing.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "indexed": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "example": [
+              {
+                "source": "some-docs-site",
+                "indexed": true
+              },
+              {
+                "source": "unknown-docs-site",
+                "indexed": false
+              }
+            ]
           }
         }
       },

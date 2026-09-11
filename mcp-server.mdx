@@ -1,46 +1,58 @@
 ---
-title: Firecrawl MCP
-description: "Connect Firecrawl to MCP clients, agents, and unattended workloads."
-og:title: 'Firecrawl MCP'
-og:description: "Connect Firecrawl to your MCP client with account OAuth, an API key, or a keyless trial."
-sidebarTitle: 'MCP'
+title: Get Started
+description: "Set up Firecrawl MCP with keyless access, account sign-in, or an API key."
+og:title: 'Firecrawl MCP: Get Started'
+og:description: "Connect Firecrawl MCP with keyless access, account sign-in, or an API key."
+sidebarTitle: 'Get Started'
 ---
 
-Firecrawl MCP gives AI clients access to live web data through the Model Context Protocol. It is available as a hosted service or as an open-source local server.
-
-## Start here
-
-Choose the connection mode that matches where Firecrawl will run. The hosted routes are credential-free URLs: credentials belong in the OAuth flow or an Authorization header, never in the URL itself.
+Choose how the connection will authenticate. Signing in and adding an API key are two paths to the same access: both reach the full tool surface on your team's plan.
 
 <CardGroup cols={3}>
-  <Card title="Connect an account" icon="user" href="/mcp-server/connect">
-    Use browser-based OAuth for an interactive MCP client and the full Firecrawl tool surface.
+  <Card title="Try Instantly" icon="bolt" href="/mcp-server/keyless#try-keyless" cta="Start keyless setup" arrow>
+    No account or key. Search, Scrape, and Parse within daily limits.
   </Card>
-  <Card title="Run unattended" icon="server" href="/mcp-server/connect#run-unattended">
-    Use `/v2/mcp` with a Firecrawl API key in an Authorization header for CI, servers, and scripts.
+  <Card title="Sign in" icon="right-to-bracket" href="/mcp-server/oauth" cta="Connect account" arrow>
+    Browser sign-in from Codex, Claude Code, or your favorite harness.
   </Card>
-  <Card title="Try keyless MCP" icon="sparkles" href="/mcp-server/connect#try-keyless">
-    Start without an API key on the rate-limited Search, Scrape, and Parse surface.
+  <Card title="Use an API key" icon="key" href="/mcp-server/keyless#add-an-api-key" cta="Configure an API key" arrow>
+    Configure an API key in your client, no browser needed.
   </Card>
 </CardGroup>
 
-## Learn more
+## Add an API key
 
-<CardGroup cols={2}>
-  <Card title="Client setup" icon="desktop" href="/mcp-server/clients">
-    Configure Claude, Cursor, VS Code, Windsurf, n8n, and other clients.
-  </Card>
-  <Card title="Run locally" icon="terminal" href="/mcp-server/local">
-    Install the open-source MCP server and configure a local or self-hosted deployment.
-  </Card>
-  <Card title="Tools and operations" icon="wrench" href="/mcp-server/tools">
-    Review Firecrawl MCP tools, rate limits, logging, and error handling.
-  </Card>
-  <Card title="Develop Firecrawl MCP" icon="github" href="/mcp-server/development">
-    Build, test, and contribute to the open-source server.
-  </Card>
-</CardGroup>
+[Create a Firecrawl API key](https://www.firecrawl.dev/app/api-keys), then add it as a bearer token in your client config:
+
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+Configure the key through an environment variable or your client's secret storage, never in the MCP URL.
 
 <Note>
-For the current keyless allowance and rate limits, see [Rate limits](/rate-limits#keyless-no-api-key). For broader agent onboarding, see [Build with AI](/ai-onboarding).
+This is a server URL for your MCP client, not a page to open directly in a browser. Sign-in connections use `https://mcp.firecrawl.dev/v2/mcp-oauth` instead, and your client starts the browser flow.
 </Note>
+
+## Client setup
+
+<CardGroup cols={2}>
+  <Card title="For Agents" icon="robot" href="/mcp-server/keyless">
+    Start keyless or use an API key.
+  </Card>
+  <Card title="For Humans" icon="user" href="/mcp-server/oauth">
+    Sign in via browser.
+  </Card>
+</CardGroup>
+
+Next: [choose a tool](/mcp-server/tools) or [run the server locally](/mcp-server/local).

@@ -26,17 +26,39 @@ import {
 } from "/snippets/shared/agent-first-onboarding.jsx";
 import GeneralFeedbackCTA from "/snippets/zh/general-feedback-cta.mdx";
 
-<Note>
-  **对于 AI 代理：**使用 [llms.txt](/zh/llms.txt) 获取所有文档的完整索引。
-</Note>
-
-<GeneralFeedbackCTA src="docs-introduction" />
-
 <div id="get-started">
-  ## 开始使用
+  ## 快速开始
 </div>
 
-<McpClientSelector />
+<Visibility for="humans">
+  <McpClientSelector variant="human" />
+</Visibility>
+
+<Visibility for="agents">
+  通过 Streamable HTTP 连接。免密钥服务器 URL (支持 搜索、抓取 和 解析，无需凭证) 为 `https://mcp.firecrawl.dev/v2/mcp`。
+
+  * Codex：`codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp`
+  * Claude Code：`claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp`
+  * Cursor 或任何支持 JSON 配置的客户端：`{"mcpServers": {"firecrawl": {"url": "https://mcp.firecrawl.dev/v2/mcp"}}}`
+  * OpenCode (`opencode.json`)：`{"mcp": {"firecrawl": {"type": "remote", "url": "https://mcp.firecrawl.dev/v2/mcp", "enabled": true}}}`
+  * ChatGPT 或 Claude.ai：使用原生 Firecrawl 连接器 — [ChatGPT](https://chatgpt.com/plugins?q=firecrawl) 或 [Claude](https://claude.ai/directory/connectors/firecrawl)。
+
+  两种设置方式及 API 密钥设置：[MCP 快速开始](/zh/mcp-server.md)、[面向代理](/zh/mcp-server/keyless.md) 和 [面向人类](/zh/mcp-server/oauth.md)。
+</Visibility>
+
+<div id="build-directly-with-the-api">
+  ### 直接使用 API 构建
+</div>
+
+立即抓取你的第一个页面。此请求无需账户或 API 密钥。
+
+<ScrapeCURL />
+
+需要更高限额时，请添加 [API 密钥](https://www.firecrawl.dev/app/api-keys)。请参见 [Python SDK](/zh/sdks/python)、[Node SDK](/zh/sdks/node) 或 [API Reference](/zh/api-reference/endpoint/scrape)，了解如何将其集成到你的应用中。
+
+<div id="other-ways-to-get-started">
+  ## 其他开始使用方式
+</div>
 
 <div id="install-the-firecrawl-cli">
   ### 安装 Firecrawl CLI
@@ -50,16 +72,20 @@ npx -y firecrawl-cli@latest init --all --browser
 
 <Note>
   完成设置后请重启你的编码代理，以便其发现这些新技能。完整的配置流程请参见
-  [Skills + CLI](/zh/sdks/cli)。
+  [CLI](/zh/sdks/cli)。
 </Note>
 
 <div id="set-up-with-an-agent">
   ### 使用代理设置
 </div>
 
-将此 Firecrawl 设置 prompt 提供给你的代理。
+将此 Firecrawl 设置 prompt 提供给你的代理，或请参见[所有 MCP 设置选项](/zh/mcp-server)。
 
 <AgentSetupButton />
+
+<Note>
+  **对于 AI 代理：**使用 [llms.txt](https://docs.firecrawl.dev/llms.txt) 获取文档索引，或使用 [llms-full.txt](https://docs.firecrawl.dev/llms-full.txt) 获取完整文本。
+</Note>
 
 <div id="build-and-test-directly">
   ### 直接构建和测试
@@ -105,6 +131,8 @@ npx -y firecrawl-cli@latest init --all --browser
 * **可靠**：专为生产环境打造，具备高可用性和稳定一致的结果。
 * **快速**：数秒内返回结果，并针对高吞吐量进行了优化。
 * **MCP Server**：通过 [模型上下文协议](/zh/mcp-server) 将 Firecrawl 连接到任何 AI 工具。
+
+<GeneralFeedbackCTA src="docs-introduction" />
 
 ***
 
@@ -193,6 +221,10 @@ npx -y firecrawl-cli@latest init --all --browser
 
   <Card title="浏览器沙箱" icon="browser" href="/zh/features/browser">
     适用于交互式工作流的托管浏览器会话
+  </Card>
+
+  <Card title="解析" icon="file-magnifying-glass" href="/zh/features/parse">
+    将本地 PDF、DOCX、XLSX、HTML 等转换为 Markdown 或结构化 JSON
   </Card>
 
   <Card title="Map" icon="map" href="/zh/features/map">

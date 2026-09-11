@@ -44,20 +44,20 @@ Le temps passé dans la file d’attente est décompté du paramètre [`timeout`
 
       <tr>
         <td style={{ padding: '8px 12px' }}>Standard</td>
+        <td style={{ padding: '8px 12px' }}>25</td>
+        <td style={{ padding: '8px 12px' }}>50,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Growth</td>
         <td style={{ padding: '8px 12px' }}>50</td>
         <td style={{ padding: '8px 12px' }}>100,000</td>
       </tr>
 
       <tr>
-        <td style={{ padding: '8px 12px' }}>Growth</td>
-        <td style={{ padding: '8px 12px' }}>100</td>
-        <td style={{ padding: '8px 12px' }}>200,000</td>
-      </tr>
-
-      <tr>
         <td style={{ padding: '8px 12px' }}>Scale / Enterprise</td>
-        <td style={{ padding: '8px 12px' }}>150+</td>
-        <td style={{ padding: '8px 12px' }}>300,000+</td>
+        <td style={{ padding: '8px 12px' }}>100+</td>
+        <td style={{ padding: '8px 12px' }}>200,000+</td>
       </tr>
     </tbody>
   </table>
@@ -77,9 +77,9 @@ Les limites de débit sont mesurées en requêtes par minute et servent principa
   ### Sans clé (sans clé API)
 </div>
 
-Le point de terminaison MCP sans clé hébergé de Firecrawl propose exactement **Search, Scrape et Parse** sans clé API. Les autres outils MCP hébergés nécessitent une connexion à un compte ou une clé API.
+Le point de terminaison MCP sans clé hébergé de Firecrawl propose exactement **recherche, Scrape et Parse** sans clé API. Les autres outils MCP hébergés nécessitent une connexion à un compte ou une clé API.
 
-Pour les clients officiels Firecrawl, la CLI, les SDK et l’API REST, l’accès sans clé inclut également **Interact**. Les points de terminaison de recherche peuvent également être utilisés sans clé API sur Firecrawl Cloud lorsque Research Index est activé. Aucun autre point de terminaison (crawl, extraction, cartographie, extraction par lot, etc.) n’est disponible sans clé.
+Pour les clients officiels Firecrawl, la CLI, les SDK et l’API REST, l’accès sans clé inclut également **Interact**. Sur Firecrawl Cloud, les points de terminaison de recherche et de recherche pour développeurs peuvent également être utilisés sans clé API. Aucun autre point de terminaison (crawl, extraction, cartographie, extraction par lot, etc.) n’est disponible sans clé.
 
 L’utilisation sans clé est gratuite et limitée par adresse IP et par jour selon **deux plafonds** ; le dépassement de l’un ou l’autre renvoie un `429` :
 
@@ -88,7 +88,9 @@ L’utilisation sans clé est gratuite et limitée par adresse IP et par jour se
 
 [Inscrivez-vous pour obtenir une clé API gratuite](https://firecrawl.dev) afin d’obtenir 1 000 crédits et des limites de débit plus élevées sans frais — les clients officiels utilisent automatiquement votre clé une fois configurée.
 
-### Offre actuelle
+<div id="current-plans-2">
+  ### Offre actuelle
+</div>
 
 <div style={{ overflowX: 'auto', maxWidth: '100%' }}>
   <table style={{ width: '100%', borderCollapse: 'collapse' }}>

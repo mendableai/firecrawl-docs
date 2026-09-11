@@ -1,252 +1,255 @@
 ---
-title: "Self-hosting"
-description: "Learn how to self-host Firecrawl to run on your own and contribute to the project."
-og:title: "Self-hosting | Firecrawl"
-og:description: "Learn how to self-host Firecrawl to run on your own and contribute to the project."
+title: "Self-hosting Firecrawl"
+sidebarTitle: "Self-hosting"
+description: "Self-host Firecrawl with Docker Compose, verify a local scrape, understand open-source limits, and prepare the stack for production."
+og:title: "Self-hosting Firecrawl | Firecrawl"
+og:description: "Self-host Firecrawl with Docker Compose, verify a local scrape, understand open-source limits, and prepare the stack for production."
 ---
-#### Contributor?
 
-Welcome to [Firecrawl](https://firecrawl.dev) 🔥! Here are some instructions on how to get the project locally so you can run it on your own and contribute.
+<span id="self-hosting-firecrawl" />
 
-If you're contributing, note that the process is similar to other open-source repos, i.e., fork Firecrawl, make changes, run tests, PR.
+Self-host Firecrawl with Docker Compose when you need source or infrastructure control. This guide pins release `v2.11.162`, starts the API at `http://localhost:3002`, and verifies a successful `POST /v2/scrape` response with Markdown.
 
-If you have any questions or would like help getting on board, join our Discord community [here](https://discord.gg/firecrawl) for more information or submit an issue on Github [here](https://github.com/firecrawl/firecrawl/issues/new/choose)!
+<Warning>
+  This trusted-network quickstart disables API authentication and is not a
+  production architecture. It starts without durable storage, TLS, high
+  availability, or every Firecrawl Cloud capability.
+</Warning>
 
-## Self-hosting Firecrawl
+## Choose self-hosting or Firecrawl Cloud
 
-Refer to [SELF_HOST.md](https://github.com/firecrawl/firecrawl/blob/main/SELF_HOST.md) for instructions on how to run it locally.
+### Self-host Firecrawl when
 
-## Why?
+- **You want control over the source or infrastructure.** This guide gets the API and its supporting services running on your machine.
+- **You are comfortable operating the stack.** You will own upgrades, security, storage, monitoring, and recovery.
+- **You want to validate Firecrawl against your environment.** Get the baseline working here, then design the controls in [Before production](#before-production).
 
-Self-hosting Firecrawl is particularly beneficial for organizations with stringent security policies that require data to remain within controlled environments. Here are some key reasons to consider self-hosting:
+Choose [Firecrawl Cloud](https://firecrawl.dev) when you want to start scraping without running infrastructure. See [Open Source vs Cloud](/contributing/open-source-or-cloud) for the capability differences.
 
-- **Enhanced Security and Compliance:** By self-hosting, you ensure that all data handling and processing complies with internal and external regulations, keeping sensitive information within your secure infrastructure. Note that Firecrawl is a Mendable product and relies on SOC2 Type2 certification, which means that the platform adheres to high industry standards for managing data security.
-- **Customizable Services:** Self-hosting allows you to tailor the services, such as the Playwright service, to meet specific needs or handle particular use cases that may not be supported by the standard cloud offering.
-- **Learning and Community Contribution:** By setting up and maintaining your own instance, you gain a deeper understanding of how Firecrawl works, which can also lead to more meaningful contributions to the project.
+**Our recommendation:** self-host when source access or infrastructure control is worth the operational work. If you want the fastest supported path to production, start with Firecrawl Cloud.
 
-### Considerations
+### What self-hosting requires
 
-However, there are some limitations and additional responsibilities to be aware of:
+- You own upgrades, secrets, storage, monitoring, recovery, and incident response.
+- Scraping still sends outbound requests to target websites. Optional proxy, parsing, or AI providers add more data flows.
+- This guide keeps the first run intentionally simple. Get one scrape working, then change one decision at a time.
+- The commands are pinned to `v2.11.162`. A different release may use a different Compose contract.
 
-1. **Limited Access to Fire-engine:** Currently, self-hosted instances of Firecrawl do not have access to Fire-engine, which includes advanced features for handling IP blocks, robot detection mechanisms, and more. This means that while you can manage basic scraping tasks, more complex scenarios might require additional configuration or might not be supported.
-2. **Manual Configuration Required:** If you need to use scraping methods beyond the basic fetch and Playwright options, you will need to manually configure these in the `.env` file. This requires a deeper understanding of the technologies and might involve more setup time.
-| Capability | Cloud | Self-hosting |
-| --- | --- | --- |
-| All API endpoints supported | Yes | Not always; `/agent` and `/browser` are not supported in self-hosting |
-| Screenshot support | Yes | Yes, when the Playwright service is running |
-| Local LLMs (e.g., Ollama) | Not supported | Supported via `OLLAMA_BASE_URL` (experimental) |
+## Self-host Firecrawl with Docker Compose
 
-Self-hosting Firecrawl is ideal for those who need full control over their scraping and data processing environments but comes with the trade-off of additional maintenance and configuration efforts.
+### Start with these defaults
 
-## Steps
+- **Release: Firecrawl `v2.11.162`.** Pin the code and configuration first. Upgrade after reviewing the target release's `docker-compose.yaml` and self-hosting notes.
+- **API authentication: off for this local run.** Add it only with a complete supported identity and database design; one environment variable is not enough.
+- **Queue: PostgreSQL.** Keep it unless you intentionally want to operate the optional FoundationDB backend.
+- **Queue admin UI: off.** Enable it only with a strong `BULL_AUTH_KEY` and network controls.
+- **AI and advanced scraping providers: not configured.** Add a provider when a capability you need requires it.
 
-1. First, start by installing the dependencies
+Keep the first run boring: get one scrape working, then add what your use case needs.
 
-- Docker [instructions](https://docs.docker.com/get-docker/)
+### Prerequisites
 
+Before you start, install:
 
-2. Set environment variables
+- [Git](https://git-scm.com/downloads)
+- [Docker Engine](https://docs.docker.com/engine/install/) or Docker Desktop
+- Docker Compose v2, invoked as `docker compose`
+- `curl` for the verification requests
 
-Create an `.env` in the root directory you can copy over the template in `apps/api/.env.example`
+Make sure port `3002` is available and Docker has enough capacity to build and run several services. Firecrawl does not publish a verified minimum host size for this stack.
 
-To start, we wont set up authentication, or any optional sub services (pdf parsing, JS blocking support, AI features)
+### Clone the verified release
 
+This guide was verified against Firecrawl `v2.11.162`. Check out that exact release to keep the code, commands, and configuration in sync:
+
+```bash
+git clone https://github.com/firecrawl/firecrawl.git
+cd firecrawl
+git checkout v2.11.162
 ```
-# .env
 
-# ===== Required ENVS ======
-PORT=3002
-HOST=0.0.0.0
+Want to use another release? Review its `docker-compose.yaml` and self-hosting notes before reusing these values.
 
-# Note: PORT is used by both the main API server and worker liveness check endpoint
+### Configure the evaluation deployment
 
-# To turn on DB authentication, you need to set up Supabase.
+Create the smallest working `.env` in the repository root:
+
+```bash
+cat > .env <<'EOF'
 USE_DB_AUTHENTICATION=false
-
-# ===== Optional ENVS ======
-
-## === AI features (JSON format on scrape, /extract API) ===
-# Provide your OpenAI API key here to enable AI features
-# OPENAI_API_KEY=
-
-# Experimental: Use Ollama
-# OLLAMA_BASE_URL=http://localhost:11434/api
-# MODEL_NAME=deepseek-r1:7b
-# MODEL_EMBEDDING_NAME=nomic-embed-text
-
-# Experimental: Use any OpenAI-compatible API
-# OPENAI_BASE_URL=https://example.com/v1
-# OPENAI_API_KEY=
-
-## === Proxy ===
-# PROXY_SERVER can be a full URL (e.g. http://0.1.2.3:1234) or just an IP and port combo (e.g. 0.1.2.3:1234)
-# Do not uncomment PROXY_USERNAME and PROXY_PASSWORD if your proxy is unauthenticated
-# PROXY_SERVER=
-# PROXY_USERNAME=
-# PROXY_PASSWORD=
-
-## === /search API ===
-
-# You can specify a SearXNG server with the JSON format enabled, if you'd like to use that instead of direct Google.
-# You can also customize the engines and categories parameters, but the defaults should also work just fine.
-# SEARXNG_ENDPOINT=http://your.searxng.server
-# SEARXNG_ENGINES=
-# SEARXNG_CATEGORIES=
-
-## === Other ===
-
-# Supabase Setup (used to support DB authentication, advanced logging, etc.)
-# SUPABASE_ANON_TOKEN=
-# SUPABASE_URL=
-# SUPABASE_SERVICE_TOKEN=
-
-# Use if you've set up authentication and want to test with a real API key
-# TEST_API_KEY=
-
-# This key lets you access the queue admin panel. Change this if your deployment is publicly accessible.
-BULL_AUTH_KEY=CHANGEME
-
-# This is now autoconfigured by the docker-compose.yaml. You shouldn't need to set it.
-# PLAYWRIGHT_MICROSERVICE_URL=http://playwright-service:3000/scrape
-# REDIS_URL=redis://redis:6379
-# REDIS_RATE_LIMIT_URL=redis://redis:6379
-
-# Set if you have a llamaparse key you'd like to use to parse pdfs
-# LLAMAPARSE_API_KEY=
-
-# Set if you'd like to send server health status messages to Slack
-# SLACK_WEBHOOK_URL=
-
-# Set if you'd like to send posthog events like job logs
-# POSTHOG_API_KEY=
-# POSTHOG_HOST=
-
-## === System Resource Configuration ===
-# Maximum CPU usage threshold (0.0-1.0). Worker will reject new jobs when CPU usage exceeds this value.
-# Default: 0.8 (80%)
-# MAX_CPU=0.8
-
-# Maximum RAM usage threshold (0.0-1.0). Worker will reject new jobs when memory usage exceeds this value.
-# Default: 0.8 (80%)
-# MAX_RAM=0.8
-
-# Set if you'd like to allow local webhooks to be sent to your self-hosted instance
-# ALLOW_LOCAL_WEBHOOKS=true
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=replace-with-at-least-32-random-characters
+POSTGRES_DB=postgres
+EOF
 ```
+
+Replace the PostgreSQL password before starting the stack, and do not commit `.env`. Keep `POSTGRES_DB=postgres` for `v2.11.162` because the bundled `pg_cron` configuration targets that database. Compose passes these values to both the API and PostgreSQL service.
 
 <Note>
-  The following AI features require an LLM provider configured (e.g., `OPENAI_API_KEY` or alternatives in the AI features section above):
-  - JSON format on scrape
-  - /extract API
-  - Summary format
-  - Branding format
-  - Change tracking format
+  `apps/api/.env.example` is for API development, not a drop-in Compose file.
+  This first run disables database authentication, so requests do not need an
+  API key or `Authorization` header.
 </Note>
 
-3.  *(Optional) Running with TypeScript Playwright Service*
-    
-    *   Update the `docker-compose.yml` file to change the Playwright service:
-        
-        ```plaintext
-            build: apps/playwright-service
-        ```
-        TO
-        ```plaintext
-            build: apps/playwright-service-ts
-        ```
-        
-    *   Set the `PLAYWRIGHT_MICROSERVICE_URL` in your `.env` file:
-        
-        ```plaintext
-        PLAYWRIGHT_MICROSERVICE_URL=http://localhost:3000/scrape
-        ```
-        
-    *   Don't forget to set the proxy server in your `.env` file as needed.
+Leave `NUQ_BACKEND` and `BULL_AUTH_KEY` unset. You will use the PostgreSQL queue without running the queue administration UI—fewer moving parts for the first scrape.
 
-4.  Build and run the Docker containers:
-    
-    ```bash
-    docker compose build
-    docker compose up
-    ```
+### Build and start Firecrawl
 
-This will run a local instance of Firecrawl which can be accessed at `http://localhost:3002`.
+Build the checked-out source and start everything in the background:
 
-You should be able to see the Bull Queue Manager UI on `http://localhost:3002/admin/{BULL_AUTH_KEY}/queues`.
+```bash
+docker compose up --build -d
+docker compose ps --all
+```
 
-5. *(Optional)* Test the API
+Warnings about unset optional variables are expected for this baseline. `docker compose ps --all` should show the API and supporting services running, with one-shot initialization services completed. Give the stack a little time if services are still starting.
 
-If you’d like to test the crawl endpoint, you can run this:
+### Check API reachability
 
-  ```bash
-  curl -X POST http://localhost:3002/v2/crawl \
-      -H 'Content-Type: application/json' \
-      -d '{
-        "url": "https://docs.firecrawl.dev"
-      }'
-  ```   
+First, make sure the API can answer an HTTP request:
+
+```bash
+curl \
+  --fail \
+  --silent \
+  --show-error \
+  --max-time 5 \
+  http://localhost:3002/v0/health/readiness
+```
+
+Expected response:
+
+```json
+{"status":"ok"}
+```
+
+<Warning>
+  This is a heartbeat, not an end-to-end test. It does not check Redis,
+  PostgreSQL, RabbitMQ, Playwright, workers, or outbound network access. Run the
+  scrape below before treating the deployment as usable.
+</Warning>
+
+### Run a functional smoke test
+
+Now test the path that matters: one real scrape. The request timeout is in milliseconds; curl's client timeout is in seconds and is slightly longer:
+
+```bash
+curl \
+  --fail-with-body \
+  --silent \
+  --show-error \
+  --max-time 75 \
+  -X POST \
+  http://localhost:3002/v2/scrape \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "url": "https://example.com",
+    "formats": ["markdown"],
+    "timeout": 60000
+  }'
+```
+
+A successful response has this shape:
+
+```json
+{
+  "success": true,
+  "data": {
+    "markdown": "...",
+    "metadata": {
+      "statusCode": 200
+    }
+  }
+}
+```
+
+This checks the API, scraping pipeline, one scraping-engine path, and outbound access together. Exact metadata can vary with the target response.
+
+If you get these success fields, Firecrawl is working end to end on your infrastructure. Keep this baseline, then choose what to add next.
+
+## Self-hosted feature support
+
+Your first scrape works. Add the next capability because you need it, not because it exists:
+
+| If you need | Decision |
+| --- | --- |
+| Core scrape, crawl, map, and search routes | Keep the default stack. Fetch and Playwright processing are included. |
+| LLM-backed extraction or formats | Connect an OpenAI-compatible provider or Ollama, then test that path separately. |
+| Fire-engine or its advanced anti-bot behavior | Run and configure that service separately; it is not included. |
+| Screenshots or page actions | Not available in the default stack. Fetch and Playwright both report no support; both require Fire-engine. |
+| Agent, Browser, interact, feedback, or specialized product, menu, audio, and video formats | Use Firecrawl Cloud, or verify the external service requirements for the specific capability. |
+
+For the broader product comparison, see [Open Source vs Cloud](/contributing/open-source-or-cloud). For release-specific configuration, use the pinned [`docker-compose.yaml`](https://github.com/firecrawl/firecrawl/blob/v2.11.162/docker-compose.yaml) as the companion source.
+
+## Before production
+
+Compose gets you to first success. Production needs a few explicit choices before the API leaves a trusted network:
+
+- **If data must survive service replacement,** add durable storage for PostgreSQL, Redis, and RabbitMQ, then define and test backup and restore procedures. The provided Compose file does not add those volumes.
+- **If users or untrusted networks can reach the API,** add a supported authentication design, network access controls, and TLS at a reverse proxy or ingress. Do not expose this unauthenticated baseline publicly.
+- **If you have availability or capacity requirements,** set uptime targets, monitoring, resource sizing, scaling triggers, and upgrade and rollback procedures. The Compose limits are not verified minimum requirements.
+- **If data location or compliance matters,** map requests to target websites and every optional AI, proxy, or parsing provider before enabling them.
+- **If secrets must be managed centrally,** move the database password out of `.env` and into your platform's secret-management system.
+
+These are infrastructure decisions. No single `.env` switch makes the stack production-ready.
+
+## Where to go next
+
+- **Still evaluating?** Keep the API on a trusted network and run `docker compose down` when you are finished.
+- **Adding an open-source capability?** Use [Self-hosted feature support](#self-hosted-feature-support) to find the required provider or service, then test that path on its own.
+- **Changing Firecrawl code?** Switch to [Contributor Setup](/contributing/guide) for the development environment.
+- **Connecting a client?** Point the [Firecrawl CLI](/sdks/cli#connect-the-cli-to-self-hosted-firecrawl) or [local MCP server](/mcp-server/local#connect-mcp-to-self-hosted-firecrawl) at your verified API URL.
+- **Moving to Kubernetes?** Start with the versioned Kubernetes or Helm references linked from [`SELF_HOST.md`](https://github.com/firecrawl/firecrawl/blob/main/SELF_HOST.md), then make the production decisions above explicit for your platform.
+- **Want managed infrastructure or Cloud-only capabilities?** Compare [Open Source vs Cloud](/contributing/open-source-or-cloud).
+- **Going to production?** Complete every decision in [Before production](#before-production) before exposing the API.
 
 ## Troubleshooting
 
-This section provides solutions to common issues you might encounter while setting up or running your self-hosted instance of Firecrawl.
-
-### Supabase client is not configured
-
-**Symptom:**
-```bash
-[YYYY-MM-DDTHH:MM:SS.SSSz]ERROR - Attempted to access Supabase client when it's not configured.
-[YYYY-MM-DDTHH:MM:SS.SSSz]ERROR - Error inserting scrape event: Error: Supabase client is not configured.
-```
-
-**Explanation:**
-This error occurs because the Supabase client setup is not completed. You should be able to scrape and crawl with no problems. Right now it's not possible to configure Supabase in self-hosted instances.
-
 ### You're bypassing authentication
 
-**Symptom:**
-```bash
-[YYYY-MM-DDTHH:MM:SS.SSSz]WARN - You're bypassing authentication
-```
-
-**Explanation:**
-This error occurs because the Supabase client setup is not completed. You should be able to scrape and crawl with no problems. Right now it's not possible to configure Supabase in self-hosted instances.
+If you see this warning with `USE_DB_AUTHENTICATION=false`, you are on the expected first-run path. Requests use a self-hosted identity and need no API key. If the API is reachable from an untrusted network, stop and add the controls in [Before production](#before-production).
 
 ### Docker containers fail to start
 
-**Symptom:**
-Docker containers exit unexpectedly or fail to start.
+If any long-running service exits, inspect container state and recent logs:
 
-**Solution:**
-Check the Docker logs for any error messages using the command:
 ```bash
-docker logs [container_name]
+docker compose ps --all
+docker compose logs --tail=200
 ```
 
-- Ensure all required environment variables are set correctly in the .env file.
-- Verify that all Docker services defined in docker-compose.yml are correctly configured and the necessary images are available.
+- If the source revision differs, either check out `v2.11.162` or use that release's configuration.
+- If a build or container is resource-constrained, increase Docker CPU, memory, or disk capacity.
+- If PostgreSQL fails, check `.env` syntax, keep `POSTGRES_DB=postgres`, and make sure the user and password values are consistent.
 
 ### Connection issues with Redis
 
-**Symptom:**
-Errors related to connecting to Redis, such as timeouts or "Connection refused".
+If a container cannot connect to Redis, keep the Compose service address `redis://redis:6379`. `localhost` points back to that container, not the Redis service.
 
-**Solution:**
-- Ensure that the Redis service is up and running in your Docker environment.
-- Verify that the REDIS_URL and REDIS_RATE_LIMIT_URL in your .env file point to the correct Redis instance.
-- Check network settings and firewall rules that may block the connection to the Redis port.
+```bash
+docker compose ps redis
+docker compose logs --tail=100 redis
+```
+
+If you added `REDIS_URL` or `REDIS_RATE_LIMIT_URL`, remove the override to restore the default or use an address that resolves from inside the Compose network.
 
 ### API endpoint does not respond
 
-**Symptom:**
-API requests to the Firecrawl instance timeout or return no response.
+If port `3002` does not respond, check the API container and its logs:
 
-**Solution:**
-- Ensure that the Firecrawl service is running by checking the Docker container status.
-- Verify that the PORT and HOST settings in your .env file are correct and that no other service is using the same port.
-- Check the network configuration to ensure that the host is accessible from the client making the API request.
+```bash
+docker compose ps api
+docker compose logs --tail=200 api
+```
 
-By addressing these common issues, you can ensure a smoother setup and operation of your self-hosted Firecrawl instance.
+If another process owns port `3002`, stop it or change the published port consistently. During initial startup, retry only after the API container reports as running.
 
-## Install Firecrawl on a Kubernetes Cluster (Simple Version)
+If `/v0/health/readiness` succeeds but `/v2/scrape` fails, inspect the API and Playwright logs because the reachability endpoint does not validate those dependencies:
 
-Read the [examples/kubernetes-cluster-install/README.md](https://github.com/firecrawl/firecrawl/tree/main/examples/kubernetes/cluster-install#readme) for instructions on how to install Firecrawl on a Kubernetes Cluster.
+```bash
+docker compose logs --tail=200 api playwright-service
+```
+
+### Scrape request times out
+
+If the scrape times out, confirm the deployment can reach `https://example.com` and that the API and Playwright services are running. Keep curl's `--max-time` longer than the request body's `timeout` so the API can return its own timeout response.

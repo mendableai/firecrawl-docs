@@ -1,0 +1,81 @@
+---
+title: 面向用户
+description: "通过浏览器登录。"
+og:title: '面向用户'
+og:description: "通过 Codex、Claude、Cursor 或 ChatGPT 登录。"
+sidebarTitle: '面向用户'
+---
+
+import { McpClientSelector } from "/snippets/shared/agent-first-onboarding.jsx";
+
+<div id="sign-in">
+  ## 登录
+</div>
+
+<Visibility for="humans">
+  <McpClientSelector variant="human" showSeeAll={false} />
+</Visibility>
+
+<Visibility for="agents">
+  OAuth 服务器 URL (Streamable HTTP；客户端会启动浏览器登录) ：`https://mcp.firecrawl.dev/v2/mcp-oauth`
+
+  * Codex：`codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp-oauth`，然后运行 `codex mcp login firecrawl`
+  * Claude Code：`claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp-oauth`，然后通过 `/mcp` 完成登录
+  * Cursor 或任何使用 JSON 配置的客户端：`{"mcpServers": {"firecrawl": {"url": "https://mcp.firecrawl.dev/v2/mcp-oauth"}}}`
+  * OpenCode (`opencode.json`) ：`{"mcp": {"firecrawl": {"type": "remote", "url": "https://mcp.firecrawl.dev/v2/mcp-oauth", "enabled": true}}}`
+  * ChatGPT 或 Claude.ai：使用原生 Firecrawl 连接器——[ChatGPT](https://chatgpt.com/plugins?q=firecrawl) 或 [Claude](https://claude.ai/directory/connectors/firecrawl)。
+
+  必须由真人完成浏览器登录并批准团队。请勿直接在浏览器中打开服务器 URL。
+</Visibility>
+
+<Note>
+  `https://mcp.firecrawl.dev/v2/mcp-oauth` 是供 MCP 客户端使用的服务器 URL，并非可直接在浏览器中打开的页面。客户端会启动浏览器登录流程。
+</Note>
+
+您可以在 [MCP 设置](https://www.firecrawl.dev/app/settings?tab=mcp)中查看和撤销连接。
+
+<div id="chatgpt-and-claude">
+  ## ChatGPT 和 Claude
+</div>
+
+<CardGroup cols={2}>
+  <Card title="添加至 ChatGPT" icon="/images/agent-clients/chatgpt.svg" href="https://chatgpt.com/plugins?q=firecrawl" cta="在 ChatGPT 中打开" arrow>
+    在 ChatGPT 中安装原生 Firecrawl 连接器。
+  </Card>
+
+  <Card title="添加至 Claude" icon="/images/agent-clients/claude-ai.svg" href="https://claude.ai/directory/connectors/firecrawl" cta="在 Claude 中打开" arrow>
+    在 Claude 中安装原生 Firecrawl 连接器。
+  </Card>
+</CardGroup>
+
+<div id="add-an-api-key">
+  ## 添加 API 密钥
+</div>
+
+<Card title="添加 API 密钥" icon="key" href="/zh/mcp-server/keyless#add-an-api-key" arrow>
+  建议在客户端配置中使用密钥，而非通过浏览器登录。配置说明请参阅 For Agents。
+</Card>
+
+<div id="try">
+  ## 尝试
+</div>
+
+```text
+进行网页搜索，查找最新的 Firecrawl 版本发布说明，并总结这些来源。
+```
+
+如果未显示任何 Firecrawl 工具，请在保存 MCP 配置后重启或重新加载客户端。
+
+<div id="more">
+  ## 更多
+</div>
+
+<CardGroup cols={2}>
+  <Card title="选择工具" icon="wrench" href="/zh/mcp-server/tools">
+    查找合适的 Firecrawl MCP 工具，并查看不同连接方式下的可用性。
+  </Card>
+
+  <Card title="本地运行" icon="terminal" href="/zh/mcp-server/local">
+    通过 stdio 或 Streamable HTTP 启动开源服务器。
+  </Card>
+</CardGroup>

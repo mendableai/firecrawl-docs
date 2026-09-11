@@ -4,85 +4,43 @@ description: "Google Antigravity に Firecrawl のWebスクレイピングと検
 sidebarTitle: "Antigravity"
 ---
 
-MCP 経由で、Firecrawl の検索、スクレイピング、クロール、ブラウザツールを [Google Antigravity](https://antigravity.google/) に追加します。
+ホスト型 MCP サーバーを介して、Firecrawl のキーレス Search、スクレイピング、Parse ツールを [Google Antigravity](https://antigravity.google/) に追加します。
 
 <div id="quick-setup">
-  ## クイックスタート
+  ## クイックセットアップ
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. APIキーを取得する
-</div>
-
-[firecrawl.dev/app](https://www.firecrawl.dev/app) でサインアップし、APIキーをコピーします。
-
-<div id="2-add-firecrawl-to-antigravity">
-  ### 2. Antigravity に Firecrawl を追加する
-</div>
-
-Antigravity の設定 (`Cmd/Ctrl + ,`) を開き、**MCP Servers** を検索して、次の内容で新しいサーバーを追加します。
+Antigravity の設定 (`Cmd/Ctrl + ,`) を開き、**MCP Servers** を検索して、以下を追加します。
 
 ```json
 {
   "mcpServers": {
     "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
+      "serverUrl": "https://mcp.firecrawl.dev/v2/mcp"
     }
   }
 }
 ```
 
-`fc-YOUR-API-KEY` をご自身の Firecrawl APIキーに置き換えてください。
+ウィンドウを再読み込みし、`firecrawl_search`、`firecrawl_scrape`、`firecrawl_parse` が利用可能であることを確認します。
 
-<div id="3-reload-antigravity">
-  ### 3. Antigravity を再読み込み
+キーレスアクセスには、同じパブリック IP を使用するユーザー間で共有される制限があります。対話型クライアントから [For Humans](/ja/mcp-server/oauth) でサインインするか、ユーザー操作なしで利用するには [API キーを追加](/ja/mcp-server/keyless#add-an-api-key) してください。
+
+<div id="try-it">
+  ## 試してみる
 </div>
 
-ウィンドウを再読み込みします (`Cmd/Ctrl + Shift + P` → `Reload Window`) 。これで、エージェントは Firecrawl のウェブツールを利用できるようになります。
-
-<div id="quick-demo">
-  ## クイックデモ
-</div>
-
-Antigravity エージェントのチャットで:
-
-```
-Search the web for "Vercel AI SDK v5 release notes" and summarize.
+```text
+Use Firecrawl to search for the latest Vercel AI SDK release notes and summarize the sources.
 ```
 
+```text
+Scrape https://docs.firecrawl.dev/ai-onboarding and list the linked guides.
 ```
-Scrape https://docs.firecrawl.dev/ai-onboarding and list every linked guide.
-```
-
-```
-Crawl https://example.com and extract every page title.
-```
-
-Antigravity は、それらのツール呼び出しを自動的に Firecrawl MCP 経由でルーティングします。
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## リモートホストのURL (Node.js不要)
-</div>
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "url": "https://mcp.firecrawl.dev/v2/mcp"
-    }
-  }
-}
-```
-
-この構成では、キーなしで利用できるFirecrawlツールセットを使用します。アカウントに接続するセットアップや無人セットアップについては、[ホスト型MCP接続モード](/ja/developer-guides/mcp-setup-guides/oauth)に従ってください。APIキーはURLには含めず、Authorizationヘッダーまたは安全なシークレットストアに保管してください。
 
 <div id="troubleshooting">
   ## トラブルシューティング
 </div>
 
-* **サーバーが &quot;failed&quot; と表示される** — stderr は MCP の出力パネルで確認してください。原因の多くは、API キーの不足か、`npx` が `PATH` に含まれていないことです。
-* **ツールが呼び出されない** — エージェントが適切なツールを選べるよう、最初のプロンプトで Firecrawl に明示的に触れてください (例: &quot;Use Firecrawl to scrape…&quot;) 。
+* **Server が失敗と表示される:** hosted URL を確認し、MCP の出力パネルを確認してください。
+* **クロールまたは他のツールが表示されない:** キーレスで利用できるのは Search、スクレイピング、Parse のみです。より幅広いツールを利用するには、OAuth または API key で接続してください。

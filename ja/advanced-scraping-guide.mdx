@@ -52,10 +52,10 @@ Firecrawl の scrape、crawl、map、agent 各エンドポイントで利用で�
   ## PDFのスクレイピング
 </div>
 
-FirecrawlはPDFに対応しています。PDFを確実に解析したい場合は、`parsers` オプション（例: `parsers: ["pdf"]`）を使用してください。`mode` オプションで解析戦略を制御できます。
+FirecrawlはPDFに対応しています。PDFを確実に解析したい場合は、`parsers` オプション (例: `parsers: ["pdf"]`) を使用してください。`mode` オプションで解析戦略を制御できます。
 
 * **`auto`** (デフォルト) — まず高速なテキストベース抽出を試み、必要に応じてOCRにフォールバックします。
-* **`fast`** — テキストベースの解析のみ（埋め込みテキスト）。最も高速ですが、スキャンされたページや画像の多いページはスキップされます。
+* **`fast`** — テキストベースの解析のみ (埋め込みテキスト) 。最も高速ですが、スキャンされたページや画像の多いページはスキップされます。
 * **`ocr`** — すべてのページで強制的にOCR解析を行います。スキャンされたドキュメントや、`auto` がページを誤判定する場合に使用してください。
 
 `{ type: "pdf" }` と `"pdf"` は、どちらもデフォルトで `mode: "auto"` になります。
@@ -78,16 +78,17 @@ FirecrawlはPDFに対応しています。PDFを確実に解析したい場合�
 
 **文字列フォーマット**: 名前をそのまま渡します (例: `"markdown"`)。
 
-| Format     | Description                                                     |
-| ---------- | --------------------------------------------------------------- |
-| `markdown` | ページコンテンツをクリーンな Markdown に変換したもの。                                |
-| `html`     | 不要な要素を削除して処理した HTML。                                            |
-| `rawHtml`  | サーバーから返されたオリジナルの HTML をそのまま返すもの。                                |
-| `links`    | ページ上で見つかったすべてのリンク。                                              |
-| `images`   | ページ上で見つかったすべての画像。                                               |
-| `summary`  | ページコンテンツの LLM 生成サマリー。                                           |
-| `branding` | ブランドアイデンティティ (色、フォント、タイポグラフィ、余白、UI コンポーネント) を抽出。                |
-| `product`  | 複数ソースの構造化データを使って、商品ページから構造化された商品情報 (タイトル、価格、在庫状況、画像、バリアント) を抽出。 |
+| Format      | Description                                                                                                           |
+| ----------- | --------------------------------------------------------------------------------------------------------------------- |
+| `markdown`  | ページコンテンツをクリーンな Markdown に変換したもの。                                                                                      |
+| `html`      | 不要な要素を削除して処理した HTML。                                                                                                  |
+| `rawHtml`   | サーバーから返されたオリジナルの HTML をそのまま返すもの。                                                                                      |
+| `rawBase64` | 元の HTTP レスポンスボディを Base64 エンコードした、プレーンな Base64 文字列。リクエスト内で唯一のフォーマットである必要があります。MIME タイプは `metadata.contentType` に含まれます。 |
+| `links`     | ページ上で見つかったすべてのリンク。                                                                                                    |
+| `images`    | ページ上で見つかったすべての画像。                                                                                                     |
+| `summary`   | ページコンテンツの LLM 生成サマリー。                                                                                                 |
+| `branding`  | ブランドアイデンティティ (色、フォント、タイポグラフィ、余白、UI コンポーネント) を抽出。                                                                      |
+| `product`   | 複数ソースの構造化データを使って、商品ページから構造化された商品情報 (タイトル、価格、在庫状況、画像、バリアント) を抽出。                                                       |
 
 **オブジェクトフォーマット**: `type` と追加オプションを含むオブジェクトを渡します。
 
@@ -203,19 +204,22 @@ FirecrawlはPDFに対応しています。PDFを確実に解析したい場合�
   ### PDF 解析
 </div>
 
-| Parameter | Type    | Default   | Description                                           |
-| --------- | ------- | --------- | ----------------------------------------------------- |
-| `parsers` | `array` | `["pdf"]` | PDF の処理方法を制御します。`[]` で解析をスキップしてbase64 を返す（1 クレジット固定）。 |
+| Parameter | Type    | Default   | Description                                             |
+| --------- | ------- | --------- | ------------------------------------------------------- |
+| `parsers` | `array` | `["pdf"]` | PDF の処理方法を制御します。`[]` で解析をスキップしてbase64 を返す (1 クレジット固定) 。 |
 
 ```json
-{ "type": "pdf", "mode": "fast" | "auto" | "ocr", "maxPages": 10 }
+{ "type": "pdf", "mode": "fast" | "auto" | "ocr", "maxPages": 10, "pages": true, "blocks": true, "pageMarkers": true }
 ```
 
-| Property   | Type                        | Default      | Description                                                                              |
-| ---------- | --------------------------- | ------------ | ---------------------------------------------------------------------------------------- |
-| `type`     | `"pdf"`                     | *(required)* | パーサーの種類。                                                                                 |
-| `mode`     | `"fast" \| "auto" \| "ocr"` | `"auto"`     | `fast`: テキストベースの抽出のみを実行。`auto`: fast で処理し、必要に応じて OCR をフォールバックとして使用。`ocr`: OCR のみを強制的に使用。 |
-| `maxPages` | `integer`                   | —            | 解析するページ数の上限を設定。                                                                          |
+| Property      | Type                        | Default      | Description                                                                                                                                            |
+| ------------- | --------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `type`        | `"pdf"`                     | *(required)* | パーサーの種類。                                                                                                                                               |
+| `mode`        | `"fast" \| "auto" \| "ocr"` | `"auto"`     | `fast`: テキストベースの抽出のみを実行。`auto`: fast で処理し、必要に応じて OCR をフォールバックとして使用。`ocr`: OCR のみを強制的に使用。                                                               |
+| `maxPages`    | `integer`                   | —            | 解析するページ数の上限を設定。                                                                                                                                        |
+| `pages`       | `boolean`                   | `false`      | ドキュメントの `pages` フィールドに、物理ページごとの Markdown も返します。追加コストなし。                                                                                                |
+| `blocks`      | `boolean`                   | `false`      | ドキュメントの `blocks` フィールドに、ページごとの型付きレイアウトブロック (正規化された境界ボックス、ブロックタイプ、読み取り順、Markdown の文字スパン) も返します。追加コストなし。                                                 |
+| `pageMarkers` | `boolean`                   | `false`      | ドキュメントの Markdown 内の改ページ位置に `<!-- page N -->` マーカーを付加します (ページ間のみ。改ページをまたいで結合されたページでは番号が飛ぶ場合があります — [解析](/ja/features/parse#page-markers-pdf) を参照)。追加コストなし。 |
 
 <div id="actions">
   ### アクション
@@ -302,11 +306,11 @@ FirecrawlはPDFに対応しています。PDFを確実に解析したい場合�
   #### アクション実行時の注意点
 </div>
 
-- **Write** を使う前に、対象要素へフォーカスするための `click` が必要です。
-- **Scroll** は、ページ全体ではなく特定の要素をスクロールするために、任意の `selector` を指定できます。
-- **Wait** は、`milliseconds`（固定の待機時間）または `selector`（指定要素が表示されるまで待機）のいずれかを受け取ります。
-- アクションは **逐次的に** 実行されます。各ステップは、次のステップが開始する前に完了します。
-- アクションは **PDF では利用できません**。URL が PDF に解決される場合、そのリクエストは失敗します。
+* **Write** を使う前に、対象要素へフォーカスするための `click` が必要です。
+* **Scroll** は、ページ全体ではなく特定の要素をスクロールするために、任意の `selector` を指定できます。
+* **Wait** は、`milliseconds` (固定の待機時間) または `selector` (指定要素が表示されるまで待機) のいずれかを受け取ります。
+* アクションは **逐次的に** 実行されます。各ステップは、次のステップが開始する前に完了します。
+* アクションは **PDF では利用できません**。URL が PDF に解決される場合、そのリクエストは失敗します。
 
 <div id="advanced-action-examples">
   #### 高度なアクション例
@@ -470,23 +474,26 @@ curl -X POST https://api.firecrawl.dev/v2/scrape \
 </CodeGroup>
 
 <div id="agent-endpoint">
-  ## Agent endpoint
+  ## エージェントエンドポイント
 </div>
 
 自律的に複数ページにまたがるデータを抽出するには、`/v2/agent` エンドポイントを使用します。エージェントは非同期で動作します。まずジョブを開始し、その後、結果が返ってくるまでポーリングします。
+
+[Agent](/ja/features/agent) は、このエンドポイントの正規の参照先であり、実行トレース、webhook、完全なパラメータリストが含まれます。
 
 <div id="agent-options">
   ### エージェントオプション
 </div>
 
-| Parameter               | Type      | Default          | Description                                                                                                        |
-| ----------------------- | --------- | ---------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `prompt`                | `string`  | *(required)*     | 抽出するデータを自然言語で記述した指示 (最大 10,000 文字) 。                                                                               |
-| `urls`                  | `array`   | —                | エージェントの処理対象を限定する URL。                                                                                              |
-| `schema`                | `object`  | —                | 抽出データの構造を定義する JSON スキーマ。                                                                                           |
-| `maxCredits`            | `number`  | `2500`           | エージェントが消費できる最大クレジット数。ダッシュボードでは最大 2,500 まで対応しています。より高い上限を設定する場合は、API 経由で設定してください (2,500 を超える値は常に有料リクエストとして課金されます) 。 |
-| `strictConstrainToURLs` | `boolean` | `false`          | `true` の場合、エージェントは指定された URL のみを巡回します。                                                                              |
-| `model`                 | `string`  | `"spark-1-mini"` | 使用する AI モデル。`"spark-1-mini"` (デフォルト、60% 低コスト) または `"spark-1-pro"` (高精度) 。                                          |
+| Parameter               | Type      | Default      | Description                                                                                                        |
+| ----------------------- | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `prompt`                | `string`  | *(required)* | 抽出するデータを自然言語で記述した指示 (最大 10,000 文字) 。                                                                               |
+| `urls`                  | `array`   | —            | エージェントの処理対象を限定する URL。                                                                                              |
+| `schema`                | `object`  | —            | 抽出データの構造を定義する JSON スキーマ。                                                                                           |
+| `maxCredits`            | `number`  | `2500`       | エージェントが消費できる最大クレジット数。ダッシュボードでは最大 2,500 まで対応しています。より高い上限を設定する場合は、API 経由で設定してください (2,500 を超える値は常に有料リクエストとして課金されます) 。 |
+| `strictConstrainToURLs` | `boolean` | `false`      | `true` の場合、エージェントは指定された URL のみを巡回します。                                                                              |
+| `model`                 | `string`  | `"spark-2"`  | 使用する AI モデル。Spark 1 モデルは非推奨であり、現在は `"spark-2"` にルーティングされます。                                                        |
+| `effort`                | `string`  | *(unset)*    | 推論予算: `"low"`、`"medium"`、または `"high"`。すべての実行は `"spark-2"` で行われるため、`model` の有無にかかわらず `effort` を送信できます。              |
 
 <CodeGroup>
   ```python Python
@@ -619,7 +626,7 @@ curl -X POST https://api.firecrawl.dev/v2/crawl/params-preview \
 | `regexOnFullURL` | `boolean` | `false` | パス名ではなく、完全な URL に対してパターンをマッチさせます。 |
 
 <Warning>
-開始 URL も `includePaths` に対してチェックされます。いずれのパターンにもマッチしない場合、クロールの結果が 0 ページになる可能性があります。
+  開始 URL も `includePaths` に対してチェックされます。いずれのパターンにもマッチしない場合、クロールの結果が 0 ページになる可能性があります。
 </Warning>
 
 <div id="crawl-scope">
@@ -642,8 +649,8 @@ curl -X POST https://api.firecrawl.dev/v2/crawl/params-preview \
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `sitemap` | `string` | `"include"` | `"include"`: サイトマップ + リンク発見を使用します。`"skip"`: サイトマップを無視します。`"only"`: サイトマップ上の URL のみをクロールします。 |
-| `deduplicateSimilarURLs` | `boolean` | `true` | URL のバリエーション（`www.`, `https`, 末尾のスラッシュ, `index.html`）を正規化し、同一の URL として扱います。 |
-| `ignoreQueryParameters` | `boolean` | `false` | 重複排除の前にクエリ文字列を除去します（例: `/page?a=1` と `/page?a=2` は 1 つの URL と見なされます）。 |
+| `deduplicateSimilarURLs` | `boolean` | `true` | URL のバリエーション (`www.`, `https`, 末尾のスラッシュ, `index.html`) を正規化し、同一の URL として扱います。 |
+| `ignoreQueryParameters` | `boolean` | `false` | 重複排除の前にクエリ文字列を除去します (例: `/page?a=1` と `/page?a=2` は 1 つの URL と見なされます) 。 |
 
 <div id="scrape-options-for-crawl">
   #### クローリング時のスクレイプオプション
@@ -703,18 +710,19 @@ API リファレンス: [Map Endpoint Documentation](https://docs.firecrawl.dev/
 </div>
 
 <div id="allowing-firecrawl-to-scrape-your-website">
-  ### 自分のウェブサイトのスクレイピングを Firecrawl に許可する
+  ### Firecrawl に Web サイトのスクレイピングを許可する
 </div>
 
-- **User Agent**: ファイアウォールやセキュリティルールで `FirecrawlAgent` を許可してください。
-- **IP addresses**: Firecrawl は、外向き通信に固定の送信元 IP アドレスを使用していません。
+* **robots.txt**: Firecrawl はサイトをクロールする前に `robots.txt` を読み取り、user-agent トークン `FirecrawlAgent` 向けのルールと `*` 向けのルールを適用します。`robots.txt` で Firecrawl を許可または拒否する場合は `FirecrawlAgent` を指定してください。
+* **User agent**: `FirecrawlAgent` は、Firecrawl が `robots.txt` のルールを適用する際に照合するトークンです。フェッチ時の `User-Agent` ヘッダーも同じ値であるとは考えないでください。Firecrawl を許可リストに追加する場合は、`User-Agent` 文字列で照合するファイアウォールや WAF のルールではなく、`robots.txt` のディレクティブを使用してください。
+* **IP アドレス**: Firecrawl は送信元 IP アドレスを固定していません。
 
 <div id="allowing-your-application-to-call-the-firecrawl-api">
   ### アプリケーションから Firecrawl API への呼び出しを許可する
 </div>
 
-ファイアウォールがアプリケーションから外部サービスへのアウトバウンドリクエストをブロックしている場合は、アプリケーションが Firecrawl API（`api.firecrawl.dev`）に到達できるよう、Firecrawl の API サーバーの IP アドレスをホワイトリストに追加する必要があります。
+ファイアウォールがアプリケーションから外部サービスへのアウトバウンドリクエストをブロックしている場合は、アプリケーションが Firecrawl API (`api.firecrawl.dev`) に到達できるよう、Firecrawl の API サーバーの IP アドレスをホワイトリストに追加する必要があります。
 
-- **IP Address**: `35.245.250.27`
+* **IP Address**: `35.245.250.27`
 
 この IP をファイアウォールのアウトバウンド許可リストに追加し、バックエンドから Firecrawl へ scrape、crawl、map、および agent リクエストを送信できるようにしてください。

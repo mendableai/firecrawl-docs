@@ -4,92 +4,43 @@ description: "Añade la búsqueda web y el scraping de Firecrawl a Google Gemini
 sidebarTitle: "Gemini CLI"
 ---
 
-Añade las herramientas de búsqueda, scraping, rastreo y navegador de Firecrawl a [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) mediante MCP.
+Añade las herramientas de búsqueda, scraping y Parse sin clave de Firecrawl a [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) mediante el MCP Server alojado.
 
 <div id="quick-setup">
   ## Configuración rápida
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. Obtén tu clave de la API
-</div>
-
-Regístrate en [firecrawl.dev/app](https://www.firecrawl.dev/app) y copia tu clave de la API.
-
-<div id="2-add-firecrawl-to-gemini-cli">
-  ### 2. Añade Firecrawl a Gemini CLI
-</div>
-
-Gemini CLI lee la configuración de MCP desde `~/.gemini/settings.json` (global) o desde `.gemini/settings.json` en tu proyecto. Añade:
+Añade esto a `~/.gemini/settings.json` o a `.gemini/settings.json` de tu proyecto:
 
 ```json
 {
   "mcpServers": {
     "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
+      "httpUrl": "https://mcp.firecrawl.dev/v2/mcp"
     }
   }
 }
 ```
 
-Sustituye `fc-YOUR-API-KEY` por tu clave de la API de Firecrawl.
+Reinicia Gemini CLI, ejecuta `/mcp list` y confirma que `firecrawl_search`, `firecrawl_scrape` y `firecrawl_parse` estén disponibles.
 
-<div id="3-launch-gemini-cli">
-  ### 3. Inicia la Gemini CLI
+El acceso sin clave tiene límites compartidos por los usuarios que utilizan la misma IP pública. Inicia sesión desde un cliente interactivo con [For Humans](/es/mcp-server/oauth) o [añade una clave de API](/es/mcp-server/keyless#add-an-api-key) para uso sin supervisión.
+
+<div id="try-it">
+  ## Pruébalo
 </div>
 
-```bash
-gemini
+```text
+Use Firecrawl to search the web for "Gemini context window" and summarize the sources.
 ```
 
-Confirma que el servidor se haya cargado:
-
-```
-/mcp list
-```
-
-Deberías ver `firecrawl` y sus herramientas.
-
-<div id="quick-demo">
-  ## Demostración rápida
-</div>
-
-```
-Use firecrawl to search the web for "Gemini 2.5 context window" and summarize the top 5 results.
-```
-
-```
+```text
 Scrape https://ai.google.dev/gemini-api/docs and outline the sections.
 ```
-
-```
-Crawl https://example.com and extract the product names from /products.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## URL alojada remotamente (sin necesidad de Node.js)
-</div>
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "url": "https://mcp.firecrawl.dev/v2/mcp"
-    }
-  }
-}
-```
-
-Esta configuración usa el conjunto de herramientas de Firecrawl sin clave. Para una configuración vinculada a una cuenta o desatendida, sigue los [modos de conexión MCP alojados](/es/developer-guides/mcp-setup-guides/oauth); guarda las claves de API en una cabecera Authorization o en un almacén seguro de secretos, nunca en una URL.
 
 <div id="troubleshooting">
   ## Solución de problemas
 </div>
 
-* **Las herramientas no aparecen** — reinicia Gemini CLI después de editar `settings.json`; los servidores MCP se cargan al iniciarse.
-* **`spawn npx ENOENT`** — instala Node.js 18+ o usa la URL alojada remotamente.
-* **Límite de tasa excedido** — actualiza tu plan de Firecrawl en [firecrawl.dev/pricing](https://www.firecrawl.dev/pricing).
+* **Las herramientas no aparecen:** reinicia Gemini CLI después de editar `settings.json`; los servidores MCP Server se cargan al iniciarse.
+* **Falta Crawl u otra herramienta:** sin clave expone exactamente búsqueda, scraping y Parse. Conéctate con OAuth o una clave de API para acceder a una superficie de herramientas más amplia.

@@ -1,288 +1,295 @@
 ---
-title: "自托管"
-description: "了解如何自托管 Firecrawl，在本地或自有环境中运行，并为项目做出贡献。"
-og:title: "自托管 | Firecrawl"
-og:description: "了解如何自托管 Firecrawl，在本地或自有环境中运行，并为项目做出贡献。"
+title: "自托管 Firecrawl"
+sidebarTitle: "自托管"
+description: "使用 Docker Compose 自托管 Firecrawl，验证本地抓取，了解开源版本的限制，并为生产环境做好准备。"
+og:title: "自托管 Firecrawl | Firecrawl"
+og:description: "使用 Docker Compose 自托管 Firecrawl，验证本地抓取，了解开源版本的限制，并为生产环境做好准备。"
 ---
 
-<div id="contributor">
-  #### 想要贡献？
+<span id="self-hosting-firecrawl" />
+
+当您需要掌控源代码或基础设施时，可使用 Docker Compose 自托管 Firecrawl。本指南固定使用版本 `v2.11.162`，在 `http://localhost:3002` 启动 API，并验证 `POST /v2/scrape` 成功返回 Markdown 响应。
+
+<Warning>
+  此面向受信任网络的 Quickstart 会禁用 API 身份验证，并非
+  生产环境架构。它不包含持久化存储、TLS、高可
+  用性，也不具备 Firecrawl Cloud 的全部功能。
+</Warning>
+
+<div id="choose-self-hosting-or-firecrawl-cloud">
+  ## 选择自托管或使用 Firecrawl Cloud
 </div>
 
-欢迎来到 [Firecrawl](https://firecrawl.dev) 🔥！以下是一些在本地拉取并运行项目的说明，方便你自行运行并参与贡献。
-
-如果你要贡献代码，请注意流程与其他开源仓库类似：fork Firecrawl、做改动、跑测试、提交 PR。
-
-如果你有任何问题或需要上手帮助，欢迎加入我们的 Discord 社区 ([链接](https://discord.gg/firecrawl)) 获取更多信息，或在 GitHub 提交 issue ([链接](https://github.com/firecrawl/firecrawl/issues/new/choose)) ！
-
-<div id="self-hosting-firecrawl">
-  ## 自托管 Firecrawl
+<div id="self-host-firecrawl-when">
+  ### 在以下情况下自托管
 </div>
 
-有关本地运行的说明，请参阅 [SELF_HOST.md](https://github.com/firecrawl/firecrawl/blob/main/SELF_HOST.md)。
+* **您希望掌控源代码或基础设施。** 本指南将帮助您在自己的机器上运行 API 及其配套服务。
+* **您熟悉整套技术栈的运维。** 您需要负责升级、安全、存储、监控和恢复。
+* **您希望在自身环境中验证 Firecrawl。** 请先在此处完成基础配置，然后在[生产前准备](#before-production)中设计相应的控制措施。
 
-<div id="why">
-  ## 为什么？
+如果您希望无需自行运行基础设施即可开始抓取，请选择 [Firecrawl Cloud](https://firecrawl.dev)。有关功能差异，请参见[开源版与 Cloud](/zh/contributing/open-source-or-cloud)。
+
+**我们的建议：** 只有当源代码访问权限或基础设施控制带来的价值值得额外运维工作时，才选择自行托管。如果您希望通过最快的受支持路径投入生产，请从 Firecrawl Cloud 开始。
+
+<div id="what-self-hosting-requires">
+  ### 自托管需要承担的事项
 </div>
 
-对于要求数据必须留在受控环境内、具有严格安全策略的组织而言，自托管 Firecrawl 尤其有益。以下是考虑自托管的主要原因：
+* 升级、密钥、存储、监控、恢复和事件响应均由你负责。
+* 抓取仍会向目标网站发送出站请求。可选的代理、解析或 AI 提供商会带来额外的数据流。
+* 本指南刻意简化首次运行。先让一次抓取成功，再逐项调整配置。
+* 这些命令固定使用 `v2.11.162`。其他版本可能采用不同的 Compose 约定。
 
-- **更强的安全性与合规性：** 通过自托管，您可确保所有数据的处理与处理流程符合内外部合规要求，并将敏感信息留在自有的安全基础设施中。请注意，Firecrawl 是 Mendable 的产品，并通过了 SOC 2 Type II 认证，这意味着该平台在数据安全管理方面遵循严苛的行业标准。
-- **可定制的服务：** 自托管使您能够按需定制服务（例如 Playwright 服务），以满足特定需求，或处理标准云服务可能不支持的用例。
-- **学习与社区贡献：** 通过搭建并维护自有实例，您将更深入理解 Firecrawl 的工作原理，也更有助于为项目做出更有价值的贡献。
-
-<div id="considerations">
-  ### 注意事项
+<div id="self-host-firecrawl-with-docker-compose">
+  ## 使用 Docker Compose 自托管 Firecrawl
 </div>
 
-不过，需要留意一些限制和额外责任：
-
-1. **对 Fire-engine 的访问受限：** 目前，自托管的 Firecrawl 实例无法使用 Fire-engine，其包含处理 IP 封禁、机器人检测等高级功能。这意味着虽然你可以完成基础抓取任务，但更复杂的场景可能需要额外配置，或可能无法支持。
-2. **需要手动配置：** 如果你需要使用超出基础 `fetch` 和 Playwright 选项的抓取方法，则需在 `.env` 文件中手动配置。这要求对相关技术有更深入的理解，并可能增加设置时间。
-
-能力：云端 / 自托管
-
-- 支持所有 API endpoint：是 / 不总是；自托管不支持 `/agent` 和 `/browser`
-- 截图支持：是 / 是，当 Playwright 服务正在运行时
-- 本地 LLM（例如 Ollama）：不支持 / 通过 `OLLAMA_BASE_URL` 支持（实验性）
-
-自托管 Firecrawl 非常适合需要对抓取与数据处理环境实现完全掌控的用户，但相应地需要投入更多的维护与配置工作。
-
-<div id="steps">
-  ## 步骤
+<div id="start-with-these-defaults">
+  ### 采用以下默认设置
 </div>
 
-1. 首先，安装依赖项
+* **版本：Firecrawl `v2.11.162`。** 先固定代码和配置。查看目标版本的 `docker-compose.yaml` 和自托管说明后再升级。
+* **API 身份验证：此次本地运行关闭。** 仅在具备完整且受支持的身份验证和数据库设计时启用；仅设置一个环境变量并不够。
+* **队列：PostgreSQL。** 除非你有意运维可选的 FoundationDB 后端，否则请保持此设置。
+* **队列管理 UI：关闭。** 仅在设置高强度 `BULL_AUTH_KEY` 并采取网络控制措施后启用。
+* **AI 和高级抓取提供商：未配置。** 当所需功能依赖某个提供商时再添加。
 
-* Docker [安装说明](https://docs.docker.com/get-docker/)
+首次运行尽量保持简单：先让一次抓取正常运行，再按用例需要添加功能。
 
-2. 设置环境变量
+<div id="prerequisites">
+  ### 前置条件
+</div>
 
-在项目根目录创建一个 `.env` 文件,你可以复制 `apps/api/.env.example` 中的模板
+开始前，请安装：
 
-起步阶段我们先不配置身份验证,也不启用任何可选的子服务(PDF 解析、JS 阻断支持、AI 功能)
+* [Git](https://git-scm.com/downloads)
+* [Docker Engine](https://docs.docker.com/engine/install/) 或 Docker Desktop
+* Docker Compose v2 (通过 `docker compose` 调用)
+* 用于发送验证请求的 `curl`
 
-```
-# .env
+请确保端口 `3002` 可用，并且 Docker 有足够资源来构建和运行多个服务。Firecrawl 尚未公布此技术栈经过验证的最低主机配置。
 
-# ===== Required ENVS ======
-PORT=3002
-HOST=0.0.0.0
+<div id="clone-the-verified-release">
+  ### 克隆经验证的版本
+</div>
 
-# Note: PORT is used by both the main API server and worker liveness check endpoint
-
-# To turn on DB authentication, you need to set up Supabase.
-USE_DB_AUTHENTICATION=false
-
-# ===== Optional ENVS ======
-
-## === AI features (JSON format on scrape, /extract API) ===
-# Provide your OpenAI API key here to enable AI features
-# OPENAI_API_KEY=
-
-# Experimental: Use Ollama
-# OLLAMA_BASE_URL=http://localhost:11434/api
-# MODEL_NAME=deepseek-r1:7b
-# MODEL_EMBEDDING_NAME=nomic-embed-text
-
-# Experimental: Use any OpenAI-compatible API
-# OPENAI_BASE_URL=https://example.com/v1
-# OPENAI_API_KEY=
-
-## === Proxy ===
-# PROXY_SERVER can be a full URL (e.g. http://0.1.2.3:1234) or just an IP and port combo (e.g. 0.1.2.3:1234)
-# Do not uncomment PROXY_USERNAME and PROXY_PASSWORD if your proxy is unauthenticated
-# PROXY_SERVER=
-# PROXY_USERNAME=
-# PROXY_PASSWORD=
-
-## === /search API ===
-
-# 如需使用 SearXNG 而非直接使用 Google,可指定一个启用了 JSON 格式的 SearXNG 服务器。
-# 也可以自定义 engines 和 categories 参数,但默认值通常即可正常工作。
-# SEARXNG_ENDPOINT=http://your.searxng.server
-# SEARXNG_ENGINES=
-# SEARXNG_CATEGORIES=
-
-## === Other ===
-
-# Supabase Setup (used to support DB authentication, advanced logging, etc.)
-# SUPABASE_ANON_TOKEN=
-# SUPABASE_URL=
-# SUPABASE_SERVICE_TOKEN=
-
-# Use if you've set up authentication and want to test with a real API key
-# TEST_API_KEY=
-
-# This key lets you access the queue admin panel. Change this if your deployment is publicly accessible.
-BULL_AUTH_KEY=CHANGEME
-
-# This is now autoconfigured by the docker-compose.yaml. You shouldn't need to set it.
-# PLAYWRIGHT_MICROSERVICE_URL=http://playwright-service:3000/scrape
-# REDIS_URL=redis://redis:6379
-# REDIS_RATE_LIMIT_URL=redis://redis:6379
-
-# Set if you have a llamaparse key you'd like to use to parse pdfs
-# LLAMAPARSE_API_KEY=
-
-# Set if you'd like to send server health status messages to Slack
-# SLACK_WEBHOOK_URL=
-
-# Set if you'd like to send posthog events like job logs
-# POSTHOG_API_KEY=
-# POSTHOG_HOST=
-
-## === System Resource Configuration ===
-# Maximum CPU usage threshold (0.0-1.0). Worker will reject new jobs when CPU usage exceeds this value.
-# Default: 0.8 (80%)
-# MAX_CPU=0.8
-
-# Maximum RAM usage threshold (0.0-1.0). Worker will reject new jobs when memory usage exceeds this value.
-# Default: 0.8 (80%)
-# MAX_RAM=0.8
-
-# Set if you'd like to allow local webhooks to be sent to your self-hosted instance
-# ALLOW_LOCAL_WEBHOOKS=true
-```
-
-<Note>
-  以下 AI 功能需要先配置一个 LLM 提供商（例如 `OPENAI_API_KEY` 或上文 AI 功能部分中的其他替代方案）：
-
-  * 抓取时的 JSON 格式
-  * /extract API
-  * 摘要格式
-  * 品牌样式格式
-  * 变更跟踪格式
-</Note>
-
-3. *(Optional) Running with TypeScript Playwright Service*
-
-   * Update the `docker-compose.yml` file to change the Playwright service:
-
-     ```plaintext
-         build: apps/playwright-service
-     ```
-
-     TO
-
-     ```plaintext
-         build: apps/playwright-service-ts
-     ```
-
-   * Set the `PLAYWRIGHT_MICROSERVICE_URL` in your `.env` file:
-
-     ```plaintext
-     PLAYWRIGHT_MICROSERVICE_URL=http://localhost:3000/scrape
-     ```
-
-   * Don&#39;t forget to set the proxy server in your `.env` file as needed.
-
-4. Build and run the Docker containers:
-
-   ```bash
-   docker compose build
-   docker compose up
-   ```
-
-This will run a local instance of Firecrawl which can be accessed at `http://localhost:3002`.
-
-You should be able to see the Bull Queue Manager UI on `http://localhost:3002/admin/{BULL_AUTH_KEY}/queues`.
-
-5. *(可选)* 测试 API
-
-如果你想测试 crawl 端点，可以运行以下命令：
+本指南已基于 Firecrawl `v2.11.162` 验证。请检出该特定版本，以确保代码、命令和配置保持同步：
 
 ```bash
-  curl -X POST http://localhost:3002/v2/crawl \
-      -H 'Content-Type: application/json' \
-      -d '{
-        "url": "https://docs.firecrawl.dev"
-      }'
+git clone https://github.com/firecrawl/firecrawl.git
+cd firecrawl
+git checkout v2.11.162
 ```
 
+想使用其他版本？复用这些值前，请先查看该版本的 `docker-compose.yaml` 和自托管说明。
+
+<div id="configure-the-evaluation-deployment">
+  ### 配置评估环境部署
+</div>
+
+在仓库根目录创建最简可用的 `.env` 文件：
+
+```bash
+cat > .env <<'EOF'
+USE_DB_AUTHENTICATION=false
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=replace-with-at-least-32-random-characters
+POSTGRES_DB=postgres
+EOF
+```
+
+请在启动整套服务前更改 PostgreSQL 密码，并且不要提交 `.env`。对于 `v2.11.162`，请保留 `POSTGRES_DB=postgres`，因为内置的 `pg_cron` 配置针对该数据库。Compose 会将这些值传递给 API 和 PostgreSQL 服务。
+
+<Note>
+  `apps/api/.env.example` 用于 API 开发，并非可直接用于 Compose 的配置文件。
+  首次运行会禁用数据库身份验证，因此请求无需提供
+  API 密钥或 `Authorization` 请求头。
+</Note>
+
+请勿设置 `NUQ_BACKEND` 和 `BULL_AUTH_KEY`。你将使用 PostgreSQL 队列，无需运行队列管理 UI——这样首次抓取所需的组件更少。
+
+<div id="build-and-start-firecrawl">
+  ### 构建并启动 Firecrawl
+</div>
+
+构建已检出的源代码，并在后台启动所有组件：
+
+```bash
+docker compose up --build -d
+docker compose ps --all
+```
+
+此基线中出现未设置可选变量的警告属于预期情况。`docker compose ps --all` 应显示 API 和支持服务正在运行，而一次性初始化服务已完成。如果服务仍在启动，请稍候片刻。
+
+<div id="check-api-reachability">
+  ### 检查 API 是否可访问
+</div>
+
+首先，确保 API 能响应 HTTP 请求：
+
+```bash
+curl \
+  --fail \
+  --silent \
+  --show-error \
+  --max-time 5 \
+  http://localhost:3002/v0/health/readiness
+```
+
+预期响应：
+
+```json
+{"status":"ok"}
+```
+
+<Warning>
+  这只是心跳检测，并非端到端测试。它不会检查 Redis、
+  PostgreSQL、RabbitMQ、Playwright、worker 或出站网络访问。在将该部署视为可用之前，请先运行
+  以下抓取操作。
+</Warning>
+
+<div id="run-a-functional-smoke-test">
+  ### 运行功能冒烟测试
+</div>
+
+现在测试关键路径：执行一次真实抓取。请求超时以毫秒为单位；curl&#39;s 客户端超时以秒为单位，且略长一些：
+
+```bash
+curl \
+  --fail-with-body \
+  --silent \
+  --show-error \
+  --max-time 75 \
+  -X POST \
+  http://localhost:3002/v2/scrape \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "url": "https://example.com",
+    "formats": ["markdown"],
+    "timeout": 60000
+  }'
+```
+
+成功的响应如下：
+
+```json
+{
+  "success": true,
+  "data": {
+    "markdown": "...",
+    "metadata": {
+      "statusCode": 200
+    }
+  }
+}
+```
+
+这会同时检查 API、抓取流水线、一条抓取引擎路径以及出站访问。具体元数据可能因目标响应而异。
+
+如果返回这些成功字段，说明 Firecrawl 已在您的基础设施上端到端正常运行。保留这一基线，然后选择下一步要添加的内容。
+
+<div id="self-hosted-feature-support">
+  ## 自托管功能支持
+</div>
+
+首次抓取已成功。只有在确有需求时再添加相应功能，而不是因为它存在就启用：
+
+| 如果你需要                                                   | 建议                                                    |
+| ------------------------------------------------------- | ----------------------------------------------------- |
+| 核心抓取、crawl、map 和 search 路由                         | 保持默认技术栈。已包含 Fetch 和 Playwright 处理。                    |
+| 基于 LLM 的提取或 formats                                     | 连接兼容 OpenAI 的提供商或 Ollama，然后单独测试该流程。                   |
+| Fire-engine 或其高级反爬行为                                    | 单独运行并配置该服务；默认技术栈不包含它。                                 |
+| 截图或页面 actions                                           | 默认技术栈不支持。Fetch 和 Playwright 均报告不支持；两者都需要 Fire-engine。 |
+| Agent、Browser、interact、feedback，或专用的产品、菜单、音频和视频 formats | 使用 Firecrawl Cloud，或确认特定功能所需的外部服务要求。                  |
+
+如需更全面的产品对比，请参见[开源版与 Cloud](/zh/contributing/open-source-or-cloud)。如需针对特定版本进行配置，请使用固定版本的 [`docker-compose.yaml`](https://github.com/firecrawl/firecrawl/blob/v2.11.162/docker-compose.yaml) 作为配套参考。
+
+<div id="before-production">
+  ## 上线前
+</div>
+
+Compose 可帮助你快速完成首次部署。要将 API 置于受信任网络之外用于生产环境，还需做出几项明确决策：
+
+* **如果数据必须在服务替换后保留，**请为 PostgreSQL、Redis 和 RabbitMQ 添加持久化存储，并制定和测试备份与恢复流程。提供的 Compose 文件未添加这些数据卷。
+* **如果用户或不受信任的网络可以访问 API，**请采用受支持的身份验证方案、网络访问控制，并在反向代理或入口层配置 TLS。请勿将这个未经身份验证的基础配置暴露在公网。
+* **如果对可用性或容量有要求，**请设定正常运行时间目标、监控、资源规格、扩缩容触发条件，以及升级和回滚流程。Compose 中的限制并非经验证的最低要求。
+* **如果数据存储位置或合规性至关重要，**请在启用前确认请求会发送至哪些目标网站，以及每个可选的 AI、代理或解析提供商。
+* **如果必须集中管理密钥，**请将数据库密码从 `.env` 移至平台的密钥管理系统。
+
+这些都是基础设施层面的决策。没有任何一个 `.env` 开关能让该技术栈满足生产环境要求。
+
+<div id="where-to-go-next">
+  ## 下一步
+</div>
+
+* **仍在评估？** 请将 API 保持在受信任的网络中，并在完成后运行 `docker compose down`。
+* **要添加开源功能？** 通过[自托管功能支持](#self-hosted-feature-support)查找所需的提供商或服务，然后单独测试该方案。
+* **要修改 Firecrawl 代码？** 请参阅[贡献者环境搭建](/zh/contributing/guide)，设置开发环境。
+* **要连接客户端？** 将 [Firecrawl CLI](/zh/sdks/cli#connect-the-cli-to-self-hosted-firecrawl) 或[本地 MCP 服务器](/zh/mcp-server/local#connect-mcp-to-self-hosted-firecrawl)配置为使用已验证的 API URL。
+* **要迁移到 Kubernetes？** 请先参考 [`SELF_HOST.md`](https://github.com/firecrawl/firecrawl/blob/main/SELF_HOST.md) 中链接的带版本 Kubernetes 或 Helm 文档，然后针对你的平台明确做出上述生产环境决策。
+* **需要托管基础设施或仅限 Cloud 的功能？** 请比较[开源版与 Cloud](/zh/contributing/open-source-or-cloud)。
+* **要投入生产？** 请在公开 API 前完成[上线前](#before-production)中的每项决策。
 
 <div id="troubleshooting">
   ## 故障排查
 </div>
 
-本节提供在配置或运行自托管版 Firecrawl 实例时可能遇到的常见问题及解决方案。
-
-<div id="supabase-client-is-not-configured">
-  ### 未配置 Supabase 客户端
-</div>
-
-**现象：**
-
-```bash
-[YYYY-MM-DDTHH:MM:SS.SSSz]ERROR - 在未配置 Supabase 客户端的情况下尝试访问该客户端。
-[YYYY-MM-DDTHH:MM:SS.SSSz]ERROR - 插入抓取事件时出错：Error: 未配置 Supabase 客户端。
-```
-
-**解释：**
-出现此错误是因为 Supabase 客户端尚未完成配置。你仍然可以正常进行抓取和爬取。目前，自托管实例不支持配置 Supabase。
-
 <div id="youre-bypassing-authentication">
-  ### 你绕过了认证流程
+  ### 你正在绕过身份验证
 </div>
 
-**现象：**
-
-```bash
-[YYYY-MM-DDTHH:MM:SS.SSSz]WARN - You're bypassing authentication
-```
-
-**说明：**
-出现此错误是因为 Supabase 客户端尚未完成初始化。你仍然可以正常进行抓取和爬取操作。目前在自托管实例中还无法配置 Supabase。
-
+如果在 `USE_DB_AUTHENTICATION=false` 时看到此警告，说明这是预期的首次运行流程。请求会使用 self-hosted 身份，无需 API 密钥。如果该 API 可从不受信任的网络访问，请停止操作，并按照[生产环境前](#before-production)中的说明添加控制措施。
 
 <div id="docker-containers-fail-to-start">
   ### Docker 容器无法启动
 </div>
 
-**症状：**
-Docker 容器意外退出或无法启动。
-
-**解决方案：**
-使用以下命令检查 Docker 日志中的错误信息：
+如果任何长期运行的服务退出，请检查容器状态和最新日志：
 
 ```bash
-docker logs [container_name]
+docker compose ps --all
+docker compose logs --tail=200
 ```
 
-* 确保在 .env 文件中正确设置了所有必需的环境变量。
-* 确认 docker-compose.yml 中定义的所有 Docker 服务均已正确配置，且所需镜像已就绪。
-
+* 如果源代码版本不同，请检出 `v2.11.162`，或使用该版本的配置。
+* 如果构建过程或容器受资源限制，请增加 Docker 的 CPU、内存或磁盘容量。
+* 如果 PostgreSQL 启动失败，请检查 `.env` 语法，保持 `POSTGRES_DB=postgres`，并确保用户名和密码一致。
 
 <div id="connection-issues-with-redis">
-  ### 与 Redis 的连接问题
+  ### Redis 连接问题
 </div>
 
-**症状：**
-与连接 Redis 相关的错误，例如超时或 “Connection refused”。
+如果容器无法连接到 Redis，请使用 Compose 服务地址 `redis://redis:6379`。`localhost` 指向容器自身，而不是 Redis 服务。
 
-**解决方案：**
+```bash
+docker compose ps redis
+docker compose logs --tail=100 redis
+```
 
-- 确保 Redis 服务在你的 Docker 环境中已启动并正常运行。
-- 确认 `.env` 文件中的 `REDIS_URL` 和 `REDIS_RATE_LIMIT_URL` 指向正确的 Redis 实例。
-- 检查网络设置和防火墙规则，查看是否有阻止连接到 Redis 端口的情况。
+如果您设置了 `REDIS_URL` 或 `REDIS_RATE_LIMIT_URL`，请移除覆盖配置以恢复默认值，或使用可在 Compose 网络内部解析的地址。
 
 <div id="api-endpoint-does-not-respond">
   ### API 端点无响应
 </div>
 
-**现象：**
-对 Firecrawl 实例的 API 请求超时或无返回。
+如果端口 `3002` 无响应，请检查 API 容器及其日志：
 
-**解决方案：**
+```bash
+docker compose ps api
+docker compose logs --tail=200 api
+```
 
-- 检查 Docker 容器状态，确保 Firecrawl 服务正在运行。
-- 核对 .env 文件中的 PORT 和 HOST 配置是否正确，并确认没有其他服务占用同一端口。
-- 检查网络配置，确保发起 API 请求的客户端可访问该主机。
+如果其他进程占用了端口 `3002`，请停止该进程，或同步修改发布的端口。初次启动时，只有在 API 容器显示为正在运行后再重试。
 
-通过排查以上常见问题，可使自托管的 Firecrawl 实例部署与运行更顺畅。
+如果 `/v0/health/readiness` 请求成功，但 `/v2/scrape` 失败，请检查 API 和 Playwright 日志，因为可达性端点不会验证这些依赖项：
 
-<div id="install-firecrawl-on-a-kubernetes-cluster-simple-version">
-  ## 在 Kubernetes 集群上安装 Firecrawl（简化版）
+```bash
+docker compose logs --tail=200 api playwright-service
+```
+
+<div id="scrape-request-times-out">
+  ### 抓取请求超时
 </div>
 
-请阅读 [examples/kubernetes-cluster-install/README.md](https://github.com/firecrawl/firecrawl/tree/main/examples/kubernetes/cluster-install#readme)，了解在 Kubernetes 集群上安装 Firecrawl 的步骤。
+如果抓取操作超时，请确认部署环境可以访问 `https://example.com`，且 API 和 Playwright 服务正在运行。请将 curl 的 `--max-time` 设置为长于请求正文中的 `timeout`，以便 API 能返回自身的超时响应。

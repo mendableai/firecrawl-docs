@@ -1,0 +1,289 @@
+---
+title: "Replit"
+description: "Firecrawlのウェブ検索、スクレイピング、ブラウザ操作に対応する公式Replit Connector"
+---
+
+<Note>
+  **公式Replit Connector:** [Replitで連携を開く](https://replit.com/~?settings.show=true\&settings.tab=integrations)
+
+  ウェブを検索・スクレイピング・操作 • Replit Agent向け • Core、Pro、またはEnterpriseプランが必要
+</Note>
+
+<div id="replit-connector-overview">
+  ## Replit Connector の概要
+</div>
+
+Firecrawl は公式の Replit Connector として利用できます。ワークスペースで接続すると、Replit Agent はライブ Web データを必要とするアプリの構築時に Firecrawl を使用できます。
+
+<CardGroup cols={2}>
+  <Card title="Replit Agent 向けに設計" icon="robot">
+    Integrations で Firecrawl を有効にすると、Agent は構築中に検索、スクレイピング、操作を実行できます
+  </Card>
+
+  <Card title="API キーなしで開始" icon="bolt">
+    デフォルトでは Replit アカウントに請求されます。カスタム構成では、Firecrawl キーを使用するか、10,000 クレジットの特典を利用できます
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-capabilities-in-replit">
+  ## Replit で利用できる Firecrawl の機能
+</div>
+
+Replit Agent では、Firecrawl の **search**、**scrape**、**interact**、**monitor**、**crawl**、**parse** エンドポイントを使ってアプリを構築できます。コネクタの構成によって、API キーを提供し Firecrawl の利用料金を支払うアカウントが決まりますが、アプリで利用できる Firecrawl API は変わりません。
+
+<AccordionGroup>
+  <Accordion title="検索" icon="magnifying-glass">
+    リサーチ、競合他社の発見、エンリッチメントに役立つ、関連性の高い最新の Web ソースと抜粋を見つけます。
+
+    **ユースケース:** 競合他社の発見、リサーチアシスタント、リードのエンリッチメント。
+  </Accordion>
+
+  <Accordion title="スクレイピング" icon="file-code">
+    任意の URL を、要約、構造化フィールド、アプリコンテンツを含む LLM 向けのクリーンなデータに変換します。
+
+    **ユースケース:** 商品データの抽出、記事のスクレイピング、企業ページのエンリッチメント。
+  </Accordion>
+
+  <Accordion title="Interact" icon="hand-pointer">
+    動的な Web サイトで、クリック、フォーム入力、複数ステップのフローの操作を行います。
+
+    **ユースケース:** フォームワークフロー、ログインが必要なページ、複数ステップのデータ収集。
+  </Accordion>
+
+  <Accordion title="監視" icon="bell">
+    ページ、サイト、または Web を監視し、スケジュールに従って意味のあるアップデートを確認します。構築するアプリでは、Firecrawl API を通じて利用できます。
+
+    **ユースケース:** キーワード監視、変更履歴アラート、競合追跡。
+  </Accordion>
+
+  <Accordion title="クロール" icon="spider">
+    サイト内の到達可能なページを見つけてスクレイピングします。構築するアプリでは、Firecrawl API を通じて利用できます。
+
+    **ユースケース:** ドキュメントの取り込み、サイト全体の抽出、複数ページにわたるリサーチ。
+  </Accordion>
+
+  <Accordion title="解析" icon="file-lines">
+    PDF と Word ドキュメントを Markdown または JSON に変換します。構築するアプリでは、Firecrawl API を通じて利用できます。
+
+    **ユースケース:** レポートの解析、ドキュメントのナレッジベース、ファイルから構造化データへの変換フロー。
+  </Accordion>
+</AccordionGroup>
+
+<div id="getting-started">
+  ## はじめに
+</div>
+
+<Steps>
+  <Step title="Integrations を開く">
+    **Core**、**Pro**、または **Enterprise** プランの Replit ワークスペースで、**Integrations** を開きます。
+  </Step>
+
+  <Step title="Firecrawl を接続する">
+    **Enable new connector** を選択し、**Firecrawl** を選択してデフォルトの構成を使用し、**Submit** を選択します。Core と Pro では、アカウント管理者が共同ワークスペースのコネクタを管理します。Enterprise では、管理者が組織のコネクタを管理します。
+  </Step>
+
+  <Step title="課金を選択する">
+    **Use Replit default configurations** を選択したままにします (Firecrawl アカウントは不要) 。または、**Manage** を開いて **Use custom configurations** を選択し、Firecrawl APIキーを貼り付けるか、新しいキーが発行・保存される 10,000 クレジットのオファーを利用します。
+  </Step>
+
+  <Step title="接続を確認する">
+    接続済みワークスペース内のアプリで、Agent に次のサーバーサイドコネクタテストを実行するよう依頼します。
+
+    ```text
+    サーバーサイドの Firecrawl テストを実行してください。
+    Replit コネクタを使用してください。
+    https://example.com をスクレイピングしてください。
+    コネクタ相対パスの /scrape を使用してください。
+    ページタイトルと最初の段落のみを返してください。
+    APIキーを開示したり、私に要求したりしないでください。
+    アプリを公開しないでください。
+    ```
+
+    プロンプトが表示されたら、提案された Firecrawl 連携を確認します。アプリのサーバーサイドのコネクタ呼び出しが、ページの最初の段落とともに **Example Domain** を返し、チャットやアプリケーションコードで APIキーの提供を求めなければ、接続は正常に機能しています。
+
+    <Note>
+      Replit の Firecrawl コネクタのベース URL には、すでに `/v2` が含まれています。`@replit/connectors-sdk` では、`/v1/scrape` ではなくコネクタ相対パス `/scrape` を使用します。
+    </Note>
+  </Step>
+</Steps>
+
+<div id="billing-and-credentials">
+  ## 課金と認証情報
+</div>
+
+<AccordionGroup>
+  <Accordion title="Replit のデフォルト" icon="bolt">
+    * **認証情報と課金:** Replit が APIキーを提供します。Firecrawl リクエストの料金は Replit 経由で請求され、Replit クレジットから差し引かれます。
+    * **Firecrawl アカウント:** 不要です。
+    * **10,000クレジットのオファー:** 含まれません。
+  </Accordion>
+
+  <Accordion title="パートナークレジットを取得" icon="gift">
+    * **認証情報と課金:** Replit が新しい Firecrawl キーを発行します。Firecrawl の利用分は、取得したパートナークレジットから消費されます。
+    * **Firecrawl アカウント:** パートナーに関連付けられたアカウントとキーが発行されます。
+    * **10,000クレジットのオファー:** ユーザーおよびパートナーごとに1回提供され、適用から3か月後に失効します。
+    * **成功の確認:** オファーに **Claimed** と表示され、Replit 経由でコネクタの利用料金を請求する代わりに、あなたの APIキーが使用されていることが示されます。
+  </Accordion>
+
+  <Accordion title="既存の Firecrawl キー" icon="key">
+    * **認証情報と課金:** キーはご自身で指定します。利用には、その Firecrawl アカウントのプラン、クレジット、制限が適用されます。
+    * **Firecrawl アカウント:** 必要です。
+    * **10,000クレジットのオファー:** 既存のキーには追加されません。
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+  Firecrawl APIキーはコネクタのカスタム構成で管理してください。Agent プロンプト、アプリケーションのソースコード、スクリーンショット、ログ、プルリクエストにキーを貼り付けないでください。
+</Warning>
+
+<Tip>
+  **ローンチオファー:** **Manage** を開き、**Use custom configurations** を選択して、**10,000無料 Firecrawl クレジット**を取得すると、**新しい**キーが発行されます。このオファーはユーザーおよびパートナーごとに1回適用でき、適用後3か月で失効します。また、Firecrawl の Free プランの制限が適用されます。既存のキーを貼り付けても、そのキーにオファーは追加されません。Replit のデフォルト課金には含まれません。詳細な条件については、[パートナークレジット](/ja/partner-credits) を参照してください。
+</Tip>
+
+<div id="usage-patterns">
+  ## 利用パターン
+</div>
+
+<Tabs>
+  <Tab title="競合分析">
+    **競合他社の検索とスクレイピング**
+
+    1. Agent に Firecrawl の `/search` を使って競合他社を探すよう依頼する
+    2. 各競合他社のサイトをスクレイピングして重要な情報を取得する
+    3. 名前、要約、詳細をシンプルな UI に表示する
+
+    **プロンプト例:**
+
+    ```
+    Firecrawl を使って競合分析アプリを構築してください。競合他社を検索し、そのサイトをスクレイピングして要約を表示します。
+    ```
+  </Tab>
+
+  <Tab title="ウェブモニタリング">
+    **`/monitor` を使ったキーワードモニタリングアプリ**
+
+    Agent が構築するアプリで Firecrawl API を使用します。
+
+    1. Firecrawl の `/monitor` を呼び出すアプリを構築するよう Agent に依頼する
+    2. ユーザーがキーワードと対象サイトを追加できるようにする
+    3. スケジュールに沿ってチェックを実行し、必要に応じて手動スキャンも行い、意味のある変更を表示する
+
+    **プロンプト例:**
+
+    ```
+    選択したサイトを監視し、意味のある変更を通知する Firecrawl のキーワードモニタリングアプリを構築してください。
+    ```
+  </Tab>
+</Tabs>
+
+<div id="industry-use-cases">
+  ## 業界別ユースケース
+</div>
+
+<AccordionGroup>
+  <Accordion title="Eコマース" icon="cart-shopping">
+    * 競合他社の価格・品揃えの追跡
+    * 商品の在庫状況の確認
+    * レビュー・出品情報の集約
+  </Accordion>
+
+  <Accordion title="マーケティング・SEO" icon="bullhorn">
+    * 競合他社のコンテンツ監視
+    * 最新ページに基づくSEO監査
+    * リサーチブリーフの生成
+  </Accordion>
+
+  <Accordion title="営業・リード獲得" icon="briefcase">
+    * 公開Webページからの企業情報の充実
+    * リード調査アシスタント
+    * アウトバウンド向けアカウントブリーフの生成
+  </Accordion>
+
+  <Accordion title="サポート・ナレッジ" icon="book">
+    * 常に最新のドキュメントアシスタント
+    * ヘルプセンター・変更履歴の監視
+    * 最新のソースに基づいて回答する社内ツール
+  </Accordion>
+</AccordionGroup>
+
+<div id="official-blog-post">
+  ## 公式ブログ記事
+</div>
+
+<Card title="Firecrawl が Replit の公式 Replit Connector に" icon="rocket" href="https://www.firecrawl.dev/blog/firecrawl-official-replit-connector">
+  概要: Replit ワークスペースで Firecrawl を接続し、リアルタイムのウェブデータを活用したアプリを構築できます。
+</Card>
+
+<div id="troubleshooting">
+  ## トラブルシューティング
+</div>
+
+<div id="firecrawl-is-missing-from-integrations">
+  ### Integrations に Firecrawl が表示されない
+</div>
+
+* ワークスペースのプランが Core、Pro、または Enterprise であることを確認します。
+* ワークスペースまたは組織の管理者に **Integrations → Enable new connector** を開き、Firecrawl を有効にするよう依頼します。
+* アプリが、Firecrawl を有効にしたワークスペースまたは組織に属していることを確認します。
+
+<div id="agent-asks-for-an-api-key">
+  ### Agent から API キーを求められる場合
+</div>
+
+* 現在のワークスペースまたは組織で Firecrawl が有効になっていることを確認します。
+* Agent に **Firecrawl コネクタ**をアプリに追加し、サーバー側コネクタのバインディングを使用するよう指示します。
+* 独自のキーを使用する場合は、プロンプトに貼り付けるのではなく、**Manage** を開いて **Use custom configurations** を選択し、そこで追加します。
+
+<div id="agent-reports-withheld-credentials">
+  ### Agent が認証情報を取得できないと報告する
+</div>
+
+Firecrawl が接続されていても、インラインの Agent query では認証情報の結果が空と報告されることがあります。代わりに、アプリのサーバーサイド `@replit/connectors-sdk` バインディング経由でテストを実行するよう Agent に指示してください。Firecrawl v2 のスクレイピングには、コネクタ相対パス `/scrape` を使用してください。`/v1/scrape` を使用すると、誤った `/v2/v1/scrape` リクエストが生成されます。
+
+**Manage** にカスタム構成が **Claimed** と表示され、Replit があなたの API キーを使用していると示される場合は、インライン Agent sandbox が認証情報を直接読み取れなくても、パートナークレジットの請求は成功しています。
+
+<div id="the-credit-claim-option-is-unavailable">
+  ### クレジット請求オプションが利用できない
+</div>
+
+* **Manage** で **Use custom configurations** を選択していることを確認してください。
+* ユーザーがすでに Replit のパートナーオファーを受け取っていないことを確認してください。このオファーは、パートナーごとに各ユーザー1回のみ適用されます。
+* コネクタの構成にアクセスできることを、ワークスペースまたは組織の管理者に確認してもらってください。
+
+Replit の利用状況が使用状況ダッシュボードに反映されるまで、最大30分かかる場合があります。
+
+<div id="faqs">
+  ## よくある質問
+</div>
+
+<AccordionGroup>
+  <Accordion title="Firecrawl APIキーは必要ですか？">
+    いいえ。デフォルトでは、コネクタは Replit の APIキーを使用し、使用料はリクエストごとに Replit アカウントに請求されます。**Manage** で **Use custom configurations** を選択すると、ご自身の Firecrawl APIキーを貼り付けるか、10,000クレジットのオファーを利用して新しいキーを取得できます。このオファーは、ユーザーおよびパートナーごとに1回のみ適用され、3か月後に期限切れとなります。
+  </Accordion>
+
+  <Accordion title="Connector を利用できる Replit プランはどれですか？">
+    Replit インテグレーションは **Core**、**Pro**、**Enterprise** プランで利用できます。ワークスペースで Integrations を開き、Firecrawl を検索してください。
+  </Accordion>
+
+  <Accordion title="Replit が内部で Firecrawl を使用する場合と何が異なりますか？">
+    Replit Agent では、新しいドキュメントやウェブコンテンツを取得するために、バックグラウンドで Firecrawl を使用してきました。公式 Connector を使用すると、Integrations カタログからアプリで Firecrawl を利用できます。
+  </Accordion>
+</AccordionGroup>
+
+<div id="related-resources">
+  ## 関連リソース
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Replit Connectors の管理" icon="book" href="https://docs.replit.com/replitai/managing-connectors">
+    利用可能なプラン、設定、アクセス、コネクタの管理
+  </Card>
+
+  <Card title="Replit Agent の連携" icon="plug" href="https://docs.replit.com/features/integrations/overview">
+    Agent が連携を見つけて利用する仕組み
+  </Card>
+
+  <Card title="導入事例" icon="newspaper" href="https://www.firecrawl.dev/blog/how-replit-uses-firecrawl-to-power-ai-agents">
+    Replit が Firecrawl を活用して Agent を強化する方法
+  </Card>
+</CardGroup>

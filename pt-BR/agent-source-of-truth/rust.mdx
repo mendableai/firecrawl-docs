@@ -132,7 +132,7 @@ let results = client
 * `options.categories`
   * Tipo: `Vec<SearchCategory>`
   * Use quando: você quiser filtrar os resultados por categoria.
-  * Valores confirmados: `Github`, `Research`, `Pdf`
+  * Valores confirmados: `Research`, `Pdf`
 
 * `options.limit`
   * Tipo: u32
@@ -167,19 +167,19 @@ let results = client
   ## Scrape
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### Por que usar
 </div>
 
 Use o scrape quando você já tiver uma URL e quiser conteúdo estruturado em um ou mais formatos.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### Método recomendado do SDK
 </div>
 
 `client.scrape(url, options)` → `Result<Document, FirecrawlError>` (o campo `data` da resposta HTTP é retornado diretamente pelo SDK).
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Exemplo simples
 </div>
 
@@ -194,7 +194,7 @@ let doc = client
     .await?;
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Exemplo complexo
 </div>
 
@@ -247,7 +247,7 @@ let doc = client
     .await?;
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### Parâmetros
 </div>
 
@@ -381,13 +381,13 @@ let doc = client
   ## Interagir
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### Por que usar
 </div>
 
 Use `interact` quando uma página exigir ações no navegador ou execução de código após o início do scraping.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### Método recomendado do SDK
 </div>
 
@@ -395,7 +395,7 @@ Use `interact` quando uma página exigir ações no navegador ou execução de c
 
 Para encerrar a sessão do navegador, use `client.stop_interaction(job_id)` (HTTP `DELETE` em `/v2/scrape/{jobId}/interact`).
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Exemplo simples
 </div>
 
@@ -413,7 +413,7 @@ let result = client
     .await?;
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Exemplo complexo
 </div>
 
@@ -442,7 +442,7 @@ let stopped = client.stop_interaction("<scrapeJobId>").await?;
 // stopped: ScrapeBrowserDeleteResponse { success, session_duration_ms, credits_billed, error, ... }
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### Parâmetros
 </div>
 

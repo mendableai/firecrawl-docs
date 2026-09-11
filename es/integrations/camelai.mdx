@@ -5,13 +5,24 @@ og:title: "Camel AI | Firecrawl"
 og:description: "Firecrawl se integra con Camel AI como cargador de datos."
 ---
 
+<Note>
+  **Documentación oficial de CAMEL:** [docs.camel-ai.org/key&#95;modules/loaders](https://docs.camel-ai.org/key_modules/loaders)
+
+  Firecrawl se ofrece como un cargador de CAMEL y convierte cualquier sitio en markdown preparado para LLM y tus agentes
+</Note>
+
 <div id="installation">
   ## Instalación
 </div>
 
 ```bash
 pip install camel-ai
+```
 
+Configura tu clave de Firecrawl para que el cargador la detecte automáticamente:
+
+```bash
+export FIRECRAWL_API_KEY="fc-your-api-key"
 ```
 
 <div id="usage">
@@ -21,32 +32,43 @@ pip install camel-ai
 Con Camel AI y Firecrawl puedes crear rápidamente sistemas multiagente que utilizan datos de la web.
 
 <div id="using-firecrawl-to-gather-an-entire-website">
-  ### Cómo usar Firecrawl para recopilar un sitio web completo
+  ### Uso de Firecrawl para recopilar todo un sitio web
 </div>
 
+`crawl` devuelve el resultado cuando finaliza el trabajo. Comprueba `status` y luego lee el markdown de `data`.
+
 ```python
-mock_app = MockFirecrawlApp.return_value
-firecrawl = Firecrawl(
-    api_key='FC_API_KEY', api_url='https://api.test.com'
-)
-url = 'https://example.com'
-response = [{'markdown': 'Contenido de Markdown'}]
-mock_app.crawl_url.return_value = respons
-result = firecrawl.markdown_crawl(url)
+from camel.loaders import Firecrawl
+
+firecrawl = Firecrawl()
+
+response = firecrawl.crawl(url="https://www.camel-ai.org/about")
+print(response["status"])  # "completed" cuando el crawl ha finalizado
+
+print(response["data"][0]["markdown"])
 ```
 
 <div id="using-firecrawl-to-gather-a-single-page">
-  ### Uso de Firecrawl para obtener una sola página
+  ### Usar Firecrawl para recopilar una sola página
 </div>
 
 ```python
-mock_app = MockFirecrawlApp.return_value
-firecrawl = Firecrawl(
-    api_key='test_api_key', api_url='https://api.test.com'
-)
-url = 'https://example.com'
-response = 'Contenido scrapeado'
-mock_app.scrape_url.return_value = response
+from camel.loaders import Firecrawl
 
-result = firecrawl.scrape(url)
+firecrawl = Firecrawl()
+
+response = firecrawl.scrape(url="https://www.camel-ai.org/about")
+print(response["markdown"])
 ```
+
+<Tip>
+  `Firecrawl()` lee `FIRECRAWL_API_KEY` del entorno. Pasa `api_key=...` para sobrescribirla o `api_url=...` para usar una instancia [autogestionada](/es/contributing/self-host).
+</Tip>
+
+<div id="resources">
+  ## Recursos
+</div>
+
+* [Documentación de los cargadores de CAMEL](https://docs.camel-ai.org/key_modules/loaders)
+* [Guía de CAMEL y Firecrawl](https://www.camel-ai.org/blogs/firecrawl)
+* Documentación de [scraping de Firecrawl](/es/features/scrape) y de [crawl](/es/features/crawl)

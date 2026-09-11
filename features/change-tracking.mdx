@@ -14,6 +14,8 @@ Change tracking compares the current content of a page against the last time you
 - Two diff modes: `git-diff` for line-level changes, `json` for field-level comparison
 - Scoped to your team, and optionally scoped to a tag that you pass in
 
+Change tracking is the per-scrape diff primitive. If you want Firecrawl to run the checks on a schedule and notify you by webhook, email, or Slack when something changes, use [monitoring](/features/monitoring) instead of calling `/scrape` yourself on a timer.
+
 ## How it works
 
 Every scrape with `changeTracking` enabled stores a snapshot and compares it against the previous snapshot for that URL. Snapshots are stored persistently and do not expire, so comparisons remain accurate regardless of how much time has passed between scrapes.
@@ -468,7 +470,7 @@ curl -s -X POST "https://api.firecrawl.dev/v2/batch/scrape" \
 
 ## Scheduling change tracking
 
-Change tracking is most useful when you scrape on a regular schedule. You can automate this with cron, cloud schedulers, or workflow tools.
+Change tracking is most useful when you scrape on a regular schedule. [Monitoring](/features/monitoring) runs that schedule for you, down to a 5 minute interval, and sends webhook, email, or Slack notifications. Use the options below when you want to own the schedule yourself with cron, cloud schedulers, or workflow tools.
 
 ### Cron job
 
@@ -527,7 +529,7 @@ Schedule it with `crontab -e`:
 
 ### Workflow automation
 
-No-code platforms like **n8n**, **Zapier**, and **Make** can call the Firecrawl API on a schedule and route results to Slack, email, or databases. See the [workflow automation guides](/developer-guides/workflow-automation/n8n).
+No-code platforms like **n8n**, **Zapier**, and **Make** can call the Firecrawl API on a schedule and route results to Slack, email, or databases. See the [workflow automation guides](/integrations/n8n).
 
 ## Webhooks
 

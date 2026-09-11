@@ -1,0 +1,16 @@
+```js Node
+import { Firecrawl } from 'firecrawl';
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
+
+// Trace de execução de uma run: eventos ordenados (chamadas de ferramenta, raciocínio, artefatos)
+const trace = await firecrawl.getAgentTrace("JOB_ID");
+
+for (const event of trace.events ?? []) {
+  console.log(event.type);
+}
+
+// Inclui as sessões de navegador ativas no momento, enquanto a run está em execução
+const live = await firecrawl.getAgentTrace("JOB_ID", { liveView: true });
+console.log(live.activeBrowserSessions);
+```

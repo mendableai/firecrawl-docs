@@ -873,7 +873,7 @@
           },
           "proxy": {
             "default": "auto",
-            "description": "Spécifie le type de proxy à utiliser.\n\n - **basic** : Proxies pour le scraping de sites avec des systèmes antibot inexistants ou basiques. Rapides et généralement efficaces.\n - **enhanced** : Proxies améliorés pour le scraping de sites avec des systèmes antibot avancés. Plus lents, mais plus fiables sur certains sites. Coût pouvant aller jusqu’à 5 crédits par requête.\n - **auto** : Firecrawl réessaiera automatiquement d’effectuer le scraping avec des proxies améliorés si le proxy basic échoue. Si le réessai avec enhanced réussit, 5 crédits seront facturés pour cette opération de scraping. Si la première tentative avec basic réussit, seul le coût standard sera facturé.\n\nSi vous ne spécifiez pas de proxy, Firecrawl utilisera auto par défaut.",
+            "description": "Spécifie le type de proxy à utiliser.\n\n - **basic** : Proxies pour le scraping de sites avec des systèmes antibot inexistants ou basiques. Rapides et généralement efficaces.\n - **enhanced** : Proxies améliorés pour le scraping de sites avec des systèmes antibot avancés. Plus lents, mais plus fiables sur certains sites. Facturés au même coût en crédits que basic.\n - **auto** : Firecrawl réessaiera automatiquement d’effectuer le scraping avec des proxies améliorés si le proxy basic échoue. Les proxies améliorés n’entraînent aucun supplément de crédits, donc dans tous les cas, seul le coût standard sera facturé.\n\nSi vous ne spécifiez pas de proxy, Firecrawl utilisera auto par défaut.",
             "enum": [
               "basic",
               "enhanced",
@@ -2883,7 +2883,7 @@
                           "type": "string"
                         },
                         "planCredits": {
-                          "description": "Nombre de crédits inclus dans le forfait. Cela n’inclut pas les crédits de coupons, les packs de crédits ni les recharges automatiques.",
+                          "description": "Nombre de crédits inclus dans le forfait. Cela n’inclut pas les crédits de coupons ni les crédits ajoutés au paiement à l’utilisation.",
                           "example": 500000,
                           "type": "number"
                         },

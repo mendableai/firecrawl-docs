@@ -11,3 +11,14 @@ Affiche votre activité API des dernières 24 heures. Utilisez ceci pour repér
 | `crawl`              | `GET /v2/crawl/{id}`                 |
 | `batch_scrape`       | `GET /v2/batch/scrape/{id}`          |
 | `agent`              | `GET /v2/agent/{jobId}`              |
+
+<div id="team-management-endpoints">
+  ## Points de terminaison de gestion de l’équipe
+</div>
+
+| Opération                            | Chemin d’API                           | Page de documentation                                                        |
+| ------------------------------------ | -------------------------------------- | ---------------------------------------------------------------------------- |
+| Activité de l’équipe                 | `GET /v2/team/activity`                | [`activity`](/fr/api-reference/endpoint/activity)                               |
+| Utilisation des crédits              | `GET /v2/team/credit-usage`            | [`credit-usage`](/fr/api-reference/endpoint/credit-usage)                       |
+| Utilisation des crédits (historique) | `GET /v2/team/credit-usage/historical` | [`credit-usage-historical`](/fr/api-reference/endpoint/credit-usage-historical) |
+| État de la file d’attente            | `GET /v2/team/queue-status`            | [`queue-status`](/fr/api-reference/endpoint/queue-status)                       |

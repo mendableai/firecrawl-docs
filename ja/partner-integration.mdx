@@ -132,7 +132,7 @@ POST /partner/v1/api-keys/validate
 * APIキーは、ユーザーがいつでも手動で削除できます。
 * 削除されたAPIキーはソフトデリートされません。Firecrawlでは、削除されたキーと、そもそも存在しなかったキーを区別できません。
 
-<div id="request">
+<div id="request-2">
   #### リクエスト
 </div>
 
@@ -149,7 +149,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/validate" \
 | -------- | ------ | -- | ------------ |
 | `apiKey` | string | はい | 検証対象の API キー |
 
-<div id="response">
+<div id="response-2">
   #### レスポンス
 </div>
 
@@ -167,7 +167,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/validate" \
 | `teamName` | string | このAPIキーに関連付けられたチーム名         |
 | `email`    | string | このAPIキーに関連付けられたユーザーのメールアドレス |
 
-<div id="errors">
+<div id="errors-2">
   #### エラー
 </div>
 
@@ -189,7 +189,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/validate" \
 POST /partner/v1/api-keys/rotate
 ```
 
-<div id="request">
+<div id="request-3">
   #### リクエスト
 </div>
 
@@ -206,7 +206,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/rotate" \
 | -------- | ------ | -- | ---------------------- |
 | `apiKey` | string | はい | 削除して新しいものに置き換える API キー |
 
-<div id="response">
+<div id="response-3">
   #### レスポンス
 </div>
 
@@ -222,7 +222,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/rotate" \
 | -------- | --- | ------------- |
 | `apiKey` | string | 新しく作成されたAPIキー |
 
-<div id="errors">
+<div id="errors-3">
   #### エラー
 </div>
 

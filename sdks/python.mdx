@@ -19,6 +19,8 @@ import ScrapeAndCrawlExamplePython from '/snippets/v2/scrape-and-crawl/python.md
 import CrawlWebSocketPythonBase from '/snippets/v2/crawl-websocket/base/python.mdx'
 import PersistentPython from '/snippets/v2/browser/persistent/python.mdx'
 import AIOPython from '/snippets/v2/async/base/python.mdx'
+import AgentWithSchemaPython from '/snippets/v2/agent/with-schema/python.mdx'
+import AgentStatusPython from '/snippets/v2/agent/status/python.mdx'
 
 ## Installation
 
@@ -108,6 +110,18 @@ Use `map` to generate a list of URLs from a website. The options let you customi
 To extract structured data from websites, use the `extract` method. It takes the URLs to extract data from, a prompt, and a schema as arguments. The schema is a Pydantic model that defines the structure of the extracted data.
 
 <ExtractPythonShort /> */}
+
+### Run an Agent
+
+Hand a research or extraction task to an agent with the `agent` method. It takes a `prompt`, an optional `schema` to shape the output, and `max_credits` to cap what the run can spend.
+
+<AgentWithSchemaPython />
+
+Agent runs are asynchronous. Use `start_agent` to get a job ID back immediately, then poll it with `get_agent_status`.
+
+<AgentStatusPython />
+
+Every run also records an execution trace and output snapshots, which you can read with `get_agent_trace` and `get_agent_snapshot`. See [Agent](/features/agent) for the event schema and the full parameter list.
 
 ### Crawling a Website with WebSockets
 

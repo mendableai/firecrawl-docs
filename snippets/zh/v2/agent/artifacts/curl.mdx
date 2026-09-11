@@ -1,0 +1,20 @@
+```bash cURL
+# 获取本次运行写入的所有 markdown、html 或 json 工件。
+curl -s "https://api.firecrawl.dev/v2/agent/JOB_ID/trace" \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+| jq -r '.events[]
+         | select(.type == "artifact.updated")
+         | select(.artifact.kind == "markdown" or .artifact.kind == "html" or .artifact.kind == "json")
+         | "\(.artifact.kind) \(.artifact.snapshotId)"' \
+| while read -r kind snapshot_id; do
+    body=$(curl -s "https://api.firecrawl.dev/v2/agent/JOB_ID/snapshots/$snapshot_id" \
+      -H "Authorization: Bearer $FIRECRAWL_API_KEY")
+
+    # markdown 和 html 快照本身就是内容；json 则经过 JSON 编码。
+    if [ "$kind" = "json" ]; then
+      printf '%s' "$body" | jq -r '.snapshot | fromjson'
+    else
+      printf '%s' "$body" | jq -r '.snapshot'
+    fi
+  done
+```

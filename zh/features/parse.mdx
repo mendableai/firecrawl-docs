@@ -1,57 +1,45 @@
 ---
 title: '解析'
-description: '上传本地或非公开文档，并将其转换为干净、适用于 LLM 的数据'
+description: '将 PDF、Word、Excel、PowerPoint 等文档转换为整洁的 Markdown、逐页内容、布局块和结构化 JSON'
 og:title: "解析 | Firecrawl"
-og:description: "将本地 PDF、DOCX、XLSX、HTML 等转换为 Markdown 或结构化 JSON"
+og:description: "将 PDF、DOCX、XLSX、HTML 等转换为 Markdown、带边界框的布局块或结构化 JSON"
 icon: "file-magnifying-glass"
 version: "v2"
 sidebarTitle: "解析"
 ---
 
-`/parse` 端点可将本地或非公开文档转换为干净、适用于 LLM 的数据。通过 `multipart/form-data` 上传文件字节后，可返回 Markdown、JSON、HTML、链接、图片或摘要，并保留阅读顺序和表格。
+import ParsePagesPython from "/snippets/zh/v2/parse/pages/python.mdx";
+import ParsePagesNode from "/snippets/zh/v2/parse/pages/js.mdx";
+import ParsePagesCURL from "/snippets/zh/v2/parse/pages/curl.mdx";
+import ParsePageMarkersPython from "/snippets/zh/v2/parse/page-markers/python.mdx";
+import ParsePageMarkersNode from "/snippets/zh/v2/parse/page-markers/js.mdx";
+import ParsePageMarkersCURL from "/snippets/zh/v2/parse/page-markers/curl.mdx";
+import ParseBlocksPython from "/snippets/zh/v2/parse/blocks/python.mdx";
+import ParseBlocksNode from "/snippets/zh/v2/parse/blocks/js.mdx";
+import ParseBlocksCURL from "/snippets/zh/v2/parse/blocks/curl.mdx";
+import ParseJsonPython from "/snippets/zh/v2/parse/json/python.mdx";
+import ParseJsonNode from "/snippets/zh/v2/parse/json/js.mdx";
+import ParseJsonCURL from "/snippets/zh/v2/parse/json/curl.mdx";
+import ParseGroundingPython from "/snippets/zh/v2/parse/grounding/python.mdx";
+import ParseGroundingNode from "/snippets/zh/v2/parse/grounding/js.mdx";
+import VideoParseVsScrape from "/snippets/zh/shared/video-parse-vs-scrape.mdx";
 
-* 将 PDF、DOCX、XLSX、HTML 等转换为 Markdown 或结构化 JSON
-* 借助基于 Rust 的引擎，解析速度最高可提升 **5 倍**
-* 每次请求的文件大小上限为 **50 MB**
-* 支持 Zero Data Retention
+解析可将文档转换为整洁、可供 LLM 使用的数据。将文件上传至
+[`/parse`](/zh/api-reference/endpoint/parse)，或使用 [`/scrape`](/zh/features/scrape)
+抓取公开文档 URL，即可获取 Markdown、逐页内容、逐页类型化布局块或结构化 JSON。
 
-<div id="when-to-use-parse">
-  ## 何时使用 `/parse`
-</div>
+* **感知布局**：按阅读顺序组织标题、段落、表格和公式
+* **支持扫描件**：原生文本提取，并为纯图像页面提供 OCR 回退方案
+* **结构可追溯**：逐页类型化布局块，包含边界框以及指向 Markdown 中字符范围的链接 (PDF)
+* **支持常见格式**：PDF、Word、Excel、PowerPoint、OpenDocument、EPUB、CSV、HTML
+* 支持 **零数据保留**
 
-当源文档是**本地文件**，或**无法通过公开 URL 访问**时，请使用 `/parse`。如果你有指向该文档的公开 URL，优先使用 [`/scrape`](/zh/features/scrape)——它会根据扩展名或内容类型自动检测文件类型，并以相同方式解析。
+不确定该用 Parse 还是 [Scrape](/zh/features/scrape)？下面的视频讲解了两者的区别：
 
-| 来源                                                | 端点                                               |
-| ------------------------------------------------- | ------------------------------------------------ |
-| 指向文档的公开 URL (例如 `https://example.com/report.pdf`) | [`POST /scrape`](/zh/api-reference/endpoint/scrape) |
-| 本地文件或非公开字节数据 (PDF、DOCX、XLSX、HTML、...)             | [`POST /parse`](/zh/api-reference/endpoint/parse)   |
+<VideoParseVsScrape />
 
-<Tip>
-  **通过 MCP 使用 Firecrawl？** 对于本地文件，请使用 `firecrawl_parse`。配置了 `FIRECRAWL_API_URL` 后，本地 MCP 可以直接读取文件。远程托管的 MCP 会先返回一个短时有效的上传命令，然后再解析返回的 `uploadRef`。公开的文档 URL 仍应使用 `/scrape`。
-</Tip>
-
-<Tip>
-  **有公开的 PDF URL？** 请改用 `/scrape`——它会自动检测文档类型，并返回干净的 markdown。无需额外使用 PDF 库。
-
-  ```python Python
-  doc = firecrawl.scrape("https://example.com/report.pdf", formats=["markdown"])
-  ```
-</Tip>
-
-<div id="parsing">
-  ## 解析
-</div>
-
-<div id="parse-endpoint">
-  ### /parse 端点
-</div>
-
-用于上传文件并获取解析后的内容。该请求采用 `multipart/form-data` 格式，包含一个必填的 `file` 部分，以及一个可选的 `options` JSON 部分。
-
-**支持的扩展名：** `.html`, `.htm`, `.pdf`, `.docx`, `.doc`, `.odt`, `.rtf`, `.xlsx`, `.xls`.
-
-<div id="usage">
-  ### 使用方式
+<div id="quickstart">
+  ## 快速入门
 </div>
 
 <CodeGroup>
@@ -87,8 +75,14 @@ sidebarTitle: "解析"
   ```
 </CodeGroup>
 
+<Note>
+  如果您有**公开文档 URL**而非文件，[`/scrape`](/zh/features/scrape)
+  会自动检测文件类型并以相同方式解析——选项和输出均相同：
+  `firecrawl.scrape("https://example.com/report.pdf")`。
+</Note>
+
 <div id="response">
-  ### 响应
+  ## 响应
 </div>
 
 SDK 直接返回文档对象。cURL 返回 JSON 数据。
@@ -116,56 +110,233 @@ SDK 直接返回文档对象。cURL 返回 JSON 数据。
   则会省略 `totalPages`。
 </Note>
 
-<div id="options">
-  ## 选项
+除文档 markdown 外，还有三种输出可满足单个
+markdown 字符串无法满足的需求：适用于 PDF 文档的[按物理页划分的 Markdown](#per-page-markdown-pdf)和
+[布局块](#layout-blocks-pdf)，以及适用于所有格式的
+[结构化 JSON](#structured-json-output)。如果只需要 markdown 本身中的
+页面归属信息，[页面标记](#page-markers-pdf)会直接标注分页位置。
+
+<div id="per-page-markdown-pdf">
+  ## 按物理页划分的 Markdown (PDF)
 </div>
 
-`/parse` 可在 `options` 字段下接受部分 scrape 选项。常见设置如下：
+在 [PDF 解析器](#pdf-options)中设置 `pages: true` 后，文档还会包含一个 `pages` 数组，其中包含按实际页面划分的 markdown——当您需要确认内容来自哪一页，或需要独立处理各页面时非常有用。
+无需额外成本。
+
+<CodeGroup>
+  <ParsePagesPython />
+
+  <ParsePagesNode />
+
+  <ParsePagesCURL />
+</CodeGroup>
+
+```json
+"pages": [
+  { "pageNumber": 1, "markdown": "# Annual Report\n\n..." },
+  { "pageNumber": 2, "markdown": "..." }
+]
+```
+
+<div id="page-markers-pdf">
+  ## 页面标记 (PDF)
+</div>
+
+在 [PDF 解析器](#pdf-options) 中设置 `pageMarkers: true` 后，文档 `markdown` 中的页面会通过 HTML 注释标记连接，该标记会注明后续物理页面的页码：
+
+```markdown
+……第 1 页结尾
+
+---
+
+<!-- page 2 -->
+
+第 2 页开头……
+```
+
+不会新增响应字段——标记嵌入在 Markdown 中，因此任何只处理 Markdown 字符串的下游流水线都能保留按页归属信息。渲染 Markdown 时，这些注释不可见，并且可轻松按 (`<!-- page N -->`，从 1 开始计数) 拆分。无需额外成本。
+
+<CodeGroup>
+  <ParsePageMarkersPython />
+
+  <ParsePageMarkersNode />
+
+  <ParsePageMarkersCURL />
+</CodeGroup>
+
+<Note>
+  标记仅出现在页面**之间**——第 1 页前不会有标记。
+  当解析器合并跨页内容时，编号可能会跳过某一页
+  (延续到下一页的表格或句子没有可标记的边界) 。如果需要将每个物理页面单独处理，请使用 [`pages: true`](#per-page-markdown-pdf)；这两个选项可组合使用。
+</Note>
+
+<div id="layout-blocks-pdf">
+  ## 布局块 (PDF)
+</div>
+
+在 [PDF 解析器](#pdf-options)中设置 `blocks: true` 后，文档还会
+包含一个 `blocks` 数组：其中按页提供解析引擎检测到的逐页类型化布局块，
+以及其几何信息和来源信息。这是 markdown 的结构化对应形式——可用于引用溯源、
+高亮叠加层，或审计文档内容。无需额外成本。
+
+<Frame caption="引擎检测到的每个封禁均标注了类型和位置——与生成 markdown 的区域相同。">
+  <img src="/images/pdf-blocks-overlay.png" alt="已解析的 PDF 页面，每个检测到的布局块上均叠加了彩色边界框：标题、文本、章节标题、表格、图形、说明文字、页脚和页码" />
+</Frame>
+
+<CodeGroup>
+  <ParseBlocksPython />
+
+  <ParseBlocksNode />
+
+  <ParseBlocksCURL />
+</CodeGroup>
+
+```json
+"blocks": [
+  {
+    "pageNumber": 1,
+    "width": 1700,
+    "height": 2200,
+    "status": "ok",
+    "items": [
+      {
+        "id": "p1.b0",
+        "type": "title",
+        "label": "doc_title",
+        "bbox": [0.118, 0.054, 0.882, 0.092],
+        "content": "# Annual Report",
+        "markdownSpan": [0, 15],
+        "readingOrder": 0,
+        "source": "native_text",
+        "confidence": { "layout": 0.97, "ocr": null }
+      }
+    ]
+  }
+]
+```
+
+<div id="block-fields">
+  ### 封禁字段
+</div>
+
+| 字段             | 描述                                                                                                                            |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `id`           | 在同一响应中保持稳定：`p<page>.b<index in reading order>`。                                                                               |
+| `type`         | 封禁类型：`title`、`section_header`、`text`、`table`、`formula`、`figure`、`caption`、`page_number`、`page_header`、`page_footer`。未来可能会新增类型。 |
+| `label`        | 原始布局模型标签，为实现前向兼容而直接透传。                                                                                                        |
+| `bbox`         | 相对于页面归一化到 0–1 的 `[x0, y0, x1, y1]`。乘以 `width`/`height` 可得到像素坐标。页面尺寸未知时为 `null`。                                               |
+| `content`      | 此封禁生成的 Markdown 片段。                                                                                                            |
+| `markdownSpan` | 文档 `markdown` 中对应此封禁片段的 `[start, end)` 字符偏移量。后处理重写该片段时为 `null`。                                                                |
+| `readingOrder` | 在检测到的阅读顺序中的位置。                                                                                                                |
+| `source`       | 生成该封禁的流水线路径 (例如 `native_text`、`layout_ocr`、`tsr`、`formula_model`) 。                                                            |
+| `confidence`   | `layout` 检测分数 (0–1) ，以及来源提供时的 `ocr` 文本置信度；否则为 `null`——绝不使用虚构的聚合值。                                                             |
+
+<div id="grounding-from-an-answer-back-to-the-page">
+  ### 溯源：从答案回溯到页面
+</div>
+
+`markdownSpan` 将每个封禁关联到其生成的 markdown 中对应的精确子字符串。这让引用溯源成为查找而非推断：在 markdown 中找到引用的文本，再找到 span 覆盖该偏移位置的封禁，即可获得页码和边界框——完全无需向语言模型查询坐标。
+
+<CodeGroup>
+  <ParseGroundingPython />
+
+  <ParseGroundingNode />
+</CodeGroup>
+
+<div id="structured-json-output">
+  ## 结构化 JSON 输出
+</div>
+
+传入 JSON schema 或 prompt，即可直接从文档中提取结构化数据：
+
+<CodeGroup>
+  <ParseJsonPython />
+
+  <ParseJsonNode />
+
+  <ParseJsonCURL />
+</CodeGroup>
+
+<div id="pdf-options">
+  ## PDF 选项
+</div>
+
+所有 PDF 相关行为均通过 `parsers` 选项控制，`/parse` 和
+`/scrape` 均适用：
+
+```json
+{
+  "parsers": [
+    {
+      "type": "pdf",
+      "mode": "auto",
+      "maxPages": 100,
+      "pages": true,
+      "blocks": true,
+      "pageMarkers": true
+    }
+  ]
+}
+```
+
+| 属性            | 类型                          | 默认值      | 描述                                                                     |
+| ------------- | --------------------------- | -------- | ---------------------------------------------------------------------- |
+| `type`        | `"pdf"`                     | *(必填)*   | 解析器类型。                                                                 |
+| `mode`        | `"fast" \| "auto" \| "ocr"` | `"auto"` | 解析策略——详见下文。                                                            |
+| `maxPages`    | `integer`                   | —        | 限制解析的页数。                                                               |
+| `pages`       | `boolean`                   | `false`  | 同时返回[按页划分的 Markdown](#per-page-markdown-pdf)。无需额外成本。                   |
+| `blocks`      | `boolean`                   | `false`  | 同时返回带边界框的[布局块](#layout-blocks-pdf)。无需额外成本。                             |
+| `pageMarkers` | `boolean`                   | `false`  | 使用 [`<!-- page N -->` 标记](#page-markers-pdf)在文档 Markdown 中标注分页。无需额外成本。 |
+
+传入 `parsers: []` 将完全跳过解析，并以 base64 格式返回 PDF
+(固定消耗 1 个额度) 。
+
+<div id="parsing-modes">
+  ### 解析模式
+</div>
+
+| 模式     | 描述                                                    |
+| ------ | ----------------------------------------------------- |
+| `auto` | 优先尝试快速的文本提取；当页面需要时回退到 OCR。这是默认值。                      |
+| `fast` | 仅进行文本提取 (嵌入文本) 。这是最快的选项，但对于扫描页或纯图像页面会直接失败，而不会悄悄返回空结果。 |
+| `ocr`  | 强制对每一页执行 OCR。适用于扫描文档，或 `auto` 错误分类页面时。                |
+
+<div id="supported-formats">
+  ## 支持的格式
+</div>
+
+**扩展名：** `.html`, `.htm`, `.xhtml`, `.pdf`, `.docx`, `.doc`, `.docm`, `.odt`, `.ods`, `.odp`, `.rtf`, `.xlsx`, `.xls`, `.xlsm`, `.xlsb`, `.pptx`, `.ppt`, `.pptm`, `.epub`, `.csv`.
+
+请参见[Document Parsing](/zh/features/document-parsing)，了解各格式的
+转换方式。
+
+<div id="request-reference">
+  ## 请求参考
+</div>
+
+请求采用 `multipart/form-data`，其中包含必填的 `file` 部分和可选的 `options` JSON 部分。`options` 接受部分 scrape 选项：
 
 * `formats`：输出格式数组。默认值为 `["markdown"]`。支持：`markdown`、`html`、`rawHtml`、`links`、`images`、`summary` 和 `json` (可搭配 schema 或 prompt) 。
 * `onlyMainContent`：仅返回文档的主体内容。默认值为 `true`。
 * `includeTags` / `excludeTags`：按标签包含或排除内容 (适用于 HTML 输入) 。
 * `redactPII`：对返回的 markdown 中的个人身份识别信息进行脱敏处理。
 * `timeout`：请求超时时间 (毫秒) 。默认值为 `30000`，最大为 `300000`。
-* `parsers`：文件解析器控制选项。对于 PDF，设置为 `{ "type": "pdf", "mode": "fast" | "auto" | "ocr", "maxPages": <int> }`。
+* `parsers`：文件解析器控制选项 — 请参见 [PDF 选项](#pdf-options)。
 
 <Note>
   `/parse` 不支持仅适用于浏览器的选项，例如 `actions`、`waitFor`、`location`、`mobile` 或变更追踪。
 </Note>
 
-<div id="pdf-parser-modes">
-  ### PDF 解析模式
-</div>
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v2/parse \
-  -H 'Authorization: Bearer YOUR_API_KEY' \
-  -F 'file=@./scan.pdf' \
-  -F 'options={"parsers":[{"type":"pdf","mode":"ocr","maxPages":50}]};type=application/json'
-```
-
-* `fast`：仅提取文本，速度最快。
-* `auto` (默认值) ：优先提取文本，页面仅含图像时回退到 OCR。
-* `ocr`：对每一页执行 OCR——适用于扫描文档。
-
-<div id="structured-json-output">
-  ### 结构化 JSON 输出
-</div>
-
-传入 JSON schema 或 prompt，即可直接从文档中提取结构化数据：
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v2/parse \
-  -H 'Authorization: Bearer YOUR_API_KEY' \
-  -F 'file=@./invoice.pdf' \
-  -F 'options={"formats":[{"type":"json","schema":{"type":"object","properties":{"total":{"type":"number"},"vendor":{"type":"string"}}}}]};type=application/json'
-```
+<Tip>
+  **通过 MCP 使用 Firecrawl？** 对于本地文件，请使用 `firecrawl_parse`。配置 `FIRECRAWL_API_URL` 后，本地 MCP 可以直接读取文件。远程托管 MCP 会先返回一个短期有效的上传命令，然后解析返回的 `uploadRef`。公开文档 URL 仍应使用 `/scrape`。
+</Tip>
 
 <div id="considerations">
   ## 注意事项
 </div>
 
 * 每个请求的最大文件大小为 **50 MB**。
+* PDF 解析按**每页 1 个额度**计费；`pages`、`blocks` 和 `pageMarkers` 选项不产生额外成本。
 * 在 `ocr` 模式下解析超大 PDF 或扫描版 PDF 可能需要更长时间——请增大 `timeout`，或使用 `maxPages` 来限定处理范围。
 * 对于多份文件，请对每个文件并行调用 `/parse`；不支持批量上传。
 

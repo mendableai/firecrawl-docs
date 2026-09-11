@@ -1,562 +1,135 @@
 ---
-title: Firecrawl MCP 工具和操作
-description: Firecrawl MCP 的可用工具、运行行为和错误处理。
-sidebarTitle: 工具和操作
+title: Firecrawl MCP 工具
+description: 选择 Firecrawl MCP 工具，了解其可用性和运行方式。
+sidebarTitle: 工具
 ---
 
-此处列出了 Firecrawl MCP 服务器提供的全部工具。工具是否可用取决于您的连接方式。
+Firecrawl MCP 提供用于查找、提取、交互和监控网页内容的工具。MCP 客户端连接后，会收到每个可用工具的完整输入 schema。
 
-| 连接模式               | 工具可用性                                                        |
-| ------------------ | ------------------------------------------------------------ |
-| 托管账户 OAuth         | 完整工具集，具体取决于套餐和功能可用性                                          |
-| 托管 API 密钥          | 完整工具集，具体取决于套餐和功能可用性                                          |
-| 托管免密钥              | 仅限 `firecrawl_search`、`firecrawl_scrape` 和 `firecrawl_parse` |
-| 使用云端 API 密钥的本地 MCP | 由 API 支持的工具；直接解析本地文件需要自托管 API URL                            |
-| 使用自托管 API 的本地 MCP  | 由该部署中启用的服务支持的工具                                              |
+<div id="tool-availability">
+  ## 工具可用性
+</div>
+
+| 连接模式                         | 可用工具                                                      |
+| ---------------------------- | --------------------------------------------------------- |
+| 托管 OAuth                     | 完整工具集，受套餐和团队策略限制                                          |
+| 托管 API 密钥                    | 完整工具集，受套餐和团队策略限制                                          |
+| 托管免密钥                        | `firecrawl_search`、`firecrawl_scrape` 和 `firecrawl_parse` |
+| 使用 Firecrawl cloud API 的本地模式 | 基于 API 的工具；不支持直接解析本地文件                                    |
+| 使用自托管 Firecrawl API 的本地模式    | 该部署中已启用服务支持的工具                                            |
+
+请先阅读 [开始使用](/zh/mcp-server)，然后选择[面向代理](/zh/mcp-server/keyless)或[面向用户](/zh/mcp-server/oauth)。某些可选工具可通过环境配置或团队策略禁用。
+
+<div id="choose-a-tool">
+  ## 选择工具
+</div>
+
+| 任务       | 工具                                                 | 适用场景                                                                                      |
+| -------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 读取单个页面   | `firecrawl_scrape`                                 | 您知道 URL，需要页面内容或结构化字段。                                                                     |
+| 提取结构化数据  | 使用 JSON 格式的 `firecrawl_scrape`                     | 您有 URL，并希望数据符合 prompt 或 JSON schema。                                                      |
+| 发现站点 URL | `firecrawl_map`                                    | 您需要先找到页面，再决定要提取什么。                                                                        |
+| 进行网页搜索   | `firecrawl_search`                                 | 您有查询条件，而非已知 URL。                                                                          |
+| 解析文件     | `firecrawl_parse`                                  | 您需要从 PDF、文档、电子表格或 HTML 文件中获取内容。                                                           |
+| 提取多个页面   | `firecrawl_crawl` 和 `firecrawl_check_crawl_status` | 您需要遍历整个站点或其中某个部分。爬取工具会轮询任务，直至其进入终态后再返回。                                                   |
+| 运行自主研究   | `firecrawl_agent` 和 `firecrawl_agent_status`       | 任务涉及多个来源，且具体页面未知。                                                                         |
+| 操作实时页面   | `firecrawl_interact` 和 `firecrawl_interact_stop`   | 您需要点击、填写表单、导航或提取动态页面内容。                                                                   |
+| 搜索科学文献   | `firecrawl_research_*`                             | 您需要查找论文、阅读论文中的段落，或追溯引用。搜索 PubMed、bioRxiv、medRxiv 和 arXiv 论文摘要的[研究索引](/zh/features/research)。 |
+| 解答编程问题   | `firecrawl_developer_search`                       | 您需要来自 issue、已合并的 pull request、README 和精选文档的一手答案。                                          |
+| 监控变化     | `firecrawl_monitor_*`                              | 您需要定期检查、差异对比，以及 webhook 或电子邮件通知。                                                          |
+| 发送产品反馈   | `firecrawl_search_feedback` 和 `firecrawl_feedback` | 您想为搜索结果评分，或报告端点级别的质量问题。                                                                   |
 
 <Note>
-  部分可选工具可能因环境或团队策略而被禁用。请先参阅 [连接 Firecrawl MCP](/zh/mcp-server/connect)，选择身份验证模式；有关当前的免密钥额度，请参见 [限流](/zh/rate-limits#keyless-no-api-key)。
+  原有的 提取 MCP 工具已弃用，不属于当前工具集的一部分。对于已知页面，请使用 JSON 格式的 抓取；当 Firecrawl 必须发现来源时，请使用 代理。请参见[选择数据提取器](/zh/developer-guides/usage-guides/choosing-the-data-extractor)了解完整对比。
 </Note>
 
-<div id="available-tools">
-  ## 可用工具
+<Tip>
+  请使用 MCP 客户端针对当前参数显示的 schema。下方的功能指南介绍 Firecrawl 的底层行为，不会在此重复这些 schema。
+</Tip>
+
+<div id="important-behavior">
+  ## 重要行为
 </div>
 
-<div id="1-scrape-tool-firecrawl_scrape">
-  ### 1. 抓取工具 (`firecrawl_scrape`)
+<AccordionGroup>
+  <Accordion title="解析本地文件">
+    连接到自托管 Firecrawl API 的本地 MCP 服务器可直接读取 `filePath`。托管服务器无法读取您本机上的文件，因此需要通过两次调用完成交接：
+
+    1. 使用 `filePath` 调用 `firecrawl_parse`，获取上传命令和 `uploadRef`。
+    2. 在可读取该文件的机器上运行上传命令。
+    3. 使用返回的 `uploadRef` 再次调用 `firecrawl_parse`。
+
+    上传命令使用短期有效的签名上传目标，不包含您的 Firecrawl API 密钥。对于公开文档 URL，请使用 `firecrawl_scrape`。
+  </Accordion>
+
+  <Accordion title="检查正在运行的爬取任务">
+    `firecrawl_crawl` 通常会启动爬取，并在返回前轮询至终态。如果等待超时，请使用 `firecrawl_check_crawl_status` 和爬取 ID 恢复该任务。对于在当前 MCP 调用之外创建的爬取，也请使用相同的状态工具。
+
+    `firecrawl_agent` 是异步的：它会返回任务标识符，`firecrawl_agent_status` 会检查该任务，直到其完成或失败。
+  </Accordion>
+
+  <Accordion title="关闭交互会话">
+    使用 `url` 启动会话，或复用之前抓取调用中的 `scrapeId`。工作流完成后，使用 `scrapeId` 调用 `firecrawl_interact_stop` 以释放会话。
+  </Accordion>
+
+  <Accordion title="安全管理监控">
+    `firecrawl_monitor_*` 系列工具可创建、列出、更新、运行和检查定期监控。`firecrawl_monitor_delete` 会永久删除监控，只有在用户明确要求删除时才应调用。
+  </Accordion>
+
+  <Accordion title="启用可选反馈工具">
+    设置 `FIRECRAWL_NO_SEARCH_FEEDBACK=1` 可阻止注册 `firecrawl_search_feedback`。设置 `FIRECRAWL_NO_ENDPOINT_FEEDBACK=1` 可阻止注册 `firecrawl_feedback`。
+  </Accordion>
+</AccordionGroup>
+
+<div id="feature-guides">
+  ## 功能指南
 </div>
 
-使用高级选项从单个 URL 中抓取内容。
+<CardGroup cols={3}>
+  <Card title="抓取" href="/zh/features/scrape" icon="file-lines">
+    从单个 URL 提取内容或结构化字段。
+  </Card>
 
-```json
-{
-  "name": "firecrawl_scrape",
-  "arguments": {
-    "url": "https://example.com",
-    "formats": ["markdown"],
-    "onlyMainContent": true,
-    "waitFor": 1000,
-    "mobile": false,
-    "includeTags": ["article", "main"],
-    "excludeTags": ["nav", "footer"],
-    "skipTlsVerification": false
-  }
-}
-```
+  <Card title="搜索" href="/zh/features/search" icon="magnifying-glass">
+    查找相关的网页、新闻、图片和开发者资源。
+  </Card>
 
-若要对个人身份信息进行脱敏，请在抓取工具的参数中添加 `redactPII`。
+  <Card title="研究索引" href="/zh/features/research" icon="book-open">
+    搜索论文、阅读段落并追踪引用。
+  </Card>
 
-```json
-{
-  "name": "firecrawl_scrape",
-  "arguments": {
-    "url": "https://example.com/contact",
-    "formats": ["markdown"],
-    "redactPII": true
-  }
-}
-```
+  <Card title="开发者索引" href="/zh/features/developer" icon="code">
+    根据 issue、PR、README 和文档回答编程问题。
+  </Card>
 
-<div id="2-map-tool-firecrawl_map">
-  ### 2. Map 工具 (`firecrawl_map`)
+  <Card title="爬取" href="/zh/features/crawl" icon="spider-web">
+    遍历并提取整个网站或其中的某个部分。
+  </Card>
+
+  <Card title="解析" href="/zh/features/parse" icon="file-import">
+    将文件转换为可供 LLM 使用的输出。
+  </Card>
+
+  <Card title="交互" href="/zh/features/interact" icon="arrow-pointer">
+    在实时浏览器会话中操作动态页面。
+  </Card>
+
+  <Card title="代理" href="/zh/features/agent" icon="sparkles">
+    运行自主的多源研究。
+  </Card>
+
+  <Card title="监控" href="/zh/features/monitoring" icon="bell">
+    跟踪页面变更并接收通知。
+  </Card>
+</CardGroup>
+
+<div id="troubleshooting">
+  ## 故障排除
 </div>
 
-扫描网站，发现其中所有已编入索引的 URL。
-
-```json
-{
-  "name": "firecrawl_map",
-  "arguments": {
-    "url": "https://example.com",
-    "search": "blog",
-    "sitemap": "include",
-    "includeSubdomains": false,
-    "limit": 100,
-    "ignoreQueryParameters": true
-  }
-}
-```
-
-<div id="map-tool-options">
-  #### Map 工具选项：
-</div>
-
-* `url`：要映射的网站基础 URL
-* `search`：用于筛选 URL 的可选搜索词
-* `sitemap`：控制 sitemap 的使用方式：“include”、“skip”或“only”
-* `includeSubdomains`：映射时是否包含子域名
-* `limit`：返回的最大 URL 数量
-* `ignoreQueryParameters`：映射时是否忽略查询参数
-
-**最适合：** 在决定抓取哪些内容前发现网站中的 URL；查找网站的特定部分。
-**返回：** 网站中找到的 URL 数组。
-
-<div id="3-search-tool-firecrawl_search">
-  ### 3. 搜索工具 (`firecrawl_search`)
-</div>
-
-进行网页搜索，并可选择从搜索结果中提取内容。
-
-```json
-{
-  "name": "firecrawl_search",
-  "arguments": {
-    "query": "your search query",
-    "limit": 5,
-    "location": "United States",
-    "tbs": "qdr:m",
-    "scrapeOptions": {
-      "formats": ["markdown"],
-      "onlyMainContent": true
-    }
-  }
-}
-```
-
-<div id="search-tool-options">
-  #### Search Tool 选项：
-</div>
-
-* `query`：搜索查询字符串 (必填)
-* `limit`：返回结果的最大数量
-* `location`：搜索结果的地理位置
-* `tbs`：基于时间的搜索筛选条件 (例如，`qdr:d` 表示过去一天，`qdr:w` 表示过去一周，`qdr:m` 表示过去一个月)
-* `filter`：附加搜索筛选条件
-* `sources`：要搜索的来源类型数组 (`web`、`images`、`news`)
-* `scrapeOptions`：用于抓取搜索结果页面的选项
-* `enterprise`：企业选项数组 (`default`、`anon`、`zdr`)
-
-<div id="3b-search-feedback-tool-firecrawl_search_feedback">
-  ### 3b. 搜索反馈工具 (`firecrawl_search_feedback`)
-</div>
-
-使用 `firecrawl_search` 后，可提交结构化反馈。每个搜索 ID 的首次反馈提交可返还一个额度，但受团队每日上限限制。
-
-```json
-{
-  "name": "firecrawl_search_feedback",
-  "arguments": {
-    "searchId": "search-id-from-firecrawl-search",
-    "rating": "good",
-    "valuableSources": [
-      {
-        "url": "https://docs.firecrawl.dev/mcp-server",
-        "reason": "Contains the current connection guidance."
-      }
-    ]
-  }
-}
-```
-
-设置 `FIRECRAWL_NO_SEARCH_FEEDBACK=1` 可避免注册此可选工具。
-
-<div id="3c-generic-feedback-tool-firecrawl_feedback">
-  ### 3c. 通用反馈工具 (`firecrawl_feedback`)
-</div>
-
-为已完成的 抓取、解析、Map 或 搜索 任务提供简明的端点级反馈。请勿包含原始抓取或解析内容。
-
-```json
-{
-  "name": "firecrawl_feedback",
-  "arguments": {
-    "endpoint": "scrape",
-    "jobId": "job-id",
-    "rating": "partial",
-    "issues": ["missing_markdown"],
-    "url": "https://example.com"
-  }
-}
-```
-
-使用 `firecrawl_search_feedback` 对搜索结果质量提供反馈。设置 `FIRECRAWL_NO_ENDPOINT_FEEDBACK=1` 可避免注册通用反馈工具。
-
-<div id="4-parse-tool-firecrawl_parse">
-  ### 4. Parse Tool (`firecrawl_parse`)
-</div>
-
-将 PDF、DOCX、XLSX 或 HTML 等本地文件解析为干净、可供 LLM 使用的数据。
-
-```json
-{
-  "name": "firecrawl_parse",
-  "arguments": {
-    "filePath": "/absolute/path/to/report.pdf",
-    "formats": ["markdown"]
-  }
-}
-```
-
-当你通过 `FIRECRAWL_API_URL` 在本地针对 Firecrawl API 实例运行 Firecrawl MCP 时，MCP 服务器可以直接读取 `filePath`，并将文件字节发送到 `/v2/parse`。
-
-使用远程托管的 MCP 服务器时，托管服务器无法读取你机器上的文件。在这种情况下，`firecrawl_parse` 会采用两步交接流程，该流程同样适用于远程免密钥 URL：
-
-1. 使用 `filePath` 调用 `firecrawl_parse`。该工具会返回一条预填充的上传命令，以及包含 `uploadRef` 的 `nextToolCall`。
-2. 在能够读取该文件的机器上运行上传命令，然后使用返回的 `uploadRef` 再次调用 `firecrawl_parse`。
-
-上传命令会将文件字节发送到一个短时有效的签名上传目标，其中不包含你的 Firecrawl API 密钥。
-
-<div id="parse-tool-options">
-  #### Parse Tool 选项：
-</div>
-
-* `filePath`：要解析的本地文件路径。首次调用时使用。
-* `uploadRef`：首次托管 MCP 调用返回的引用。上传成功后，第二次调用时使用。
-* `formats`：输出格式。默认值为 `markdown`。
-* `parsers`：解析器控制选项，例如 PDF 解析选项。
-* `contentType`：可选的文件 MIME 类型覆盖设置。
-* `declaredSizeBytes`：可选的文件大小提示。文件大小上限为 50 MB。
-
-**最适合：** 无法通过公开 URL 访问的本地或非公开文档。
-
-**不建议用于：** 公开文档 URL。请改用 `firecrawl_scrape`；它会检测并解析 URL 中的文档。
-
-<div id="5-crawl-tool-firecrawl_crawl">
-  ### 5. 爬取工具 (`firecrawl_crawl`)
-</div>
-
-使用高级选项启动异步爬取。
-
-```json
-{
-  "name": "firecrawl_crawl",
-  "arguments": {
-    "url": "https://example.com",
-    "maxDiscoveryDepth": 2,
-    "limit": 100,
-    "allowExternalLinks": false,
-    "deduplicateSimilarURLs": true
-  }
-}
-```
-
-<div id="6-check-crawl-status-firecrawl_check_crawl_status">
-  ### 6. 查看爬取状态 (`firecrawl_check_crawl_status`)
-</div>
-
-查看爬取任务的状态。
-
-```json
-{
-  "name": "firecrawl_check_crawl_status",
-  "arguments": {
-    "id": "550e8400-e29b-41d4-a716-446655440000"
-  }
-}
-```
-
-**返回：** 爬取任务的状态和进度，以及 (如有) 结果。
-
-<div id="7-extract-tool-firecrawl_extract">
-  ### 7. 提取工具 (`firecrawl_extract`)
-</div>
-
-利用 LLM 从网页中提取结构化信息。支持云端 AI 和自托管 LLM。
-
-```json
-{
-  "name": "firecrawl_extract",
-  "arguments": {
-    "urls": ["https://example.com/page1", "https://example.com/page2"],
-    "prompt": "Extract product information including name, price, and description",
-    "schema": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "price": { "type": "number" },
-        "description": { "type": "string" }
-      },
-      "required": ["name", "price"]
-    },
-    "allowExternalLinks": false,
-    "enableWebSearch": false,
-    "includeSubdomains": false
-  }
-}
-```
-
-响应示例：
-
-```json
-{
-  "content": [
-    {
-      "type": "text",
-      "text": {
-        "name": "Example Product",
-        "price": 99.99,
-        "description": "This is an example product description"
-      }
-    }
-  ],
-  "isError": false
-}
-```
-
-<div id="extract-tool-options">
-  #### Extract Tool 选项：
-</div>
-
-* `urls`: 用于提取信息的 URL 数组
-* `prompt`: 用于 LLM 提取的自定义 prompt
-* `schema`: 用于提取结构化数据的 JSON schema
-* `allowExternalLinks`: 允许从外部链接中提取信息
-* `enableWebSearch`: 启用网页搜索以获取额外上下文
-* `includeSubdomains`: 提取时包含子域名
-
-使用自托管实例时，提取将使用您配置的 LLM。云 API 则使用 Firecrawl 托管的 LLM 服务。
-
-<div id="8-agent-tool-firecrawl_agent">
-  ### 8. 代理工具 (`firecrawl_agent`)
-</div>
-
-自主网页调研代理，可根据你的查询自行浏览互联网、搜索信息、访问页面，并提取结构化数据。该操作以异步方式运行——会立即返回任务 ID，你可轮询 `firecrawl_agent_status` 检查任务何时完成并获取结果。
-
-```json
-{
-  "name": "firecrawl_agent",
-  "arguments": {
-    "prompt": "Find the top 5 AI startups founded in 2024 and their funding amounts",
-    "schema": {
-      "type": "object",
-      "properties": {
-        "startups": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": { "type": "string" },
-              "funding": { "type": "string" },
-              "founded": { "type": "string" }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-您还可以指定让代理重点关注的 URL：
-
-```json
-{
-  "name": "firecrawl_agent",
-  "arguments": {
-    "urls": ["https://docs.firecrawl.dev", "https://firecrawl.dev/pricing"],
-    "prompt": "Compare the features and pricing information from these pages"
-  }
-}
-```
-
-<div id="agent-tool-options">
-  #### 代理工具选项：
-</div>
-
-* `prompt`：所需数据的自然语言描述 (必填，最多 10,000 个字符)
-* `urls`：可选的 URL 数组，用于让代理聚焦于特定页面
-* `schema`：用于结构化输出的可选 JSON schema
-
-**最适合：** 不清楚确切 URL 的复杂研究任务；多源数据收集；查找分散在网页各处的信息；从常规抓取无法处理的 JavaScript 密集型 SPA 中提取数据。
-
-**返回：** 用于检查状态的任务 ID。使用 `firecrawl_agent_status` 轮询获取结果。
-
-<div id="9-check-agent-status-firecrawl_agent_status">
-  ### 9. 检查代理状态 (`firecrawl_agent_status`)
-</div>
-
-检查代理任务的状态，并在任务完成后获取结果。每隔 15～30 秒轮询一次，在判定请求失败前，至少持续轮询 2～3 分钟。
-
-```json
-{
-  "name": "firecrawl_agent_status",
-  "arguments": {
-    "id": "550e8400-e29b-41d4-a716-446655440000"
-  }
-}
-```
-
-<div id="agent-status-options">
-  #### 代理状态选项：
-</div>
-
-* `id`：`firecrawl_agent` 返回的代理任务 ID (必填)
-
-**可能的状态：**
-
-* `processing`：代理仍在调研中 -- 继续轮询
-* `completed`：调研已完成 -- 响应中包含提取的数据
-* `failed`：发生错误
-
-**返回：**代理任务的状态、进度和结果 (如已完成) 。
-
-<div id="10-interact-with-a-page-firecrawl_interact">
-  ### 10. 与页面交互 (`firecrawl_interact`)
-</div>
-
-在实时浏览器会话中与页面交互：点击按钮、填写表单、提取动态内容，或继续深入导航。
-
-可使用以下两种定位模式之一：
-
-* 传入 `url`，即可在一次 MCP 调用中打开新页面并与其交互。
-* 传入之前 `firecrawl_scrape` 调用返回的 `scrapeId`，以复用已加载的页面。
-
-不要同时传入 `url` 和 `scrapeId`。请提供 `prompt` 或 `code` 其中之一。`scrapeOptions` 仅可在 `url` 模式下使用。
-
-**URL 模式示例：**
-
-```json
-{
-  "name": "firecrawl_interact",
-  "arguments": {
-    "url": "https://example.com/products",
-    "prompt": "Click on the first product and tell me its price"
-  }
-}
-```
-
-**复用抓取的示例：**
-
-```json
-{
-  "name": "firecrawl_interact",
-  "arguments": {
-    "scrapeId": "scrape-id-from-previous-scrape",
-    "prompt": "Click the Sign In button"
-  }
-}
-```
-
-<div id="interact-tool-options">
-  #### 交互工具选项：
-</div>
-
-* `url`：要交互的页面；系统会为您打开会话。使用此项或 `scrapeId`。
-* `scrapeId`：此前调用 `firecrawl_scrape` 返回的抓取任务 ID。使用此项或 `url`。
-* `prompt`：描述要执行操作的自然语言指令。提供 `prompt` 或 `code`。
-* `code`：在浏览器会话中执行的代码。提供 `code` 或 `prompt`。
-* `language`：`bash`、`python` 或 `node` (可选，默认值为 `node`，仅与 `code` 配合使用) 。
-* `timeout`：执行超时时间 (秒) ，范围为 1–300 (可选，默认值为 30) 。
-* `scrapeOptions`：仅在 `url` 模式下使用的可选抓取控制选项。
-
-**最适合：** 在单个页面上执行多步骤工作流，例如搜索网站、点击搜索结果、填写表单，以及提取需要交互才能获取的数据。
-
-**返回：** 包含输出和实时视图 URL 的交互结果。
-
-<div id="11-stop-interact-session-firecrawl_interact_stop">
-  ### 11. 停止交互会话 (`firecrawl_interact_stop`)
-</div>
-
-停止已抓取页面的交互会话。完成交互后调用此工具以释放资源。
-
-```json
-{
-  "name": "firecrawl_interact_stop",
-  "arguments": {
-    "scrapeId": "scrape-id-from-previous-scrape"
-  }
-}
-```
-
-<div id="interact-stop-options">
-  #### 交互停止选项：
-</div>
-
-* `scrapeId`：要停止的会话对应的抓取 ID (必填)
-
-**返回：**确认会话已停止。
-
-<div id="12-research-tools-firecrawl_research_">
-  ### 12. 研究工具 (`firecrawl_research_*`)
-</div>
-
-使用只读研究工具进行文献综述、论文查阅、引文发现以及搜索公开的 GitHub 仓库。
-
-| 工具                                  | 用途              |
-| ----------------------------------- | --------------- |
-| `firecrawl_research_search_papers`  | 搜索研究论文          |
-| `firecrawl_research_inspect_paper`  | 查看单篇论文的元数据和详细信息 |
-| `firecrawl_research_related_papers` | 查找与指定论文相关的论文    |
-| `firecrawl_research_read_paper`     | 阅读可用的论文内容       |
-| `firecrawl_research_search_github`  | 搜索公开的 GitHub 仓库 |
-
-这些工具不属于托管免密钥服务的一部分。
-
-<div id="13-monitor-tools-firecrawl_monitor_">
-  ### 13. 监控工具 (`firecrawl_monitor_*`)
-</div>
-
-创建和管理定期网页监控。监控会按计划执行检查，将结果与保存的快照进行比较，并可通过 Webhook 或电子邮件发送通知。
-
-```json
-{
-  "name": "firecrawl_monitor_create",
-  "arguments": {
-    "page": "https://example.com/pricing",
-    "goal": "Alert when pricing, packaging, or launch messaging changes."
-  }
-}
-```
-
-| 工具                         | 用途            |
-| -------------------------- | ------------- |
-| `firecrawl_monitor_create` | 创建页面监控或爬取监控   |
-| `firecrawl_monitor_list`   | 列出监控          |
-| `firecrawl_monitor_get`    | 获取单个监控        |
-| `firecrawl_monitor_update` | 更新监控          |
-| `firecrawl_monitor_run`    | 立即触发检查        |
-| `firecrawl_monitor_delete` | 删除监控          |
-| `firecrawl_monitor_checks` | 列出指定监控的检查记录   |
-| `firecrawl_monitor_check`  | 获取单个页面级检查及其差异 |
-
-<Warning>
-  `firecrawl_monitor_delete` 会永久删除监控。MCP 客户端仅应在用户明确要求删除该监控时调用此工具。
-</Warning>
-
-<div id="logging-system">
-  ## 日志系统
-</div>
-
-服务器提供全面的日志记录，包括：
-
-* 操作状态和进度
-* 性能指标
-* 额度使用情况监控
-* 限流跟踪
-* 错误情况
-
-日志示例：
-
-```
-[INFO] Firecrawl MCP Server initialized successfully
-[INFO] Starting scrape for URL: https://example.com
-[INFO] Starting crawl for URL: https://example.com
-[WARNING] Credit usage has reached warning threshold
-[ERROR] Rate limit exceeded, retrying in 2s...
-```
-
-<div id="error-handling">
-  ## 错误处理
-</div>
-
-服务器提供完善的错误处理机制：
-
-* 自动重试瞬时错误
-* 通过退避策略处理限流
-* 提供详细的错误信息
-* 额度使用警告
-* 网络容错能力
-
-错误响应示例：
-
-```json
-{
-  "content": [
-    {
-      "type": "text",
-      "text": "Error: Rate limit exceeded. Retrying in 2 seconds..."
-    }
-  ],
-  "isError": true
-}
-```
+* **某个工具缺失：**确认 [开始使用](/zh/mcp-server) 的连接模式，重新连接或重启客户端，并检查团队策略是否禁用了可选工具。
+* **客户端返回 `401`：**先检查配置的服务器 URL。
+  * 如果配置的 URL 为 `/v2/mcp-oauth`，请通过客户端重新登录。
+  * 如果为 `/v2/mcp`，请更换该服务器的 API 密钥，或将现有服务器 URL 更新为 `/v2/mcp-oauth` 并完成登录。
+  * 完成任一更改后，启动新的客户端会话。
+* **客户端被限流：**查看当前[限流规则](/zh/rate-limits)，等待重试间隔，或从免密钥访问切换为已认证访问。

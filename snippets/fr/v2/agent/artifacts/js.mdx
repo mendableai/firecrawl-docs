@@ -1,0 +1,22 @@
+```js Node
+import { Firecrawl } from 'firecrawl';
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
+
+const trace = await firecrawl.getAgentTrace("JOB_ID");
+
+for (const event of trace.events ?? []) {
+  if (event.type !== "artifact.updated") continue;
+
+  const kind = event.artifact.kind;
+  if (!["markdown", "html", "json"].includes(kind)) continue;
+
+  const snapshot = await firecrawl.getAgentSnapshot("JOB_ID", event.artifact.snapshotId);
+
+  // les instantanés markdown, html et text contiennent directement le contenu.
+  // les instantanés json sont encodés en JSON : il faut donc les décoder.
+  const content = kind === "json" ? JSON.parse(snapshot.snapshot) : snapshot.snapshot;
+
+  console.log(kind, event.artifact.path, content);
+}
+```

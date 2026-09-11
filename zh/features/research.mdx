@@ -1,20 +1,19 @@
 ---
 title: "研究索引"
-description: "搜索论文、阅读论文片段、查找相关工作，并搜索相关的 GitHub 仓库"
+description: "搜索论文、阅读论文片段，并查找相关工作"
 og:title: "研究索引 | Firecrawl"
-og:description: "使用 Firecrawl 的研究索引进行论文检索、语义扩展、论文阅读和 GitHub 搜索。"
+og:description: "使用 Firecrawl 的研究索引进行论文检索、语义扩展和论文阅读。"
 icon: "book-open"
 ---
 
-import ResearchFeedbackCTA from "/snippets/zh/research-feedback-cta.mdx";
+Firecrawl Research 是一个专为科学与工程研究代理构建的专用索引。它提供一套面向研究的工具集，用于搜索论文、查看论文元数据、阅读相关的全文片段，以及通过结构化扩展发现相关论文。
 
-Firecrawl Research 是一个专为科学与工程研究代理构建的专用索引。它提供一套面向研究的工具集，用于搜索论文、查看论文元数据、阅读相关的全文片段、通过结构化扩展发现相关论文，以及搜索与研究相关的 GitHub 仓库。
+该索引涵盖约 4300 万篇论文摘要。语料库大部分来自生物医学与生命科学领域——**PubMed**、**bioRxiv** 和 **medRxiv**——同时也包含物理学、数学和计算机科学领域的 **arXiv**。论文可通过其来源 ID 进行寻址，因此 `pmid:`、`pmcid:` 和 `doi:` 引用的使用方式与 `arxiv:` 相同。
 
 * 按主题、方法、基准、作者或类别查找论文
-* 查看标准论文元数据和来源 ID
+* 查看规范论文元数据和来源 ID
 * 阅读单篇论文中能够回答特定问题的片段
 * 从高质量的种子论文扩展到相关论文、引用它们的论文或参考文献
-* 搜索 GitHub 历史记录和 README，查找实现说明、缺陷和设计讨论
 
 <Note>
   为了让你的代理能够访问研究索引，我们强烈建议结合使用我们的 [CLI](/zh/sdks/cli) 或 [MCP](/zh/mcp-server) 与 [**专用研究技能**](https://github.com/firecrawl/skills/blob/main/skills/firecrawl-research-index/SKILL.md)，可通过以下命令安装：
@@ -24,18 +23,35 @@ Firecrawl Research 是一个专为科学与工程研究代理构建的专用索�
   ```
 </Note>
 
-<ResearchFeedbackCTA src="docs-research" />
+<div id="how-this-relates-to-search">
+  ## 与 `/search` 的关系
+</div>
+
+<Note>
+  自 2026-11-16 起，`/search` 上的 `categories: ["research"]` 将搜索该索引，并在 `data.research` 中返回相同的论文记录。下表描述的是在此之前的行为。请参见[搜索类别](/zh/features/search#search-categories)。
+</Note>
+
+Firecrawl 中有两个名为“research”的功能，它们并不是同一项功能：
+
+|          | 研究索引 (本页)                                           | 使用 `categories: ["research"]` 的 `/search`                                |
+| :------- | --------------------------------------------------- | ------------------------------------------------------------------------ |
+| 搜索范围     | 包含约 4300 万篇摘要的论文索引——PubMed、bioRxiv、medRxiv、arXiv    | 开放网页，但仅限约 14 个学术**网站** (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov、……) |
+| 返回内容     | 排序后的论文记录：规范的 `paperId`、`primaryId`、来源 ID、标题、完整摘要、评分 | 普通网页结果：URL、标题、snippet                                                    |
+| 能否阅读论文内容 | 可以——通过 `GET /search/research/papers/{id}` 按段落阅读     | 不可以                                                                      |
+| 能否通过引用扩展 | 可以——`GET /search/research/papers/{id}/similar`      | 不可以                                                                      |
+| 端点       | `GET /search/research/papers`                       | `POST /search`                                                           |
+
+进行文献研究时——查找论文、阅读论文、追踪引用——请使用研究索引。如果您想获取位于学术域名上的普通网页，请使用 [`categories: ["research"]`](/zh/features/search#search-categories)。
 
 <div id="endpoints">
   ## 端点
 </div>
 
-| 任务             | 端点                                                                                            |
-| -------------- | --------------------------------------------------------------------------------------------- |
-| 搜索论文           | [`GET /search/research/papers`](/zh/api-reference/endpoint/research-search-papers)               |
-| 查看元数据或阅读内容片段   | [`GET /search/research/papers/{id}`](/zh/api-reference/endpoint/research-paper)                  |
-| 查找相关论文         | [`GET /search/research/papers/{id}/similar`](/zh/api-reference/endpoint/research-related-papers) |
-| 搜索 GitHub 历史记录 | [`GET /search/research/github`](/zh/api-reference/endpoint/research-github-search)               |
+| 任务           | 端点                                                                                            |
+| ------------ | --------------------------------------------------------------------------------------------- |
+| 搜索论文         | [`GET /search/research/papers`](/zh/api-reference/endpoint/research-search-papers)               |
+| 查看元数据或阅读内容片段 | [`GET /search/research/papers/{id}`](/zh/api-reference/endpoint/research-paper)                  |
+| 查找相关论文       | [`GET /search/research/papers/{id}/similar`](/zh/api-reference/endpoint/research-related-papers) |
 
 <div id="search-papers">
   ## 搜索论文
@@ -87,11 +103,60 @@ Firecrawl Research 是一个专为科学与工程研究代理构建的专用索�
 * `from`：created/updated 的包含下界，格式为 `YYYY-MM-DD`
 * `to`：created/updated 的包含上界，格式为 `YYYY-MM-DD`
 
+<div id="biomedical-example">
+  ### 生物医学示例
+</div>
+
+索引中的大多数内容属于生命科学，因此临床和分子生物学查询的使用方式相同：
+
+<CodeGroup>
+  ```bash cURL
+  # 无需 API 密钥即可开始；添加 -H "Authorization: Bearer $FIRECRAWL_API_KEY" 可获得更高的限流：
+  curl -s "https://api.firecrawl.dev/v2/search/research/papers?query=CRISPR%20base%20editing%20off-target%20effects%20in%20primary%20human%20T%20cells&k=20"
+  ```
+
+  ```bash CLI
+  firecrawl research search-papers "CRISPR base editing off-target effects in primary human T cells" --limit 20
+  ```
+
+  ```python Python
+  from firecrawl import Firecrawl
+
+  firecrawl = Firecrawl(
+    # 无需 API 密钥即可开始；添加 API 密钥可获得更高的限流：
+    # api_key="fc-YOUR-API-KEY",
+  )
+
+  result = firecrawl.v2.search_papers(
+    "CRISPR base editing off-target effects in primary human T cells",
+    k=20,
+  )
+  print(result)
+  ```
+
+  ```js Node
+  import { Firecrawl } from "firecrawl";
+
+  const firecrawl = new Firecrawl({
+    // 无需 API 密钥即可开始；添加 API 密钥可获得更高的限流：
+    // apiKey: "fc-YOUR-API-KEY",
+  });
+
+  const result = await firecrawl.research.searchPapers(
+    "CRISPR base editing off-target effects in primary human T cells",
+    { k: 20 },
+  );
+  console.log(result);
+  ```
+</CodeGroup>
+
+结果会携带源所用命名空间中的 `primaryId`，因此生物医学搜索结果会以 `pmid:<id>`、`pmcid:<id>` 或 `doi:<doi>` 的形式返回。将该值直接传入下方的 inspect、read 和 related endpoint。
+
 <div id="inspect-a-paper">
   ## 查看论文
 </div>
 
-使用标准 `paperId` 或来源特定的 `primaryId`。
+使用规范 `paperId` 或来源特定的 `primaryId`。支持的 `primaryId` 格式包括 `arxiv:<id>`、`pmid:<id>`、`pmcid:<id>` 和 `doi:<doi>`；例如，要查询 PubMed 记录，可使用 `curl -s ".../v2/search/research/papers/pmid:<id>"`。
 
 <CodeGroup>
   ```bash cURL
@@ -231,49 +296,3 @@ Firecrawl Research 是一个专为科学与工程研究代理构建的专用索�
 * `similar`：共被引和书目耦合邻域中的论文
 * `citers`：引用种子论文的论文
 * `references`：种子论文引用的论文
-
-<div id="search-github-history">
-  ## 搜索 GitHub 历史记录
-</div>
-
-搜索 GitHub 上的 issue、PR、discussion 和仓库 README，查找实现细节和工程上的既有方案。
-
-<CodeGroup>
-  ```bash cURL
-  # 无需 API 密钥即可开始；添加 -H "Authorization: Bearer $FIRECRAWL_API_KEY" 可获得更高的限流上限：
-  curl -s "https://api.firecrawl.dev/v2/search/research/github?query=flash%20attention%20implementation%20notes&k=10"
-  ```
-
-  ```bash CLI
-  firecrawl research search-github "flash attention implementation notes" --limit 10
-  ```
-
-  ```python Python
-  from firecrawl import Firecrawl
-
-  firecrawl = Firecrawl(
-    # 无需 API 密钥即可开始；添加一个可获得更高的限流上限：
-    # api_key="fc-YOUR-API-KEY",
-  )
-
-  results = firecrawl.v2.search_github("flash attention implementation notes", k=10)
-  print(results)
-  ```
-
-  ```js Node
-  import { Firecrawl } from "firecrawl";
-
-  const firecrawl = new Firecrawl({
-    // 无需 API 密钥即可开始；添加一个可获得更高的限流上限：
-    // apiKey: "fc-YOUR-API-KEY",
-  });
-
-  const results = await firecrawl.research.searchGithub(
-    "flash attention implementation notes",
-    { k: 10 },
-  );
-  console.log(results);
-  ```
-</CodeGroup>
-
-GitHub 结果包含仓库、URL、issue/PR 元数据 (如有) 、摘要片段，以及匹配的 Markdown 内容 (如有) 。

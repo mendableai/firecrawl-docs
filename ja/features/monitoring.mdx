@@ -26,10 +26,13 @@ import CheckOutputMixed from "/snippets/ja/v2/monitor/check/output/mixed.mdx";
 import DiffMarkdown from "/snippets/ja/v2/monitor/diff/markdown.mdx";
 import DiffJson from "/snippets/ja/v2/monitor/diff/json.mdx";
 import DiffMixed from "/snippets/ja/v2/monitor/diff/mixed.mdx";
+import GovLegalFeedbackCTA from "/snippets/ja/gov-legal-feedback-cta.mdx";
 
 Firecrawl のモニタリングは定期的なチェックを実行し、何かが変化したり新たに現れたりしたときに、あなたまたは agent に通知します。`/monitor` を使うと、[既知のページを監視](/ja/features/monitoring-page)したり、[スケジュールに従って Web サイトをクロール](/ja/features/monitoring-website)したり、ゴールに一致する新しい結果を見つけるために[常時稼働の Web 検索を実行](/ja/features/monitoring-web-scale)したりできます。
 
 すべてのモニタータイプは同じワークフローを共有しています。1 つ以上の ターゲット を選択し、スケジュールを設定し、任意の自然言語のゴールを追加して、重要な変化があったときに webhook、メール、または Slack 通知を受け取ります。このページでは共通の構成について説明します。ターゲット 固有の設定と例については、[Page](/ja/features/monitoring-page)、[Website](/ja/features/monitoring-website)、または [Web 全体規模の監視](/ja/features/monitoring-web-scale) のモニタリングページを参照してください。
+
+<GovLegalFeedbackCTA src="docs-monitoring" />
 
 <CardGroup cols={3}>
   <Card title="ページ監視" icon="file-lines" href="/ja/features/monitoring-page">
@@ -162,7 +165,7 @@ AIに関連する新しいHacker Newsのストーリーがトップ10に入っ�
   ## 変更追跡
 </div>
 
-[Page](/ja/features/monitoring-page) と [Web サイト](/ja/features/monitoring-website) のモニターでは、デフォルトで各ページの Markdown の差分を比較し、`same`、`changed`、`new`、`removed`、`error` のいずれかを返します。**特定の構造化フィールド** (価格、見出し、在庫フラグ、リスト内の項目など) の変更を検出したい場合は、対象の `scrapeOptions` に `modes: ["json"]` を指定した `changeTracking` フォーマットを追加して、JSONモードの変更追跡を有効にします。
+[Page](/ja/features/monitoring-page) と [Web サイト](/ja/features/monitoring-website) のモニターでは、デフォルトで各ページの Markdown の差分を比較し、`same`、`changed`、`new`、`removed`、`error` のいずれかを返します。自分でスクレイピングを実行する場合は、[変更追跡](/ja/features/change-tracking) フォーマットを使って単一の呼び出しで同じ差分比較を利用できます。**特定の構造化フィールド** (価格、見出し、在庫フラグ、リスト内の項目など) の変更を検出したい場合は、ターゲットの `scrapeOptions` に `modes: ["json"]` を指定した `changeTracking` フォーマットを追加して、JSONモードの変更追跡を有効にします。
 
 <Note>
   変更追跡は `scrape` ターゲットと `crawl` ターゲットに適用されます。Web スケール全体の (`search`) モニターは、既知のページの差分を比較するのではなく、新しい結果が見つかったときにアラートを送信します。詳しくは [ステータスと重複排除](/ja/features/monitoring-web-scale#statuses-and-dedup) を参照してください。
@@ -223,7 +226,7 @@ mixed-mode のページでは、**いずれか** 一方でも変更があれば 
 モニター に `webhook` が設定されている場合、Firecrawl は 2 つの モニター event を送信できます。
 
 * `monitor.page`: 監視対象の各ページのスクレイピングが scrape worker で完了するたびに送信されます。
-* `monitor.check.completed`: チェック全体の整合処理が完了した後に送信されます。チェック の status と集計数が含まれます。ページ単位の結果を確認するには、`monitor.page` event または モニター check API を使用してください。
+* `monitor.check.completed`: チェック全体の整合処理が完了した後に送信されます。チェック の `status` と集計数が含まれます。ページ単位の結果を確認するには、`monitor.page` event または モニター check API を使用してください。
 
 `monitor.page` には、変更されたページに対して意味のある変更の判定が実行された場合、`isMeaningful` と `judgment` が含まれます。
 
@@ -238,6 +241,8 @@ mixed-mode のページでは、**いずれか** 一方でも変更があれば 
 <CheckCompletedPayload />
 
 `success` は、ページエラーなしで チェック が完了した場合に `true` です。失敗した チェック または部分的な チェック の場合は `false` となり、利用可能であれば `error` に失敗理由が含まれます。
+
+エンドポイントは 10 秒以内に `2xx` ステータスを返す必要があります。配信に失敗した場合は 1 分後、5 分後、15 分後の 3 回リトライされ、その後 webhook は失敗としてマークされます。完全な一覧は [Timeouts and retries](/ja/webhooks/overview#timeouts--retries) を参照してください。
 
 <div id="email">
   ### メール
@@ -288,7 +293,7 @@ Slack通知を設定するには:
   <GetCheckCURL />
 </CodeGroup>
 
-チェック一覧は、チェックの `status` で絞り込めます: `queued`、`running`、`completed`、`failed`、`partial`、`skipped_overlap`。
+チェック一覧は、チェックの `status` で絞り込めます: `queued`、`running`、`completed`、`failed`、`partial`、`skipped_overlap`、`skipped_no_credits`。これで全種類です。2つのスキップ系ステータスの意味については、[スキップされたチェックと一時停止中のモニター](#skipped-checks-and-paused-monitors)を参照してください。
 
 チェック詳細のレスポンスには、`estimatedCredits`、`actualCredits`、集計件数、およびページネーションされた `pages` 配列が含まれます。`estimatedCredits` はそのチェックに対して上限として予約されるクレジット数で、`actualCredits` は Firecrawl が変更されたページ数と判定が必要なページ数を把握した後に確定する最終的な請求量です。結果の次のページを取得するには、トップレベルの `next` URL を使用します。これはクロールのページネーションと同じです。ページは `status` で絞り込めます: `same`、`new`、`changed`、`removed`、`error`。変更された各ページにはインラインの `diff` データが含まれます。JSONモードのモニターによるページには、現在の抽出結果を含む `snapshot` も含まれます。
 
@@ -305,6 +310,40 @@ Slack通知を設定するには:
     <CheckOutputMixed />
   </Tab>
 </Tabs>
+
+<div id="skipped-checks-and-paused-monitors">
+  ## スキップされたチェックと一時停止中のモニター
+</div>
+
+スケジュールされたチェックが実行されないまま終了することがあります。この場合は失敗ではなくスキップのステータスとして記録され、課金も発生しません。
+
+| ステータス               | 内容                                                                                                                                           |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `skipped_overlap`    | このモニターの前回のチェックがまだ実行中のまま次のチェックの実行時刻を迎えたため、並行実行せずにスキップされました。次回のスケジュールされたチェックは通常どおり実行されます。                                                   |
+| `skipped_no_credits` | このモニターのクレジットチェックが実行を拒否しました。`actualCredits` は `0` となり、`error` に理由が示されます。これは、teamのクレジットが不足している場合と、パートナーから付与されたジョブをパートナーが取り下げた場合の両方が該当します。 |
+
+`skipped_no_credits` のチェックは、原因が解消され次第、自動的に解消されます。クレジットを追加するだけで十分で、モニター側でresetする必要はありません。
+
+<div id="there-is-no-failure-counter-to-read">
+  ### 読み取れる失敗カウンターはありません
+</div>
+
+Firecrawl は、モニターの失敗回数の累計、エラー率、連続スキップ数を保持も返却もしません。モニター オブジェクトが返すのは `status`、`nextRunAt`、`lastRunAt`、`currentCheckId`、`lastCheckSummary` で、チェック は自身の `status` と `error` を返します。いずれも累計値ではありません。
+
+連続回数や発生率が必要な場合は、チェック の一覧から算出してください。`GET /v2/monitor/{monitorId}/checks` は チェック を新しい順に返すため、先頭から続く同一 ステータス の件数を数えれば現在の連続回数が分かり、異なる ステータス のチェック が 1 件現れた時点でその連続は途切れます。
+
+<div id="automatic-pausing">
+  ### 自動的な一時停止
+</div>
+
+Firecrawl がモニターを一時停止するのは、次の 1 つのケースだけです。[パートナー連携](/ja/partner-credits)を通じて付与されたクレジットでモニターが動作しているときに、パートナーがそのジョブを取り下げた場合、すべてのチェックは `skipped_no_credits` でスキップされ、パートナーがジョブを取り消した旨のエラーが記録されます。この状態が自然に解消されることはないため、この種のスキップが 3 回連続すると、Firecrawl はモニターの `status` を `paused` に設定し、`nextRunAt` をクリアしてスケジュールを停止します。
+
+ここから次の 2 点が言えます。
+
+* クレジットを使い切ってもモニターは一時停止されません。残高を超過したチームでもスケジュールは維持され、クレジットが再び利用可能になるまで `skipped_no_credits` のチェックが記録され続けます。
+* 一時停止は状態の変化であり、通知ではありません。一時停止用の webhook イベントもメール通知もありません。確認するにはモニターの `status` を参照し、元のアクセス権が復旧したら `PATCH /v2/monitor/{monitorId}` で `active` に戻してください。
+
+一時停止されたモニターは、構成とチェック履歴をそのまま保持します。一時停止は削除ではありません。
 
 <div id="pricing">
   ## 料金

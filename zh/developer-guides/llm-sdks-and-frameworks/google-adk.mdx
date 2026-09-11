@@ -34,11 +34,13 @@ Firecrawl 提供一个 MCP 服务器，可与 Google 的 ADK 无缝集成，使�
 
 <CodeGroup>
   ```python 远程 MCP 服务器
+  import os
+
   from google.adk.agents.llm_agent import Agent
   from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
   from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
 
-  FIRECRAWL_API_KEY = "YOUR-API-KEY"
+  FIRECRAWL_API_KEY = os.environ["FIRECRAWL_API_KEY"]
 
   root_agent = Agent(
       model="gemini-2.5-pro",
@@ -57,6 +59,8 @@ Firecrawl 提供一个 MCP 服务器，可与 Google 的 ADK 无缝集成，使�
   ```
 
   ```python 本地 MCP 服务器
+  import os
+
   from google.adk.agents.llm_agent import Agent
   from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
   from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
@@ -74,10 +78,10 @@ Firecrawl 提供一个 MCP 服务器，可与 Google 的 ADK 无缝集成，使�
                       command='npx',
                       args=[
                           "-y",
-                          "firecrawl-mcp",
+                          "firecrawl-mcp@3.23.7",
                       ],
                       env={
-                          "FIRECRAWL_API_KEY": "YOUR-API-KEY",
+                          "FIRECRAWL_API_KEY": os.environ["FIRECRAWL_API_KEY"],
                       }
                   ),
                   timeout=30,
@@ -88,18 +92,19 @@ Firecrawl 提供一个 MCP 服务器，可与 Google 的 ADK 无缝集成，使�
   ```
 </CodeGroup>
 
+在启动 ADK 的环境中设置 `FIRECRAWL_API_KEY`。请勿将其值放入代理 prompt、源代码控制或 MCP URL 中。本地 MCP 软件包需要 Node.js 22 或更高版本。
+
 <div id="available-tools">
   ## 可用工具
 </div>
 
-| 工具         | 名称                             | 描述                   |
-| ---------- | ------------------------------ | -------------------- |
-| Scrape 工具  | `firecrawl_scrape`             | 使用高级选项抓取单个 URL 的内容   |
-| Map 工具     | `firecrawl_map`                | 映射网站以发现站点上所有已索引的 URL |
-| Search 工具  | `firecrawl_search`             | 搜索全网，并可选地从搜索结果中提取内容  |
-| Crawl 工具   | `firecrawl_crawl`              | 使用高级选项启动异步爬取         |
-| 爬取状态检查     | `firecrawl_check_crawl_status` | 查看爬取任务状态             |
-| Extract 工具 | `firecrawl_extract`            | 利用 LLM 从网页提取结构化信息    |
+| 工具        | 名称                             | 描述                   |
+| --------- | ------------------------------ | -------------------- |
+| Scrape 工具 | `firecrawl_scrape`             | 使用高级选项抓取单个 URL 的内容   |
+| Map 工具    | `firecrawl_map`                | 映射网站以发现站点上所有已索引的 URL |
+| Search 工具 | `firecrawl_search`             | 搜索全网，并可选地从搜索结果中提取内容  |
+| Crawl 工具  | `firecrawl_crawl`              | 使用高级选项启动异步爬取         |
+| 爬取状态检查    | `firecrawl_check_crawl_status` | 查看爬取任务状态             |
 
 <div id="configuration">
   ## 配置

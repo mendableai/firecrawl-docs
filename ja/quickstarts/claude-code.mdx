@@ -3,62 +3,62 @@ title: "Claude Code での MCP によるウェブ検索とスクレイピング"
 description: "2分で Claude Code にウェブ検索とスクレイピングを追加"
 ---
 
-Firecrawl の MCP を使って、Claude Code にウェブ検索とスクレイピング機能を追加します。
+ホスト型 MCP サーバーを介して Claude Code を Firecrawl に接続します。キーがコマンドライン、プロジェクトファイル、会話に入力されないため、OAuth による対話型セットアップを推奨します。
 
 <div id="quick-setup">
   ## クイックセットアップ
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. APIキーを取得する
+<div id="1-add-firecrawl">
+  ### 1. Firecrawl の追加
 </div>
 
-[firecrawl.dev/app](https://firecrawl.dev/app) にサインアップし、APIキーをコピーします。
-
-<div id="2-add-firecrawl-mcp-server">
-  ### 2. Firecrawl MCP サーバーの追加
-</div>
-
-**オプション A: リモートでホストされた URL (推奨)&#x20;**
+実行：
 
 ```bash
 claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp-oauth
 ```
 
-サーバーを追加した後、Claude Code で `/mcp` を使用して Firecrawl へのサインインを完了してください。
+`https://mcp.firecrawl.dev/v2/mcp-oauth` はクライアントの構成値であり、ブラウザで直接開くページではありません。
 
-**オプション B: ローカル (npx)**
-
-```bash
-claude mcp add firecrawl -e FIRECRAWL_API_KEY=your-api-key -- npx -y firecrawl-mcp@3.23.0
-```
-
-`your-api-key` を実際の Firecrawl APIキーに置き換えてください。
-
-完了です！これで Claude Code からウェブを検索・スクレイピングできます。
-
-<div id="quick-demo">
-  ## クイックデモ
+<div id="2-sign-in-and-verify">
+  ### 2. サインインして確認する
 </div>
 
-Claude Codeで以下を試してください:
+Claude Code で `/mcp` を入力し、`firecrawl` を選択してブラウザでサインインを完了します。既存の Firecrawl 接続を変更した場合は、新しい Claude Code セッションを開始してください。
 
-**ウェブを検索する:**
+アクティブな `firecrawl` サーバーが 1 つだけであることを確認してから、次を試してください。
 
-```
-Search for the latest Next.js 15 features
-```
-
-**ページをスクレイピングする:**
-
-```
-Scrape firecrawl.dev and tell me what it does
+```text
+Next.js の最新リリースノートを検索して、ソースを要約してください。
 ```
 
-**ドキュメントを取得:**
-
-```
-Find and scrape the Stripe API docs for payment intents
+```text
+https://firecrawl.dev をスクレイピングして、どんなサービスなのか説明してください。
 ```
 
-Claude は、情報を取得するために Firecrawl の検索ツールとスクレイピングツールを自動的に使用します。
+<div id="other-connection-modes">
+  ## その他の接続方法
+</div>
+
+* アカウントやキーなしで Search、スクレイピング、解析を利用するには、[keyless MCP を試す](/ja/mcp-server/keyless#try-keyless)。
+* ユーザー操作なしで使用するには、[API キーを設定](/ja/mcp-server/keyless#add-an-api-key)します。シークレットは Agent チャット外で管理し、環境変数を参照してください。
+* ローカルプロセスまたはセルフホスト型 Firecrawl API が必要な場合にのみ、[MCP をローカルで実行](/ja/mcp-server/local)してください。ローカルパッケージには Node.js 22 以降が必要です。
+
+<div id="optional-literature-research">
+  ## 任意：文献調査
+</div>
+
+論文や文献を扱う場合、research-index スキルは、一般的なウェブ検索ではなく、これらのクエリを `firecrawl_research_*` ツールと[Research Index](/ja/features/research)に振り分けます：
+
+```bash
+npx skills add firecrawl/skills@firecrawl-research-index
+```
+
+<div id="troubleshooting">
+  ## トラブルシューティング
+</div>
+
+* **Firecrawl サーバーがすでに存在する場合：** `claude mcp remove firecrawl` を実行し、目的の接続を一度だけ追加してから、新しいセッションを開始します。
+* **ブラウザが開かない場合：** `/mcp` を入力し、`firecrawl` を選択して、クライアント側から認証を開始します。
+* **サーバーで `401` が表示される場合：** `/mcp` から再度サインインしてください。会話や OAuth URL に API キーを貼り付けないでください。

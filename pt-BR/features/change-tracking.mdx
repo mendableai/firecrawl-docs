@@ -1,18 +1,20 @@
 ---
 title: 'Rastreio de mudanças'
-description: 'Detecte e monitore mudanças em conteúdo da web entre scrapes'
+description: 'Detecte e monitore mudanças em conteúdo da web entre scrapings'
 og:title: "Rastreio de mudanças | Firecrawl"
 sidebarTitle: "Rastreio de mudanças"
-og:description: "Detecte e monitore mudanças em conteúdo da web entre scrapes"
+og:description: "Detecte e monitore mudanças em conteúdo da web entre scrapings"
 ---
 
 ![Rastreio de mudanças](/images/launch-week/lw3d12.webp)
 
-O rastreio de mudanças compara o conteúdo atual de uma página com o da última vez em que você fez o scrape. Adicione `changeTracking` ao seu array de `formats` para detectar se uma página é nova, inalterada ou modificada e, opcionalmente, obter um diff estruturado do que mudou.
+O rastreio de mudanças compara o conteúdo atual de uma página com o da última vez em que você fez o scraping. Adicione `changeTracking` ao seu array de `formats` para detectar se uma página é nova, inalterada ou modificada e, opcionalmente, obter um diff estruturado do que mudou.
 
 * Funciona com `/scrape`, `/crawl` e `/batch/scrape`
 * Dois modos de diff: `git-diff` para mudanças em nível de linha e `json` para comparação em nível de campo
 * Restrito à sua equipe e, opcionalmente, a uma tag que você especificar
+
+O rastreio de mudanças é a primitiva de diff por scraping. Se você quiser que o Firecrawl execute as verificações em um agendamento e o notifique por webhook, email ou Slack quando algo mudar, use o [monitoramento](/pt-BR/features/monitoring) em vez de chamar o `/scrape` por conta própria em intervalos regulares.
 
 <div id="how-it-works">
   ## Como funciona
@@ -166,7 +168,7 @@ O modo `git-diff` retorna alterações linha a linha em um formato semelhante ao
   ```
 </CodeGroup>
 
-<div id="response">
+<div id="response-2">
   ### Resposta
 </div>
 
@@ -286,7 +288,7 @@ Passe `modes: ["json"]` com um `schema` definindo os campos a serem extraídos:
   ```
 </CodeGroup>
 
-<div id="response">
+<div id="response-3">
   ### Resposta
 </div>
 
@@ -475,10 +477,10 @@ Use a [raspagem em lote](/pt-BR/features/batch-scrape) para monitorar um conjunt
 </CodeGroup>
 
 <div id="scheduling-change-tracking">
-  ## Agendando o rastreamento de alterações
+  ## Agendando o rastreio de mudanças
 </div>
 
-O rastreamento de alterações é mais útil quando você faz scraping em uma agenda regular. Você pode automatizar isso com cron, agendadores em nuvem ou ferramentas de workflow.
+O rastreio de mudanças é mais útil quando você faz scraping em uma agenda regular. O [monitoramento](/pt-BR/features/monitoring) executa esse agendamento para você, com intervalos de até 5 minutos, e envia notificações por webhook, email ou Slack. Use as opções abaixo quando quiser gerenciar o agendamento por conta própria com cron, agendadores em nuvem ou ferramentas de fluxo de trabalho.
 
 <div id="cron-job">
   ### Cron job
@@ -543,7 +545,7 @@ Agende isso com `crontab -e`:
   ### Automação de fluxos de trabalho
 </div>
 
-Plataformas no-code como **n8n**, **Zapier** e **Make** podem chamar a API do Firecrawl em intervalos programados e enviar os resultados para o Slack, e-mail ou bancos de dados. Veja os [guias de automação de fluxos de trabalho](/pt-BR/developer-guides/workflow-automation/n8n).
+Plataformas no-code como **n8n**, **Zapier** e **Make** podem chamar a API do Firecrawl em intervalos programados e enviar os resultados para o Slack, e-mail ou bancos de dados. Veja os [guias de automação de fluxos de trabalho](/pt-BR/integrations/n8n).
 
 <div id="webhooks">
   ## Webhooks

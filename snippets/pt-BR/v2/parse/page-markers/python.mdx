@@ -1,0 +1,20 @@
+```python Python
+from firecrawl import Firecrawl
+from firecrawl.v2.types import ScrapeOptions
+
+firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
+
+doc = firecrawl.parse(
+    "./report.pdf",
+    options=ScrapeOptions(parsers=[{"type": "pdf", "page_markers": True}]),
+)
+
+print(doc.markdown)
+# ...fim da página 1
+#
+# ---
+#
+# <!-- página 2 -->
+#
+# início da página 2...
+```

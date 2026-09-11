@@ -1,17 +1,231 @@
 ---
 title: "Dify"
-description: "Learn how to use Firecrawl on Dify"
-og:title: "Dify | Firecrawl"
-og:description: "Learn how to use Firecrawl on Dify"
+description: "Official Firecrawl plugin for Dify workflows, plus knowledge base website sync"
 ---
 
-## Sync Data from Websites for Dify workflows
+<Note>
+**Official Dify Plugin:** [marketplace.dify.ai/plugins/langgenius/firecrawl](https://marketplace.dify.ai/plugins/langgenius/firecrawl)
 
-Firecrawl can be used inside of [Dify the LLM workflow builder](https://cloud.dify.ai/). This page introduces how to scrape data from a web page, parse it into Markdown, and import it into the Dify knowledge base using their Firecrawl integration.
+Official plugin by Dify team • 170,000+ installs • Chatflow & Agent apps • Free to use
+</Note>
+
+## Dify Integration Overview
+
+Dify is an open-source LLM app development platform. The official Firecrawl plugin enables web crawling and scraping directly in your AI workflows.
+
+<CardGroup cols={2}>
+  <Card title="Chatflow & Workflow Apps" icon="diagram-project">
+    Build visual pipelines with Firecrawl nodes for data extraction
+  </Card>
+
+  <Card title="Agent Applications" icon="robot">
+    Give AI agents the power to scrape live web data on demand
+  </Card>
+</CardGroup>
+
+## Firecrawl Tools in Dify
+
+The plugin ships seven actions.
+
+<AccordionGroup>
+  <Accordion title="Search" icon="magnifying-glass">
+
+Search the web and optionally scrape the returned results, so you get fresh result metadata or full page content in one step.
+
+**Use Cases:** Research assistants, competitor discovery, grounding answers in live sources.
+
+  </Accordion>
+
+  <Accordion title="Scrape" icon="file-code">
+
+Convert any URL into clean, structured data. Transform raw HTML into actionable insights.
+
+**Use Cases:** Extract product data, scrape article content, get structured data with JSON mode.
+
+  </Accordion>
+
+  <Accordion title="Crawl" icon="spider">
+
+Perform recursive crawls of websites and subdomains to gather extensive content.
+
+**Use Cases:** Full site content extraction, documentation scraping, multi-page data collection.
+
+  </Accordion>
+
+  <Accordion title="Map" icon="sitemap">
+
+Generate a complete map of all URLs present on a website.
+
+**Use Cases:** Site structure analysis, SEO auditing, URL discovery for batch scraping.
+
+  </Accordion>
+
+  <Accordion title="Crawl Job" icon="list-check">
+
+Retrieve scraping results based on a Job ID or cancel ongoing tasks.
+
+**Use Cases:** Monitor long-running crawls, manage async scraping workflows, cancel operations when needed.
+
+  </Accordion>
+
+  <Accordion title="Create Monitor" icon="bell">
+
+Create a scheduled monitor that re-checks a target on a recurring schedule.
+
+**Use Cases:** Keeping ingested data fresh, changelog watching, competitor tracking.
+
+  </Accordion>
+
+  <Accordion title="Monitor Checks" icon="clock-rotate-left">
+
+Retrieve a monitor's details and its check results, so you can act only on the pages that changed.
+
+**Use Cases:** Incremental knowledge base updates, change alerts, downstream triggers.
+
+  </Accordion>
+</AccordionGroup>
+
+## Getting Started
+
+<Steps>
+  <Step title="Install Firecrawl Plugin">
+    Access the [Dify Plugin Marketplace](https://marketplace.dify.ai/plugins/langgenius/firecrawl) and install the Firecrawl tool
+  </Step>
+
+  <Step title="Get Firecrawl API Key">
+    Visit [Firecrawl API Keys](https://www.firecrawl.dev/app/api-keys) and create a new API key
+  </Step>
+
+  <Step title="Authorize in Dify">
+    Navigate to **Plugins > Firecrawl > To Authorize** and input your API key
+  </Step>
+
+  <Step title="Add to Your Workflow">
+    Drag Firecrawl tools into your Chatflow, Workflow, or Agent application
+  </Step>
+
+  <Step title="Configure & Test">
+    Set up parameters and test your workflow
+  </Step>
+</Steps>
+
+## Usage Patterns
+
+<Tabs>
+  <Tab title="Chatflow Apps">
+**Visual Pipeline Integration**
+
+1. Add Firecrawl node to your pipeline
+2. Select action (Map, Crawl, Scrape)
+3. Define input variables
+4. Execute pipeline sequentially
+
+**Example Flow:**
+```
+User Input → Firecrawl (Scrape) → LLM Processing → Response
+```
+  </Tab>
+
+  <Tab title="Workflow Apps">
+**Automated Data Processing**
+
+Build multi-step workflows with:
+- Scheduled scraping
+- Data transformation
+- Database storage
+- Notifications
+
+**Example Flow:**
+```
+Schedule Trigger → Firecrawl (Crawl) → Data Processing → Storage
+```
+  </Tab>
+
+  <Tab title="Agent Apps">
+**AI-Powered Web Access**
+
+Give agents real-time web scraping capabilities:
+
+1. Add Firecrawl tool to Agent
+2. Agent autonomously decides when to scrape
+3. LLM analyzes extracted content
+4. Agent provides informed responses
+
+**Use Case:** Customer support agents that reference live documentation
+  </Tab>
+</Tabs>
+
+## Common Use Cases
+
+<CardGroup cols={2}>
+  <Card title="AI Chatbot with Live Data" icon="messages">
+    Build RAG-powered chatbots that scrape and reference live website content
+  </Card>
+
+  <Card title="Content Analysis Agent" icon="brain">
+    Agents that research topics by scraping and analyzing multiple sources
+  </Card>
+
+  <Card title="Competitor Monitoring" icon="binoculars">
+    Automated workflows that track competitor websites and alert on changes
+  </Card>
+
+  <Card title="Data Enrichment Pipeline" icon="database">
+    Extract and enrich data from websites into structured databases
+  </Card>
+</CardGroup>
+
+## Firecrawl Actions
+
+| Tool | Description | Best For |
+|------|-------------|----------|
+| **Search** | Web search with optional page content | Grounding answers in live sources |
+| **Scrape** | Single-page data extraction | Quick content capture |
+| **Crawl** | Multi-page recursive crawling | Full site extraction |
+| **Map** | URL discovery and site mapping | SEO analysis, URL lists |
+| **Crawl Job** | Async job management | Long-running operations |
+| **Create Monitor** | Scheduled re-checks of a target | Keeping ingested data fresh |
+| **Monitor Checks** | Monitor details and check results | Acting only on changed pages |
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Agent Apps" icon="robot">
+    - Let agents decide when to scrape
+    - Use natural language instructions
+    - Enable tool calling in LLM settings
+    - Monitor token usage with large scrapes
+  </Card>
+
+  <Card title="Workflow Apps" icon="diagram-project">
+    - Use Map before Crawl for large sites
+    - Set appropriate crawl limits
+    - Add error handling nodes
+    - Test with small datasets first
+  </Card>
+</CardGroup>
+
+## Dify vs Other Platforms
+
+| Feature | Dify | Make | Zapier | n8n |
+|---------|------|------|--------|-----|
+| **Type** | LLM app platform | Workflow automation | Workflow automation | Workflow automation |
+| **Best For** | AI agents & chatbots | Visual workflows | Quick automation | Developer control |
+| **Pricing** | Open-source + Cloud | Operations-based | Per-task | Execution-based |
+| **AI-Native** | Yes | Partial | Partial | Partial |
+| **Self-Hosted** | Yes | No | No | Yes |
+
+<Tip>
+**Pro Tip:** Dify excels at building AI-native applications where agents need dynamic web access. Perfect for chatbots, research assistants, and AI tools that need live data.
+</Tip>
+
+## Sync websites into the Dify knowledge base
+
+Firecrawl can also scrape a web page into Markdown and import it into the Dify knowledge base from [Dify Cloud](https://cloud.dify.ai/).
 
 ### Configuring Firecrawl
 
-First, you need to configure Firecrawl credentials in the Data Source section of the Settings page.
+Open your avatar menu, go to the **DataSource** page, and configure Firecrawl credentials.
 
 <img
   className="block"
@@ -19,7 +233,7 @@ First, you need to configure Firecrawl credentials in the Data Source section of
   alt="Configure Firecrawl key"
 />
 
-Log in to your Firecrawl account and get your API Key, and then enter and save it in Dify.
+Log in to your Firecrawl account, get your API key, then enter and save it in Dify.
 
 <img
   className="block"
@@ -27,9 +241,9 @@ Log in to your Firecrawl account and get your API Key, and then enter and save i
   alt="Save Firecrawl key"
 />
 
-### Scrape target webpage
+### Scrape the target webpage
 
-Now comes the fun part, scraping and crawling. On the knowledge base creation page, select Sync from website and enter the URL to be scraped.
+On the knowledge base creation page, select Sync from website, choose Firecrawl as the provider, and enter the URL to scrape.
 
 <img
   className="block"
@@ -37,7 +251,7 @@ Now comes the fun part, scraping and crawling. On the knowledge base creation pa
   alt="Scraping setup"
 />
 
-The configuration options include: Whether to crawl sub-pages, Page crawling limit, Page scraping max depth, Excluded paths, Include only paths, and Content extraction scope. After completing the configuration, click Run to preview the parsed pages.
+Configuration options include: whether to crawl sub-pages, page crawling limit, page scraping max depth, excluded paths, include only paths, and content extraction scope. After configuring, click Run to preview the parsed pages.
 
 <img
   className="block"
@@ -47,7 +261,7 @@ The configuration options include: Whether to crawl sub-pages, Page crawling lim
 
 ### Review import results
 
-After importing the parsed text from the webpage, it is stored in the knowledge base documents. View the import results and click Add URL to continue importing new web pages.
+Imported page text is stored in knowledge base documents. View the results and click Add URL to import more pages.
 
 <img
   className="block"

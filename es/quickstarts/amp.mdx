@@ -4,65 +4,13 @@ description: "Añade el scraping web y la búsqueda de Firecrawl a Sourcegraph A
 sidebarTitle: "Amp"
 ---
 
-Añade las herramientas de búsqueda, scraping, rastreo y navegador de Firecrawl a [Sourcegraph Amp](https://ampcode.com) mediante MCP.
+Añade las herramientas sin clave Search, scraping y Parse de Firecrawl a [Sourcegraph Amp](https://ampcode.com) mediante el MCP Server alojado.
 
 <div id="quick-setup">
   ## Configuración rápida
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. Obtén tu clave de API
-</div>
-
-Regístrate en [firecrawl.dev/app](https://www.firecrawl.dev/app) y copia tu clave de API.
-
-<div id="2-add-firecrawl-to-amp">
-  ### 2. Añade Firecrawl a Amp
-</div>
-
-Abre la configuración de Amp y añade un MCP Server. Amp admite la configuración estándar de MCP:
-
-```json
-{
-  "amp.mcpServers": {
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
-    }
-  }
-}
-```
-
-Sustituye `fc-YOUR-API-KEY` por tu clave de API de Firecrawl.
-
-<div id="3-reload-amp">
-  ### 3. Vuelve a cargar Amp
-</div>
-
-Vuelve a cargar la ventana de Amp. Las herramientas de Firecrawl ya están disponibles para el agente.
-
-<div id="quick-demo">
-  ## Demo rápida
-</div>
-
-```
-Busca en la web "Sourcegraph Cody vs Amp" y resume las diferencias.
-```
-
-```
-Scrape https://docs.firecrawl.dev and list the core endpoints.
-```
-
-```
-Crawl https://example.com and output a site map as JSON.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## URL alojada remotamente (sin necesidad de Node.js)
-</div>
+Abre la configuración de Amp y añade este MCP Server remoto:
 
 ```json
 {
@@ -74,11 +22,25 @@ Crawl https://example.com and output a site map as JSON.
 }
 ```
 
-Esta configuración usa el conjunto de herramientas de Firecrawl sin clave. Para una configuración vinculada a una cuenta o desatendida, sigue los [modos de conexión MCP alojados](/es/developer-guides/mcp-setup-guides/oauth); guarda las claves de API en una cabecera Authorization o en un almacén seguro de secretos, nunca en una URL.
+Recarga Amp y confirma que `firecrawl_search`, `firecrawl_scrape` y `firecrawl_parse` están disponibles.
+
+El acceso sin clave tiene límites compartidos entre los usuarios con la misma IP pública. Inicia sesión desde un cliente interactivo con [For Humans](/es/mcp-server/oauth) o [añade una clave de API](/es/mcp-server/keyless#add-an-api-key) para uso desatendido.
+
+<div id="try-it">
+  ## Pruébalo
+</div>
+
+```text
+Busca en la web "Sourcegraph Cody vs Amp" y resume las fuentes.
+```
+
+```text
+Scrape https://docs.firecrawl.dev and list the core endpoints.
+```
 
 <div id="troubleshooting">
   ## Solución de problemas
 </div>
 
-* **El servidor no se inicia** — revisa la vista de registros de MCP de Amp para ver la salida de stderr.
-* **Falta `npx`** — instala Node.js 18+ o usa la URL alojada remotamente indicada arriba.
+* **El servidor no se conecta:** confirma que la URL sea exactamente `https://mcp.firecrawl.dev/v2/mcp` y revisa los registros de MCP de Amp.
+* **No aparece Crawl u otra herramienta:** el acceso sin clave solo incluye Search, scraping y Parse. Conéctate con OAuth o una clave de API para acceder a más herramientas.

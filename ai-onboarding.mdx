@@ -6,10 +6,10 @@ og:description: "Everything you need to onboard your AI agent to Firecrawl. Skil
 sidebarTitle: "Build with AI"
 ---
 
-If you're developing with AI, Firecrawl offers several resources to improve your experience. Firecrawl ships with **skills** — self-contained knowledge packs that AI coding agents discover and use automatically. One install command gives agents three complete skill segments: CLI skills for live web work, build skills for integrating Firecrawl into application code, and workflow skills for producing repeatable deliverables. Firecrawl users can get an API key in two ways. See [Get credentials](#get-credentials) below.
+If you're developing with AI, Firecrawl offers several resources to improve your experience. Firecrawl ships with **skills** — self-contained knowledge packs that AI coding agents discover and use automatically. One install command gives agents CLI skills for live web work and workflow skills for producing repeatable deliverables. Build skills for integrating Firecrawl into application code are a separate step (`firecrawl setup build`). Firecrawl users can get an API key in two ways. See [Get credentials](#get-credentials) below.
 
 - [Get credentials](#get-credentials)
-- [Skills + CLI](#skills-cli)
+- [CLI and agent skills](#cli)
 - [Using Firecrawl as a Tool](#using-firecrawl-as-a-tool)
 - [Agentic Debugging](#agentic-debugging)
 - [Firecrawl MCP Server](#firecrawl-mcp-server)
@@ -49,20 +49,23 @@ Firecrawl users can get an API key in two ways. Most users should sign in throug
 
 **Can't sign in or get a key?** The CLI, SDKs, and REST API allow keyless search, scrape, interact, and parse. Hosted MCP exposes the narrower keyless Search, Scrape, and Parse surface; interact requires an account connection or API key there. Keyless access is rate-limited and meant as a fallback, so move to a free account or API key as soon as one is available. See [Keyless (no API key)](/rate-limits#keyless-no-api-key) for details.
 
-Once you have an API key, continue with [Skills + CLI](#skills-cli) below.
+Once you have an API key, continue with [CLI and agent skills](#cli) below.
 
-## Skills + CLI
+<span id="cli"></span>
+
+## CLI and agent skills
 
 The [Firecrawl CLI](/sdks/cli) lets your agent search, scrape, interact, crawl, map, extract, and run agent jobs from the terminal. It's built for humans, AI agents, and CI/CD pipelines.
 
-The Firecrawl **skills** are self-contained knowledge packs that AI coding agents like Claude Code, Antigravity, and OpenCode discover and use automatically. A single install command sets up everything — the CLI tools for live web work, the build skills for integrating Firecrawl into application code, and the workflow skills for producing repeatable deliverables:
+The Firecrawl **skills** are self-contained knowledge packs that AI coding agents like Codex, Claude Code, Cursor, and OpenCode discover and use automatically. A single install command sets up the CLI tools for live web work and the workflow skills for producing repeatable deliverables. Build skills for integrating Firecrawl into application code are installed with `firecrawl setup build`:
 
 ```bash
 npx -y firecrawl-cli@latest init --all --browser
 ```
 
-- `--all` installs every Firecrawl skill segment (CLI, build, workflows) to every detected AI coding agent on the machine
+- `--all` skips agent selection and initializes every detected agent
 - `--browser` opens the browser for Firecrawl authentication automatically
+- `--skip-auth`, `--skip-install`, `--skip-skills`, and `--agent <name>` are also available. See `firecrawl init --help`.
 
 After install, verify everything is working:
 
@@ -74,13 +77,14 @@ firecrawl scrape "https://firecrawl.dev"
 To reinstall or scope to a specific agent later:
 
 ```bash
-firecrawl setup skills      # CLI + build skills
+firecrawl setup skills      # CLI / core skills
+firecrawl setup build       # build skills
 firecrawl setup workflows   # workflow skills
 ```
 
 ### What the install gives you
 
-The install sets up three categories of skills that cover every way an agent uses Firecrawl. Each segment lives in its own repo so it can evolve independently:
+Firecrawl skills cover three categories. `init` installs CLI and workflow skills. Run `firecrawl setup build` for build skills. Each segment lives in its own repo so it can evolve independently:
 
 - [`firecrawl/cli`](https://github.com/firecrawl/cli) — CLI skills for live web work
 - [`firecrawl/skills`](https://github.com/firecrawl/skills) — build skills for app integration
@@ -88,28 +92,36 @@ The install sets up three categories of skills that cover every way an agent use
 
 **CLI skills** — for live web work during an agent session:
 
-| Skill                | Purpose                                           |
-| -------------------- | ------------------------------------------------- |
-| `firecrawl/cli`      | Overall CLI command workflow                      |
-| `firecrawl-search`   | Search the web and discover pages                 |
-| `firecrawl-scrape`   | Extract clean content from a known URL            |
-| `firecrawl-interact` | Interact with scraped pages using prompts or code |
-| `firecrawl-crawl`    | Bulk-extract content from an entire site          |
-| `firecrawl-map`      | Discover all URLs on a domain                     |
-| `firecrawl-agent`    | Run autonomous web data gathering with a job      |
+| Skill                        | Purpose                                                |
+| ---------------------------- | ------------------------------------------------------ |
+| `firecrawl`                  | Overall CLI command workflow                           |
+| `firecrawl-search`           | Search the web and discover pages                      |
+| `firecrawl-scrape`           | Extract clean content from a known URL                 |
+| `firecrawl-interact`         | Interact with scraped pages using prompts or code      |
+| `firecrawl-crawl`            | Bulk-extract content from an entire site               |
+| `firecrawl-map`              | Discover all URLs on a domain                          |
+| `firecrawl-agent`            | Run autonomous web data gathering with a job           |
+| `firecrawl-monitor`          | Detect site changes and get notified                   |
+| `firecrawl-parse`            | Parse local documents into markdown                    |
+| `firecrawl-download`         | Download a site as local files                         |
+| `firecrawl-research-index`   | Search papers, read passages, and follow citations     |
+| `firecrawl-developer-index`  | Search issues, pull requests, READMEs, and docs        |
+
+The install above includes both index skills. To add just the paper-search one to an existing setup — worth doing when the work is biomedical or scientific literature — run:
+
+```bash
+npx skills add firecrawl/skills@firecrawl-research-index
+```
 
 **Build skills** — for integrating Firecrawl into application code:
 
-| Skill                        | Purpose                                              |
-| ---------------------------- | ---------------------------------------------------- |
-| `firecrawl-build`            | Choose the right Firecrawl endpoint for your product |
-| `firecrawl-build-onboarding` | Auth and project setup                               |
-| `firecrawl-build-scrape`     | Implement scraping in app code                       |
-| `firecrawl-build-search`     | Implement search in app code                         |
-| `firecrawl-build-interact`   | Implement page interaction in app code               |
-| `firecrawl-build-crawl`      | Implement crawling in app code                       |
-| `firecrawl-build-map`        | Implement URL discovery in app code                  |
-| `firecrawl-build-parse`      | Implement document parsing in app code               |
+| Skill                        | Purpose                                                          |
+| ---------------------------- | ---------------------------------------------------------------- |
+| `firecrawl-build`            | Choose the right Firecrawl endpoint for your product             |
+| `firecrawl-build-onboarding` | Auth and project setup                                           |
+| `firecrawl-build-scrape`     | Implement scraping in app code                                   |
+| `firecrawl-build-search`     | Implement search in app code                                     |
+| `firecrawl-build-interact`   | Implement page interaction in app code                           |
 
 **Workflow skills** — outcome-focused skills that produce a concrete deliverable from Firecrawl web data:
 
@@ -134,7 +146,7 @@ The install sets up three categories of skills that cover every way an agent use
 
 ### Choose your path
 
-All three skill categories use the same install. The difference is what happens next:
+CLI and workflow skills come from the install above. Build skills are a separate step: `firecrawl setup build`. The difference is what happens next:
 
 <Steps>
   <Step title="Live web tools (CLI skills)">
@@ -160,7 +172,7 @@ All three skill categories use the same install. The difference is what happens 
 
   </Step>
   <Step title="App integration (Build skills)">
-    Use this when you're building an application, agent, or workflow that calls the Firecrawl API from code. The build skills help with picking the right endpoint, wiring up the SDK, and running a smoke test.
+    Use this when you're building an application, agent, or workflow that calls the Firecrawl API from code. Install the build skills with `firecrawl setup build`. They help with picking the right endpoint, wiring up the SDK, and running a smoke test.
 
     The agent answers one key question — *what should Firecrawl do in the product?* — and the build skills route to `/search`, `/scrape`, `/interact`, `/parse`, `/crawl`, `/map`, or `/agent` accordingly.
 
@@ -242,7 +254,9 @@ Firecrawl gives agents five core tools for working with the web. Each tool maps 
       -d '{"query": "latest OpenAI API pricing"}'
     ```
 
-    **When to use:** Research tasks, finding documentation, competitive analysis, answering questions that require up-to-date web information.
+    **When to use:** General web research, finding documentation, competitive analysis, answering questions that require up-to-date web information.
+
+    **When not to use:** Scientific literature. To find papers, read passages from inside one, or follow citations, use the [Research Index](/features/research) instead — the `firecrawl_research_*` MCP tools, `firecrawl research search-papers` on the CLI, or the `firecrawl-research-index` skill. Search returns web page snippets; the Research Index returns paper records with full abstracts.
 
   </Accordion>
 
@@ -375,35 +389,10 @@ The response includes an `answer`, a `confidence` rating, optional `fixParameter
 
 ## Firecrawl MCP Server
 
-MCP is an open protocol that standardizes how applications provide context to LLMs. Among other benefits, it gives LLMs tools to act on your behalf. Our [MCP server](https://github.com/firecrawl/firecrawl-mcp-server) is open-source and covers our full API surface — search, scrape, interact, crawl, map, extract, and agent.
+MCP is an open protocol that lets compatible applications give models access to tools. The open-source [Firecrawl MCP server](https://github.com/firecrawl/firecrawl-mcp-server) supports search, scraping, browsing, crawling, mapping, structured extraction through Scrape JSON, and autonomous Agent jobs.
 
-Use the remote hosted URL (works without an API key on the keyless free tier):
-
-```
-https://mcp.firecrawl.dev/v2/mcp
-```
-
-With an API key, send it as an `Authorization: Bearer fc-YOUR-API-KEY` header to unlock every tool plus higher limits.
-
-Or add the local server to any MCP client:
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
-    }
-  }
-}
-```
-
-<Card title="MCP Server" icon="plug" href="/mcp-server">
-  View installation instructions for Cursor, Claude Desktop, Windsurf, VS Code,
-  and more.
+<Card title="Choose an MCP connection" icon="plug" href="/mcp-server">
+  Try keyless access, sign in through an interactive client, or configure an API key for agents, CI, and backend services.
 </Card>
 
 ## Firecrawl Docs for Agents
@@ -433,7 +422,7 @@ You can give your agent current Firecrawl docs in a context-aware way. Agents ca
 
   </Step>
   <Step title="MCP docs server">
-    For a structured approach using MCP tools, connect the Firecrawl MCP server in any MCP client (Cursor, Claude Code, Claude Desktop, Windsurf). See the [MCP Server](/mcp-server) page for install commands.
+    For a structured approach using MCP tools, connect the Firecrawl MCP server in Codex, Cursor, Claude Code, Claude Desktop, or another compatible client. Start with the [MCP setup chooser](/mcp-server). Windsurf users should follow the [Windsurf quickstart](/quickstarts/windsurf).
   </Step>
   <Step title="Copy to ChatGPT / Claude">
     Every page includes a contextual action menu (copy, view as markdown, open in ChatGPT, open in Claude) so agents and humans can move pages between tools in one click.
@@ -446,7 +435,7 @@ Drop-in quickstarts for the stacks agents build on most often. Point your agent 
 
 Prefer to let Cursor drive? One-click install the Firecrawl MCP server and start prompting in Cursor:
 
-<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=firecrawl&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImZpcmVjcmF3bC1tY3AiXSwiZW52Ijp7IkZJUkVDUkFXTF9BUElfS0VZIjoiWU9VUi1BUEktS0VZIn19">
+<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=firecrawl&config=eyJ1cmwiOiJodHRwczovL21jcC5maXJlY3Jhd2wuZGV2L3YyL21jcCJ9">
   <img
     src="https://cursor.com/deeplink/mcp-install-dark.png"
     alt="Open in Cursor — Add Firecrawl MCP server"

@@ -20,7 +20,7 @@ og:description: "通过由您的组织控制的策略，在所有端点上封禁
 威胁防护 提供三种模式，可在组织级别设置：
 
 * **关闭** (默认值) — 不进行任何检查。
-* **正常** — URL 会与 [Google Web Risk](https://cloud.google.com/web-risk) 进行比对；该服务会标记与恶意软件、社会工程攻击 (网络钓鱼) 和有害软件相关的页面和网站。**每扫描一个 URL 需消耗 +2 额度。**
+* **正常** — URL 会与 [Google Web Risk](https://cloud.google.com/security/products/web-risk) 进行比对；该服务会标记与恶意软件、社会工程攻击 (网络钓鱼) 和有害软件相关的页面和网站。**每扫描一个 URL 需消耗 +2 额度。**
 * **Zscaler** — URL 会与你组织自己的 [Zscaler Internet Access](https://www.zscaler.com/products-and-solutions/zscaler-internet-access) (ZIA) 租户进行比对：包括你选择封禁的由 Zscaler 定义的 URL 类别，以及你的自定义 URL 类别和自定义 URL 列表。请参见下方的 [Zscaler 模式](#zscaler-mode)。**无需扫描费用** — 分类会在你自己的租户中进行。
 
 这些检查旨在保护你的数据。在正常模式下，绝大多数请求都会基于定期同步的威胁列表在本地完成，因此你抓取的 URL 绝不会发送给分类器。在 Zscaler 模式下，URL 分类会在你自己的 ZIA 租户中进行 — 即已知晓你组织网页策略的同一系统。无论采用哪种模式，Firecrawl 都不会存储关于你流量的任何判定结果。

@@ -1,0 +1,58 @@
+---
+title: "Praison AI"
+description: "使用 Firecrawl 作为 Praison AI 工具抓取网页"
+---
+
+<Note>
+  **Praison 官方文档：** [praison.ai/docs/tools/external/firecrawl](https://praison.ai/docs/tools/external/firecrawl)
+
+  通过 Firecrawl 为 Praison 代理提供实时网页抓取能力
+</Note>
+
+<div id="overview">
+  ## 概述
+</div>
+
+Praison AI 可以调用 Firecrawl 工具，让代理抓取网页，并在运行过程中使用清理后的内容。
+
+<div id="quick-start">
+  ## 快速开始
+</div>
+
+1. 安装 tools extra：
+
+```bash
+pip install "praisonai[tools]"
+```
+
+2. 为 Firecrawl 云端设置 `FIRECRAWL_API_KEY`
+3. 将 Firecrawl 工具传入你的代理：
+
+```python
+from praisonaiagents import Agent
+from praisonai_tools import FirecrawlTool
+
+agent = Agent(
+    name="WebScraper",
+    instructions="You are a web scraping assistant. Use Firecrawl to extract content.",
+    tools=[FirecrawlTool()],
+)
+
+print(agent.chat("Scrape the content from https://praison.ai/docs"))
+```
+
+<div id="what-you-can-do">
+  ## 可执行的操作
+</div>
+
+| 功能     | 使用场景                                            |
+| ------ | ----------------------------------------------- |
+| **抓取** | 将清理后的页面内容获取到代理上下文中 (`FirecrawlTool.scrape`)     |
+| **爬取** | 从网站收集页面 (`FirecrawlTool.crawl(url, limit=10)`)  |
+
+<div id="resources">
+  ## 资源
+</div>
+
+* [Praison `FirecrawlTool` 指南](https://praison.ai/docs/tools/external/firecrawl)
+* [Firecrawl 抓取文档](/zh/features/scrape)

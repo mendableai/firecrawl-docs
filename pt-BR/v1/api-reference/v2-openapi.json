@@ -873,7 +873,7 @@
           },
           "proxy": {
             "default": "auto",
-            "description": "Especifica o tipo de proxy a ser usado.\n\n - **basic**: Proxies para scraping de sites sem ou com soluções anti-bot básicas. Rápido e geralmente funciona.\n - **enhanced**: Proxies avançados para scraping de sites com soluções anti-bot avançadas. Mais lento, porém mais confiável em certos sites. Pode custar até 5 créditos por requisição.\n - **auto**: O Firecrawl irá automaticamente repetir o scraping com proxies *enhanced* se o proxy *basic* falhar. Se a nova tentativa com *enhanced* for bem-sucedida, 5 créditos serão cobrados por essa operação de scraping. Se a primeira tentativa com *basic* for bem-sucedida, apenas o custo normal será cobrado.\n\nSe você não especificar um proxy, o Firecrawl usará **auto** por padrão.",
+            "description": "Especifica o tipo de proxy a ser usado.\n\n - **basic**: Proxies para scraping de sites sem ou com soluções anti-bot básicas. Rápido e geralmente funciona.\n - **enhanced**: Proxies avançados para scraping de sites com soluções anti-bot avançadas. Mais lento, porém mais confiável em certos sites. Cobrado pelo mesmo custo em créditos que o básico.\n - **auto**: O Firecrawl irá automaticamente repetir o scraping com proxies *enhanced* se o proxy *basic* falhar. Proxies aprimorados não têm cobrança adicional de créditos, portanto, de qualquer forma, apenas o custo normal será cobrado.\n\nSe você não especificar um proxy, o Firecrawl usará **auto** por padrão.",
             "enum": [
               "basic",
               "enhanced",
@@ -2883,7 +2883,7 @@
                           "type": "string"
                         },
                         "planCredits": {
-                          "description": "Número de créditos do plano. Isso não inclui créditos provenientes de cupons, pacotes de créditos ou créditos de recarga automática.",
+                          "description": "Número de créditos do plano. Isso não inclui créditos provenientes de cupons ou créditos adicionados por pagamento conforme o uso.",
                           "example": 500000,
                           "type": "number"
                         },

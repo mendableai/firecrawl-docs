@@ -1,0 +1,120 @@
+---
+title: "Hermes Agent"
+description: "Use Firecrawl as the default web search and extract backend in Hermes Agent"
+---
+
+<Note>
+**Official Hermes docs:** [Web search](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-search) · [Browser](https://hermes-agent.nousresearch.com/docs/user-guide/features/browser)
+
+[Hermes Agent](https://hermes-agent.nousresearch.com/) by Nous Research uses Firecrawl as the default backend for `web_search` and `web_extract`
+</Note>
+
+## Overview
+
+Hermes Agent is an open source terminal and desktop agent from Nous Research. It ships with web tools:
+
+| Tool | What it does |
+|------|----------------|
+| **`web_search`** | Search the web and return ranked results |
+| **`web_extract`** | Fetch and extract readable content from URLs |
+
+Firecrawl is the **default** provider for both search and extract. Set `FIRECRAWL_API_KEY`, use a self hosted `FIRECRAWL_API_URL`, or use Nous Tool Gateway. If you have credentials for multiple providers, select Firecrawl in `hermes tools` or `config.yaml`. Browser automation through Firecrawl cloud mode is optional.
+
+## Quick start
+
+1. Install Hermes Agent from [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com/)
+2. Add your Firecrawl key:
+
+```bash
+# ~/.hermes/.env
+FIRECRAWL_API_KEY=fc-your-key-here
+```
+
+Get a key at [firecrawl.dev](https://www.firecrawl.dev/app/api-keys).
+
+3. Or configure interactively:
+
+```bash
+hermes tools
+```
+
+Choose **Web Search & Extract** → **Firecrawl**.
+
+4. Verify:
+
+```bash
+hermes setup
+```
+
+## Capabilities
+
+| Capability | In Hermes |
+|------------|-----------|
+| **Search** | Default `web_search` backend |
+| **Extract / scrape** | Default `web_extract` backend |
+| **Browser** | Optional Firecrawl cloud browser provider |
+
+### Use Firecrawl for one capability only
+
+Hermes lets you pick search and extract backends independently, so you can pair a free search backend with Firecrawl extraction (or the reverse):
+
+```yaml
+# ~/.hermes/config.yaml
+web:
+  search_backend: "searxng"
+  extract_backend: "firecrawl"
+```
+
+When those keys are empty, both fall through to `web.backend`, and then Hermes auto detects from available credentials. Other provider credentials can take priority over Firecrawl during auto detection, so set `search_backend`, `extract_backend`, or `web.backend` explicitly when you want to guarantee that Firecrawl is used.
+
+### Browser cloud mode
+
+To use Firecrawl for browser automation:
+
+```bash
+# ~/.hermes/.env
+FIRECRAWL_API_KEY=fc-your-key-here
+```
+
+```bash
+hermes setup tools
+# → Browser Automation → Firecrawl
+```
+
+Optional:
+
+```bash
+# Self hosted Firecrawl (default cloud API otherwise)
+FIRECRAWL_API_URL=http://localhost:3002
+
+# Session TTL in seconds (default: 300)
+FIRECRAWL_BROWSER_TTL=600
+```
+
+## Nous Portal (managed Firecrawl)
+
+With a paid [Nous Portal](https://portal.nousresearch.com/) subscription, web search and extract can run through Hermes **Tool Gateway** with managed Firecrawl. No separate Firecrawl key is required:
+
+```bash
+hermes setup --portal
+```
+
+Existing installs can enable web tools via `hermes tools`.
+
+## Self hosted Firecrawl
+
+```bash
+# ~/.hermes/.env
+FIRECRAWL_API_URL=http://localhost:3002
+```
+
+When `FIRECRAWL_API_URL` is set, the API key is optional if Firecrawl server auth is disabled (`USE_DB_AUTHENTICATION=false` on the Firecrawl instance).
+
+## Resources
+
+- [Hermes Agent](https://hermes-agent.nousresearch.com/)
+- [Hermes web search docs (Firecrawl default)](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-search#firecrawl-default)
+- [Hermes browser docs (Firecrawl cloud mode)](https://hermes-agent.nousresearch.com/docs/user-guide/features/browser#firecrawl-cloud-mode)
+- [Firecrawl search](/features/search)
+- [Firecrawl scrape](/features/scrape)
+- [Nous Research models quickstart](/quickstarts/nous-research) (API tool calling with Hermes models)

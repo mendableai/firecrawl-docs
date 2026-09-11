@@ -356,16 +356,14 @@ Formatos disponíveis:
 
 O custo de uma busca é de 2 créditos a cada 10 resultados de busca. Se as opções de scraping estiverem ativadas, os custos padrão de scraping se aplicam a cada resultado de busca:
 
-- **Basic scrape**: 1 crédito por página da web
-- **PDF parsing**: 1 crédito por página de PDF
-- **Enhanced proxy mode**: 4 créditos adicionais por página da web
-- **JSON mode**: 4 créditos adicionais por página da web
+* **Basic scrape**: 1 crédito por página da web
+* **PDF parsing**: 1 crédito por página de PDF
+* **JSON mode**: 4 créditos adicionais por página da web
 
 Para ajudar a controlar os custos:
 
-- Defina `parsers: []` se a análise de PDF não for necessária
-- Use `proxy: "basic"` em vez de `"enhanced"` quando possível, ou defina como `"auto"`
-- Limite o número de resultados de busca com o parâmetro `limit`
+* Defina `parsers: []` se a análise de PDF não for necessária
+* Limite o número de resultados de busca com o parâmetro `limit`
 
 <div id="advanced-scraping-options">
   ## Opções avançadas de scraping

@@ -5,7 +5,7 @@ openapi: '/ja/api-reference/v2-openapi.json POST /search'
 
 この search エンドポイントは、Web 検索と Firecrawl のスクレイピング機能を組み合わせることで、あらゆるクエリに対してページ全体のコンテンツを返します。
 
-各検索結果の Markdown 形式の完全なコンテンツを取得するには、`scrapeOptions` に `formats: [{"type": "markdown"}]` を指定してください。指定しない場合は、結果（url、title、description）がデフォルトで返されます。要約されたコンテンツが必要な場合は、`{"type": "summary"}` など他のフォーマットも使用できます。
+各検索結果の Markdown 形式の完全なコンテンツを取得するには、`scrapeOptions` に `formats: [{"type": "markdown"}]` を指定してください。指定しない場合は、結果 (url、title、description) がデフォルトで返されます。要約されたコンテンツが必要な場合は、`{"type": "summary"}` など他のフォーマットも使用できます。
 
 <div id="supported-query-operators">
   ## サポートされているクエリ演算子
@@ -51,14 +51,20 @@ openapi: '/ja/api-reference/v2-openapi.json POST /search'
 ```
 
 <div id="categories-parameter">
-  ## Categories パラメータ
+  ## Categories Parameter
 </div>
 
-`categories` パラメータで、特定のカテゴリに検索結果を絞り込みます：
+`categories` パラメータを使うと、search results を特定のカテゴリで絞り込めます。
 
-- **`github`**: GitHub のリポジトリ、コード、Issue、ドキュメントを検索
-- **`research`**: 学術系・研究系のウェブサイト（arXiv、Nature、IEEE、PubMed など）を検索
-- **`pdf`**: PDF を検索
+* **`research`**: web search を学術・研究 Web サイト (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov など) に限定します。2026-11-16 より [Research Index](/ja/features/research) を検索して paper レコードを返す仕様に変わります。詳細は以下の警告を参照してください
+* **`pdf`**: PDF を検索します
+* **`developer`**: [Developer Index](/ja/features/developer) を検索します — 公開コードリポジトリの issues、マージ済みのプルリクエスト、README に加え、厳選されたドキュメントサイトが対象です
+
+<Warning>
+  **`research` カテゴリは 2026-11-16 に変更されます。** web の結果を 14 の学術 Web サイトに絞り込むのではなく、[Research Index](/ja/features/research) (PubMed、bioRxiv、medRxiv、arXiv) を検索するようになります。結果は `data.web` から `data.research` へ移り、paper レコードとして返されます: `paperId`、`primaryId`、`ids`、`title`、`abstract`、`score`。それまでの間、このカテゴリを使用するレスポンスにはすべて `warnings` エントリが含まれます。
+
+  paper レコードが必要な場合は、この日付までに parsing を更新するか、今すぐ [`GET /search/research/papers`](/ja/api-reference/endpoint/research-search-papers) を呼び出してください。学術サイトの Web ページが必要な場合は、[`includeDomains`](#domain-filters) に切り替えてください。
+</Warning>
 
 <div id="example-usage">
   ### 使い方の例
@@ -67,7 +73,7 @@ openapi: '/ja/api-reference/v2-openapi.json POST /search'
 ```json
 {
   "query": "機械学習",
-  "categories": ["github", "research"],
+  "categories": ["research", "pdf"],
   "limit": 10
 }
 ```
@@ -116,22 +122,21 @@ openapi: '/ja/api-reference/v2-openapi.json POST /search'
   "data": {
     "web": [
       {
-        "url": "https://github.com/example/ml-project",
-        "title": "Machine Learning Project",
-        "description": "Implementation of ML algorithms",
-        "category": "github"
-      },
-      {
         "url": "https://arxiv.org/abs/2024.12345",
         "title": "ML Research Paper",
         "description": "Latest advances in machine learning",
         "category": "research"
+      },
+      {
+        "url": "https://example.com/ml-survey.pdf",
+        "title": "ML Survey",
+        "description": "A survey of machine learning methods",
+        "category": "pdf"
       }
     ]
   }
 }
 ```
-
 
 <div id="time-based-search">
   ## 時間ベースの検索

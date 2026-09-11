@@ -119,7 +119,7 @@ Les réponses en cas de succès incluent `success`, `data`, éventuellement `war
   * Type : tableau d’objets de catégorie typés
   * À utiliser lorsque : vous voulez filtrer les résultats par catégorie.
   * Formes d’objet confirmées :
-    * `{ "type": "github" }`
+    * `{ "type": "developer" }`
     * `{ "type": "research" }`
     * `{ "type": "pdf" }`
 
@@ -151,8 +151,8 @@ Les réponses en cas de succès incluent `success`, `data`, éventuellement `war
   * Type : tableau de strings (`"anon"` ou `"zdr"` par élément)
   * À utiliser lorsque : vous avez besoin de contrôles de recherche Enterprise.
   * Valeurs :
-    * `"zdr"`: zéro conservation des données de bout en bout
-    * `"anon"`: zéro conservation des données avec anonymisation
+    * `"zdr"`: rétention nulle des données de bout en bout
+    * `"anon"`: rétention nulle des données avec anonymisation
 
 * `scrapeOptions`
   * Type : objet
@@ -162,17 +162,19 @@ Les réponses en cas de succès incluent `success`, `data`, éventuellement `war
   ## Scrape
 </div>
 
-### Pourquoi l’utiliser
+<div id="why-use-it-2">
+  ### Pourquoi l’utiliser
+</div>
 
 Utilisez scrape lorsque vous avez déjà une URL et souhaitez du contenu structuré dans un ou plusieurs formats.
 
-<div id="endpoint">
+<div id="endpoint-2">
   ### Point de terminaison
 </div>
 
 `POST /scrape`
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Exemple simple
 </div>
 
@@ -186,7 +188,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
   }'
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Exemple complexe
 </div>
 
@@ -224,7 +226,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
   }'
 ```
 
-<div id="response">
+<div id="response-2">
   ### Réponse
 </div>
 
@@ -236,7 +238,7 @@ Les réponses réussies incluent `success` et `data`. Champs `data` courants (se
 * `warning` : avertissement facultatif concernant l&#39;extraction ou le formatage
 * `changeTracking` : présent lorsque le format `changeTracking` est demandé
 
-<div id="parameters">
+<div id="parameters-2">
   ### Paramètres
 </div>
 
@@ -358,17 +360,19 @@ Les réponses réussies incluent `success` et `data`. Champs `data` courants (se
   ## Interact
 </div>
 
-### Pourquoi l’utiliser
+<div id="why-use-it-3">
+  ### Pourquoi l’utiliser
+</div>
 
 Utilisez Interact lorsqu’une page nécessite des actions dans le navigateur ou l’exécution de code après le lancement d’un scrape.
 
-<div id="endpoint">
+<div id="endpoint-3">
   ### Point de terminaison
 </div>
 
 `POST /scrape/{jobId}/interact`
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Exemple simple
 </div>
 
@@ -381,7 +385,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   }'
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Exemple complexe
 </div>
 
@@ -396,7 +400,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   }'
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### Paramètres
 </div>
 
@@ -417,13 +421,15 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   * Type : integer (secondes ; minimum 1, maximum 300, par défaut 30)
   * À utiliser si : vous avez besoin d’un délai maximal d’exécution.
 
-<div id="response">
+<div id="response-3">
   ### Réponse
 </div>
 
 Les réponses en cas de succès incluent `success` ainsi que des champs d’exécution comme `stdout`, `result` (alias de `stdout`), `stderr`, `exitCode`, `killed` et `error` (nullable).
 
-### DELETE /scrape/{jobId}/interact
+<div id="delete-scrapeinteract">
+  ### DELETE /scrape/{jobId}/interact
+</div>
 
 <div id="example">
   ### Exemple
@@ -440,17 +446,19 @@ Pas de corps JSON. Une réponse réussie inclut `success`.
   ## Ask (débogage agentique)
 </div>
 
-### Pourquoi l’utiliser
+<div id="why-use-it-4">
+  ### Pourquoi l’utiliser
+</div>
 
 Utilisez Ask lorsqu’un appel à l’API Firecrawl échoue ou renvoie des résultats inattendus. L’agent d’assistance IA diagnostique le problème, propose des paramètres de correction et peut, si nécessaire, valider la correction sur l’API réelle. Latence typique : 15 à 30 secondes.
 
-<div id="endpoint">
+<div id="endpoint-4">
   ### Point de terminaison
 </div>
 
 `POST /support/ask`
 
-<div id="simple-example">
+<div id="simple-example-4">
   ### Exemple simple
 </div>
 
@@ -463,7 +471,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
   }'
 ```
 
-<div id="complex-example">
+<div id="complex-example-4">
   ### Exemple complexe
 </div>
 
@@ -478,7 +486,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
   }'
 ```
 
-<div id="response">
+<div id="response-4">
   ### Réponse
 </div>
 
@@ -491,7 +499,7 @@ Les réponses en cas de succès incluent `requestId`, `answer`, `confidence`, `f
 * `validation.result` : `success`, `failure` ou `skipped`.
 * `feedback` : présent lorsque l’agent est bloqué ; `null` en cas de succès.
 
-<div id="parameters">
+<div id="parameters-4">
   ### Paramètres
 </div>
 
@@ -511,17 +519,19 @@ Les réponses en cas de succès incluent `requestId`, `answer`, `confidence`, `f
   ## Recherche dans la documentation
 </div>
 
-### Pourquoi l’utiliser
+<div id="why-use-it-5">
+  ### Pourquoi l’utiliser
+</div>
 
 Utilisez docs-search pour rechercher dans la documentation de Firecrawl.
 
-<div id="endpoint">
+<div id="endpoint-5">
   ### Point de terminaison
 </div>
 
 `POST /support/docs-search`
 
-<div id="example">
+<div id="example-2">
   ### Exemple
 </div>
 
@@ -534,7 +544,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/docs-search" \
   }'
 ```
 
-<div id="parameters">
+<div id="parameters-5">
   ### Paramètres
 </div>
 

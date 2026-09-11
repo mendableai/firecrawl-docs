@@ -1,0 +1,16 @@
+```python Python
+from firecrawl import Firecrawl
+
+app = Firecrawl(api_key="fc-YOUR_API_KEY")
+
+# 列出最近的代理运行记录
+page = app.list_agents()
+
+for run in page.agents:
+    print(run.id, run.status, run.target_hint)
+
+# 使用 `next` 中的游标获取下一页
+if page.next:
+    before = int(page.next.split("before=")[-1])
+    older = app.list_agents(before=before)
+```

@@ -5,13 +5,24 @@ og:title: "Camel AI | Firecrawl"
 og:description: "Firecrawl 与 Camel AI 集成，用作数据加载器。"
 ---
 
+<Note>
+  **CAMEL 官方文档：** [docs.camel-ai.org/key&#95;modules/loaders](https://docs.camel-ai.org/key_modules/loaders)
+
+  Firecrawl 以 CAMEL 加载器的形式提供，可将任何网站转换为供您的代理使用、适配 LLM 的 Markdown
+</Note>
+
 <div id="installation">
   ## 安装
 </div>
 
 ```bash
 pip install camel-ai
+```
 
+设置 Firecrawl key，以便加载器自动读取：
+
+```bash
+export FIRECRAWL_API_KEY="fc-your-api-key"
 ```
 
 <div id="usage">
@@ -21,32 +32,43 @@ pip install camel-ai
 借助 Camel AI 和 Firecrawl，你可以快速构建利用网页数据的多智能体系统。
 
 <div id="using-firecrawl-to-gather-an-entire-website">
-  ### 使用 Firecrawl 抓取整站内容
+  ### 使用 Firecrawl 获取整个网站
 </div>
 
+`crawl` 会在任务完成后返回。检查 `status`，然后从 `data` 中读取 Markdown。
+
 ```python
-mock_app = MockFirecrawlApp.return_value
-firecrawl = Firecrawl(
-    api_key='FC_API_KEY', api_url='https://api.test.com'
-)
-url = 'https://example.com'
-response = [{'markdown': 'Markdown 内容'}]
-mock_app.crawl_url.return_value = respons
-result = firecrawl.markdown_crawl(url)
+from camel.loaders import Firecrawl
+
+firecrawl = Firecrawl()
+
+response = firecrawl.crawl(url="https://www.camel-ai.org/about")
+print(response["status"])  # 爬取完成后为 "completed"
+
+print(response["data"][0]["markdown"])
 ```
 
 <div id="using-firecrawl-to-gather-a-single-page">
-  ### 使用 Firecrawl 获取单个页面数据
+  ### 使用 Firecrawl 获取单个网页
 </div>
 
 ```python
-mock_app = MockFirecrawlApp.return_value
-firecrawl = Firecrawl(
-    api_key='test_api_key', api_url='https://api.test.com'
-)
-url = 'https://example.com'
-response = 'Scraped content'
-mock_app.scrape_url.return_value = response
+from camel.loaders import Firecrawl
 
-result = firecrawl.scrape(url)
+firecrawl = Firecrawl()
+
+response = firecrawl.scrape(url="https://www.camel-ai.org/about")
+print(response["markdown"])
 ```
+
+<Tip>
+  `Firecrawl()` 会从环境变量中读取 `FIRECRAWL_API_KEY`。传入 `api_key=...` 可覆盖该设置，或传入 `api_url=...` 以指向 [self-hosted](/zh/contributing/self-host) 实例。
+</Tip>
+
+<div id="resources">
+  ## 资源
+</div>
+
+* [CAMEL 加载器文档](https://docs.camel-ai.org/key_modules/loaders)
+* [CAMEL 与 Firecrawl 使用指南](https://www.camel-ai.org/blogs/firecrawl)
+* [Firecrawl 抓取](/zh/features/scrape)和[爬取](/zh/features/crawl)文档

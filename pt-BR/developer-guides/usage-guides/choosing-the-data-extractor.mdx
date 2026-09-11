@@ -47,7 +47,7 @@ O endpoint `/agent` é o recurso mais avançado do Firecrawl — o sucessor de `
 * **Navegação autônoma**: O agente pesquisa e navega profundamente em sites para encontrar seus dados
 * **Busca profunda na web**: Descobre autonomamente informações em diversos domínios e páginas
 * **Processamento paralelo**: Processa múltiplas fontes simultaneamente para resultados mais rápidos
-* **Modelos disponíveis**: `spark-1-mini` (padrão, 60% mais barato) e `spark-1-pro` (maior precisão)
+* **Modelo**: Cada execução usa `spark-2` (o padrão). Os modelos Spark 1 foram descontinuados e são direcionados para `spark-2`
 
 <div id="example">
   ### Exemplo
@@ -83,7 +83,7 @@ Para mais detalhes, consulte a [documentação do Agent](/pt-BR/features/agent).
 
 O endpoint `/extract` coleta dados estruturados de URLs especificadas ou de domínios inteiros usando extração com LLMs.
 
-<div id="key-characteristics">
+<div id="key-characteristics-2">
   ### Características principais
 </div>
 
@@ -103,7 +103,7 @@ O desafio fundamental com `/extract` é que você normalmente precisa conhecer a
 2. **Busca na web pouco prática**: embora `enableWebSearch` exista, ele é limitado a começar pelas URLs que você fornece — um fluxo de trabalho pouco prático para tarefas de descoberta.
 3. **Por que `/agent` foi criado**: `/extract` é bom em extrair de locais conhecidos, mas menos eficaz em descobrir onde os dados estão.
 
-<div id="example">
+<div id="example-2">
   ### Exemplo
 </div>
 
@@ -133,7 +133,7 @@ Para mais detalhes, consulte a [documentação do Extract](/pt-BR/features/extra
 
 O endpoint `/scrape` com modo JSON é a abordagem mais controlada — ele extrai dados estruturados de uma única URL conhecida usando um LLM para analisar o conteúdo da página no schema que você especificar.
 
-<div id="key-characteristics">
+<div id="key-characteristics-3">
   ### Características principais
 </div>
 
@@ -143,7 +143,7 @@ O endpoint `/scrape` com modo JSON é a abordagem mais controlada — ele extrai
 * **Síncrono**: Retorna os dados imediatamente (sem necessidade de polling de jobs)
 * **Formatos adicionais**: Pode combinar extração em JSON com markdown, HTML e capturas de tela em uma única requisição
 
-<div id="example">
+<div id="example-3">
   ### Exemplo
 </div>
 
@@ -240,9 +240,9 @@ result = app.extract(
 ```python
 result = app.agent(
     urls=["https://example.com"],  # Opcional - pode omitir completamente
-    prompt="Extrair informações de produtos de example.com",
+    prompt="Extract product information from example.com",
     schema=schema,
-    model="spark-1-mini"  # ou "spark-1-pro" para maior precisão
+    model="spark-2"  # o padrão; os modelos Spark 1 estão descontinuados e são redirecionados para "spark-2"
 )
 ```
 

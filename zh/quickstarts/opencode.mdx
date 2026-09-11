@@ -4,91 +4,46 @@ description: "为 OpenCode 添加 Firecrawl 的网页抓取与搜索功能"
 sidebarTitle: "OpenCode"
 ---
 
-通过 MCP 为 [OpenCode](https://opencode.ai) 添加 Firecrawl 的搜索、抓取、爬取和浏览器工具。
+通过远程托管的 MCP 服务器，为 [OpenCode](https://opencode.ai) 添加 Firecrawl 的免密钥 Search、Scrape 和 Parse 工具。
 
 <div id="quick-setup">
-  ## 快速开始
+  ## 快速设置
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. 获取 API 密钥
-</div>
-
-在 [firecrawl.dev/app](https://www.firecrawl.dev/app) 注册，然后复制您的 API 密钥。
-
-<div id="2-add-firecrawl-to-opencode">
-  ### 2. 将 Firecrawl 添加到 OpenCode
-</div>
-
-OpenCode 会从 `~/.config/opencode/config.json` (全局) 或项目中的 `./opencode.json` 读取配置。添加：
+将以下内容添加到 `~/.config/opencode/opencode.json` 或项目的 `opencode.json`：
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
     "firecrawl": {
-      "type": "local",
-      "command": ["npx", "-y", "firecrawl-mcp"],
-      "environment": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
+      "type": "remote",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "enabled": true
     }
   }
 }
 ```
 
-将 `fc-YOUR-API-KEY` 替换为你的 Firecrawl API 密钥。
+重启 OpenCode，输入 `/mcp`，确认 `firecrawl_search`、`firecrawl_scrape` 和 `firecrawl_parse` 可用。
 
-<div id="3-start-opencode">
-  ### 3. 启动 OpenCode
+免密钥访问的限额由同一公共 IP 的用户共享。请在交互式客户端中通过 [For Humans](/zh/mcp-server/oauth) 登录；无人值守使用时，请[添加 API 密钥](/zh/mcp-server/keyless#add-an-api-key)。
+
+<div id="try-it">
+  ## 试用
 </div>
 
-```bash
-opencode
+```text
+进行网页搜索，查找最新的 Bun 版本发布说明并总结这些来源。
 ```
 
-OpenCode 会在启动时加载 MCP 服务器。请确认已接入 Firecrawl：
-
-```
-/mcp
-```
-
-<div id="quick-demo">
-  ## 快速演示
-</div>
-
-```
-进行网页搜索，查找 "Bun 2.0 changelog" 并总结排名靠前的结果。
-```
-
-```
+```text
 抓取 https://docs.firecrawl.dev/introduction and list the code examples.
 ```
 
-```
-爬取 https://example.com/blog and save each post as markdown.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## Remote Hosted URL (无需 Node.js)
-</div>
-
-```json
-{
-  "mcp": {
-    "firecrawl": {
-      "type": "remote",
-      "url": "https://mcp.firecrawl.dev/v2/mcp"
-    }
-  }
-}
-```
-
-此配置使用免密钥 Firecrawl 工具集。若需连接账户或进行无人值守设置，请参阅[托管 MCP 连接模式](/zh/developer-guides/mcp-setup-guides/oauth)；请将 API 密钥存储在 Authorization 请求头或安全密钥存储中，切勿放入 URL。
-
 <div id="troubleshooting">
-  ## 故障排查
+  ## 故障排除
 </div>
 
-* **服务器未连接** — 运行 `opencode doctor` 检查 MCP 加载错误。
-* **`npx` 权限被拒绝** — 安装 Node.js 18+，并确保 shell 已正确识别该安装 (`which npx`) 。
+* **服务器未附加：**运行 `opencode doctor`，并确认远程 URL。
+* **缺少 Crawl 或其他工具：**免密钥模式仅提供 Search、Scrape 和 Parse。请通过 OAuth 或 API 密钥连接，以使用更完整的工具集。

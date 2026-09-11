@@ -1,0 +1,24 @@
+<div className="firecrawl-cta-box">
+  <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", marginBottom: "8px" }}>
+    <Icon icon="sack-dollar" color="#ff4d00" size={22} />
+    <div className="firecrawl-cta-title" style={{ margin: 0 }}>
+      <span style={{ color: "#ff4d00" }}>Bounty: 5,000 credit reward</span>
+      <span style={{ fontWeight: 400 }}> for feedback on government and legal sources</span>
+    </div>
+  </div>
+  <p className="firecrawl-cta-description">
+    To qualify, complete a high-signal interview (thoughtful, concrete use cases, etc) with our Firecrawl Feedback Assistant. Only takes a few minutes, can be stopped at any time, and is both human/agent-friendly (just paste the link into your agentic harness!). Most useful if you search or scrape government, court, regulatory, or public-record sites and have hit their quirks firsthand.
+  </p>
+  <a
+    href={"https://www.firecrawl.dev/survey/u90t8?src=" + (props.src || "docs-gov-legal")}
+    className="firecrawl-cta-btn-primary firecrawl-cta-btn-inline"
+  >
+    Start the interview
+  </a>
+  <p
+    className="firecrawl-cta-description"
+    style={{ fontSize: "12px", fontStyle: "italic", margin: "12px 0 0 0" }}
+  >
+    Include your email to be eligible. Interviews are reviewed for quality at the end of each week.
+  </p>
+</div>

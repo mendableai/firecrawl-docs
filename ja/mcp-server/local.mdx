@@ -1,8 +1,10 @@
 ---
-title: Firecrawl MCP をローカルで実行する
-description: ローカルの Firecrawl MCP サーバーをインストールして設定します。
-sidebarTitle: ローカルで実行
+title: Firecrawl MCP をローカルで実行
+description: オープンソースの Firecrawl MCP サーバーを stdio または Streamable HTTP 経由で起動・設定します。
+sidebarTitle: MCP をローカルで実行
 ---
+
+クライアントがローカルプロセスを起動する必要がある場合、ローカル HTTP トランスポートを使用する場合、または MCP サーバーをセルフホスト型 Firecrawl API に接続する必要がある場合は、Firecrawl MCP をローカルで実行します。マネージドサービスを使用する場合は、[はじめに](/ja/mcp-server)から始めてください。
 
 <div id="prerequisites">
   ## 前提条件
@@ -18,128 +20,108 @@ sidebarTitle: ローカルで実行
 node --version
 ```
 
-<div id="run-over-stdio">
-  ## stdio 経由で実行
+<div id="start-the-server">
+  ## サーバーを起動する
 </div>
 
-```bash
-env FIRECRAWL_API_KEY=fc-YOUR_API_KEY npx -y firecrawl-mcp@3.23.0
-```
+<Tabs>
+  <Tab title="stdio">
+    MCP クライアントが Firecrawl をローカルプロセスとして起動する場合は、stdio を使用します。
 
-これは、MCP サーバー をローカルプロセスとして起動するクライアント向けのデフォルトのトランスポートです。
+    ```bash
+    env FIRECRAWL_API_KEY=fc-YOUR-API-KEY \
+      npx -y firecrawl-mcp@3.23.7
+    ```
 
-<div id="run-with-streamable-http">
-  ## Streamable HTTP で実行する
+    クライアントで `npx -y firecrawl-mcp@3.23.7` を実行するよう設定し、クライアントの保護された環境変数またはシークレット管理機構で `FIRECRAWL_API_KEY` を指定します。
+  </Tab>
+
+  <Tab title="Streamable HTTP">
+    n8n などのクライアントがすでに起動しているサーバーに接続する場合は、HTTP を使用します。
+
+    ```bash
+    env HTTP_STREAMABLE_SERVER=true \
+      FIRECRAWL_API_KEY=fc-YOUR-API-KEY \
+      npx -y firecrawl-mcp@3.23.7
+    ```
+
+    クライアントを次のエンドポイントに接続します。
+
+    ```text
+    http://localhost:3000/mcp
+    ```
+
+    サーバーの準備ができていることを確認します。
+
+    ```bash
+    curl http://localhost:3000/health
+    ```
+
+    ヘルスチェックの戻り値は `ok` です。ローカルのルートは `/mcp` です。`/v2/mcp` はホスト型 Firecrawl サービス用です。
+  </Tab>
+</Tabs>
+
+<div id="configure-the-firecrawl-api">
+  ## Firecrawl API を設定する
 </div>
 
-すでに起動している MCP サーバー に接続する n8n などのクライアントでは、HTTP トランスポート を使用します。
+| 環境変数                     | 用途                                                             |
+| ------------------------ | -------------------------------------------------------------- |
+| `FIRECRAWL_API_KEY`      | Firecrawl クラウド API への認証に使用します。セルフホスト型 API で認証が不要な場合にのみ任意です。    |
+| `FIRECRAWL_API_URL`      | クラウド API ではなく、セルフホスト型 Firecrawl API にリクエストを送信します。              |
+| `HTTP_STREAMABLE_SERVER` | stdio の代わりにローカルの Streamable HTTP トランスポートを開始するには、`true` に設定します。 |
 
-```bash
-env HTTP_STREAMABLE_SERVER=true \
-  FIRECRAWL_API_KEY=fc-YOUR_API_KEY \
-  npx -y firecrawl-mcp@3.23.0
-```
+<CodeGroup>
+  ```bash Cloud API
+  export FIRECRAWL_API_KEY=fc-YOUR-API-KEY
+  npx -y firecrawl-mcp@3.23.7
+  ```
 
-クライアントを次に接続します。
+  ```bash Self-hosted API
+  export FIRECRAWL_API_URL=https://firecrawl.your-domain.com
+  export FIRECRAWL_API_KEY=your-api-key # インスタンスで認証が不要な場合は省略
+  npx -y firecrawl-mcp@3.23.7
+  ```
+</CodeGroup>
 
-```text
-http://localhost:3000/mcp
-```
-
-サーバーの準備ができていることを確認します。
-
-```bash
-curl http://localhost:3000/health
-```
-
-ヘルスチェックの戻り値は `ok` です。ローカルルートは `/mcp`、ホスト型の Firecrawl ルートは `/v2/mcp` です。
+<Note>
+  `firecrawl_parse` でローカルファイルを直接解析するには、セルフホスト型 Firecrawl API を指す `FIRECRAWL_API_URL` が必要です。クラウド API のみに接続されたローカル MCP サーバーでは、このツールを介してローカルファイルをアップロードできません。代わりに、[ホスト型サーバーでは署名付きアップロードの引き渡しを使用します](/ja/mcp-server/tools#important-behavior)。
+</Note>
 
 <div id="install-globally">
-  ## グローバルインストール
+  ## グローバルにインストール
 </div>
 
+最短のセットアップには `npx` を使用します。代わりに、レビュー済みの同じリリースをグローバルにインストールするには：
+
 ```bash
-npm install -g firecrawl-mcp@3.23.0
+npm install -g firecrawl-mcp@3.23.7
 ```
 
 次を実行します。
 
 ```bash
-env FIRECRAWL_API_KEY=fc-YOUR_API_KEY firecrawl-mcp
+env FIRECRAWL_API_KEY=fc-YOUR-API-KEY firecrawl-mcp
 ```
 
-<div id="configuration">
-  ## 構成
+<div id="troubleshooting">
+  ## トラブルシューティング
 </div>
 
-<div id="environment-variables">
-  ### 環境変数
-</div>
+<AccordionGroup>
+  <Accordion title="クライアントで spawn npx ENOENT が発生する">
+    Node.js 22 以降をインストールし、クライアントの `PATH` に `npx` が含まれていることを確認してから、クライアントを完全に再起動してください。Windows では、コマンドプロンプトで `where npx` を実行し、表示された `npx.cmd` のパスを使用するようクライアントを設定してください。
+  </Accordion>
 
-<div id="cloud-and-self-hosted-api">
-  #### クラウド API とセルフホスト型 API
-</div>
+  <Accordion title="HTTP クライアントが接続できない">
+    `HTTP_STREAMABLE_SERVER=true` であることを確認してから、`http://localhost:3000/health` を呼び出してください。クライアントのエンドポイントには、ホスト型の `/v2/mcp` パスではなく、`http://localhost:3000/mcp` を使用してください。
+  </Accordion>
 
-* `FIRECRAWL_API_KEY`: Firecrawl APIキー
-  * クラウド API (デフォルト) を使用する場合は必須
-  * `FIRECRAWL_API_URL` を指定したセルフホスト型インスタンスを使用する場合は任意
-* `FIRECRAWL_API_URL` (任意) : セルフホスト型インスタンス用のカスタム API エンドポイント
-  * 例: `https://firecrawl.your-domain.com`
-  * 指定しない場合はクラウド API が使用されます (APIキーが必要です)
+  <Accordion title="ツールを利用できない">
+    ツールを利用できるかどうかは、対象のデプロイメントで有効になっている Firecrawl サービスによって異なります。[Tools](/ja/mcp-server/tools) の接続設定と比較し、ローカルプロセスの出力で登録または認証のエラーを確認してください。
+  </Accordion>
 
-<div id="configuration-examples">
-  ### 構成例
-</div>
-
-クラウド API を使用する場合:
-
-```bash
-export FIRECRAWL_API_KEY=your-api-key
-```
-
-セルフホスト型インスタンスの場合：
-
-```bash
-export FIRECRAWL_API_URL=https://firecrawl.your-domain.com
-export FIRECRAWL_API_KEY=your-api-key  # インスタンスで認証が必要な場合
-```
-
-<div id="custom-configuration-with-claude-desktop">
-  ### Claude Desktop のカスタム構成
-</div>
-
-`claude_desktop_config.json`に以下を追加します：
-
-```json
-{
-  "mcpServers": {
-    "mcp-server-firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "YOUR_API_KEY_HERE"
-      }
-    }
-  }
-}
-```
-
-<div id="hosted-mcp-vs-local-mcp">
-  ### Hosted MCP とローカル MCP
-</div>
-
-ホスト型 MCP サーバーは、安全なリモート利用に最適化されています。MCP サーバーをローカルで実行する場合に利用できる一部のオプションは、リモートでは制限されるか利用できません。
-
-* ホスト型のキーなしモードでは、Search、Scrape、Parse のみが利用可能で、IP アドレスごとにレート制限が適用されます。
-* ローカル専用のファイル読み取りは、MCP サーバーをローカルで実行している場合にのみ利用できます。
-* Agent がローカルリソースにアクセスする必要がある場合は、webhook とローカルファイルパスをローカルまたはセルフホスト型の MCP サーバーで設定してください。
-
-<Note>
-  `firecrawl_parse` によるローカルファイルの直接解析には、セルフホスト型 Firecrawl API を指す `FIRECRAWL_API_URL` が必要です。クラウド API キーのみで設定されたローカル MCP サーバーでは、そのツールを介してローカルファイルをアップロードできません。
-</Note>
-
-<div id="rate-limiting">
-  ### レート制限
-</div>
-
-Firecrawl ではレート制限が適用されます。より高い制限とすべてのツールセットへのアクセスには、API キーをご利用ください。
+  <Accordion title="サーバーにレート制限がかかっている">
+    レート制限は、接続されている Firecrawl API によって適用されます。現在の[レート制限](/ja/rate-limits)と、セルフホスト型デプロイメントに設定されている制限を確認してください。
+  </Accordion>
+</AccordionGroup>

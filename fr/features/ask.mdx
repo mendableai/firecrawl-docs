@@ -1,8 +1,8 @@
 ---
 title: "Déboguer Firecrawl avec Ask"
-description: "Débogage assisté par agent pour votre intégration Firecrawl"
+description: "Déboguez une tâche ayant échoué ou tout problème d'intégration Firecrawl avec une API de support agentique"
 og:title: "Ask | Firecrawl"
-og:description: "Déboguez les problèmes de scraping et obtenez des correctifs validés — le tout en un seul appel d'API."
+og:description: "Déboguez les tâches ayant échoué et les problèmes de scraping, et obtenez des correctifs validés — le tout en un seul appel d'API."
 sidebarTitle: "Déboguer avec Ask"
 icon: "messages-question"
 ---
@@ -53,6 +53,73 @@ curl -X POST https://api.firecrawl.dev/v2/support/docs-search \
     "question": "how do I set up webhook signature verification?"
   }'
 ```
+
+<div id="debug-a-failed-job">
+  ## Déboguer une tâche ayant échoué
+</div>
+
+Chaque tâche Firecrawl — scrape, crawl, extraction par lot, recherche, cartographie ou extraction — peut être déboguée avec `/support/ask`. Décrivez le problème en langage clair et indiquez l’ID de tâche si vous en avez un ; l’agent récupère les journaux de la tâche et l’état de votre compte avant de répondre.
+
+```bash
+curl -X POST https://api.firecrawl.dev/v2/support/ask \
+  -H "Authorization: Bearer VOTRE_CLÉ_API" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "debug failed job 0f8c9a1b-4e2d-47a1-9c3f-1b2d3e4f5a6b — crawl of https://example.com failed after 12 pages",
+    "rationale": "user needs the full docs site indexed before their demo"
+  }'
+```
+
+Incluez autant d’éléments que possible : chacun aide à affiner le diagnostic :
+
+| Détail                          | Pourquoi c’est utile                                                                                          |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| ID de tâche                     | Permet à l’agent de consulter directement les journaux, l’état et les résultats par page de cette tâche       |
+| URL cible                       | Révèle des blocages propres au site, comme la protection contre les bots, le rendu JS ou les règles robots    |
+| Message d’erreur ou code d’état | Distingue les limites de débit et l’épuisement des crédits des échecs au niveau du scrape                     |
+| Ce que vous attendiez           | Distingue un échec net d’une tâche ayant « réussi » malgré du contenu manquant                                |
+| `rationale`                     | Indique à l’agent ce que recherche l’utilisateur final afin qu’il privilégie les éléments probants pertinents |
+
+<div id="what-ask-checks-for-common-failures">
+  ### Ce qu’Ask vérifie en cas d’échecs courants
+</div>
+
+| Symptôme                                    | Ce que l’agent examine                                                                                    |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| État de la tâche `failed`                   | Journaux de la tâche, code d’état HTTP en amont, historique du proxy et des tentatives                    |
+| Le crawl a renvoyé moins de pages que prévu | `limit`, `maxDiscoveryDepth`, `includePaths`/`excludePaths`, couverture du sitemap, règles robots         |
+| Markdown vide ou tronqué                    | Rendu côté client, délai de `waitFor`, `actions` requises, suppression par `onlyMainContent`              |
+| Réponses `401` / `402` / `429`              | Validité et restrictions de la clé API, crédits restants, limites de débit de l’offre                     |
+| Tâche bloquée ou arrivant à expiration      | État de la file d’attente, délais d’expiration au niveau des pages, concurrence des tâches de votre offre |
+| Webhook jamais déclenché                    | Tentatives de livraison, réponses du point de terminaison, échecs de vérification de signature            |
+
+Vous n’avez pas d’ID de tâche ? Survolez l’URL d’une ligne dans les [journaux d’activité](https://www.firecrawl.dev/app/logs) et cliquez sur **Copier l’ID**, ou utilisez l’`id` renvoyé au démarrage de la tâche.
+
+<div id="debug-from-activity-logs">
+  ### Déboguer depuis les journaux d’activité
+</div>
+
+Si vous préférez ne pas effectuer l’appel vous-même, le dashboard exécute le même agent pour vous. Ouvrez les [journaux d’activité](https://www.firecrawl.dev/app/logs) et repérez le bouton à étincelles dans la colonne **Actions** d’une ligne en échec — son infobulle indique **Déboguer le ticket**. Il ne s’affiche que pour les tâches ayant échoué ou terminées avec des erreurs dans des requêtes enfants ; les tâches réussies ou en cours n’en disposent donc pas.
+
+Cliquer dessus lance immédiatement le diagnostic ; aucun prompt n’est nécessaire. Firecrawl envoie à l’agent utilisé par `/support/ask` l’URL, le point de terminaison, l’état, le message d’erreur et les paramètres de scrape de la tâche. L’agent lit ensuite les journaux de la tâche et l’état de votre compte. Le contenu des pages scrapées n’est jamais inclus.
+
+Le panneau qui s’ouvre affiche :
+
+| Élément            | Description                                                                                            |
+| ------------------ | ------------------------------------------------------------------------------------------------------ |
+| Diagnostic         | L’explication de l’agent sur ce qui s’est mal passé et les modifications à apporter                    |
+| Badge de confiance | Élevé, moyen ou faible — niveau de certitude de l’agent dans sa réponse                                |
+| Badge **Validé**   | Affiché lorsque l’agent a testé le correctif suggéré et que le test a réussi                           |
+| Correctif suggéré  | Les paramètres corrigés au format JSON, avec un bouton de copie — collez-les dans votre prochain appel |
+| Sources            | Liens vers les pages de documentation sur lesquelles repose la réponse                                 |
+
+Si le diagnostic ne résout pas le problème, **Ouvrir un ticket de support** au bas du panneau crée un ticket auquel l’analyse de l’agent est déjà jointe, afin que vous n’ayez pas à réexpliquer l’échec.
+
+<Info>
+  Le débogage depuis le dashboard est limité à 30 exécutions par heure et par équipe, et votre équipe doit disposer d’au moins une clé API — l’agent s’exécute avec votre propre clé et ne voit donc que vos tâches.
+</Info>
+
+Une fois le diagnostic obtenu, appliquez les `fixParameters` renvoyés et réessayez — consultez la [stratégie de nouvelle tentative par l’agent](#agent-retry-pattern) ci-dessous.
 
 <div id="how-it-works">
   ## Fonctionnement

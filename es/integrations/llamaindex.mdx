@@ -1,24 +1,23 @@
 ---
-title: 'Llamaindex'
+title: 'LlamaIndex'
 description: 'Firecrawl se integra con LlamaIndex como lector de documentos.'
-og:title: "Llamaindex | Firecrawl"
+og:title: "LlamaIndex | Firecrawl"
 og:description: "Firecrawl se integra con LlamaIndex como lector de documentos."
 ---
-
-> Nota: esta integración aún usa la [versión v0 de la API de Firecrawl](/es/v0/introduction). Puedes instalar la versión 0.0.20 del SDK de Python o la 0.0.36 del SDK de Node.
 
 <div id="installation">
   ## Instalación
 </div>
 
 ```bash
-pip install firecrawl-py==0.0.20 llama_index llama-index llama-index-readers-web
-
+pip install 'firecrawl-py>=4.3.3' llama-index llama-index-readers-web
 ```
 
 <div id="usage">
   ## Uso
 </div>
+
+`FireCrawlWebReader` admite los modos `scrape`, `crawl`, `map`, `search` y `extract`.
 
 <div id="using-firecrawl-to-gather-an-entire-website">
   ### Usar Firecrawl para recopilar todo un sitio web
@@ -33,7 +32,7 @@ import os
 # Inicializa FireCrawlWebReader para rastrear un sitio web
 firecrawl_reader = FireCrawlWebReader(
     api_key="<your_api_key>",  # Sustituye por tu clave de API real de https://www.firecrawl.dev/
-    mode="scrape",  # Elige entre "crawl" y "scrape" para extraer una sola página
+    mode="crawl",  # "scrape", "crawl", "map", "search" o "extract"
     params={"additional": "parameters"}  # Parámetros adicionales opcionales
 )
 
@@ -46,7 +45,7 @@ index = SummaryIndex.from_documents(documents)
 
 # Configura el nivel de registro en DEBUG para obtener salidas más detalladas
 query_engine = index.as_query_engine()
-response = query_engine.query("¿Qué hacía el autor cuando crecía?")
+response = query_engine.query("What did the author do growing up?")
 display(Markdown(f"<b>{response}</b>"))
 ```
 
@@ -60,7 +59,7 @@ from llama_index.readers.web import FireCrawlWebReader
 # Inicializa FireCrawlWebReader con tu clave de API y el modo deseado
 firecrawl_reader = FireCrawlWebReader(
     api_key="<your_api_key>",  # Reemplaza con tu clave de API real de https://www.firecrawl.dev/
-    mode="scrape",  # Elige entre "crawl" y "scrape"
+    mode="scrape",  # "scrape", "crawl", "map", "search" o "extract"
     params={"additional": "parameters"}  # Parámetros adicionales opcionales
 )
 
@@ -68,8 +67,8 @@ firecrawl_reader = FireCrawlWebReader(
 documents = firecrawl_reader.load_data(url="http://paulgraham.com/worked.html")
 index = SummaryIndex.from_documents(documents)
 
-# Configura el logging en DEBUG para obtener salidas más detalladas
+# Configura el registro en DEBUG para obtener salidas más detalladas
 query_engine = index.as_query_engine()
-response = query_engine.query("¿Qué hacía el autor cuando estaba creciendo?")
+response = query_engine.query("What did the author do growing up?")
 display(Markdown(f"<b>{response}</b>"))
 ```

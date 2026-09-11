@@ -1,63 +1,47 @@
 ---
 title: "ClaudeでFirecrawl MCPを使う"
-description: "OAuthでClaudeをFirecrawlに接続"
+description: "ネイティブコネクタでClaude.aiにFirecrawlを追加"
 ---
 
-リモートアカウントコネクタを使って、ClaudeにFirecrawlの機能を追加できます。
+ネイティブのFirecrawlコネクタを使って、Claude.aiにFirecrawlを追加します。カスタムコネクタを追加したり、サーバーURLを貼り付けたりする必要はありません。
 
 <Note>
   Claude Codeのセットアップをお探しですか？代わりに[Claude Code
   ガイド](/ja/quickstarts/claude-code)をご覧ください。
 </Note>
 
-<div id="quick-setup">
-  ## クイックスタート
+<div id="add-to-claude">
+  ## Claude に追加
 </div>
 
-<div id="1-add-a-custom-connector">
-  ### 1. カスタムコネクタを追加
+<Card title="Claude に追加" icon="/images/agent-clients/claude-ai.svg" href="https://claude.ai/directory/connectors/firecrawl" cta="Claude で開く" arrow>
+  Claude.ai で Firecrawl コネクタを開き、接続します。
+</Card>
+
+1. [Claude.ai の Firecrawl コネクタ](https://claude.ai/directory/connectors/firecrawl)を開きます。
+2. Firecrawl に接続します。Claude がブラウザで Firecrawl を開いたら、サインインし、チームを選択してアクセスを承認します。
+3. 会話で **+** メニューを開き、**Connectors** に移動して Firecrawl を有効にします。
+
+Team または Enterprise プランでは、メンバーが接続する前に組織の Owner がコネクタを許可する必要がある場合があります。
+
+このコネクタ経由のリクエストでは、サインイン時に選択したチームのクレジットとプランが使用されます。[MCP settings](https://www.firecrawl.dev/app/settings?tab=mcp)から、いつでも接続を確認または取り消せます。
+
+<div id="try">
+  ## 試す
 </div>
 
-Claude.ai の [設定 &gt; Connectors](https://claude.ai/settings/connectors) に移動し、**カスタムコネクタを追加** をクリックします。
+Firecrawlを有効にした状態で、次を試してください。
 
-コネクタの詳細を入力します。
-
-* **URL:** `https://mcp.firecrawl.dev/v2/mcp-oauth`
-* **OAuth Client ID:** 空欄のままにします
-* **OAuth Client Secret:** 空欄のままにします
-
-コネクタを保存するには、**Add** をクリックします。
-
-Claude がブラウザで Firecrawl を開きます。サインインし、使用するチームを選択して、アクセスを承認してください。生の APIキーがコネクタの URL に含まれることはありません。エンドポイントの仕様やその他の対応モードについては、[MCP クライアントをアカウントに接続](/ja/developer-guides/mcp-setup-guides/oauth) を参照してください。
-
-<div id="2-enable-in-conversation">
-  ### 2. 会話で有効にする
-</div>
-
-Claude.ai のいずれかの会話で、左下の **+** ボタンをクリックし、**Connectors** を開いて Firecrawl コネクタを有効にします。
-
-<div id="quick-demo">
-  ## クイックデモ
-</div>
-
-Firecrawlコネクタを有効にした状態で、次のプロンプトを試してください。
-
-**ウェブを検索:**
-
-```
-Search for the latest Next.js 15 features
+```text
+Search the web for the latest Firecrawl release notes and summarize the sources.
 ```
 
-**ページをスクレイピング:**
-
-```
+```text
 Scrape firecrawl.dev and tell me what it does
 ```
 
-**ドキュメントを見る:**
+<div id="more">
+  ## その他
+</div>
 
-```
-Find and scrape the Stripe API docs for payment intents
-```
-
-ClaudeはFirecrawlの検索ツールとスクレイピングツールを自動的に使って情報を取得します。
+他のクライアントでのサインイン設定については[For Humans](/ja/mcp-server/oauth)を、キーなしで開始するには[For Agents](/ja/mcp-server/keyless)を参照してください。

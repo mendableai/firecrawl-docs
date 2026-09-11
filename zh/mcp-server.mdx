@@ -1,55 +1,65 @@
 ---
-title: Firecrawl MCP
-description: "将 Firecrawl 连接到 MCP 客户端、代理和无人值守工作负载。"
-og:title: 'Firecrawl MCP'
-og:description: "通过账户 OAuth、API 密钥或免密钥试用，将 Firecrawl 连接到您的 MCP 客户端。"
-sidebarTitle: 'MCP'
+title: 开始使用
+description: "通过免密钥访问、账户登录或 API 密钥设置 Firecrawl MCP。"
+og:title: 'Firecrawl MCP：开始使用'
+og:description: "通过免密钥访问、账户登录或 API 密钥连接 Firecrawl MCP。"
+sidebarTitle: '开始使用'
 ---
 
-Firecrawl MCP 通过模型上下文协议让 AI 客户端访问实时网页数据。它既可作为托管服务使用，也可作为开源的本地服务器运行。
-
-<div id="start-here">
-  ## 从这里开始
-</div>
-
-请选择与 Firecrawl 运行环境相匹配的连接模式。托管端点为免凭据 URL：凭据应通过 OAuth 流程或 Authorization 标头提供，切勿直接放在 URL 中。
+选择连接的身份验证方式。登录账户和添加 API 密钥可获得相同的访问权限：两者均可使用团队套餐中的完整工具集。
 
 <CardGroup cols={3}>
-  <Card title="连接账户" icon="user" href="/zh/mcp-server/connect">
-    为交互式 MCP 客户端使用基于浏览器的 OAuth，解锁完整的 Firecrawl 工具集。
+  <Card title="立即试用" icon="bolt" href="/zh/mcp-server/keyless#try-keyless" cta="开始免密钥设置" arrow>
+    无需账户或密钥。可在每日限额内使用 Search、Scrape 和 Parse。
   </Card>
 
-  <Card title="无人值守运行" icon="server" href="/zh/mcp-server/connect#run-unattended">
-    适用于 CI、服务器和脚本：通过 Authorization 标头携带 Firecrawl API 密钥，使用 `/v2/mcp`。
+  <Card title="登录" icon="right-to-bracket" href="/zh/mcp-server/oauth" cta="连接账户" arrow>
+    可通过 Codex、Claude Code 或您常用的测试框架在浏览器中登录。
   </Card>
 
-  <Card title="试用免密钥 MCP" icon="sparkles" href="/zh/mcp-server/connect#try-keyless">
-    无需 API 密钥即可开始使用限流的 Search、Scrape 和 Parse 功能。
+  <Card title="使用 API 密钥" icon="key" href="/zh/mcp-server/keyless#add-an-api-key" cta="配置 API 密钥" arrow>
+    在客户端中配置 API 密钥，无需浏览器。
   </Card>
 </CardGroup>
 
-<div id="learn-more">
-  ## 了解更多
+<div id="add-an-api-key">
+  ## 添加 API 密钥
+</div>
+
+[创建 Firecrawl API 密钥](https://www.firecrawl.dev/app/api-keys)，然后在客户端配置中将其作为 Bearer 令牌添加：
+
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+请通过环境变量或客户端的密钥存储配置密钥，切勿将密钥放在 MCP URL 中。
+
+<Note>
+  这是 MCP 客户端使用的服务器 URL，并非可直接在浏览器中打开的页面。登录连接请使用 `https://mcp.firecrawl.dev/v2/mcp-oauth`，客户端会启动浏览器登录流程。
+</Note>
+
+<div id="client-setup">
+  ## 客户端设置
 </div>
 
 <CardGroup cols={2}>
-  <Card title="配置客户端" icon="desktop" href="/zh/mcp-server/clients">
-    配置 Claude、Cursor、VS Code、Windsurf、n8n 等客户端。
+  <Card title="面向代理" icon="robot" href="/zh/mcp-server/keyless">
+    使用免密钥模式，或使用 API 密钥。
   </Card>
 
-  <Card title="本地运行" icon="terminal" href="/zh/mcp-server/local">
-    安装开源 MCP Server，并配置本地或自托管部署。
-  </Card>
-
-  <Card title="工具和操作" icon="wrench" href="/zh/mcp-server/tools">
-    了解 Firecrawl MCP 工具、限流、日志记录和错误处理。
-  </Card>
-
-  <Card title="开发 Firecrawl MCP" icon="github" href="/zh/mcp-server/development">
-    构建、测试并为开源服务器贡献代码。
+  <Card title="面向用户" icon="user" href="/zh/mcp-server/oauth">
+    通过浏览器登录。
   </Card>
 </CardGroup>
 
-<Note>
-  有关当前的免密钥额度和限流，请参见[限流](/zh/rate-limits#keyless-no-api-key)。如需了解更广泛的代理入门信息，请参见[使用 AI 构建](/zh/ai-onboarding)。
-</Note>
+下一步：[选择工具](/zh/mcp-server/tools)或[在本地运行服务器](/zh/mcp-server/local)。

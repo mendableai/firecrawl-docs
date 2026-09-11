@@ -1,8 +1,8 @@
 ---
 title: "Depure o Firecrawl com o Ask"
-description: "Depuração orientada por agentes para sua integração com o Firecrawl"
+description: "Depure um job com falha ou qualquer problema de integração com o Firecrawl usando uma API de suporte orientada por agentes"
 og:title: "Ask | Firecrawl"
-og:description: "Depure problemas de scraping e obtenha correções verificadas — tudo em uma única chamada de API."
+og:description: "Depure jobs com falha e problemas de scraping e obtenha correções verificadas — tudo em uma única chamada de API."
 sidebarTitle: "Depure com o Ask"
 icon: "messages-question"
 ---
@@ -53,6 +53,73 @@ curl -X POST https://api.firecrawl.dev/v2/support/docs-search \
     "question": "how do I set up webhook signature verification?"
   }'
 ```
+
+<div id="debug-a-failed-job">
+  ## Depure um job que falhou
+</div>
+
+Todo job do Firecrawl — scraping, rastreamento, extração em lote, busca, mapeamento ou extração — pode ser depurado com `/support/ask`. Descreva a falha em linguagem simples e inclua o ID do job, se tiver um; o agente consulta os logs desse job e o estado da sua conta antes de responder.
+
+```bash
+curl -X POST https://api.firecrawl.dev/v2/support/ask \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "debug failed job 0f8c9a1b-4e2d-47a1-9c3f-1b2d3e4f5a6b — crawl of https://example.com failed after 12 pages",
+    "rationale": "user needs the full docs site indexed before their demo"
+  }'
+```
+
+Inclua o máximo possível destas informações — cada uma ajuda a delimitar o diagnóstico:
+
+| Detalhe                              | Por que ajuda                                                                                           |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| ID do job                            | Permite que o agente consulte diretamente os logs, o status e os resultados por página desse job        |
+| URL de destino                       | Revela bloqueios específicos do site, como proteção contra bots, renderização de JS ou regras de robots |
+| Mensagem de erro ou código de status | Diferencia limites de taxa e esgotamento de créditos de falhas no nível do scraping                     |
+| O que você esperava                  | Distingue uma falha completa de um job que &quot;foi bem-sucedido&quot;, mas teve conteúdo ausente      |
+| `rationale`                          | Informa ao agente o que o usuário final busca para que ele priorize as evidências corretas              |
+
+<div id="what-ask-checks-for-common-failures">
+  ### O que o Ask verifica em falhas comuns
+</div>
+
+| Sintoma                                                 | O que o agente investiga                                                                                |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Status do job `failed`                                  | Logs do job, status HTTP de origem, histórico de proxy e novas tentativas                               |
+| O rastreamento retornou menos páginas do que o esperado | `limit`, `maxDiscoveryDepth`, `includePaths`/`excludePaths`, cobertura do sitemap, regras de robots     |
+| Markdown vazio ou truncado                              | Renderização no lado do cliente, tempo de `waitFor`, `actions` necessárias, corte por `onlyMainContent` |
+| Respostas `401` / `402` / `429`                         | Validade e restrições da chave de API, créditos restantes, limites de taxa do plano                     |
+| Job travado ou excedendo o tempo limite                 | Estado da fila, tempos limite por página, concorrência de jobs do seu plano                             |
+| Webhook nunca foi disparado                             | Tentativas de entrega, respostas do endpoint, falhas na verificação de assinatura                       |
+
+Não tem o ID do job? Passe o cursor sobre a URL de uma linha em [Activity Logs](https://www.firecrawl.dev/app/logs) e clique em **Copy ID**, ou use o `id` retornado ao iniciar o job.
+
+<div id="debug-from-activity-logs">
+  ### Depurar pelos logs de atividade
+</div>
+
+Se preferir não fazer a chamada manualmente, o painel executa o mesmo agente para você. Abra os [Logs de atividade](https://www.firecrawl.dev/app/logs) e procure o botão de brilhos na coluna **Ações** de uma linha com falha — a dica de ferramenta exibe **Depurar problema**. Ele só aparece em jobs que falharam ou terminaram com erros em solicitações filhas; portanto, jobs concluídos com êxito ou em andamento não o terão.
+
+Ao clicar nele, o diagnóstico começa imediatamente; não há prompt para escrever. O Firecrawl envia a URL, o endpoint, o status, a mensagem de erro e os parâmetros de scraping desse job para o mesmo agente por trás de `/support/ask`, que então lê os logs do job e o estado da sua conta. O conteúdo das páginas extraídas nunca é incluído.
+
+O painel exibido apresenta:
+
+| Elemento          | O que é                                                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------- |
+| Diagnóstico       | A explicação do agente sobre o que deu errado e o que alterar                               |
+| Selo de confiança | Alta, média ou baixa — o grau de certeza do agente na resposta                              |
+| Selo **Validado** | Exibido quando o agente testou a própria correção sugerida e o teste foi aprovado           |
+| Correção sugerida | Os parâmetros corrigidos em JSON, com um botão para copiar — cole-os na sua próxima chamada |
+| Fontes            | Links para as páginas da documentação nas quais a resposta se baseia                        |
+
+Se o diagnóstico não resolver o problema, **Abrir ticket de suporte**, na parte inferior do painel, cria um ticket com a análise do agente já anexada, para que você não precise explicar a falha novamente.
+
+<Info>
+  A depuração pelo painel é limitada a 30 execuções por hora por equipe, e sua equipe precisa ter pelo menos uma chave de API — o agente é executado com sua própria chave, portanto, só vê seus jobs.
+</Info>
+
+Quando tiver um diagnóstico, aplique os `fixParameters` retornados e tente novamente — consulte o [padrão de retentativa do agente](#agent-retry-pattern) abaixo.
 
 <div id="how-it-works">
   ## Como funciona

@@ -3,6 +3,10 @@ title: 'Scrape'
 openapi: '/api-reference/v2-openapi.json POST /scrape'
 ---
 
+## Capabilities
+
+[Capabilities](/capabilities) is the single page listing what a scrape can do to a page, which of those capabilities run in a self-hosted deployment, and which endpoints accept a request with no API key.
+
 ## Interactions
 
 For browser interactions (clicking, typing, navigating, extracting dynamic content), use the [Interact endpoint](/features/interact). Scrape a page first, then call `POST /v2/scrape/{scrapeId}/interact` with a natural-language prompt or Playwright code to take actions on the page.

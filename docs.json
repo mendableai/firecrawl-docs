@@ -47,9 +47,9 @@
       }
     ],
     "socials": {
-      "discord": "https://discord.gg/firecrawl",
       "github": "https://github.com/firecrawl/firecrawl",
       "linkedin": "https://www.linkedin.com/company/firecrawl",
+      "website": "https://community.firecrawl.dev/",
       "x": "https://x.com/firecrawl"
     }
   },
@@ -121,20 +121,17 @@
                     "group": "Get Started",
                     "pages": [
                       "introduction",
-                      "sdks/cli",
-                      "ai-onboarding",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "mcp-server",
-                          "mcp-server/connect",
-                          "mcp-server/clients",
-                          "mcp-server/local",
-                          "mcp-server/tools",
-                          "mcp-server/development"
-                        ]
+                          "mcp-server/keyless",
+                          "mcp-server/oauth"
+                        ],
+                        "root": "mcp-server"
                       },
+                      "sdks/cli",
+                      "ai-onboarding",
                       "advanced-scraping-guide",
                       {
                         "group": "Plans and Billing",
@@ -165,7 +162,8 @@
                         "pages": [
                           "features/search",
                           "features/search-highlights",
-                          "features/research"
+                          "features/research",
+                          "features/developer"
                         ]
                       },
                       {
@@ -184,7 +182,6 @@
                           "features/document-parsing"
                         ]
                       },
-                      "features/interact",
                       {
                         "group": "Monitor",
                         "icon": "radar",
@@ -193,6 +190,14 @@
                           "features/monitoring-page",
                           "features/monitoring-website",
                           "features/monitoring-web-scale"
+                        ]
+                      },
+                      {
+                        "group": "Interact / Browser Sandbox",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "features/interact",
+                          "features/browser"
                         ]
                       }
                     ]
@@ -204,13 +209,7 @@
                       "features/parse",
                       "features/map",
                       "features/crawl",
-                      "features/agent",
-                      {
-                        "group": "Agent (Research Preview)",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "features/agent"
                     ]
                   },
                   {
@@ -294,7 +293,8 @@
                         "group": "Usage Guides",
                         "icon": "compass",
                         "pages": [
-                          "developer-guides/usage-guides/choosing-the-data-extractor"
+                          "developer-guides/usage-guides/choosing-the-data-extractor",
+                          "developer-guides/usage-guides/verifying-freshness-and-liveness"
                         ]
                       },
                       {
@@ -322,33 +322,27 @@
                         ]
                       },
                       {
-                        "group": "MCP Setup Guides",
-                        "icon": "plug",
+                        "group": "Integrations",
+                        "icon": "puzzle-piece",
                         "pages": [
-                          "developer-guides/mcp-setup-guides/chatgpt",
-                          "developer-guides/mcp-setup-guides/claude-ai",
-                          "developer-guides/mcp-setup-guides/factory-ai",
-                          "developer-guides/mcp-setup-guides/oauth"
-                        ]
-                      },
-                      {
-                        "group": "Common Sites",
-                        "icon": "globe",
-                        "pages": [
-                          "developer-guides/common-sites/amazon",
-                          "developer-guides/common-sites/etsy",
-                          "developer-guides/common-sites/github",
-                          "developer-guides/common-sites/wikipedia"
-                        ]
-                      },
-                      {
-                        "group": "Workflow Automation",
-                        "icon": "bolt",
-                        "pages": [
-                          "developer-guides/workflow-automation/n8n",
-                          "developer-guides/workflow-automation/zapier",
-                          "developer-guides/workflow-automation/make",
-                          "developer-guides/workflow-automation/dify"
+                          "integrations",
+                          "integrations/hermes",
+                          "integrations/replit",
+                          "integrations/lovable",
+                          "integrations/langchain",
+                          "integrations/llamaindex",
+                          "integrations/crewai",
+                          "integrations/camelai",
+                          "integrations/praison",
+                          "integrations/dify",
+                          "integrations/langflow",
+                          "integrations/flowise",
+                          "integrations/zapier",
+                          "integrations/make",
+                          "integrations/n8n",
+                          "integrations/pipedream",
+                          "integrations/composio",
+                          "integrations/sourcesyncai"
                         ]
                       }
                     ]
@@ -433,10 +427,6 @@
                 "tab": "SDKs"
               },
               {
-                "href": "https://www.firecrawl.dev/app",
-                "tab": "Integrations"
-              },
-              {
                 "groups": [
                   {
                     "group": "Using the API",
@@ -463,7 +453,7 @@
                     ]
                   },
                   {
-                    "group": "Interact Endpoints",
+                    "group": "Interact / Browser Sandbox Endpoints",
                     "pages": [
                       "api-reference/endpoint/browser-create",
                       "api-reference/endpoint/browser-execute",
@@ -478,8 +468,13 @@
                     "pages": [
                       "api-reference/endpoint/research-search-papers",
                       "api-reference/endpoint/research-paper",
-                      "api-reference/endpoint/research-related-papers",
-                      "api-reference/endpoint/research-github-search"
+                      "api-reference/endpoint/research-related-papers"
+                    ]
+                  },
+                  {
+                    "group": "Developer Index Endpoints",
+                    "pages": [
+                      "api-reference/endpoint/developer-search"
                     ]
                   },
                   {
@@ -520,10 +515,12 @@
                   },
                   {
                     "group": "Agent Endpoints",
-                    "hidden": true,
                     "pages": [
                       "api-reference/endpoint/agent",
+                      "api-reference/endpoint/agent-list",
                       "api-reference/endpoint/agent-get",
+                      "api-reference/endpoint/agent-trace",
+                      "api-reference/endpoint/agent-snapshot",
                       "api-reference/endpoint/agent-delete"
                     ]
                   },
@@ -589,7 +586,6 @@
                       },
                       {
                         "group": "Agent",
-                        "hidden": true,
                         "pages": [
                           "api-reference/endpoint/webhook-agent-started",
                           "api-reference/endpoint/webhook-agent-action",
@@ -629,15 +625,12 @@
                       "sdks/cli",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "mcp-server",
-                          "mcp-server/connect",
-                          "mcp-server/clients",
-                          "mcp-server/local",
-                          "mcp-server/tools",
-                          "mcp-server/development"
-                        ]
+                          "mcp-server/keyless",
+                          "mcp-server/oauth"
+                        ],
+                        "root": "mcp-server"
                       },
                       "quickstarts/openclaw"
                     ]
@@ -710,7 +703,6 @@
                     "pages": [
                       "introduction",
                       "mcp-server",
-                      "migrate-to-v2",
                       "advanced-scraping-guide",
                       {
                         "group": "Plans and Billing",
@@ -784,16 +776,10 @@
                     "pages": [
                       "dashboard"
                     ]
-                  },
-                  {
-                    "group": "Contributing",
-                    "pages": [
-                      "contributing/open-source-or-cloud",
-                      "contributing/guide",
-                      "contributing/self-host"
-                    ]
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "Documentation"
               },
               {
@@ -815,8 +801,7 @@
                       "sdks/rust",
                       "sdks/dotnet",
                       "sdks/php",
-                      "sdks/elixir",
-                      "sdks/cli"
+                      "sdks/elixir"
                     ]
                   },
                   {
@@ -824,6 +809,8 @@
                     "pages": []
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "SDKs"
               },
               {
@@ -930,20 +917,17 @@
                     "group": "Primeros pasos",
                     "pages": [
                       "es/introduction",
-                      "es/sdks/cli",
-                      "es/ai-onboarding",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "es/mcp-server",
-                          "es/mcp-server/connect",
-                          "es/mcp-server/clients",
-                          "es/mcp-server/local",
-                          "es/mcp-server/tools",
-                          "es/mcp-server/development"
-                        ]
+                          "es/mcp-server/keyless",
+                          "es/mcp-server/oauth"
+                        ],
+                        "root": "es/mcp-server"
                       },
+                      "es/sdks/cli",
+                      "es/ai-onboarding",
                       "es/advanced-scraping-guide",
                       {
                         "group": "Planes y facturación",
@@ -974,7 +958,8 @@
                         "pages": [
                           "es/features/search",
                           "es/features/search-highlights",
-                          "es/features/research"
+                          "es/features/research",
+                          "es/features/developer"
                         ]
                       },
                       {
@@ -1003,7 +988,14 @@
                           "es/features/monitoring-web-scale"
                         ]
                       },
-                      "es/features/interact"
+                      {
+                        "group": "Interacción / sandbox del navegador",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "es/features/interact",
+                          "es/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -1012,13 +1004,7 @@
                       "es/features/parse",
                       "es/features/map",
                       "es/features/crawl",
-                      "es/features/agent",
-                      {
-                        "group": "Agent (Research Preview)",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "es/features/agent"
                     ]
                   },
                   {
@@ -1102,7 +1088,8 @@
                         "group": "Guías de uso",
                         "icon": "compass",
                         "pages": [
-                          "es/developer-guides/usage-guides/choosing-the-data-extractor"
+                          "es/developer-guides/usage-guides/choosing-the-data-extractor",
+                          "es/developer-guides/usage-guides/verifying-freshness-and-liveness"
                         ]
                       },
                       {
@@ -1130,33 +1117,27 @@
                         ]
                       },
                       {
-                        "group": "Guías de configuración de MCP",
-                        "icon": "plug",
+                        "group": "Integraciones",
+                        "icon": "puzzle-piece",
                         "pages": [
-                          "es/developer-guides/mcp-setup-guides/chatgpt",
-                          "es/developer-guides/mcp-setup-guides/claude-ai",
-                          "es/developer-guides/mcp-setup-guides/factory-ai",
-                          "es/developer-guides/mcp-setup-guides/oauth"
-                        ]
-                      },
-                      {
-                        "group": "Sitios habituales",
-                        "icon": "globe",
-                        "pages": [
-                          "es/developer-guides/common-sites/amazon",
-                          "es/developer-guides/common-sites/etsy",
-                          "es/developer-guides/common-sites/github",
-                          "es/developer-guides/common-sites/wikipedia"
-                        ]
-                      },
-                      {
-                        "group": "Automatización de flujos de trabajo",
-                        "icon": "bolt",
-                        "pages": [
-                          "es/developer-guides/workflow-automation/n8n",
-                          "es/developer-guides/workflow-automation/zapier",
-                          "es/developer-guides/workflow-automation/make",
-                          "es/developer-guides/workflow-automation/dify"
+                          "es/integrations",
+                          "es/integrations/hermes",
+                          "es/integrations/replit",
+                          "es/integrations/lovable",
+                          "es/integrations/langchain",
+                          "es/integrations/llamaindex",
+                          "es/integrations/crewai",
+                          "es/integrations/camelai",
+                          "es/integrations/praison",
+                          "es/integrations/dify",
+                          "es/integrations/langflow",
+                          "es/integrations/flowise",
+                          "es/integrations/zapier",
+                          "es/integrations/make",
+                          "es/integrations/n8n",
+                          "es/integrations/pipedream",
+                          "es/integrations/composio",
+                          "es/integrations/sourcesyncai"
                         ]
                       }
                     ]
@@ -1241,10 +1222,6 @@
                 "tab": "SDKs"
               },
               {
-                "href": "https://www.firecrawl.dev/app",
-                "tab": "Integraciones"
-              },
-              {
                 "groups": [
                   {
                     "group": "Uso de la API",
@@ -1271,7 +1248,7 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de interacción",
+                    "group": "Endpoints de interacción / sandbox del navegador",
                     "pages": [
                       "es/api-reference/endpoint/browser-create",
                       "es/api-reference/endpoint/browser-execute",
@@ -1286,8 +1263,13 @@
                     "pages": [
                       "es/api-reference/endpoint/research-search-papers",
                       "es/api-reference/endpoint/research-paper",
-                      "es/api-reference/endpoint/research-related-papers",
-                      "es/api-reference/endpoint/research-github-search"
+                      "es/api-reference/endpoint/research-related-papers"
+                    ]
+                  },
+                  {
+                    "group": "Endpoints de developer index",
+                    "pages": [
+                      "es/api-reference/endpoint/developer-search"
                     ]
                   },
                   {
@@ -1314,7 +1296,7 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de supervisión",
+                    "group": "Supervisar endpoints",
                     "pages": [
                       "es/api-reference/endpoint/monitor-create",
                       "es/api-reference/endpoint/monitor-list",
@@ -1327,16 +1309,18 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de agente",
-                    "hidden": true,
+                    "group": "Endpoints de agentes",
                     "pages": [
                       "es/api-reference/endpoint/agent",
+                      "es/api-reference/endpoint/agent-list",
                       "es/api-reference/endpoint/agent-get",
+                      "es/api-reference/endpoint/agent-trace",
+                      "es/api-reference/endpoint/agent-snapshot",
                       "es/api-reference/endpoint/agent-delete"
                     ]
                   },
                   {
-                    "group": "Endpoints de feedback",
+                    "group": "Endpoints de comentarios",
                     "pages": [
                       "es/api-reference/endpoint/feedback"
                     ]
@@ -1357,7 +1341,7 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de la cuenta",
+                    "group": "Endpoints de cuenta",
                     "pages": [
                       "es/api-reference/endpoint/activity",
                       "es/api-reference/endpoint/credit-usage",
@@ -1389,15 +1373,14 @@
                         ]
                       },
                       {
-                        "group": "Supervisión",
+                        "group": "Supervisar",
                         "pages": [
                           "es/api-reference/endpoint/webhook-monitor-page",
                           "es/api-reference/endpoint/webhook-monitor-check-completed"
                         ]
                       },
                       {
-                        "group": "Agent",
-                        "hidden": true,
+                        "group": "Agente",
                         "pages": [
                           "es/api-reference/endpoint/webhook-agent-started",
                           "es/api-reference/endpoint/webhook-agent-action",
@@ -1409,7 +1392,7 @@
                     ]
                   },
                   {
-                    "group": "Integración de socios",
+                    "group": "Integración de partners",
                     "pages": [
                       "es/partner-integration"
                     ]
@@ -1423,7 +1406,7 @@
                     "group": "Primeros pasos",
                     "pages": [
                       {
-                        "group": "Desarrolla con IA",
+                        "group": "Crear con IA",
                         "pages": [
                           "es/ai-onboarding",
                           "es/ai-onboarding/agent-auth"
@@ -1437,21 +1420,18 @@
                       "es/sdks/cli",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "es/mcp-server",
-                          "es/mcp-server/connect",
-                          "es/mcp-server/clients",
-                          "es/mcp-server/local",
-                          "es/mcp-server/tools",
-                          "es/mcp-server/development"
-                        ]
+                          "es/mcp-server/keyless",
+                          "es/mcp-server/oauth"
+                        ],
+                        "root": "es/mcp-server"
                       },
                       "es/quickstarts/openclaw"
                     ]
                   },
                   {
-                    "group": "Harnesses para agentes",
+                    "group": "Entornos de agentes",
                     "pages": [
                       "es/quickstarts/openclaw",
                       "es/quickstarts/claude-code",
@@ -1468,7 +1448,7 @@
                     ]
                   },
                   {
-                    "group": "SDKs y frameworks de LLM",
+                    "group": "SDK y frameworks de LLM",
                     "pages": [
                       "es/developer-guides/llm-sdks-and-frameworks/openai",
                       "es/developer-guides/llm-sdks-and-frameworks/anthropic",
@@ -1490,20 +1470,20 @@
                     ]
                   },
                   {
-                    "group": "Depuración agéntica",
+                    "group": "Depuración con agentes",
                     "pages": [
                       "es/features/ask"
                     ]
                   },
                   {
-                    "group": "Guías prácticas",
+                    "group": "Recetarios",
                     "pages": [
                       "es/developer-guides/cookbooks/ai-research-assistant-cookbook",
                       "es/developer-guides/cookbooks/brand-style-guide-generator-cookbook"
                     ]
                   }
                 ],
-                "tab": "Desarrolla con IA"
+                "tab": "Crear con IA"
               }
             ],
             "version": "v2"
@@ -1518,7 +1498,6 @@
                     "pages": [
                       "es/introduction",
                       "es/mcp-server",
-                      "es/migrate-to-v2",
                       "es/advanced-scraping-guide",
                       {
                         "group": "Planes y facturación",
@@ -1529,7 +1508,7 @@
                         ]
                       },
                       {
-                        "group": "Enterprise",
+                        "group": "Empresa",
                         "pages": [
                           "es/enterprise",
                           "es/features/ip-restrictions",
@@ -1592,16 +1571,10 @@
                     "pages": [
                       "es/dashboard"
                     ]
-                  },
-                  {
-                    "group": "Contribuciones",
-                    "pages": [
-                      "es/contributing/open-source-or-cloud",
-                      "es/contributing/guide",
-                      "es/contributing/self-host"
-                    ]
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "Documentación"
               },
               {
@@ -1623,8 +1596,7 @@
                       "es/sdks/rust",
                       "es/sdks/dotnet",
                       "es/sdks/php",
-                      "es/sdks/elixir",
-                      "es/sdks/cli"
+                      "es/sdks/elixir"
                     ]
                   },
                   {
@@ -1632,6 +1604,8 @@
                     "pages": []
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "SDKs"
               },
               {
@@ -1738,20 +1712,17 @@
                     "group": "Prise en main",
                     "pages": [
                       "fr/introduction",
-                      "fr/sdks/cli",
-                      "fr/ai-onboarding",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "fr/mcp-server",
-                          "fr/mcp-server/connect",
-                          "fr/mcp-server/clients",
-                          "fr/mcp-server/local",
-                          "fr/mcp-server/tools",
-                          "fr/mcp-server/development"
-                        ]
+                          "fr/mcp-server/keyless",
+                          "fr/mcp-server/oauth"
+                        ],
+                        "root": "fr/mcp-server"
                       },
+                      "fr/sdks/cli",
+                      "fr/ai-onboarding",
                       "fr/advanced-scraping-guide",
                       {
                         "group": "Offres et facturation",
@@ -1782,7 +1753,8 @@
                         "pages": [
                           "fr/features/search",
                           "fr/features/search-highlights",
-                          "fr/features/research"
+                          "fr/features/research",
+                          "fr/features/developer"
                         ]
                       },
                       {
@@ -1811,7 +1783,14 @@
                           "fr/features/monitoring-web-scale"
                         ]
                       },
-                      "fr/features/interact"
+                      {
+                        "group": "Interact / Browser Sandbox",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "fr/features/interact",
+                          "fr/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -1820,13 +1799,7 @@
                       "fr/features/parse",
                       "fr/features/map",
                       "fr/features/crawl",
-                      "fr/features/agent",
-                      {
-                        "group": "Agent (Research Preview)",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "fr/features/agent"
                     ]
                   },
                   {
@@ -1910,7 +1883,8 @@
                         "group": "Guides d'utilisation",
                         "icon": "compass",
                         "pages": [
-                          "fr/developer-guides/usage-guides/choosing-the-data-extractor"
+                          "fr/developer-guides/usage-guides/choosing-the-data-extractor",
+                          "fr/developer-guides/usage-guides/verifying-freshness-and-liveness"
                         ]
                       },
                       {
@@ -1938,33 +1912,27 @@
                         ]
                       },
                       {
-                        "group": "Guides de configuration MCP",
-                        "icon": "plug",
+                        "group": "Intégrations",
+                        "icon": "puzzle-piece",
                         "pages": [
-                          "fr/developer-guides/mcp-setup-guides/chatgpt",
-                          "fr/developer-guides/mcp-setup-guides/claude-ai",
-                          "fr/developer-guides/mcp-setup-guides/factory-ai",
-                          "fr/developer-guides/mcp-setup-guides/oauth"
-                        ]
-                      },
-                      {
-                        "group": "Sites courants",
-                        "icon": "globe",
-                        "pages": [
-                          "fr/developer-guides/common-sites/amazon",
-                          "fr/developer-guides/common-sites/etsy",
-                          "fr/developer-guides/common-sites/github",
-                          "fr/developer-guides/common-sites/wikipedia"
-                        ]
-                      },
-                      {
-                        "group": "Automatisation des workflows",
-                        "icon": "bolt",
-                        "pages": [
-                          "fr/developer-guides/workflow-automation/n8n",
-                          "fr/developer-guides/workflow-automation/zapier",
-                          "fr/developer-guides/workflow-automation/make",
-                          "fr/developer-guides/workflow-automation/dify"
+                          "fr/integrations",
+                          "fr/integrations/hermes",
+                          "fr/integrations/replit",
+                          "fr/integrations/lovable",
+                          "fr/integrations/langchain",
+                          "fr/integrations/llamaindex",
+                          "fr/integrations/crewai",
+                          "fr/integrations/camelai",
+                          "fr/integrations/praison",
+                          "fr/integrations/dify",
+                          "fr/integrations/langflow",
+                          "fr/integrations/flowise",
+                          "fr/integrations/zapier",
+                          "fr/integrations/make",
+                          "fr/integrations/n8n",
+                          "fr/integrations/pipedream",
+                          "fr/integrations/composio",
+                          "fr/integrations/sourcesyncai"
                         ]
                       }
                     ]
@@ -2049,10 +2017,6 @@
                 "tab": "SDKs"
               },
               {
-                "href": "https://www.firecrawl.dev/app",
-                "tab": "Intégrations"
-              },
-              {
                 "groups": [
                   {
                     "group": "Utilisation de l’API",
@@ -2069,7 +2033,7 @@
                     ]
                   },
                   {
-                    "group": "Points de terminaison de Scrape",
+                    "group": "Points de terminaison de scraping",
                     "pages": [
                       "fr/api-reference/endpoint/scrape",
                       "fr/api-reference/endpoint/batch-scrape",
@@ -2079,7 +2043,7 @@
                     ]
                   },
                   {
-                    "group": "Points de terminaison d’Interact",
+                    "group": "Points de terminaison Interact / Browser Sandbox",
                     "pages": [
                       "fr/api-reference/endpoint/browser-create",
                       "fr/api-reference/endpoint/browser-execute",
@@ -2094,8 +2058,13 @@
                     "pages": [
                       "fr/api-reference/endpoint/research-search-papers",
                       "fr/api-reference/endpoint/research-paper",
-                      "fr/api-reference/endpoint/research-related-papers",
-                      "fr/api-reference/endpoint/research-github-search"
+                      "fr/api-reference/endpoint/research-related-papers"
+                    ]
+                  },
+                  {
+                    "group": "Points de terminaison de l’index développeur",
+                    "pages": [
+                      "fr/api-reference/endpoint/developer-search"
                     ]
                   },
                   {
@@ -2105,13 +2074,13 @@
                     ]
                   },
                   {
-                    "group": "Points de terminaison de Parse",
+                    "group": "Points de terminaison d’analyse",
                     "pages": [
                       "fr/api-reference/endpoint/parse"
                     ]
                   },
                   {
-                    "group": "Points de terminaison de crawl",
+                    "group": "Points de terminaison crawl",
                     "pages": [
                       "fr/api-reference/endpoint/crawl-post",
                       "fr/api-reference/endpoint/crawl-get",
@@ -2122,7 +2091,7 @@
                     ]
                   },
                   {
-                    "group": "Points de terminaison de Monitor",
+                    "group": "Points de terminaison de surveillance",
                     "pages": [
                       "fr/api-reference/endpoint/monitor-create",
                       "fr/api-reference/endpoint/monitor-list",
@@ -2135,22 +2104,24 @@
                     ]
                   },
                   {
-                    "group": "Points de terminaison d’agent",
-                    "hidden": true,
+                    "group": "Points de terminaison Agent",
                     "pages": [
                       "fr/api-reference/endpoint/agent",
+                      "fr/api-reference/endpoint/agent-list",
                       "fr/api-reference/endpoint/agent-get",
+                      "fr/api-reference/endpoint/agent-trace",
+                      "fr/api-reference/endpoint/agent-snapshot",
                       "fr/api-reference/endpoint/agent-delete"
                     ]
                   },
                   {
-                    "group": "Points de terminaison de retours",
+                    "group": "Points de terminaison de retour",
                     "pages": [
                       "fr/api-reference/endpoint/feedback"
                     ]
                   },
                   {
-                    "group": "Points de terminaison d’extraction",
+                    "group": "Points de terminaison Extract",
                     "hidden": true,
                     "pages": [
                       "fr/api-reference/endpoint/extract",
@@ -2178,7 +2149,7 @@
                     ]
                   },
                   {
-                    "group": "Charges utiles des webhooks",
+                    "group": "Charges utiles de webhook",
                     "pages": [
                       {
                         "group": "Crawl",
@@ -2205,7 +2176,6 @@
                       },
                       {
                         "group": "Agent",
-                        "hidden": true,
                         "pages": [
                           "fr/api-reference/endpoint/webhook-agent-started",
                           "fr/api-reference/endpoint/webhook-agent-action",
@@ -2228,10 +2198,10 @@
               {
                 "groups": [
                   {
-                    "group": "Premiers pas",
+                    "group": "Prise en main",
                     "pages": [
                       {
-                        "group": "Créez avec l’IA",
+                        "group": "Créer avec l’IA",
                         "pages": [
                           "fr/ai-onboarding",
                           "fr/ai-onboarding/agent-auth"
@@ -2245,21 +2215,18 @@
                       "fr/sdks/cli",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "fr/mcp-server",
-                          "fr/mcp-server/connect",
-                          "fr/mcp-server/clients",
-                          "fr/mcp-server/local",
-                          "fr/mcp-server/tools",
-                          "fr/mcp-server/development"
-                        ]
+                          "fr/mcp-server/keyless",
+                          "fr/mcp-server/oauth"
+                        ],
+                        "root": "fr/mcp-server"
                       },
                       "fr/quickstarts/openclaw"
                     ]
                   },
                   {
-                    "group": "Harnais d’agent",
+                    "group": "Intégrations pour agent",
                     "pages": [
                       "fr/quickstarts/openclaw",
                       "fr/quickstarts/claude-code",
@@ -2276,7 +2243,7 @@
                     ]
                   },
                   {
-                    "group": "SDK et frameworks pour LLM",
+                    "group": "SDK et frameworks LLM",
                     "pages": [
                       "fr/developer-guides/llm-sdks-and-frameworks/openai",
                       "fr/developer-guides/llm-sdks-and-frameworks/anthropic",
@@ -2291,20 +2258,20 @@
                     ]
                   },
                   {
-                    "group": "Point de terminaison de l’Agent",
+                    "group": "Point de terminaison de l’agent",
                     "pages": [
                       "fr/agents/fire-1",
                       "fr/agents/fire-1-extract"
                     ]
                   },
                   {
-                    "group": "Débogage des agents",
+                    "group": "Débogage agentique",
                     "pages": [
                       "fr/features/ask"
                     ]
                   },
                   {
-                    "group": "Guides pratiques",
+                    "group": "Recueils de recettes",
                     "pages": [
                       "fr/developer-guides/cookbooks/ai-research-assistant-cookbook",
                       "fr/developer-guides/cookbooks/brand-style-guide-generator-cookbook"
@@ -2326,7 +2293,6 @@
                     "pages": [
                       "fr/introduction",
                       "fr/mcp-server",
-                      "fr/migrate-to-v2",
                       "fr/advanced-scraping-guide",
                       {
                         "group": "Offres et facturation",
@@ -2400,16 +2366,10 @@
                     "pages": [
                       "fr/dashboard"
                     ]
-                  },
-                  {
-                    "group": "Contribuer",
-                    "pages": [
-                      "fr/contributing/open-source-or-cloud",
-                      "fr/contributing/guide",
-                      "fr/contributing/self-host"
-                    ]
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "Documentation"
               },
               {
@@ -2431,8 +2391,7 @@
                       "fr/sdks/rust",
                       "fr/sdks/dotnet",
                       "fr/sdks/php",
-                      "fr/sdks/elixir",
-                      "fr/sdks/cli"
+                      "fr/sdks/elixir"
                     ]
                   },
                   {
@@ -2440,6 +2399,8 @@
                     "pages": []
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "SDKs"
               },
               {
@@ -2546,20 +2507,17 @@
                     "group": "はじめに",
                     "pages": [
                       "ja/introduction",
-                      "ja/sdks/cli",
-                      "ja/ai-onboarding",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "ja/mcp-server",
-                          "ja/mcp-server/connect",
-                          "ja/mcp-server/clients",
-                          "ja/mcp-server/local",
-                          "ja/mcp-server/tools",
-                          "ja/mcp-server/development"
-                        ]
+                          "ja/mcp-server/keyless",
+                          "ja/mcp-server/oauth"
+                        ],
+                        "root": "ja/mcp-server"
                       },
+                      "ja/sdks/cli",
+                      "ja/ai-onboarding",
                       "ja/advanced-scraping-guide",
                       {
                         "group": "プランと課金",
@@ -2590,7 +2548,8 @@
                         "pages": [
                           "ja/features/search",
                           "ja/features/search-highlights",
-                          "ja/features/research"
+                          "ja/features/research",
+                          "ja/features/developer"
                         ]
                       },
                       {
@@ -2619,7 +2578,14 @@
                           "ja/features/monitoring-web-scale"
                         ]
                       },
-                      "ja/features/interact"
+                      {
+                        "group": "Interact / ブラウザサンドボックス",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "ja/features/interact",
+                          "ja/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -2628,13 +2594,7 @@
                       "ja/features/parse",
                       "ja/features/map",
                       "ja/features/crawl",
-                      "ja/features/agent",
-                      {
-                        "group": "Agent (Research Preview)",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "ja/features/agent"
                     ]
                   },
                   {
@@ -2718,7 +2678,8 @@
                         "group": "利用ガイド",
                         "icon": "compass",
                         "pages": [
-                          "ja/developer-guides/usage-guides/choosing-the-data-extractor"
+                          "ja/developer-guides/usage-guides/choosing-the-data-extractor",
+                          "ja/developer-guides/usage-guides/verifying-freshness-and-liveness"
                         ]
                       },
                       {
@@ -2746,33 +2707,27 @@
                         ]
                       },
                       {
-                        "group": "MCPセットアップガイド",
-                        "icon": "plug",
+                        "group": "連携",
+                        "icon": "puzzle-piece",
                         "pages": [
-                          "ja/developer-guides/mcp-setup-guides/chatgpt",
-                          "ja/developer-guides/mcp-setup-guides/claude-ai",
-                          "ja/developer-guides/mcp-setup-guides/factory-ai",
-                          "ja/developer-guides/mcp-setup-guides/oauth"
-                        ]
-                      },
-                      {
-                        "group": "主要サイト",
-                        "icon": "globe",
-                        "pages": [
-                          "ja/developer-guides/common-sites/amazon",
-                          "ja/developer-guides/common-sites/etsy",
-                          "ja/developer-guides/common-sites/github",
-                          "ja/developer-guides/common-sites/wikipedia"
-                        ]
-                      },
-                      {
-                        "group": "ワークフロー自動化",
-                        "icon": "bolt",
-                        "pages": [
-                          "ja/developer-guides/workflow-automation/n8n",
-                          "ja/developer-guides/workflow-automation/zapier",
-                          "ja/developer-guides/workflow-automation/make",
-                          "ja/developer-guides/workflow-automation/dify"
+                          "ja/integrations",
+                          "ja/integrations/hermes",
+                          "ja/integrations/replit",
+                          "ja/integrations/lovable",
+                          "ja/integrations/langchain",
+                          "ja/integrations/llamaindex",
+                          "ja/integrations/crewai",
+                          "ja/integrations/camelai",
+                          "ja/integrations/praison",
+                          "ja/integrations/dify",
+                          "ja/integrations/langflow",
+                          "ja/integrations/flowise",
+                          "ja/integrations/zapier",
+                          "ja/integrations/make",
+                          "ja/integrations/n8n",
+                          "ja/integrations/pipedream",
+                          "ja/integrations/composio",
+                          "ja/integrations/sourcesyncai"
                         ]
                       }
                     ]
@@ -2857,10 +2812,6 @@
                 "tab": "SDK"
               },
               {
-                "href": "https://www.firecrawl.dev/app",
-                "tab": "インテグレーション"
-              },
-              {
                 "groups": [
                   {
                     "group": "API の利用方法",
@@ -2887,7 +2838,7 @@
                     ]
                   },
                   {
-                    "group": "Interact エンドポイント",
+                    "group": "Interact / ブラウザサンドボックス エンドポイント",
                     "pages": [
                       "ja/api-reference/endpoint/browser-create",
                       "ja/api-reference/endpoint/browser-execute",
@@ -2902,12 +2853,17 @@
                     "pages": [
                       "ja/api-reference/endpoint/research-search-papers",
                       "ja/api-reference/endpoint/research-paper",
-                      "ja/api-reference/endpoint/research-related-papers",
-                      "ja/api-reference/endpoint/research-github-search"
+                      "ja/api-reference/endpoint/research-related-papers"
                     ]
                   },
                   {
-                    "group": "Map エンドポイント",
+                    "group": "Developer Indexエンドポイント",
+                    "pages": [
+                      "ja/api-reference/endpoint/developer-search"
+                    ]
+                  },
+                  {
+                    "group": "マップエンドポイント",
                     "pages": [
                       "ja/api-reference/endpoint/map"
                     ]
@@ -2930,7 +2886,7 @@
                     ]
                   },
                   {
-                    "group": "Monitor エンドポイント",
+                    "group": "モニターエンドポイント",
                     "pages": [
                       "ja/api-reference/endpoint/monitor-create",
                       "ja/api-reference/endpoint/monitor-list",
@@ -2944,10 +2900,12 @@
                   },
                   {
                     "group": "エージェントエンドポイント",
-                    "hidden": true,
                     "pages": [
                       "ja/api-reference/endpoint/agent",
+                      "ja/api-reference/endpoint/agent-list",
                       "ja/api-reference/endpoint/agent-get",
+                      "ja/api-reference/endpoint/agent-trace",
+                      "ja/api-reference/endpoint/agent-snapshot",
                       "ja/api-reference/endpoint/agent-delete"
                     ]
                   },
@@ -2966,7 +2924,7 @@
                     ]
                   },
                   {
-                    "group": "Agentic Debugging エンドポイント",
+                    "group": "エージェント型デバッグエンドポイント",
                     "pages": [
                       "ja/api-reference/endpoint/ask",
                       "ja/api-reference/endpoint/docs-search"
@@ -2986,7 +2944,7 @@
                     ]
                   },
                   {
-                    "group": "webhookペイロード",
+                    "group": "webhook ペイロード",
                     "pages": [
                       {
                         "group": "クロール",
@@ -2997,7 +2955,7 @@
                         ]
                       },
                       {
-                        "group": "バッチスクレイピング",
+                        "group": "バッチスクレイプ",
                         "pages": [
                           "ja/api-reference/endpoint/webhook-batch-scrape-started",
                           "ja/api-reference/endpoint/webhook-batch-scrape-page",
@@ -3005,7 +2963,7 @@
                         ]
                       },
                       {
-                        "group": "監視",
+                        "group": "モニター",
                         "pages": [
                           "ja/api-reference/endpoint/webhook-monitor-page",
                           "ja/api-reference/endpoint/webhook-monitor-check-completed"
@@ -3013,7 +2971,6 @@
                       },
                       {
                         "group": "エージェント",
-                        "hidden": true,
                         "pages": [
                           "ja/api-reference/endpoint/webhook-agent-started",
                           "ja/api-reference/endpoint/webhook-agent-action",
@@ -3025,13 +2982,13 @@
                     ]
                   },
                   {
-                    "group": "パートナー連携",
+                    "group": "パートナーインテグレーション",
                     "pages": [
                       "ja/partner-integration"
                     ]
                   }
                 ],
-                "tab": "API リファレンス"
+                "tab": "APIリファレンス"
               },
               {
                 "groups": [
@@ -3039,7 +2996,7 @@
                     "group": "はじめに",
                     "pages": [
                       {
-                        "group": "AIで構築する",
+                        "group": "AI で構築",
                         "pages": [
                           "ja/ai-onboarding",
                           "ja/ai-onboarding/agent-auth"
@@ -3048,20 +3005,17 @@
                     ]
                   },
                   {
-                    "group": "AIツール",
+                    "group": "AI ツール",
                     "pages": [
                       "ja/sdks/cli",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "ja/mcp-server",
-                          "ja/mcp-server/connect",
-                          "ja/mcp-server/clients",
-                          "ja/mcp-server/local",
-                          "ja/mcp-server/tools",
-                          "ja/mcp-server/development"
-                        ]
+                          "ja/mcp-server/keyless",
+                          "ja/mcp-server/oauth"
+                        ],
+                        "root": "ja/mcp-server"
                       },
                       "ja/quickstarts/openclaw"
                     ]
@@ -3119,7 +3073,7 @@
                     ]
                   }
                 ],
-                "tab": "AIで構築する"
+                "tab": "AIで構築"
               }
             ],
             "version": "v2"
@@ -3134,7 +3088,6 @@
                     "pages": [
                       "ja/introduction",
                       "ja/mcp-server",
-                      "ja/migrate-to-v2",
                       "ja/advanced-scraping-guide",
                       {
                         "group": "プランと課金",
@@ -3145,7 +3098,7 @@
                         ]
                       },
                       {
-                        "group": "エンタープライズ",
+                        "group": "Enterprise",
                         "pages": [
                           "ja/enterprise",
                           "ja/features/ip-restrictions",
@@ -3208,16 +3161,10 @@
                     "pages": [
                       "ja/dashboard"
                     ]
-                  },
-                  {
-                    "group": "貢献",
-                    "pages": [
-                      "ja/contributing/open-source-or-cloud",
-                      "ja/contributing/guide",
-                      "ja/contributing/self-host"
-                    ]
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "ドキュメント"
               },
               {
@@ -3239,8 +3186,7 @@
                       "ja/sdks/rust",
                       "ja/sdks/dotnet",
                       "ja/sdks/php",
-                      "ja/sdks/elixir",
-                      "ja/sdks/cli"
+                      "ja/sdks/elixir"
                     ]
                   },
                   {
@@ -3248,6 +3194,8 @@
                     "pages": []
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "SDK"
               },
               {
@@ -3354,20 +3302,17 @@
                     "group": "Primeiros passos",
                     "pages": [
                       "pt-BR/introduction",
-                      "pt-BR/sdks/cli",
-                      "pt-BR/ai-onboarding",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "pt-BR/mcp-server",
-                          "pt-BR/mcp-server/connect",
-                          "pt-BR/mcp-server/clients",
-                          "pt-BR/mcp-server/local",
-                          "pt-BR/mcp-server/tools",
-                          "pt-BR/mcp-server/development"
-                        ]
+                          "pt-BR/mcp-server/keyless",
+                          "pt-BR/mcp-server/oauth"
+                        ],
+                        "root": "pt-BR/mcp-server"
                       },
+                      "pt-BR/sdks/cli",
+                      "pt-BR/ai-onboarding",
                       "pt-BR/advanced-scraping-guide",
                       {
                         "group": "Planos e cobrança",
@@ -3398,7 +3343,8 @@
                         "pages": [
                           "pt-BR/features/search",
                           "pt-BR/features/search-highlights",
-                          "pt-BR/features/research"
+                          "pt-BR/features/research",
+                          "pt-BR/features/developer"
                         ]
                       },
                       {
@@ -3427,7 +3373,14 @@
                           "pt-BR/features/monitoring-web-scale"
                         ]
                       },
-                      "pt-BR/features/interact"
+                      {
+                        "group": "Interagir / Browser Sandbox",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "pt-BR/features/interact",
+                          "pt-BR/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -3436,13 +3389,7 @@
                       "pt-BR/features/parse",
                       "pt-BR/features/map",
                       "pt-BR/features/crawl",
-                      "pt-BR/features/agent",
-                      {
-                        "group": "Agente (Research Preview)",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "pt-BR/features/agent"
                     ]
                   },
                   {
@@ -3526,7 +3473,8 @@
                         "group": "Guias de uso",
                         "icon": "compass",
                         "pages": [
-                          "pt-BR/developer-guides/usage-guides/choosing-the-data-extractor"
+                          "pt-BR/developer-guides/usage-guides/choosing-the-data-extractor",
+                          "pt-BR/developer-guides/usage-guides/verifying-freshness-and-liveness"
                         ]
                       },
                       {
@@ -3554,33 +3502,27 @@
                         ]
                       },
                       {
-                        "group": "Guias de configuração do MCP",
-                        "icon": "plug",
+                        "group": "Integrações",
+                        "icon": "puzzle-piece",
                         "pages": [
-                          "pt-BR/developer-guides/mcp-setup-guides/chatgpt",
-                          "pt-BR/developer-guides/mcp-setup-guides/claude-ai",
-                          "pt-BR/developer-guides/mcp-setup-guides/factory-ai",
-                          "pt-BR/developer-guides/mcp-setup-guides/oauth"
-                        ]
-                      },
-                      {
-                        "group": "Sites comuns",
-                        "icon": "globe",
-                        "pages": [
-                          "pt-BR/developer-guides/common-sites/amazon",
-                          "pt-BR/developer-guides/common-sites/etsy",
-                          "pt-BR/developer-guides/common-sites/github",
-                          "pt-BR/developer-guides/common-sites/wikipedia"
-                        ]
-                      },
-                      {
-                        "group": "Automação de fluxos de trabalho",
-                        "icon": "bolt",
-                        "pages": [
-                          "pt-BR/developer-guides/workflow-automation/n8n",
-                          "pt-BR/developer-guides/workflow-automation/zapier",
-                          "pt-BR/developer-guides/workflow-automation/make",
-                          "pt-BR/developer-guides/workflow-automation/dify"
+                          "pt-BR/integrations",
+                          "pt-BR/integrations/hermes",
+                          "pt-BR/integrations/replit",
+                          "pt-BR/integrations/lovable",
+                          "pt-BR/integrations/langchain",
+                          "pt-BR/integrations/llamaindex",
+                          "pt-BR/integrations/crewai",
+                          "pt-BR/integrations/camelai",
+                          "pt-BR/integrations/praison",
+                          "pt-BR/integrations/dify",
+                          "pt-BR/integrations/langflow",
+                          "pt-BR/integrations/flowise",
+                          "pt-BR/integrations/zapier",
+                          "pt-BR/integrations/make",
+                          "pt-BR/integrations/n8n",
+                          "pt-BR/integrations/pipedream",
+                          "pt-BR/integrations/composio",
+                          "pt-BR/integrations/sourcesyncai"
                         ]
                       }
                     ]
@@ -3665,10 +3607,6 @@
                 "tab": "SDKs"
               },
               {
-                "href": "https://www.firecrawl.dev/app",
-                "tab": "Integrações"
-              },
-              {
                 "groups": [
                   {
                     "group": "Usando a API",
@@ -3685,7 +3623,7 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de scraping",
+                    "group": "Endpoints /scrape",
                     "pages": [
                       "pt-BR/api-reference/endpoint/scrape",
                       "pt-BR/api-reference/endpoint/batch-scrape",
@@ -3695,7 +3633,7 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de interação",
+                    "group": "Endpoints para interagir / Browser Sandbox",
                     "pages": [
                       "pt-BR/api-reference/endpoint/browser-create",
                       "pt-BR/api-reference/endpoint/browser-execute",
@@ -3710,8 +3648,13 @@
                     "pages": [
                       "pt-BR/api-reference/endpoint/research-search-papers",
                       "pt-BR/api-reference/endpoint/research-paper",
-                      "pt-BR/api-reference/endpoint/research-related-papers",
-                      "pt-BR/api-reference/endpoint/research-github-search"
+                      "pt-BR/api-reference/endpoint/research-related-papers"
+                    ]
+                  },
+                  {
+                    "group": "Endpoints do índice para desenvolvedores",
+                    "pages": [
+                      "pt-BR/api-reference/endpoint/developer-search"
                     ]
                   },
                   {
@@ -3721,7 +3664,7 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de processamento",
+                    "group": "Endpoints de análise",
                     "pages": [
                       "pt-BR/api-reference/endpoint/parse"
                     ]
@@ -3751,11 +3694,13 @@
                     ]
                   },
                   {
-                    "group": "Endpoints do agente",
-                    "hidden": true,
+                    "group": "Endpoints de agente",
                     "pages": [
                       "pt-BR/api-reference/endpoint/agent",
+                      "pt-BR/api-reference/endpoint/agent-list",
                       "pt-BR/api-reference/endpoint/agent-get",
+                      "pt-BR/api-reference/endpoint/agent-trace",
+                      "pt-BR/api-reference/endpoint/agent-snapshot",
                       "pt-BR/api-reference/endpoint/agent-delete"
                     ]
                   },
@@ -3813,7 +3758,7 @@
                         ]
                       },
                       {
-                        "group": "Monitoramento",
+                        "group": "Monitor",
                         "pages": [
                           "pt-BR/api-reference/endpoint/webhook-monitor-page",
                           "pt-BR/api-reference/endpoint/webhook-monitor-check-completed"
@@ -3821,7 +3766,6 @@
                       },
                       {
                         "group": "Agente",
-                        "hidden": true,
                         "pages": [
                           "pt-BR/api-reference/endpoint/webhook-agent-started",
                           "pt-BR/api-reference/endpoint/webhook-agent-action",
@@ -3847,7 +3791,7 @@
                     "group": "Primeiros passos",
                     "pages": [
                       {
-                        "group": "Crie com IA",
+                        "group": "Desenvolva com IA",
                         "pages": [
                           "pt-BR/ai-onboarding",
                           "pt-BR/ai-onboarding/agent-auth"
@@ -3861,21 +3805,18 @@
                       "pt-BR/sdks/cli",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "pt-BR/mcp-server",
-                          "pt-BR/mcp-server/connect",
-                          "pt-BR/mcp-server/clients",
-                          "pt-BR/mcp-server/local",
-                          "pt-BR/mcp-server/tools",
-                          "pt-BR/mcp-server/development"
-                        ]
+                          "pt-BR/mcp-server/keyless",
+                          "pt-BR/mcp-server/oauth"
+                        ],
+                        "root": "pt-BR/mcp-server"
                       },
                       "pt-BR/quickstarts/openclaw"
                     ]
                   },
                   {
-                    "group": "Harnesses para agentes",
+                    "group": "Integrações com agentes",
                     "pages": [
                       "pt-BR/quickstarts/openclaw",
                       "pt-BR/quickstarts/claude-code",
@@ -3914,20 +3855,20 @@
                     ]
                   },
                   {
-                    "group": "Depuração de agentes",
+                    "group": "Depuração agêntica",
                     "pages": [
                       "pt-BR/features/ask"
                     ]
                   },
                   {
-                    "group": "Guias práticos",
+                    "group": "Receitas",
                     "pages": [
                       "pt-BR/developer-guides/cookbooks/ai-research-assistant-cookbook",
                       "pt-BR/developer-guides/cookbooks/brand-style-guide-generator-cookbook"
                     ]
                   }
                 ],
-                "tab": "Crie com IA"
+                "tab": "Desenvolva com IA"
               }
             ],
             "version": "v2"
@@ -3942,7 +3883,6 @@
                     "pages": [
                       "pt-BR/introduction",
                       "pt-BR/mcp-server",
-                      "pt-BR/migrate-to-v2",
                       "pt-BR/advanced-scraping-guide",
                       {
                         "group": "Planos e cobrança",
@@ -3953,7 +3893,7 @@
                         ]
                       },
                       {
-                        "group": "Enterprise",
+                        "group": "Empresarial",
                         "pages": [
                           "pt-BR/enterprise",
                           "pt-BR/features/ip-restrictions",
@@ -4016,16 +3956,10 @@
                     "pages": [
                       "pt-BR/dashboard"
                     ]
-                  },
-                  {
-                    "group": "Contribuindo",
-                    "pages": [
-                      "pt-BR/contributing/open-source-or-cloud",
-                      "pt-BR/contributing/guide",
-                      "pt-BR/contributing/self-host"
-                    ]
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "Documentação"
               },
               {
@@ -4047,8 +3981,7 @@
                       "pt-BR/sdks/rust",
                       "pt-BR/sdks/dotnet",
                       "pt-BR/sdks/php",
-                      "pt-BR/sdks/elixir",
-                      "pt-BR/sdks/cli"
+                      "pt-BR/sdks/elixir"
                     ]
                   },
                   {
@@ -4056,6 +3989,8 @@
                     "pages": []
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "SDKs"
               },
               {
@@ -4162,20 +4097,17 @@
                     "group": "快速上手",
                     "pages": [
                       "zh/introduction",
-                      "zh/sdks/cli",
-                      "zh/ai-onboarding",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "zh/mcp-server",
-                          "zh/mcp-server/connect",
-                          "zh/mcp-server/clients",
-                          "zh/mcp-server/local",
-                          "zh/mcp-server/tools",
-                          "zh/mcp-server/development"
-                        ]
+                          "zh/mcp-server/keyless",
+                          "zh/mcp-server/oauth"
+                        ],
+                        "root": "zh/mcp-server"
                       },
+                      "zh/sdks/cli",
+                      "zh/ai-onboarding",
                       "zh/advanced-scraping-guide",
                       {
                         "group": "套餐与计费",
@@ -4206,7 +4138,8 @@
                         "pages": [
                           "zh/features/search",
                           "zh/features/search-highlights",
-                          "zh/features/research"
+                          "zh/features/research",
+                          "zh/features/developer"
                         ]
                       },
                       {
@@ -4235,7 +4168,14 @@
                           "zh/features/monitoring-web-scale"
                         ]
                       },
-                      "zh/features/interact"
+                      {
+                        "group": "交互 / 浏览器沙箱",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "zh/features/interact",
+                          "zh/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -4244,13 +4184,7 @@
                       "zh/features/parse",
                       "zh/features/map",
                       "zh/features/crawl",
-                      "zh/features/agent",
-                      {
-                        "group": "代理（研究预览）",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "zh/features/agent"
                     ]
                   },
                   {
@@ -4334,7 +4268,8 @@
                         "group": "使用方式指南",
                         "icon": "compass",
                         "pages": [
-                          "zh/developer-guides/usage-guides/choosing-the-data-extractor"
+                          "zh/developer-guides/usage-guides/choosing-the-data-extractor",
+                          "zh/developer-guides/usage-guides/verifying-freshness-and-liveness"
                         ]
                       },
                       {
@@ -4362,33 +4297,27 @@
                         ]
                       },
                       {
-                        "group": "MCP 设置指南",
-                        "icon": "plug",
+                        "group": "Integrations",
+                        "icon": "puzzle-piece",
                         "pages": [
-                          "zh/developer-guides/mcp-setup-guides/chatgpt",
-                          "zh/developer-guides/mcp-setup-guides/claude-ai",
-                          "zh/developer-guides/mcp-setup-guides/factory-ai",
-                          "zh/developer-guides/mcp-setup-guides/oauth"
-                        ]
-                      },
-                      {
-                        "group": "常见站点",
-                        "icon": "globe",
-                        "pages": [
-                          "zh/developer-guides/common-sites/amazon",
-                          "zh/developer-guides/common-sites/etsy",
-                          "zh/developer-guides/common-sites/github",
-                          "zh/developer-guides/common-sites/wikipedia"
-                        ]
-                      },
-                      {
-                        "group": "工作流自动化",
-                        "icon": "bolt",
-                        "pages": [
-                          "zh/developer-guides/workflow-automation/n8n",
-                          "zh/developer-guides/workflow-automation/zapier",
-                          "zh/developer-guides/workflow-automation/make",
-                          "zh/developer-guides/workflow-automation/dify"
+                          "zh/integrations",
+                          "zh/integrations/hermes",
+                          "zh/integrations/replit",
+                          "zh/integrations/lovable",
+                          "zh/integrations/langchain",
+                          "zh/integrations/llamaindex",
+                          "zh/integrations/crewai",
+                          "zh/integrations/camelai",
+                          "zh/integrations/praison",
+                          "zh/integrations/dify",
+                          "zh/integrations/langflow",
+                          "zh/integrations/flowise",
+                          "zh/integrations/zapier",
+                          "zh/integrations/make",
+                          "zh/integrations/n8n",
+                          "zh/integrations/pipedream",
+                          "zh/integrations/composio",
+                          "zh/integrations/sourcesyncai"
                         ]
                       }
                     ]
@@ -4473,10 +4402,6 @@
                 "tab": "SDK"
               },
               {
-                "href": "https://www.firecrawl.dev/app",
-                "tab": "集成"
-              },
-              {
                 "groups": [
                   {
                     "group": "使用 API",
@@ -4503,7 +4428,7 @@
                     ]
                   },
                   {
-                    "group": "交互端点",
+                    "group": "交互 / 浏览器沙箱端点",
                     "pages": [
                       "zh/api-reference/endpoint/browser-create",
                       "zh/api-reference/endpoint/browser-execute",
@@ -4518,12 +4443,17 @@
                     "pages": [
                       "zh/api-reference/endpoint/research-search-papers",
                       "zh/api-reference/endpoint/research-paper",
-                      "zh/api-reference/endpoint/research-related-papers",
-                      "zh/api-reference/endpoint/research-github-search"
+                      "zh/api-reference/endpoint/research-related-papers"
                     ]
                   },
                   {
-                    "group": "映射端点",
+                    "group": "开发者索引端点",
+                    "pages": [
+                      "zh/api-reference/endpoint/developer-search"
+                    ]
+                  },
+                  {
+                    "group": "map端点",
                     "pages": [
                       "zh/api-reference/endpoint/map"
                     ]
@@ -4560,10 +4490,12 @@
                   },
                   {
                     "group": "代理端点",
-                    "hidden": true,
                     "pages": [
                       "zh/api-reference/endpoint/agent",
+                      "zh/api-reference/endpoint/agent-list",
                       "zh/api-reference/endpoint/agent-get",
+                      "zh/api-reference/endpoint/agent-trace",
+                      "zh/api-reference/endpoint/agent-snapshot",
                       "zh/api-reference/endpoint/agent-delete"
                     ]
                   },
@@ -4574,7 +4506,7 @@
                     ]
                   },
                   {
-                    "group": "提取端点",
+                    "group": "extract端点",
                     "hidden": true,
                     "pages": [
                       "zh/api-reference/endpoint/extract",
@@ -4582,7 +4514,7 @@
                     ]
                   },
                   {
-                    "group": "Agentic Debugging 端点",
+                    "group": "代理式调试端点",
                     "pages": [
                       "zh/api-reference/endpoint/ask",
                       "zh/api-reference/endpoint/docs-search"
@@ -4602,7 +4534,7 @@
                     ]
                   },
                   {
-                    "group": "Webhook 载荷",
+                    "group": "Webhook 负载",
                     "pages": [
                       {
                         "group": "爬取",
@@ -4629,7 +4561,6 @@
                       },
                       {
                         "group": "代理",
-                        "hidden": true,
                         "pages": [
                           "zh/api-reference/endpoint/webhook-agent-started",
                           "zh/api-reference/endpoint/webhook-agent-action",
@@ -4652,10 +4583,10 @@
               {
                 "groups": [
                   {
-                    "group": "快速开始",
+                    "group": "入门指南",
                     "pages": [
                       {
-                        "group": "用 AI 构建",
+                        "group": "使用 AI 构建",
                         "pages": [
                           "zh/ai-onboarding",
                           "zh/ai-onboarding/agent-auth"
@@ -4669,21 +4600,18 @@
                       "zh/sdks/cli",
                       {
                         "group": "MCP",
-                        "icon": "plug",
                         "pages": [
                           "zh/mcp-server",
-                          "zh/mcp-server/connect",
-                          "zh/mcp-server/clients",
-                          "zh/mcp-server/local",
-                          "zh/mcp-server/tools",
-                          "zh/mcp-server/development"
-                        ]
+                          "zh/mcp-server/keyless",
+                          "zh/mcp-server/oauth"
+                        ],
+                        "root": "zh/mcp-server"
                       },
                       "zh/quickstarts/openclaw"
                     ]
                   },
                   {
-                    "group": "代理工具集",
+                    "group": "代理工具",
                     "pages": [
                       "zh/quickstarts/openclaw",
                       "zh/quickstarts/claude-code",
@@ -4700,7 +4628,7 @@
                     ]
                   },
                   {
-                    "group": "LLM SDK 与框架",
+                    "group": "LLM SDKs 和框架",
                     "pages": [
                       "zh/developer-guides/llm-sdks-and-frameworks/openai",
                       "zh/developer-guides/llm-sdks-and-frameworks/anthropic",
@@ -4735,7 +4663,7 @@
                     ]
                   }
                 ],
-                "tab": "用 AI 构建"
+                "tab": "使用 AI 构建"
               }
             ],
             "version": "v2"
@@ -4750,7 +4678,6 @@
                     "pages": [
                       "zh/introduction",
                       "zh/mcp-server",
-                      "zh/migrate-to-v2",
                       "zh/advanced-scraping-guide",
                       {
                         "group": "套餐与计费",
@@ -4824,16 +4751,10 @@
                     "pages": [
                       "zh/dashboard"
                     ]
-                  },
-                  {
-                    "group": "参与贡献",
-                    "pages": [
-                      "zh/contributing/open-source-or-cloud",
-                      "zh/contributing/guide",
-                      "zh/contributing/self-host"
-                    ]
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "文档"
               },
               {
@@ -4855,8 +4776,7 @@
                       "zh/sdks/rust",
                       "zh/sdks/dotnet",
                       "zh/sdks/php",
-                      "zh/sdks/elixir",
-                      "zh/sdks/cli"
+                      "zh/sdks/elixir"
                     ]
                   },
                   {
@@ -4864,6 +4784,8 @@
                     "pages": []
                   }
                 ],
+                "hidden": true,
+                "searchable": true,
                 "tab": "SDK"
               },
               {
@@ -4941,6 +4863,102 @@
     {
       "source": "/features/exchange",
       "destination": "/features/alexandria"
+    },
+    {
+      "destination": "/api-reference/endpoint/browser-create",
+      "source": "/api-reference/endpoint/browser-create-session"
+    },
+    {
+      "destination": "/api-reference/endpoint/browser-execute",
+      "source": "/api-reference/endpoint/browser-actions"
+    },
+    {
+      "destination": "/api-reference/endpoint/scrape-browser-delete",
+      "source": "/api-reference/endpoint/scrape-delete-interact"
+    },
+    {
+      "destination": "/api-reference/endpoint/crawl-params-preview",
+      "source": "/api-reference/endpoint/crawl-url-params-preview"
+    },
+    {
+      "destination": "/api-reference/endpoint/crawl-params-preview",
+      "source": "/api-reference/endpoint/crawl-url-preview"
+    },
+    {
+      "destination": "/api-reference/endpoint/crawl-active",
+      "source": "/api-reference/endpoint/crawl-get-active"
+    },
+    {
+      "destination": "/features/interact",
+      "source": "/features/scrape-and-interact"
+    },
+    {
+      "destination": "/api-reference/endpoint/token-usage",
+      "source": "/api-reference/endpoint/get-token-usage"
+    },
+    {
+      "destination": "/api-reference/endpoint/token-usage-historical",
+      "source": "/api-reference/endpoint/get-token-usage-historical"
+    },
+    {
+      "destination": "/api-reference/endpoint/activity",
+      "source": "/api-reference/endpoint/get-team-activity"
+    },
+    {
+      "destination": "/api-reference/endpoint/queue-status",
+      "source": "/api-reference/endpoint/get-team-queue-status"
+    },
+    {
+      "destination": "/api-reference/endpoint/credit-usage-historical",
+      "source": "/api-reference/endpoint/get-team-credit-usage-historical"
+    },
+    {
+      "destination": "/api-reference/endpoint/token-usage",
+      "source": "/api-reference/endpoint/team/get-token-usage"
+    },
+    {
+      "destination": "/api-reference/endpoint/token-usage-historical",
+      "source": "/api-reference/endpoint/team/get-token-usage-historical"
+    },
+    {
+      "destination": "/api-reference/endpoint/credit-usage-historical",
+      "source": "/api-reference/endpoint/team/get-credit-usage-historical"
+    },
+    {
+      "destination": "/mcp-server",
+      "source": "/mcp-server/connect"
+    },
+    {
+      "destination": "/mcp-server",
+      "source": "/mcp-server/clients"
+    },
+    {
+      "destination": "/mcp-server",
+      "source": "/mcp-server/development"
+    },
+    {
+      "destination": "/mcp-server/oauth",
+      "source": "/developer-guides/mcp-setup-guides/oauth"
+    },
+    {
+      "destination": "/mcp-server/keyless",
+      "source": "/mcp-server/keyless-api-key"
+    },
+    {
+      "destination": "/mcp-server/keyless",
+      "source": "/mcp-server/agent-mcp"
+    },
+    {
+      "destination": "/mcp-server/oauth",
+      "source": "/mcp-server/human-mcp"
+    },
+    {
+      "destination": "/api-reference/endpoint/developer-search",
+      "source": "/api-reference/endpoint/research-github-search"
+    },
+    {
+      "destination": "/features/monitoring",
+      "source": "/features/monitor"
     },
     {
       "destination": "/features/browser",
@@ -5357,6 +5375,54 @@
     {
       "destination": "/webhooks/overview",
       "source": "/webhooks"
+    },
+    {
+      "destination": "/integrations/replit",
+      "source": "/developer-guides/workflow-automation/replit"
+    },
+    {
+      "destination": "/integrations/zapier",
+      "source": "/developer-guides/workflow-automation/zapier"
+    },
+    {
+      "destination": "/integrations/make",
+      "source": "/developer-guides/workflow-automation/make"
+    },
+    {
+      "destination": "/integrations/n8n",
+      "source": "/developer-guides/workflow-automation/n8n"
+    },
+    {
+      "destination": "/integrations/dify",
+      "source": "/developer-guides/workflow-automation/dify"
+    },
+    {
+      "destination": "/introduction",
+      "source": "/migrate-to-v2"
+    },
+    {
+      "destination": "/introduction",
+      "source": "/migrate-to-v2.md"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/amazon"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/etsy"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/github"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/wikipedia"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites"
     }
   ],
   "seo": {

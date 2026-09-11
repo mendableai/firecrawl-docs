@@ -60,6 +60,7 @@ import ScrapeHighlightsPython from "/snippets/zh/v2/scrape/highlights/python.mdx
 import ScrapeHighlightsNode from "/snippets/zh/v2/scrape/highlights/js.mdx";
 import ScrapeHighlightsCURL from "/snippets/zh/v2/scrape/highlights/curl.mdx";
 import PlaygroundCTA from "/snippets/zh/shared/playground-cta-scrape.mdx";
+import VideoParseVsScrape from "/snippets/zh/shared/video-parse-vs-scrape.mdx";
 
 Firecrawl 可将网页转换为 markdown，非常适合 LLM 应用。
 
@@ -67,9 +68,13 @@ Firecrawl 可将网页转换为 markdown，非常适合 LLM 应用。
 * 处理动态内容：动态网站、JS 渲染的网站、PDF 和图片
 * 输出干净的 markdown、结构化数据、截图或 html。
 
-详情请参阅 [Scrape Endpoint API 参考](https://docs.firecrawl.dev/api-reference/endpoint/scrape)。
+详情请参阅 [抓取 Endpoint API 参考](https://docs.firecrawl.dev/api-reference/endpoint/scrape)。
 
 <PlaygroundCTA />
+
+要抓取某个 URL 上的文档，还是解析本地磁盘上的文档？下面介绍何时使用 抓取、何时使用 [Parse](/zh/features/parse)：
+
+<VideoParseVsScrape />
 
 <Note>如果请求失败，请参见 [Errors](/zh/api-reference/errors) 了解完整的错误代码目录、原因、补救措施和重试指南。</Note>
 
@@ -121,25 +126,39 @@ Firecrawl 可将网页转换为 markdown，非常适合 LLM 应用。
 </Tip>
 
 <Info>
-  每次抓取会消耗 1 个额度。某些选项会产生额外消耗：JSON 模式每页额外消耗 4 个额度，question 和 highlights formats 每种格式每页额外消耗 4 个额度，高级代理 (enhanced proxy) 每页额外消耗 4 个额度，PII 脱敏每页额外消耗 4 个额度，PDF 解析每个 PDF 页面额外消耗 1 个额度，音频或视频提取每页额外消耗 4 个额度。
+  每次抓取会消耗 1 个额度。某些选项会产生额外消耗：JSON 模式每页额外消耗 4 个额度，question 和 highlights formats 每种格式每页额外消耗 4 个额度，PII 脱敏每页额外消耗 4 个额度，PDF 解析每个 PDF 页面额外消耗 1 个额度，音频或视频提取每页额外消耗 4 个额度。
 </Info>
 
-### 响应
+<div id="response">
+  ### 响应
+</div>
 
 各 SDK 会直接返回数据对象。cURL 将按下方所示原样返回载荷。
 
 <ScrapeResponse />
 
-<div id="scrape-formats">
-  ## 抓取 formats
+<div id="response-metadata-and-status-codes">
+  ### 响应元数据和状态码
 </div>
 
-现在你可以选择输出所需的 formats。你可以指定多个输出 formats。支持的 formats 包括：
+抓取响应中有两个相互独立的状态层级，需要注意区分：
+
+* **API 请求状态**：Firecrawl API 调用本身的 HTTP 状态，以及响应正文中的 `success` 布尔值。只要请求被接受并处理，就会返回 HTTP `200` 和 `success: true`，即使目标页面实际返回的是非 2xx 状态码。
+* **页面状态** (`data.metadata.statusCode`) ：目标网站为该页面返回的 HTTP 状态码 (例如 `200`、`301`、`404`、`403`、`500`) 。它反映的是页面本身的响应情况。
+
+因此，可靠的做法是：先确认请求成功 (HTTP `200` + `success: true`) ，再检查 `data.metadata.statusCode`，了解页面的实际结果。Firecrawl 将 2xx 或 `304` 的 `statusCode` 视为页面加载正常；其他状态则表示页面未能正常加载。当页面返回错误状态时，`data.metadata.error` 可能会包含更多详细信息。
+
+<div id="scrape-formats">
+  ## 抓取格式
+</div>
+
+现在你可以选择输出所需的格式。你可以指定多个输出格式。支持的格式包括：
 
 * Markdown (`markdown`)
 * 摘要 (`summary`)
 * HTML (`html`) - 页面 HTML 的清洗版本
 * 原始 HTML (`rawHtml`) - 按页面返回的不经修改的 HTML
+* 原始 Base64 (`rawBase64`) - 经过 Base64 编码的原始 HTTP 响应正文；必须是请求中的唯一格式
 * 截图 (`screenshot`，可选项包括 `fullPage`、`quality`、`viewport`) — 截图 URL 会在 24 小时后过期
 * 链接 (`links`)
 * JSON (`json`) - 结构化输出
@@ -150,7 +169,9 @@ Firecrawl 可将网页转换为 markdown，非常适合 LLM 应用。
 * 视频 (`video`) - 从支持的视频 URL (例如 YouTube) 中提取最佳质量的视频 (返回签名 GCS URL，1 小时后过期)
 * Query (`query`，带有 `prompt` 和可选的 `mode`) - 针对页面提出一个自然语言问题；答案会在 `answer` 字段中返回
 
-输出键将与你选择的 format 对应。
+输出键将与你选择的格式对应。
+
+`rawBase64` 格式会返回经过 Base64 编码的原始 HTTP 响应正文。`rawBase64` 字段包含纯 Base64 字符串，而非数据 URI。请从 `metadata.contentType` 读取 MIME 类型。请仅请求 `rawBase64`，因为 API 会拒绝将其与任何其他格式一起使用。响应中不包含 `markdown`、`html` 或 `rawHtml` 字段，并且它仅包含该 URL 对应的单个文件，不包含 CSS、图片或其他子资源。
 
 <div id="extract-structured-data">
   ## 提取结构化数据
@@ -223,7 +244,9 @@ branding 格式会从网页中提取完整的品牌识别信息，包括颜色�
   <ScrapeBrandingCURL />
 </CodeGroup>
 
-### 响应
+<div id="response-2">
+  ### 响应
+</div>
 
 品牌配置会返回一个完整的 `BrandingProfile` 对象，其结构如下：
 
@@ -294,7 +317,9 @@ branding 格式会从网页中提取完整的品牌识别信息，包括颜色�
   <ScrapeProductCURL />
 </CodeGroup>
 
-### 响应
+<div id="response-3">
+  ### 响应
+</div>
 
 `product` 格式会返回一个 `product` 对象，结构如下：
 
@@ -339,7 +364,9 @@ branding 格式会从网页中提取完整的品牌识别信息，包括颜色�
   **自托管：** `product` 格式由专用的产品提取服务提供支持。在 Firecrawl Cloud 上可开箱即用。如果你选择自托管，请设置 `PRODUCT_EXTRACTION_SERVICE_URL` 并将其指向该服务——如果未设置，请求 `product` 格式时会返回警告，且不会返回产品 (音频/视频格式对其服务也采用相同模式) 。
 </Note>
 
-### 与其他 formats 组合使用
+<div id="combining-with-other-formats-2">
+  ### 与其他 formats 组合使用
+</div>
 
 你可以将 product 格式与其他 formats 组合使用，以获取更全面的页面数据：
 
@@ -506,7 +533,9 @@ Firecrawl 允许你在抓取页面内容之前对网页执行各种 actions。�
 
 当你指定位置设置时，Firecrawl 会在可用时使用合适的代理，并仿真相应的语言和时区设置。默认情况下，若未指定位置，位置将设为“US”。
 
-### 用法
+<div id="usage-2">
+  ### 用法
+</div>
 
 要使用位置和语言设置，请在请求体中包含 `location` 对象，并提供以下属性：
 
@@ -600,13 +629,21 @@ Firecrawl 允许你在抓取页面内容之前对网页执行各种 actions。�
   ```
 </CodeGroup>
 
+<div id="freshness-and-item-status">
+  ### 新鲜度与条目状态
+</div>
+
+`maxAge` 决定 Firecrawl 是否可以返回缓存副本；它并不能说明页面所呈现的状态是否仍然有效。对新鲜度有要求时，请使用 `maxAge: 0` 跳过缓存，然后检查返回的内容，以及任何重定向或特定来源的状态信号。仅凭响应成功，并不能证明状态仍然有效。
+
+请参见[验证新鲜度和可用性](/zh/developer-guides/usage-guides/verifying-freshness-and-liveness)，了解检查清单和示例。
+
 <div id="batch-scraping-multiple-urls">
   ## 批量抓取多个 URL
 </div>
 
 你现在可以同时批量抓取多个 URL。它以起始 URL 和可选参数作为输入。params 参数允许你为批量抓取任务指定其他选项，例如输出 formats。
 
-<div id="how-it-works">
+<div id="how-it-works-2">
   ### 工作原理
 </div>
 
@@ -614,7 +651,9 @@ Firecrawl 允许你在抓取页面内容之前对网页执行各种 actions。�
 
 SDK 提供两种方式：同步与异步。同步方式会直接返回批量抓取作业的结果，异步方式则会返回一个作业 ID，供您用于查询批量抓取的状态。
 
-### 使用方法
+<div id="usage-3">
+  ### 使用方法
+</div>
 
 <CodeGroup>
   <BatchScrapePython />
@@ -624,7 +663,7 @@ SDK 提供两种方式：同步与异步。同步方式会直接返回批量抓�
   <BatchScrapeCURL />
 </CodeGroup>
 
-<div id="response">
+<div id="response-4">
   ### Response
 </div>
 

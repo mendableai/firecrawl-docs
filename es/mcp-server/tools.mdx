@@ -1,562 +1,136 @@
 ---
-title: Herramientas y operaciones de Firecrawl MCP
-description: Herramientas disponibles, comportamiento operativo y manejo de errores de Firecrawl MCP.
-sidebarTitle: Herramientas y operaciones
+title: Herramientas de Firecrawl MCP
+description: Selecciona una herramienta de Firecrawl MCP y conoce su disponibilidad y funcionamiento.
+sidebarTitle: Herramientas
 ---
 
-Las herramientas enumeradas aquí describen todas las capacidades del MCP Server Firecrawl. La disponibilidad de las herramientas depende de cómo se conecte.
+Firecrawl MCP ofrece herramientas para encontrar, extraer, interactuar con y supervisar contenido web. Tu cliente MCP recibe el esquema de entrada exacto de cada herramienta disponible al conectarse.
 
-| Modo de conexión                          | Disponibilidad de herramientas                                                                                        |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| OAuth de cuenta alojada                   | Todas las herramientas, según la disponibilidad del plan y las funciones                                              |
-| Clave de API alojada                      | Todas las herramientas, según la disponibilidad del plan y las funciones                                              |
-| Alojado sin clave                         | Solo `firecrawl_search`, `firecrawl_scrape` y `firecrawl_parse`                                                       |
-| MCP local con una clave de API en la nube | Herramientas respaldadas por API; el procesamiento directo de archivos locales requiere una URL de API autogestionada |
-| MCP local con una API autogestionada      | Herramientas compatibles con los servicios habilitados en esa implementación                                          |
+<div id="tool-availability">
+  ## Disponibilidad de herramientas
+</div>
+
+| Modo de conexión                              | Herramientas disponibles                                                                          |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| OAuth alojado                                 | Conjunto completo de herramientas, sujeto al plan y a la política del equipo                      |
+| clave de API alojada                          | Conjunto completo de herramientas, sujeto al plan y a la política del equipo                      |
+| Sin clave alojado                             | `firecrawl_search`, `firecrawl_scrape` y `firecrawl_parse`                                        |
+| Local con la API en la nube de Firecrawl      | Herramientas respaldadas por API; el procesamiento directo de archivos locales no está disponible |
+| Local con una API de Firecrawl autogestionada | Herramientas compatibles con los servicios habilitados en esa implementación                      |
+
+Comienza con [Primeros pasos](/es/mcp-server) y elige [Para agentes](/es/mcp-server/keyless) o [Para personas](/es/mcp-server/oauth). Algunas herramientas opcionales pueden deshabilitarse mediante el entorno o la política del equipo.
+
+<div id="choose-a-tool">
+  ## Selecciona una herramienta
+</div>
+
+| Trabajo                                | Herramienta                                        | Úsala cuando                                                                                                                                                                             |
+| -------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Leer una página                        | `firecrawl_scrape`                                 | Conoces la URL y necesitas el contenido de la página o campos estructurados.                                                                                                             |
+| Extraer datos estructurados            | `firecrawl_scrape` con formato JSON                | Tienes la URL y quieres datos que coincidan con un prompt o esquema JSON.                                                                                                                |
+| Descubrir las URL de un sitio          | `firecrawl_map`                                    | Necesitas encontrar páginas antes de decidir qué extraer.                                                                                                                                |
+| Buscar en la web                       | `firecrawl_search`                                 | Tienes una consulta en lugar de una URL conocida.                                                                                                                                        |
+| Procesar un archivo                    | `firecrawl_parse`                                  | Necesitas contenido de un PDF, documento, hoja de cálculo o archivo HTML.                                                                                                                |
+| Extraer varias páginas                 | `firecrawl_crawl` y `firecrawl_check_crawl_status` | Necesitas recorrer un sitio o una sección. La herramienta de rastreo consulta el estado del trabajo hasta que alcanza un estado terminal antes de devolver el resultado.                 |
+| Realizar investigación autónoma        | `firecrawl_agent` y `firecrawl_agent_status`       | La tarea abarca varias fuentes y se desconocen las páginas exactas.                                                                                                                      |
+| Interactuar con una página activa      | `firecrawl_interact` y `firecrawl_interact_stop`   | Necesitas hacer clic, completar formularios, navegar o extraer contenido de páginas dinámicas.                                                                                           |
+| Buscar literatura científica           | `firecrawl_research_*`                             | Necesitas encontrar artículos, leer pasajes de uno de ellos o seguir citas. Busca en el [Research Index](/es/features/research) resúmenes de artículos de PubMed, bioRxiv, medRxiv y arXiv. |
+| Responder una pregunta de programación | `firecrawl_developer_search`                       | Necesitas respuestas de fuentes primarias procedentes de issues, pull requests fusionadas, archivos README y documentación seleccionada.                                                 |
+| Supervisar cambios                     | `firecrawl_monitor_*`                              | Necesitas comprobaciones recurrentes, diffs y notificaciones por webhook o correo electrónico.                                                                                           |
+| Enviar feedback sobre el producto      | `firecrawl_search_feedback` y `firecrawl_feedback` | Quieres valorar resultados de búsqueda o informar sobre la calidad de un endpoint.                                                                                                       |
 
 <Note>
-  Algunas herramientas opcionales pueden deshabilitarse mediante variables de entorno o políticas del equipo. Para empezar, consulte [Conectar Firecrawl MCP](/es/mcp-server/connect) para seleccionar un modo de autenticación y [Límites de tasa](/es/rate-limits#keyless-no-api-key) para conocer el límite actual sin clave.
+  La antigua herramienta MCP Extract está obsoleta y no forma parte del conjunto actual de herramientas. Usa Scrape con formato JSON para una página conocida, o Agent cuando Firecrawl deba descubrir las fuentes. Consulta [Elegir el extractor de datos](/es/developer-guides/usage-guides/choosing-the-data-extractor) para ver la comparación completa.
 </Note>
 
-<div id="available-tools">
-  ## Herramientas disponibles
+<Tip>
+  Usa el esquema que muestra tu cliente MCP para los argumentos actuales. Las guías de funcionalidad a continuación explican el comportamiento subyacente de Firecrawl sin duplicar aquí esos esquemas.
+</Tip>
+
+<div id="important-behavior">
+  ## Comportamiento importante
 </div>
 
-<div id="1-scrape-tool-firecrawl_scrape">
-  ### 1. Herramienta de scraping (`firecrawl_scrape`)
+<AccordionGroup>
+  <Accordion title="Procesar un archivo local">
+    Un MCP Server local conectado a una API de Firecrawl autogestionada puede leer `filePath` directamente. El servidor alojado no puede leer archivos de tu máquina, por lo que utiliza un proceso de dos llamadas:
+
+    1. Llama a `firecrawl_parse` con `filePath` para recibir un comando de carga y `uploadRef`.
+    2. Ejecuta el comando de carga en la máquina que puede leer el archivo.
+    3. Vuelve a llamar a `firecrawl_parse` con el `uploadRef` devuelto.
+
+    El comando de carga usa un objetivo firmado de corta duración y no contiene tu clave de API de Firecrawl. Usa `firecrawl_scrape` para una URL de documento pública.
+  </Accordion>
+
+  <Accordion title="Comprobar un rastreo en ejecución">
+    `firecrawl_crawl` normalmente inicia un rastreo y consulta su estado hasta que alcanza un estado terminal antes de responder. Si se agota el tiempo de espera, reanuda el trabajo con `firecrawl_check_crawl_status` y el ID del rastreo. Usa la misma herramienta de estado para un rastreo creado fuera de la llamada MCP actual.
+
+    `firecrawl_agent` es asíncrono: devuelve un ID de trabajo y `firecrawl_agent_status` comprueba ese trabajo hasta que se complete o falle.
+  </Accordion>
+
+  <Accordion title="Cerrar sesiones de Interact">
+    Comienza con una `url` o reutiliza el `scrapeId` de una llamada a Scrape anterior. Cuando finalice el flujo de trabajo, llama a `firecrawl_interact_stop` con el `scrapeId` para liberar la sesión.
+  </Accordion>
+
+  <Accordion title="Gestionar monitores de forma segura">
+    La familia `firecrawl_monitor_*` crea, enumera, actualiza, ejecuta e inspecciona monitores recurrentes. `firecrawl_monitor_delete` elimina permanentemente un monitor y solo debe llamarse cuando el usuario tenga la intención explícita de eliminarlo.
+  </Accordion>
+
+  <Accordion title="Habilitar herramientas de feedback opcionales">
+    Establece `FIRECRAWL_NO_SEARCH_FEEDBACK=1` para evitar que se registre `firecrawl_search_feedback`. Establece `FIRECRAWL_NO_ENDPOINT_FEEDBACK=1` para evitar que se registre `firecrawl_feedback`.
+  </Accordion>
+</AccordionGroup>
+
+<div id="feature-guides">
+  ## Guía de funcionalidad
 </div>
 
-Extrae contenido de una sola URL con opciones avanzadas.
+<CardGroup cols={3}>
+  <Card title="Scrape" href="/es/features/scrape" icon="file-lines">
+    Extrae contenido o campos estructurados de una URL.
+  </Card>
 
-```json
-{
-  "name": "firecrawl_scrape",
-  "arguments": {
-    "url": "https://example.com",
-    "formats": ["markdown"],
-    "onlyMainContent": true,
-    "waitFor": 1000,
-    "mobile": false,
-    "includeTags": ["article", "main"],
-    "excludeTags": ["nav", "footer"],
-    "skipTlsVerification": false
-  }
-}
-```
+  <Card title="Search" href="/es/features/search" icon="magnifying-glass">
+    Encuentra fuentes relevantes en la web, noticias, imágenes y fuentes para desarrolladores.
+  </Card>
 
-Para ocultar información de identificación personal, incluye `redactPII` en los argumentos de la herramienta de scraping.
+  <Card title="Research Index" href="/es/features/research" icon="book-open">
+    Busca artículos, lee pasajes y sigue citas.
+  </Card>
 
-```json
-{
-  "name": "firecrawl_scrape",
-  "arguments": {
-    "url": "https://example.com/contact",
-    "formats": ["markdown"],
-    "redactPII": true
-  }
-}
-```
+  <Card title="Developer Index" href="/es/features/developer" icon="code">
+    Responde preguntas de programación a partir de issues, PRs, READMEs y documentación.
+  </Card>
 
-<div id="2-map-tool-firecrawl_map">
-  ### 2. Herramienta de mapeo (`firecrawl_map`)
+  <Card title="Rastreo" href="/es/features/crawl" icon="spider-web">
+    Recorre y extrae un sitio o una sección.
+  </Card>
+
+  <Card title="Procesar" href="/es/features/parse" icon="file-import">
+    Convierte archivos en salidas listas para LLM.
+  </Card>
+
+  <Card title="Interact" href="/es/features/interact" icon="arrow-pointer">
+    Opera páginas dinámicas en una sesión de navegador activa.
+  </Card>
+
+  <Card title="Agent" href="/es/features/agent" icon="sparkles">
+    Realiza investigaciones autónomas en múltiples fuentes.
+  </Card>
+
+  <Card title="Monitoring" href="/es/features/monitoring" icon="bell">
+    Supervisa cambios en las páginas y recibe notificaciones.
+  </Card>
+</CardGroup>
+
+<div id="troubleshooting">
+  ## Solución de problemas
 </div>
 
-Mapea un sitio web para descubrir todas sus URL indexadas.
-
-```json
-{
-  "name": "firecrawl_map",
-  "arguments": {
-    "url": "https://example.com",
-    "search": "blog",
-    "sitemap": "include",
-    "includeSubdomains": false,
-    "limit": 100,
-    "ignoreQueryParameters": true
-  }
-}
-```
-
-<div id="map-tool-options">
-  #### Opciones de la herramienta de mapeo:
-</div>
-
-* `url`: URL base del sitio web que se va a mapear
-* `search`: Término de búsqueda opcional para filtrar URL
-* `sitemap`: Controla el uso del mapa del sitio: &quot;include&quot;, &quot;skip&quot; u &quot;only&quot;
-* `includeSubdomains`: Indica si se deben incluir subdominios en el mapeo
-* `limit`: Número máximo de URL que se devolverán
-* `ignoreQueryParameters`: Indica si se deben ignorar los parámetros de consulta durante el mapeo
-
-**Ideal para:** Descubrir URL de un sitio web antes de decidir qué extraer mediante scraping; encontrar secciones específicas de un sitio web.
-**Devuelve:** Array de URL encontradas en el sitio.
-
-<div id="3-search-tool-firecrawl_search">
-  ### 3. Herramienta de búsqueda (`firecrawl_search`)
-</div>
-
-Busca en la web y, de forma opcional, extrae contenido de los resultados de búsqueda.
-
-```json
-{
-  "name": "firecrawl_search",
-  "arguments": {
-    "query": "your search query",
-    "limit": 5,
-    "location": "United States",
-    "tbs": "qdr:m",
-    "scrapeOptions": {
-      "formats": ["markdown"],
-      "onlyMainContent": true
-    }
-  }
-}
-```
-
-<div id="search-tool-options">
-  #### Opciones de la herramienta de búsqueda:
-</div>
-
-* `query`: Cadena de consulta de búsqueda (obligatoria)
-* `limit`: Número máximo de resultados que se devolverán
-* `location`: Ubicación geográfica de los resultados de búsqueda
-* `tbs`: Filtro de búsqueda por tiempo (p. ej., `qdr:d` para el último día, `qdr:w` para la última semana, `qdr:m` para el último mes)
-* `filter`: Filtro de búsqueda adicional
-* `sources`: Array de tipos de fuente donde buscar (`web`, `images`, `news`)
-* `scrapeOptions`: Opciones de scraping para las páginas de resultados de búsqueda
-* `enterprise`: Array de opciones empresariales (`default`, `anon`, `zdr`)
-
-<div id="3b-search-feedback-tool-firecrawl_search_feedback">
-  ### 3b. Herramienta de comentarios de búsqueda (`firecrawl_search_feedback`)
-</div>
-
-Envía comentarios estructurados después de utilizar `firecrawl_search`. El primer envío de comentarios para un ID de búsqueda puede reembolsar un crédito, sujeto al límite diario del equipo.
-
-```json
-{
-  "name": "firecrawl_search_feedback",
-  "arguments": {
-    "searchId": "search-id-from-firecrawl-search",
-    "rating": "good",
-    "valuableSources": [
-      {
-        "url": "https://docs.firecrawl.dev/mcp-server",
-        "reason": "Contains the current connection guidance."
-      }
-    ]
-  }
-}
-```
-
-Establece `FIRECRAWL_NO_SEARCH_FEEDBACK=1` para impedir que se registre esta herramienta opcional.
-
-<div id="3c-generic-feedback-tool-firecrawl_feedback">
-  ### 3c. Herramienta de comentarios generales (`firecrawl_feedback`)
-</div>
-
-Envía comentarios concisos sobre endpoints para trabajos de scraping, procesamiento, mapeo o búsqueda completados. No incluyas contenido sin procesar extraído o procesado.
-
-```json
-{
-  "name": "firecrawl_feedback",
-  "arguments": {
-    "endpoint": "scrape",
-    "jobId": "job-id",
-    "rating": "partial",
-    "issues": ["missing_markdown"],
-    "url": "https://example.com"
-  }
-}
-```
-
-Usa `firecrawl_search_feedback` para enviar comentarios sobre la calidad de los resultados de búsqueda. Configura `FIRECRAWL_NO_ENDPOINT_FEEDBACK=1` para evitar que se registre la herramienta de comentarios genérica.
-
-<div id="4-parse-tool-firecrawl_parse">
-  ### 4. Herramienta de procesamiento (`firecrawl_parse`)
-</div>
-
-Procesa archivos locales, como documentos PDF, DOCX, XLSX o HTML, y los convierte en datos limpios y listos para LLM.
-
-```json
-{
-  "name": "firecrawl_parse",
-  "arguments": {
-    "filePath": "/absolute/path/to/report.pdf",
-    "formats": ["markdown"]
-  }
-}
-```
-
-Cuando ejecutas Firecrawl MCP localmente con una instancia de la API de Firecrawl mediante `FIRECRAWL_API_URL`, el MCP Server puede leer `filePath` directamente y envía los bytes del archivo a `/v2/parse`.
-
-Cuando usas el MCP Server alojado remoto, este no puede leer archivos de tu máquina. En ese caso, `firecrawl_parse` utiliza una transferencia en dos pasos que también funciona en la URL remota sin clave:
-
-1. Llama a `firecrawl_parse` con `filePath`. La herramienta devuelve un comando de carga preconfigurado y un `nextToolCall` que contiene un `uploadRef`.
-2. Ejecuta el comando de carga en la máquina que puede leer el archivo y, después, vuelve a llamar a `firecrawl_parse` con el `uploadRef` devuelto.
-
-El comando de carga envía los bytes del archivo a un destino de carga firmado de corta duración. No incluye tu clave de API de Firecrawl.
-
-<div id="parse-tool-options">
-  #### Opciones de Herramienta de procesamiento:
-</div>
-
-* `filePath`: Ruta local del archivo que quieres procesar. Úsalo en la primera llamada.
-* `uploadRef`: Referencia devuelta por la primera llamada al MCP alojado. Úsala en la segunda llamada, tras completar la carga.
-* `formats`: Formatos de salida. El valor predeterminado es `markdown`.
-* `parsers`: Controles del parser, como las opciones de procesamiento de PDF.
-* `contentType`: Anulación opcional del tipo MIME del archivo.
-* `declaredSizeBytes`: Indicación opcional del tamaño del archivo. El tamaño máximo de los archivos es de 50 MB.
-
-**Ideal para:** Documentos locales o no públicos que no están disponibles en una URL pública.
-
-**No recomendado para:** URL de documentos públicos. Usa `firecrawl_scrape`; detectará y procesará documentos desde URL.
-
-<div id="5-crawl-tool-firecrawl_crawl">
-  ### 5. Herramienta de rastreo (`firecrawl_crawl`)
-</div>
-
-Inicia un rastreo asíncrono con opciones avanzadas.
-
-```json
-{
-  "name": "firecrawl_crawl",
-  "arguments": {
-    "url": "https://example.com",
-    "maxDiscoveryDepth": 2,
-    "limit": 100,
-    "allowExternalLinks": false,
-    "deduplicateSimilarURLs": true
-  }
-}
-```
-
-<div id="6-check-crawl-status-firecrawl_check_crawl_status">
-  ### 6. Consultar el estado del rastreo (`firecrawl_check_crawl_status`)
-</div>
-
-Consulta el estado de un rastreo.
-
-```json
-{
-  "name": "firecrawl_check_crawl_status",
-  "arguments": {
-    "id": "550e8400-e29b-41d4-a716-446655440000"
-  }
-}
-```
-
-**Devuelve:** El estado y el progreso del trabajo de rastreo, incluidos los resultados si están disponibles.
-
-<div id="7-extract-tool-firecrawl_extract">
-  ### 7. Herramienta de extracción (`firecrawl_extract`)
-</div>
-
-Extrae información estructurada de páginas web mediante modelos de lenguaje de gran tamaño (LLM). Admite tanto la extracción con IA en la nube como con LLM autogestionados.
-
-```json
-{
-  "name": "firecrawl_extract",
-  "arguments": {
-    "urls": ["https://example.com/page1", "https://example.com/page2"],
-    "prompt": "Extract product information including name, price, and description",
-    "schema": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "price": { "type": "number" },
-        "description": { "type": "string" }
-      },
-      "required": ["name", "price"]
-    },
-    "allowExternalLinks": false,
-    "enableWebSearch": false,
-    "includeSubdomains": false
-  }
-}
-```
-
-Respuesta de ejemplo:
-
-```json
-{
-  "content": [
-    {
-      "type": "text",
-      "text": {
-        "name": "Example Product",
-        "price": 99.99,
-        "description": "This is an example product description"
-      }
-    }
-  ],
-  "isError": false
-}
-```
-
-<div id="extract-tool-options">
-  #### Opciones de la herramienta de extracción:
-</div>
-
-* `urls`: array de URL de las que extraer información
-* `prompt`: prompt personalizado para la extracción con el LLM
-* `schema`: esquema JSON para la extracción de datos estructurados
-* `allowExternalLinks`: permite extraer información de enlaces externos
-* `enableWebSearch`: habilita la búsqueda web para obtener contexto adicional
-* `includeSubdomains`: incluye subdominios en la extracción
-
-Al utilizar una instancia autogestionada, la extracción usará el LLM configurado. En la API en la nube, se usa el servicio de LLM gestionado por Firecrawl.
-
-<div id="8-agent-tool-firecrawl_agent">
-  ### 8. Herramienta de agente (`firecrawl_agent`)
-</div>
-
-Agente autónomo de investigación web que navega por Internet de forma independiente, busca información, recorre páginas y extrae datos estructurados según tu consulta. Se ejecuta de forma asíncrona: devuelve un ID de trabajo de inmediato y consultas `firecrawl_agent_status` para comprobar cuándo ha finalizado y recuperar los resultados.
-
-```json
-{
-  "name": "firecrawl_agent",
-  "arguments": {
-    "prompt": "Find the top 5 AI startups founded in 2024 and their funding amounts",
-    "schema": {
-      "type": "object",
-      "properties": {
-        "startups": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": { "type": "string" },
-              "funding": { "type": "string" },
-              "founded": { "type": "string" }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-También puedes proporcionar URL específicas para que el agente se centre en ellas:
-
-```json
-{
-  "name": "firecrawl_agent",
-  "arguments": {
-    "urls": ["https://docs.firecrawl.dev", "https://firecrawl.dev/pricing"],
-    "prompt": "Compare the features and pricing information from these pages"
-  }
-}
-```
-
-<div id="agent-tool-options">
-  #### Opciones de herramienta de agente:
-</div>
-
-* `prompt`: Descripción en lenguaje natural de los datos que quieres obtener (obligatorio, máximo 10.000 caracteres)
-* `urls`: Array opcional de URL para que el agente se centre en páginas específicas
-* `schema`: Esquema JSON opcional para obtener una salida estructurada
-
-**Ideal para:** Tareas de investigación complejas en las que no conoces las URL exactas; recopilación de datos de múltiples fuentes; búsqueda de información dispersa por la web; extracción de datos de SPA con mucho JavaScript que fallan con el scraping convencional.
-
-**Devuelve:** ID de trabajo para consultar el estado. Usa `firecrawl_agent_status` para sondear los resultados.
-
-<div id="9-check-agent-status-firecrawl_agent_status">
-  ### 9. Consultar el estado del agente (`firecrawl_agent_status`)
-</div>
-
-Consulta el estado de un trabajo de agente y recupera los resultados cuando finalice. Consulta el estado cada 15-30 segundos y continúa haciéndolo durante al menos 2-3 minutos antes de considerar que la solicitud ha fallado.
-
-```json
-{
-  "name": "firecrawl_agent_status",
-  "arguments": {
-    "id": "550e8400-e29b-41d4-a716-446655440000"
-  }
-}
-```
-
-<div id="agent-status-options">
-  #### Opciones de estado del agente:
-</div>
-
-* `id`: ID del trabajo del agente devuelto por `firecrawl_agent` (obligatorio)
-
-**Estados posibles:**
-
-* `processing`: El agente sigue investigando -- continúa consultando
-* `completed`: La investigación ha finalizado -- la respuesta incluye los datos extraídos
-* `failed`: Se produjo un error
-
-**Devuelve:** El estado, el progreso y los resultados (si se ha completado) del trabajo del agente.
-
-<div id="10-interact-with-a-page-firecrawl_interact">
-  ### 10. Interactúa con una página (`firecrawl_interact`)
-</div>
-
-Interactúa con una página en una sesión activa del navegador: haz clic en botones, completa formularios, extrae contenido dinámico o navega a mayor profundidad.
-
-Usa uno de estos dos modos de selección:
-
-* Pasa `url` para abrir e interactuar con una página nueva en una sola llamada MCP.
-* Pasa el `scrapeId` de una llamada anterior a `firecrawl_scrape` para reutilizar la página ya cargada.
-
-No pases `url` y `scrapeId` a la vez. Proporciona `prompt` o `code`. `scrapeOptions` solo se puede usar en el modo `url`.
-
-**Ejemplo del modo URL:**
-
-```json
-{
-  "name": "firecrawl_interact",
-  "arguments": {
-    "url": "https://example.com/products",
-    "prompt": "Click on the first product and tell me its price"
-  }
-}
-```
-
-**Ejemplo de reutilización de scraping:**
-
-```json
-{
-  "name": "firecrawl_interact",
-  "arguments": {
-    "scrapeId": "scrape-id-from-previous-scrape",
-    "prompt": "Click the Sign In button"
-  }
-}
-```
-
-<div id="interact-tool-options">
-  #### Opciones de la herramienta Interact:
-</div>
-
-* `url`: Página con la que interactuar; abre la sesión automáticamente. Usa este parámetro o `scrapeId`.
-* `scrapeId`: ID de trabajo de scraping de una llamada anterior a `firecrawl_scrape`. Usa este parámetro o `url`.
-* `prompt`: Instrucción en lenguaje natural que describe la acción que se debe realizar. Proporciona `prompt` o `code`.
-* `code`: Código que se ejecutará en la sesión del navegador. Proporciona `code` o `prompt`.
-* `language`: `bash`, `python` o `node` (opcional; el valor predeterminado es `node`; solo se usa con `code`).
-* `timeout`: Tiempo máximo de ejecución en segundos, de 1 a 300 (opcional; el valor predeterminado es 30).
-* `scrapeOptions`: Controles de scraping opcionales que solo se usan con el modo `url`.
-
-**Ideal para:** Flujos de trabajo de varios pasos en una sola página: buscar en un sitio, hacer clic en los resultados, rellenar formularios y extraer datos que requieren interacción.
-
-**Devuelve:** El resultado de la interacción, incluidas las URL de salida y de vista en vivo.
-
-<div id="11-stop-interact-session-firecrawl_interact_stop">
-  ### 11. Detener una sesión de Interact (`firecrawl_interact_stop`)
-</div>
-
-Detén una sesión de Interact para una página extraída. Úsalo cuando termines de interactuar para liberar recursos.
-
-```json
-{
-  "name": "firecrawl_interact_stop",
-  "arguments": {
-    "scrapeId": "scrape-id-from-previous-scrape"
-  }
-}
-```
-
-<div id="interact-stop-options">
-  #### Opciones para detener Interact:
-</div>
-
-* `scrapeId`: El ID de scraping de la sesión que se va a detener (obligatorio)
-
-**Devuelve:** Confirmación de que la sesión se ha detenido.
-
-<div id="12-research-tools-firecrawl_research_">
-  ### 12. Herramientas de investigación (`firecrawl_research_*`)
-</div>
-
-Usa las herramientas de investigación de solo lectura para revisar la bibliografía, inspeccionar artículos, descubrir citas y buscar repositorios públicos de GitHub.
-
-| Herramienta                         | Propósito                                                      |
-| ----------------------------------- | -------------------------------------------------------------- |
-| `firecrawl_research_search_papers`  | Buscar artículos de investigación                              |
-| `firecrawl_research_inspect_paper`  | Inspeccionar los metadatos y detalles de un artículo           |
-| `firecrawl_research_related_papers` | Encontrar artículos relacionados con un artículo de referencia |
-| `firecrawl_research_read_paper`     | Leer el contenido disponible de un artículo                    |
-| `firecrawl_research_search_github`  | Buscar repositorios públicos de GitHub                         |
-
-Estas herramientas no forman parte de la oferta alojada sin clave.
-
-<div id="13-monitor-tools-firecrawl_monitor_">
-  ### 13. Herramientas de monitorización (`firecrawl_monitor_*`)
-</div>
-
-Crea y gestiona monitores de páginas recurrentes. Los monitores ejecutan comprobaciones programadas, comparan los resultados con instantáneas almacenadas y pueden enviar notificaciones mediante webhooks o correo electrónico.
-
-```json
-{
-  "name": "firecrawl_monitor_create",
-  "arguments": {
-    "page": "https://example.com/pricing",
-    "goal": "Alert when pricing, packaging, or launch messaging changes."
-  }
-}
-```
-
-| Herramienta                | Finalidad                                    |
-| -------------------------- | -------------------------------------------- |
-| `firecrawl_monitor_create` | Crear un monitor de página o de rastreo      |
-| `firecrawl_monitor_list`   | Listar monitores                             |
-| `firecrawl_monitor_get`    | Obtener un monitor                           |
-| `firecrawl_monitor_update` | Actualizar un monitor                        |
-| `firecrawl_monitor_run`    | Ejecutar una comprobación ahora              |
-| `firecrawl_monitor_delete` | Eliminar un monitor                          |
-| `firecrawl_monitor_checks` | Listar las comprobaciones de un monitor      |
-| `firecrawl_monitor_check`  | Obtener una comprobación de página y su diff |
-
-<Warning>
-  `firecrawl_monitor_delete` elimina un monitor de forma permanente. Un cliente MCP solo debe llamarlo si el usuario ha indicado explícitamente que desea eliminar ese monitor.
-</Warning>
-
-<div id="logging-system">
-  ## Sistema de registro
-</div>
-
-El servidor incluye un registro completo de:
-
-* El estado y el progreso de las operaciones
-* Métricas de rendimiento
-* Supervisión del uso de créditos
-* Seguimiento de los límites de tasa
-* Condiciones de error
-
-Ejemplos de mensajes de registro:
-
-```
-[INFO] Firecrawl MCP Server inicializado correctamente
-[INFO] Iniciando scraping de la URL: https://example.com
-[INFO] Iniciando rastreo de la URL: https://example.com
-[WARNING] El uso de créditos alcanzó el umbral de advertencia
-[ERROR] Límite de tasa excedido, reintentando en 2 s...
-```
-
-<div id="error-handling">
-  ## Manejo de errores
-</div>
-
-El servidor ofrece un sólido manejo de errores:
-
-* Reintentos automáticos ante errores transitorios
-* Manejo de límites de tasa con backoff
-* Mensajes de error detallados
-* Advertencias sobre el uso de créditos
-* Resiliencia de red
-
-Ejemplo de respuesta de error:
-
-```json
-{
-  "content": [
-    {
-      "type": "text",
-      "text": "Error: Rate limit exceeded. Retrying in 2 seconds..."
-    }
-  ],
-  "isError": true
-}
-```
+* **Falta una herramienta:** confirme el modo de conexión en [Primeros pasos](/es/mcp-server), vuelva a conectarse o reinicie el cliente y compruebe si la política del equipo deshabilita herramientas opcionales.
+* **El cliente devuelve `401`:** primero compruebe la URL del servidor configurada.
+  * Si la URL configurada es `/v2/mcp-oauth`, vuelva a iniciar sesión a través del cliente.
+  * Si es `/v2/mcp`, reemplace la clave de API en ese servidor o actualice la URL del servidor existente a `/v2/mcp-oauth` y complete el inicio de sesión.
+  * Inicie una nueva sesión de cliente después de cualquiera de los cambios.
+
+- **El cliente ha alcanzado el límite de tasa:** consulte los [límites de tasa](/es/rate-limits) actuales, espere el intervalo antes de reintentar o cambie del acceso sin clave al acceso autenticado.

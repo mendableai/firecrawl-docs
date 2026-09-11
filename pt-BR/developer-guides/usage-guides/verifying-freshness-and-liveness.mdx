@@ -1,0 +1,201 @@
+---
+title: "Verificando Atualidade e Disponibilidade"
+description: "Entenda a diferença entre a atualidade do conteúdo e se o estado representado por uma página ainda é válido"
+og:title: "Verificando Atualidade e Disponibilidade | Firecrawl"
+og:description: "Entenda a diferença entre a atualidade do conteúdo e se o estado representado por uma página ainda é válido"
+sidebarTitle: "Verificando Atualidade e Disponibilidade"
+---
+
+Um scraping bem-sucedido informa o que a página retornou. Ele não comprova que o **estado representado pela página** ainda é válido. Essas são duas questões distintas.
+
+* **Atualidade** → Este conteúdo é recente ou uma cópia reutilizada do cache do Firecrawl? Controlada por `maxAge`.
+* **Disponibilidade** → O item subjacente ainda existe e está ativo? Sua aplicação determina isso com base nas evidências disponíveis.
+
+Este guia explica a diferença, aborda o trade-off de `maxAge` e apresenta uma checklist e um exemplo prático para ações sensíveis à atualidade.
+
+<div id="quick-comparison">
+  ## Comparação rápida
+</div>
+
+|                                            | Atualidade                                                                          | disponibilidade                                                                                         |
+| ------------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Pergunta**                               | Este conteúdo é recente ou foi reutilizado do cache?                                | O objeto descrito pela página ainda está ativo?                                                   |
+| **Você controla isso com**                 | O parâmetro de request `maxAge`                                                     | Sua própria lógica de domínio                                                                     |
+| **O Firecrawl informa**                    | `metadata.cacheState` (`"hit"` ou `"miss"`) e `metadata.cachedAt` em caso de acerto | Nada diretamente — apenas evidências da página                                                    |
+| **Evidências disponíveis**                 | Se a response veio do cache                                                         | Conteúdo da página, `metadata.statusCode` e `metadata.url` em comparação com `metadata.sourceURL` |
+| **Um HTTP 200 com conteúdo resolve isso?** | **Não** — um 200 não diz nada sobre a atualidade do conteúdo                        | **Não** — um 200 descreve apenas a response da página                                             |
+
+***
+
+<div id="the-freshness-tradeoff-maxage">
+  ## O equilíbrio entre atualidade e desempenho (`maxAge`)
+</div>
+
+O Firecrawl armazena em cache páginas extraídas anteriormente e retorna uma cópia recente quando disponível, reduzindo a latência. `maxAge` é a idade máxima, em milissegundos, de uma cópia em cache que o Firecrawl pode retornar em vez de recuperar a página novamente.
+
+* **Omita `maxAge`**: o Firecrawl pode retornar conteúdo armazenado em cache recentemente. A janela padrão é de 2 dias; o Firecrawl pode usar uma janela diferente para alguns sites.
+* **Defina `maxAge: 0`**: o Firecrawl ignora o cache para essa solicitação e recupera a página. Isso troca latência e confiabilidade por uma recuperação mais atualizada.
+
+Mantenha o cache ativado por padrão. Pague o custo de latência de `maxAge: 0` apenas nas leituras em que conteúdo desatualizado poderia levar a uma decisão incorreta ou custosa — isso não altera o custo da página em créditos.
+
+`metadata.cacheState` é retornado quando o Firecrawl considera o cache para a solicitação, portanto é útil para verificação enquanto você ajusta `maxAge`. Ele não faz parte de uma resposta com `maxAge: 0`, porque essa solicitação ignora o cache por completo.
+
+Para detalhes sobre o funcionamento do cache, valores comuns de `maxAge`, regras de correspondência para acertos de cache e as opções de solicitação que ignoram o cache automaticamente, consulte [Scraping mais rápido](/pt-BR/features/fast-scraping).
+
+<div id="where-maxage-applies">
+  ### Onde `maxAge` se aplica
+</div>
+
+| Endpoint                  | Comportamento                                                                                                                                  |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/scrape`                 | `maxAge` é considerado no corpo da solicitação                                                                                                 |
+| `/crawl`, `/batch/scrape` | `maxAge` é considerado em `scrapeOptions`                                                                                                      |
+| `/search`                 | A busca aplica sua própria janela de atualização às páginas das quais faz scraping, portanto `maxAge` em `scrapeOptions` não tem efeito        |
+| `/parse`                  | `/parse` sempre processa o arquivo fornecido e nunca retorna nem armazena conteúdo em cache, portanto `maxAge` e `storeInCache` não têm efeito |
+
+Se precisar obter uma versão atualizada de uma página encontrada por meio de `/search`, faça scraping desse URL novamente com `/scrape` e `maxAge: 0`.
+
+***
+
+<div id="freshness-is-not-liveness">
+  ## Atualidade não é disponibilidade
+</div>
+
+Mesmo com `maxAge: 0`, o resultado informa apenas o que a página retornou naquela consulta. Uma página pode retornar HTTP 200 com conteúdo, mas ainda assim representar um estado desatualizado, indisponível ou alterado de alguma outra forma.
+
+Portanto, nem o código de status nem a presença de conteúdo determinam a disponibilidade. A disponibilidade é uma conclusão que sua aplicação tira com base em evidências específicas da fonte.
+
+***
+
+<div id="freshness-sensitive-action-checklist">
+  ## Checklist de Ações Sensíveis à Atualidade
+</div>
+
+Antes de realizar uma ação que dependa do estado atual, trate o resultado do scraping como **evidência, não prova**:
+
+1. **Use `maxAge: 0` na recuperação final** para que a resposta não seja servida do cache.
+2. **Não considere HTTP 200 ou conteúdo não vazio como prova de atividade.**
+3. **Inspecione o conteúdo renderizado e as evidências de redirecionamento.** `metadata.sourceURL` é a URL solicitada; `metadata.url` é a URL que o mecanismo informa para a resposta. Quando elas diferem, isso pode indicar um redirecionamento para outro recurso. Valores idênticos não comprovam que não houve redirecionamento.
+4. **Prefira APIs ou identificadores específicos da fonte** quando disponíveis — eles geralmente expõem um status explícito que uma página renderizada oculta.
+5. **Trate evidências inconclusivas como `unknown`** e interrompa antes da etapa cara ou irreversível, em vez de presumir que está ativo.
+
+***
+
+<div id="worked-example-collect-current-page-evidence">
+  ## Exemplo Prático: Coleta de Evidências da Página Atual
+</div>
+
+Ignore o cache e colete o conteúdo renderizado e os metadados da resposta para aplicar as regras de validação da sua aplicação. O scraping fornece evidências; não determina o estado específico do domínio.
+
+<CodeGroup>
+  ```python Python
+  import os
+
+  from firecrawl import Firecrawl
+
+  firecrawl = Firecrawl(api_key=os.environ["FIRECRAWL_API_KEY"])
+
+  def collect_current_page_evidence(url: str) -> dict:
+      # max_age=0 ignora o cache do Firecrawl para esta solicitação.
+      doc = firecrawl.scrape(url, formats=["markdown"], max_age=0)
+
+      metadata = doc.metadata
+      requested_url = (metadata.source_url if metadata else None) or url
+      response_url = metadata.url if metadata else None
+
+      return {
+          "markdown": doc.markdown or "",
+          "status_code": metadata.status_code if metadata else None,
+          "requested_url": requested_url,
+          "response_url": response_url,
+          "possible_redirect": bool(response_url and response_url != requested_url),
+      }
+
+
+  evidence = collect_current_page_evidence("https://example.com/resource")
+  # Aplique aqui verificações de conteúdo, status, API ou identificador específicas da fonte.
+  # Se forem inconclusivas, mantenha o estado desconhecido.
+  ```
+
+  ```js Node
+  import { Firecrawl } from "firecrawl";
+
+  const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWL_API_KEY });
+
+  async function collectCurrentPageEvidence(url) {
+    // maxAge: 0 ignora o cache do Firecrawl para esta solicitação.
+    const doc = await firecrawl.scrape(url, {
+      formats: ["markdown"],
+      maxAge: 0,
+    });
+
+    const requestedURL = doc.metadata?.sourceURL ?? url;
+    const responseURL = doc.metadata?.url;
+
+    return {
+      markdown: doc.markdown ?? "",
+      statusCode: doc.metadata?.statusCode,
+      requestedURL,
+      responseURL,
+      possibleRedirect: Boolean(responseURL && responseURL !== requestedURL),
+    };
+  }
+
+  const evidence = await collectCurrentPageEvidence("https://example.com/resource");
+  // Aplique aqui verificações de conteúdo, status, API ou identificador específicas da fonte.
+  // Se forem inconclusivas, mantenha o estado desconhecido.
+  ```
+
+  ```bash cURL
+  curl -s -X POST "https://api.firecrawl.dev/v2/scrape" \
+    -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "url": "https://example.com/resource",
+      "formats": ["markdown"],
+      "maxAge": 0
+    }'
+  ```
+</CodeGroup>
+
+O ponto-chave é o que acontece após a coleta: o Firecrawl fornece evidências da página; sua aplicação interpreta essas evidências com regras específicas da fonte. Se essas regras forem inconclusivas, mantenha o estado como `unknown`.
+
+***
+
+<div id="recommendations-by-scenario">
+  ## Recomendações por cenário
+</div>
+
+| Cenário                                                            | Abordagem recomendada                                                               |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| Ler descrições de produtos, documentação ou conteúdo de referência | Omita `maxAge` e use a janela de cache padrão                                       |
+| Painel ou relatório atualizado conforme um agendamento             | Use um `maxAge` diferente de zero, ajustado ao seu intervalo de atualização         |
+| Verificação final antes de uma ação que depende do estado atual    | Use `maxAge: 0` para ignorar o cache + a lista de verificação acima                 |
+| Confirmar que um objeto continua realmente ativo                   | Prefira a API ou o campo de status da fonte; trate o scraping apenas como evidência |
+| Página renderizada ambígua (200, mas sem sinal positivo)           | Classifique como `unknown`; interrompa antes da etapa irreversível                  |
+
+***
+
+<div id="key-takeaways">
+  ## Principais conclusões
+</div>
+
+1. **Atualidade e disponibilidade são questões distintas.** `maxAge` controla a atualidade; a disponibilidade é uma decisão que você toma com base em evidências.
+
+2. **Um HTTP 200 com conteúdo não comprova que o estado representado é atual.**
+
+3. **Para ações sensíveis à atualidade, use `maxAge: 0` e siga a lista de verificação.** Inspecione o conteúdo renderizado, compare `metadata.url` com `metadata.sourceURL` em busca de possíveis evidências de redirecionamento e prefira APIs específicas da fonte.
+
+4. **Trate evidências inconclusivas como `unknown`.** Um scraping, por si só, nunca deve classificar um objeto como `active`; interrompa antes de etapas caras ou irreversíveis.
+
+5. **O Firecrawl não tem um campo de disponibilidade.** Sua aplicação faz essa determinação nos termos do próprio domínio.
+
+***
+
+<div id="further-reading">
+  ## Leitura complementar
+</div>
+
+* [Scrape](/pt-BR/features/scrape)
+* [Scraping mais rápido](/pt-BR/features/fast-scraping)
+* [Como escolher o extrator de dados](/pt-BR/developer-guides/usage-guides/choosing-the-data-extractor)

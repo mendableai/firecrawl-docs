@@ -18,7 +18,7 @@ Threat Protection is an enterprise feature and is gated per organization. Contac
 Threat Protection has three modes, set at the organization level:
 
 - **Off** (default) — no checks are performed.
-- **Normal** — URLs are checked against [Google Web Risk](https://cloud.google.com/web-risk), which flags pages and sites associated with malware, social engineering (phishing), and unwanted software. **+2 credits per URL scanned.**
+- **Normal** — URLs are checked against [Google Web Risk](https://cloud.google.com/security/products/web-risk), which flags pages and sites associated with malware, social engineering (phishing), and unwanted software. **+2 credits per URL scanned.**
 - **Zscaler** — URLs are checked against your organization's own [Zscaler Internet Access](https://www.zscaler.com/products-and-solutions/zscaler-internet-access) (ZIA) tenant: the Zscaler-defined URL categories you choose to block, plus your custom URL categories and custom URL lists. See [Zscaler mode](#zscaler-mode) below. **No scan fees** — classification runs against your own tenant.
 
 The checks are designed to protect your data. In Normal mode the overwhelming majority of requests resolve locally against a regularly synced threat list, so the URLs you scrape are never sent to the classifier. In Zscaler mode, URL classification happens against your own ZIA tenant — the same system that already sees your organization's web policy. In every mode, no verdict about your traffic is ever stored by Firecrawl.

@@ -1,0 +1,82 @@
+---
+title: 人間向け
+description: "ブラウザでサインインします。"
+og:title: '人間向け'
+og:description: "Codex、Claude、Cursor、または ChatGPT からサインインします。"
+sidebarTitle: '人間向け'
+---
+
+import { McpClientSelector } from "/snippets/shared/agent-first-onboarding.jsx";
+
+<div id="sign-in">
+  ## サインイン
+</div>
+
+<Visibility for="humans">
+  <McpClientSelector variant="human" showSeeAll={false} />
+</Visibility>
+
+<Visibility for="agents">
+  OAuth サーバーURL (Streamable HTTP。クライアントがブラウザでのサインインを開始します) : `https://mcp.firecrawl.dev/v2/mcp-oauth`
+
+  * Codex: `codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp-oauth` を実行後、`codex mcp login firecrawl` を実行します。
+  * Claude Code: `claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp-oauth` を実行後、`/mcp` でサインインを完了します。
+  * Cursor または任意のJSON設定対応クライアント: `{"mcpServers": {"firecrawl": {"url": "https://mcp.firecrawl.dev/v2/mcp-oauth"}}}`
+  * OpenCode (`opencode.json`) : `{"mcp": {"firecrawl": {"type": "remote", "url": "https://mcp.firecrawl.dev/v2/mcp-oauth", "enabled": true}}}`
+
+  - ChatGPT または Claude.ai: ネイティブのFirecrawlコネクタを使用してください — [ChatGPT](https://chatgpt.com/plugins?q=firecrawl) または [Claude](https://claude.ai/directory/connectors/firecrawl)。
+
+  人間がブラウザでのサインインを完了し、チームを承認する必要があります。サーバーURLをブラウザで直接開かないでください。
+</Visibility>
+
+<Note>
+  `https://mcp.firecrawl.dev/v2/mcp-oauth` はMCPクライアント用のサーバーURLです。ブラウザで直接開くページではありません。クライアントがブラウザでのサインインフローを開始します。
+</Note>
+
+[MCP設定](https://www.firecrawl.dev/app/settings?tab=mcp)から接続を確認および取り消すことができます。
+
+<div id="chatgpt-and-claude">
+  ## ChatGPT と Claude
+</div>
+
+<CardGroup cols={2}>
+  <Card title="ChatGPT に追加" icon="/images/agent-clients/chatgpt.svg" href="https://chatgpt.com/plugins?q=firecrawl" cta="ChatGPT で開く" arrow>
+    ChatGPT 用のネイティブ Firecrawl コネクタをインストールします。
+  </Card>
+
+  <Card title="Claude に追加" icon="/images/agent-clients/claude-ai.svg" href="https://claude.ai/directory/connectors/firecrawl" cta="Claude で開く" arrow>
+    Claude 用のネイティブ Firecrawl コネクタをインストールします。
+  </Card>
+</CardGroup>
+
+<div id="add-an-api-key">
+  ## API キーを追加する
+</div>
+
+<Card title="API キーを追加する" icon="key" href="/ja/mcp-server/keyless#add-an-api-key" arrow>
+  ブラウザでサインインする代わりに、クライアント設定でキーを指定することをおすすめします。セットアップについては「For Agents」をご覧ください。
+</Card>
+
+<div id="try">
+  ## 試す
+</div>
+
+```text
+最新のFirecrawlのリリースノートをWebで検索し、そのソースを要約してください。
+```
+
+Firecrawl ツールが表示されない場合は、MCP 構成を保存した後にクライアントを再起動または再読み込みしてください。
+
+<div id="more">
+  ## その他
+</div>
+
+<CardGroup cols={2}>
+  <Card title="ツールを選択" icon="wrench" href="/ja/mcp-server/tools">
+    適切な Firecrawl MCP ツールを見つけ、接続ごとの利用可否を確認する。
+  </Card>
+
+  <Card title="ローカルで実行" icon="terminal" href="/ja/mcp-server/local">
+    オープンソースのサーバーを stdio または Streamable HTTP 経由で起動する。
+  </Card>
+</CardGroup>

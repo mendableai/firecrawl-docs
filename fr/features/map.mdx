@@ -137,7 +137,7 @@ Indiquez le pays et les langues préférées pour obtenir un contenu pertinent e
 
 Lorsque vous définissez les paramètres de localisation, Firecrawl utilise, si disponible, un proxy approprié et émule les paramètres de langue et de fuseau horaire correspondants. Par défaut, la localisation est définie sur « US » si aucun paramètre n’est spécifié.
 
-<div id="usage">
+<div id="usage-2">
   ### Utilisation
 </div>
 
@@ -160,6 +160,8 @@ Pour plus de détails sur les lieux pris en charge, consultez la [documentation 
   ## Considérations
 </div>
 
-Ce point de terminaison privilégie la rapidité ; il se peut donc qu’il ne récupère pas tous les liens d’un site web. Il s’appuie principalement sur le sitemap du site, complété par des données de crawl mises en cache et par les résultats des moteurs de recherche. Pour obtenir une liste d’URL plus exhaustive et à jour, envisagez plutôt d’utiliser le point de terminaison [/crawl](/fr/features/crawl).
+Ce point de terminaison privilégie la rapidité ; il se peut donc qu’il ne récupère pas tous les liens d’un site web. Il s’appuie principalement sur le sitemap du site, complété par des données de crawl mises en cache et par les résultats des moteurs de recherche. Pour obtenir une liste d’URL plus exhaustive et à jour, envisagez plutôt d’utiliser le point de terminaison [/crawl](/fr/features/crawl).
 
-> Êtes-vous un agent IA qui a besoin d’une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour obtenir des instructions d’intégration automatisée.
+Si vous avez besoin d’une découverte récursive plus approfondie, avec des enregistrements de résultats et d’erreurs vérifiables plutôt qu’une approximation rapide, utilisez [/crawl](/fr/features/crawl) : il découvre les pages par parcours récursif des liens ainsi que via le sitemap, et indique ce qu’il a renvoyé et ce qu’il n’a pas réussi à récupérer — voir [Exécution et suivi des résultats](/fr/features/crawl#execution-and-result-accounting). Pour obtenir les liens d’une page en particulier, demandez le [format `links`](/fr/features/scrape#scrape-formats) à [/scrape](/fr/features/scrape).
+
+> Êtes-vous un agent IA qui a besoin d’une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour obtenir des instructions d’intégration automatisée.

@@ -1,64 +1,263 @@
 ---
 title: "Dify"
-description: "Dify での Firecrawl の使い方"
-og:title: "Dify | Firecrawl"
-og:description: "Dify での Firecrawl の使い方"
+description: "Dify ワークフロー向け公式 Firecrawl プラグインと、ナレッジベースの Web サイト同期"
 ---
 
-<div id="sync-data-from-websites-for-dify-workflows">
-  ## Dify ワークフロー向けにウェブサイトのデータを同期
+<Note>
+  **公式 Dify プラグイン:** [marketplace.dify.ai/plugins/langgenius/firecrawl](https://marketplace.dify.ai/plugins/langgenius/firecrawl)
+
+  Dify チーム公式プラグイン • 17万回以上インストール • Chatflow・Agent アプリ対応 • 無料で利用可能
+</Note>
+
+<div id="dify-integration-overview">
+  ## Dify 連携の概要
 </div>
 
-Firecrawl は [LLM ワークフロー構築ツールの Dify](https://cloud.dify.ai/) 内で利用できます。このページでは、ウェブページのデータをスクレイピングし、Markdown に変換して、Firecrawl 連携を用いて Dify のナレッジベースにインポートする方法を紹介します。
+Dify は、オープンソースの LLM アプリ開発プラットフォームです。公式 Firecrawl プラグインを使えば、AI ワークフロー内でウェブを直接クロール・スクレイピングできます。
+
+<CardGroup cols={2}>
+  <Card title="チャットフロー・ワークフローアプリ" icon="diagram-project">
+    Firecrawl ノードでデータ抽出用のビジュアルパイプラインを構築
+  </Card>
+
+  <Card title="エージェントアプリケーション" icon="robot">
+    AI エージェントが必要に応じてライブのウェブデータをスクレイピング
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-tools-in-dify">
+  ## Dify の Firecrawl ツール
+</div>
+
+プラグインには 7 つのアクションがあります。
+
+<AccordionGroup>
+  <Accordion title="検索" icon="magnifying-glass">
+    Web を検索し、必要に応じて検索結果をスクレイピングすることで、最新の結果メタデータやページ全体のコンテンツを 1 ステップで取得できます。
+
+    **ユースケース:** リサーチアシスタント、競合他社の発見、ライブソースに基づく回答の根拠付け。
+  </Accordion>
+
+  <Accordion title="スクレイピング" icon="file-code">
+    任意の URL をクリーンな構造化データに変換します。raw HTML を実用的なインサイトに変換します。
+
+    **ユースケース:** 商品データの抽出、記事コンテンツのスクレイピング、JSONモードによる構造化データの取得。
+  </Accordion>
+
+  <Accordion title="クロール" icon="spider">
+    Web サイトとサブドメインを再帰的にクロールして、大量のコンテンツを収集します。
+
+    **ユースケース:** サイト全体のコンテンツ抽出、ドキュメントのスクレイピング、複数ページにわたるデータ収集。
+  </Accordion>
+
+  <Accordion title="マップ" icon="sitemap">
+    Web サイト上のすべての URL を網羅したマップを生成します。
+
+    **ユースケース:** サイト構造の分析、SEO 監査、バッチスクレイピング用の URL の検出。
+  </Accordion>
+
+  <Accordion title="クロールジョブ" icon="list-check">
+    ジョブ ID を基にスクレイピング結果を取得したり、進行中のタスクをキャンセルしたりできます。
+
+    **ユースケース:** 長時間実行されるクロールの監視、非同期スクレイピングワークフローの管理、必要に応じたオペレーションのキャンセル。
+  </Accordion>
+
+  <Accordion title="モニターを作成" icon="bell">
+    ターゲットを定期的に再チェックする、スケジュール設定済みのモニターを作成します。
+
+    **ユースケース:** 取り込んだデータを最新の状態に保つ、変更履歴の監視、競合他社の追跡。
+  </Accordion>
+
+  <Accordion title="モニターチェック" icon="clock-rotate-left">
+    モニターの詳細とチェック結果を取得し、変更があったページにのみ対応できます。
+
+    **ユースケース:** ナレッジベースの差分アップデート、変更アラート、後続処理のトリガー。
+  </Accordion>
+</AccordionGroup>
+
+<div id="getting-started">
+  ## はじめに
+</div>
+
+<Steps>
+  <Step title="Firecrawlプラグインをインストール">
+    [Dify Plugin Marketplace](https://marketplace.dify.ai/plugins/langgenius/firecrawl)にアクセスし、Firecrawlツールをインストールします
+  </Step>
+
+  <Step title="Firecrawl APIキーを取得">
+    [Firecrawl API Keys](https://www.firecrawl.dev/app/api-keys)にアクセスし、新しいAPIキーを作成します
+  </Step>
+
+  <Step title="Difyで認可">
+    **Plugins &gt; Firecrawl &gt; To Authorize**に移動し、APIキーを入力します
+  </Step>
+
+  <Step title="ワークフローに追加">
+    FirecrawlツールをChatflow、Workflow、またはAgentアプリケーションにドラッグ＆ドロップします
+  </Step>
+
+  <Step title="設定とテスト">
+    パラメータを設定し、ワークフローをテストします
+  </Step>
+</Steps>
+
+<div id="usage-patterns">
+  ## 使用パターン
+</div>
+
+<Tabs>
+  <Tab title="チャットフローアプリ">
+    **ビジュアルパイプラインとの連携**
+
+    1. パイプラインにFirecrawlノードを追加
+    2. アクションを選択 (マップ、クロール、スクレイピング) 
+    3. 入力変数を定義
+    4. パイプラインを順番に実行
+
+    **フロー例:**
+
+    ```
+    ユーザー入力 → Firecrawl（スクレイピング）→ LLMによる処理 → レスポンス
+    ```
+  </Tab>
+
+  <Tab title="ワークフローアプリ">
+    **自動データ処理**
+
+    以下を含む複数ステップのワークフローを構築します。
+
+    * 定期的なスクレイピング
+    * データ変換
+    * データベースへの保存
+    * 通知
+
+    **フロー例:**
+
+    ```
+    スケジュールトリガー → Firecrawl（クロール）→ データ処理 → 保存
+    ```
+  </Tab>
+
+  <Tab title="エージェントアプリ">
+    **AIによるWebアクセス**
+
+    エージェントにリアルタイムのWebスクレイピング機能を持たせます。
+
+    1. エージェントにFirecrawlツールを追加
+    2. エージェントがスクレイピングのタイミングを自律的に判断
+    3. LLMが抽出したコンテンツを分析
+    4. エージェントが根拠に基づくレスポンスを提供
+
+    **ユースケース:** 最新のドキュメントを参照するカスタマーサポートエージェント
+  </Tab>
+</Tabs>
+
+<div id="common-use-cases">
+  ## 一般的なユースケース
+</div>
+
+<CardGroup cols={2}>
+  <Card title="ライブデータ対応の AI チャットボット" icon="messages">
+    ライブの Web サイトコンテンツをスクレイピングして参照する RAG 搭載チャットボットを構築
+  </Card>
+
+  <Card title="コンテンツ分析エージェント" icon="brain">
+    複数のソースをスクレイピング・分析してトピックを調査するエージェント
+  </Card>
+
+  <Card title="競合他社のモニタリング" icon="binoculars">
+    競合他社の Web サイトを追跡し、変更時にアラートを送信する自動ワークフロー
+  </Card>
+
+  <Card title="データエンリッチメントパイプライン" icon="database">
+    Web サイトからデータを抽出し、構造化データベースに取り込んで拡充
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-actions">
+  ## Firecrawl アクション
+</div>
+
+| ツール                | 説明                       | 最適な用途              |
+| ------------------ | ------------------------ | ------------------ |
+| **検索**         | 任意でページコンテンツを含められる Web 検索 | 最新のソースに基づく回答の生成    |
+| **スクレイピング**         | 単一ページからのデータ抽出            | コンテンツの迅速な取得        |
+| **クロール**          | 複数ページを再帰的にクロール           | サイト全体のデータ抽出        |
+| **マップ**            | URL の検出とサイトマッピング         | SEO 分析、URL リストの作成  |
+| **クロールジョブ**      | 非同期ジョブの管理                | 長時間実行されるオペレーション    |
+| **モニターを作成** | ターゲットを定期的に再チェック          | 取り込み済みデータを最新の状態に維持 |
+| **モニターチェック** | Monitor の詳細とチェック結果       | 変更されたページにのみ対応      |
+
+<div id="best-practices">
+  ## ベストプラクティス
+</div>
+
+<CardGroup cols={2}>
+  <Card title="エージェントアプリ" icon="robot">
+    * スクレイピングのタイミングはエージェントに判断させる
+    * 自然言語で指示する
+    * LLMの設定でツール呼び出しを有効にする
+    * 大規模なスクレイピングではトークン使用量を監視する
+  </Card>
+
+  <Card title="ワークフローアプリ" icon="diagram-project">
+    * 大規模なサイトでは、クロールの前にマップを使用する
+    * 適切なクロール上限を設定する
+    * エラーハンドリング用のノードを追加する
+    * まずは小規模なデータセットでテストする
+  </Card>
+</CardGroup>
+
+<div id="dify-vs-other-platforms">
+  ## Dify と他プラットフォームの比較
+</div>
+
+| 機能          | Dify             | Make        | Zapier    | n8n       |
+| ----------- | ---------------- | ----------- | --------- | --------- |
+| **種類**      | LLMアプリプラットフォーム   | ワークフロー自動化   | ワークフロー自動化 | ワークフロー自動化 |
+| **最適な用途**   | AIエージェントとチャットボット | ビジュアルワークフロー | 手軽な自動化    | 開発者による制御  |
+| **料金体系**    | オープンソース + Cloud  | オペレーションベース  | タスクごと     | 実行回数ベース   |
+| **AIネイティブ** | はい               | 一部対応        | 一部対応      | 一部対応      |
+| **セルフホスト**  | はい               | いいえ         | いいえ       | はい        |
+
+<Tip>
+  **プロのヒント:** Difyは、エージェントに動的なWebアクセスが必要なAIネイティブアプリケーションの構築に優れています。リアルタイムデータを必要とするチャットボット、リサーチアシスタント、AIツールに最適です。
+</Tip>
+
+<div id="sync-websites-into-the-dify-knowledge-base">
+  ## Web サイトを Dify のナレッジベースに同期
+</div>
+
+Firecrawl では、ウェブページを Markdown にスクレイピングし、[Dify Cloud](https://cloud.dify.ai/) から Dify のナレッジベースにインポートすることもできます。
 
 <div id="configuring-firecrawl">
   ### Firecrawl の設定
 </div>
 
-まず、設定ページの Data Source セクションで Firecrawl の認証情報を設定します。
+アバターメニューを開き、**DataSource** ページに移動して、Firecrawl の認証情報を設定します。
 
-<img
-  className="block"
-  src="/images/fc_dify_config.avif"
-  alt="Firecrawl キーを設定"
-/>
+<img className="block" src="/images/fc_dify_config.avif" alt="Firecrawl キーを設定" />
 
 Firecrawl アカウントにログインして API キーを取得し、Dify に入力して保存します。
 
-<img
-  className="block"
-  src="/images/fc_dify_savekey.png"
-  alt="Firecrawl キーを保存"
-/>
+<img className="block" src="/images/fc_dify_savekey.png" alt="Firecrawl キーを保存" />
 
-<div id="scrape-target-webpage">
-  ### 対象のウェブページをスクレイプする
+<div id="scrape-the-target-webpage">
+  ### 対象のウェブページをスクレイピングする
 </div>
 
-いよいよ実作業、スクレイピングとクロールです。ナレッジベース作成ページで「Sync from website」を選択し、スクレイプするURLを入力します。
+ナレッジベース作成ページで「Sync from website」を選択し、プロバイダーとして Firecrawl を選び、スクレイピングするURLを入力します。
 
-<img
-  className="block"
-  src="/images/fc_dify_webscrape.webp"
-  alt="スクレイピングのセットアップ"
-/>
+<img className="block" src="/images/fc_dify_webscrape.webp" alt="スクレイピングのセットアップ" />
 
 設定項目には、サブページをクロールするか、ページクロールの上限、スクレイピングの最大深さ、除外するパス、含めるパス、コンテンツ抽出範囲などがあります。設定が完了したら、Run をクリックして解析結果のページをプレビューします。
 
-<img
-  className="block"
-  src="/images/fc_dify_fcoptions.webp"
-  alt="Firecrawl の設定を行う"
-/>
+<img className="block" src="/images/fc_dify_fcoptions.webp" alt="Firecrawl の設定を行う" />
 
 <div id="review-import-results">
   ### インポート結果を確認する
 </div>
 
-ウェブページから解析したテキストを取り込むと、ナレッジベースのドキュメントに保存されます。インポート結果を確認し、「Add URL」をクリックして新しいウェブページの取り込みを続けてください。
+インポートしたページのテキストは、ナレッジベースのドキュメントに保存されます。結果を確認し、「Add URL」をクリックしてさらにページをインポートします。
 
-<img
-  className="block"
-  src="/images/fc_dify_results.webp"
-  alt="Firecrawl のスクレイプ結果を確認"
-/>
+<img className="block" src="/images/fc_dify_results.webp" alt="Firecrawl のスクレイピング結果を確認" />

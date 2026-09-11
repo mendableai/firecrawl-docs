@@ -23,13 +23,29 @@ import AgentWithURLsCURL from "/snippets/pt-BR/v2/agent/with-urls/curl.mdx";
 import AgentStatusPython from "/snippets/pt-BR/v2/agent/status/python.mdx";
 import AgentStatusJS from "/snippets/pt-BR/v2/agent/status/js.mdx";
 import AgentStatusCURL from "/snippets/pt-BR/v2/agent/status/curl.mdx";
+import AgentListPython from "/snippets/pt-BR/v2/agent/list/python.mdx";
+import AgentListJS from "/snippets/pt-BR/v2/agent/list/js.mdx";
+import AgentListCURL from "/snippets/pt-BR/v2/agent/list/curl.mdx";
 import AgentStatusPending from "/snippets/pt-BR/v2/agent/status/pending.mdx";
 import AgentStatusCompleted from "/snippets/pt-BR/v2/agent/status/completed.mdx";
 import AgentWithModelPython from "/snippets/pt-BR/v2/agent/with-model/python.mdx";
 import AgentWithModelJS from "/snippets/pt-BR/v2/agent/with-model/js.mdx";
 import AgentWithModelCURL from "/snippets/pt-BR/v2/agent/with-model/curl.mdx";
+import AgentTracePython from "/snippets/pt-BR/v2/agent/trace/python.mdx";
+import AgentTraceJS from "/snippets/pt-BR/v2/agent/trace/js.mdx";
+import AgentTraceCURL from "/snippets/pt-BR/v2/agent/trace/curl.mdx";
+import AgentSnapshotPython from "/snippets/pt-BR/v2/agent/snapshot/python.mdx";
+import AgentSnapshotJS from "/snippets/pt-BR/v2/agent/snapshot/js.mdx";
+import AgentSnapshotCURL from "/snippets/pt-BR/v2/agent/snapshot/curl.mdx";
+import AgentTracePollPython from "/snippets/pt-BR/v2/agent/trace/poll/python.mdx";
+import AgentTracePollJS from "/snippets/pt-BR/v2/agent/trace/poll/js.mdx";
+import AgentTracePollCURL from "/snippets/pt-BR/v2/agent/trace/poll/curl.mdx";
+import AgentArtifactsPython from "/snippets/pt-BR/v2/agent/artifacts/python.mdx";
+import AgentArtifactsJS from "/snippets/pt-BR/v2/agent/artifacts/js.mdx";
+import AgentArtifactsCURL from "/snippets/pt-BR/v2/agent/artifacts/curl.mdx";
 import PlaygroundCTA from "/snippets/pt-BR/shared/playground-cta-agent.mdx";
 import ChooseDataExtractor from "/snippets/pt-BR/shared/choose-data-extractor/from-agent.mdx";
+import AgentFeedbackCTA from "/snippets/pt-BR/agent-feedback-cta.mdx";
 
 **Escolhendo a ferramenta certa.** agente é a escolha certa quando você **não sabe quais são as URLs** ou precisa de navegação autônoma pela web.
 
@@ -41,8 +57,10 @@ Seja para obter um único dado ou conjuntos de dados completos em escala, o Fire
 **Pense no `/agent` como uma pesquisa profunda por dados, onde quer que eles estejam!**
 
 <Info>
-  **Research Preview**: agente está em acesso antecipado. Espere algumas imperfeições. Ele ficará significativamente melhor com o tempo. [Compartilhe feedback →](mailto:product@firecrawl.com)
+  **Research Preview**: agente está em acesso antecipado. Espere algumas imperfeições. Ele ficará significativamente melhor com o tempo.
 </Info>
+
+<AgentFeedbackCTA src="docs-agent" />
 
 agente aproveita tudo o que há de melhor no `/extract` e leva isso além:
 
@@ -95,6 +113,7 @@ Jobs de agente são executados de forma assíncrona. Ao enviar um job, você rec
 
 * **Método padrão**: `agent()` aguarda e retorna os resultados finais
 * **Iniciar e depois consultar**: use `start_agent` (Python) ou `startAgent` (Node) para obter um Job ID imediatamente e depois verificar o status com `get_agent_status` / `getAgentStatus`
+* **Notificação em vez de consulta**: passe um `webhook` ao iniciar o job para receber [eventos do agente](/pt-BR/webhooks/events#agent-events) conforme a execução avança e é concluída
 
 <Note>Os resultados do job ficam disponíveis via API por 24 horas após a conclusão. Após esse período, você ainda pode ver o histórico do seu agente e os resultados nos [logs de atividade](https://www.firecrawl.dev/app/logs).</Note>
 
@@ -110,15 +129,14 @@ Jobs de agente são executados de forma assíncrona. Ao enviar um job, você rec
   ### Estados possíveis
 </div>
 
-| Status       | Descrição                                         |
-| ------------ | ------------------------------------------------- |
-| `processing` | O agente ainda está trabalhando na sua requisição |
-| `completed`  | Extração concluída com sucesso                    |
-| `failed`     | Ocorreu um erro durante a extração                |
-| `cancelled`  | O job foi cancelado pelo usuário                  |
+| Status       | Descrição                                                                                                                              |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `processing` | O agente ainda está trabalhando na sua requisição                                                                                      |
+| `completed`  | Extração concluída com sucesso                                                                                                         |
+| `failed`     | Ocorreu um erro durante a extração ou o job foi cancelado (jobs cancelados informam `failed` com uma mensagem de erro de cancelamento) |
 
 <Note>
-  **O cancelamento é cooperativo.** Quando você chama o endpoint de cancelamento, a solicitação é registrada imediatamente, mas qualquer etapa já em andamento (uma etapa de raciocínio do LLM, uma chamada de ferramenta ou uma ação no navegador) continua até um ponto de interrupção seguro antes de o job passar para `cancelled`. Os créditos podem continuar sendo consumidos durante esse breve intervalo, então o `creditsUsed` final pode ser maior do que o valor informado no momento em que você clicou em cancelar.
+  **O cancelamento é cooperativo.** Quando você chama o endpoint de cancelamento, a solicitação é registrada imediatamente, mas qualquer etapa já em andamento (uma etapa de raciocínio do LLM, uma chamada de ferramenta ou uma ação no navegador) continua até um ponto de interrupção seguro antes de o job parar. Os créditos podem continuar sendo consumidos durante esse breve intervalo, então o `creditsUsed` final pode ser maior do que o valor informado no momento em que você clicou em cancelar. Um job cancelado informa o status `failed` quando consultado e emite um evento de webhook `agent.cancelled`.
 </Note>
 
 <div id="pending-example">
@@ -133,6 +151,91 @@ Jobs de agente são executados de forma assíncrona. Ao enviar um job, você rec
 
 <AgentStatusCompleted />
 
+<div id="listing-agent-runs">
+  ## Listando execuções de agentes
+</div>
+
+`GET /agent` lista todas as execuções de agentes da sua equipe, das mais recentes às mais antigas — incluindo as iniciadas no playground ou pela API. Cada entrada inclui o ID da execução, a hora de criação, o status, uma breve indicação do destino e as opções com que ela foi iniciada.
+
+Os resultados são paginados em páginas fixas de 20 execuções. Quando houver mais páginas, a resposta incluirá uma URL `next`; use o timestamp `before` dela para buscar a próxima página. Os métodos do SDK não paginam automaticamente, para que você mantenha o controle de até onde voltar.
+
+<CodeGroup>
+  <AgentListPython />
+
+  <AgentListJS />
+
+  <AgentListCURL />
+</CodeGroup>
+
+<div id="following-a-run-in-progress">
+  ## Acompanhando uma execução em andamento
+</div>
+
+O agente não mantém uma conexão de streaming aberta. Não há stream de eventos enviados pelo servidor nem websocket, então acompanhe uma execução consultando seu rastro ou recebendo webhooks.
+
+| Superfície                 | O que você recebe                                                                                                                                                                                                           | Ideal para                                                                    |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Consulta do rastro         | Detalhes completos: todos os eventos emitidos pela execução até o momento, incluindo chamadas de ferramenta, resumos de raciocínio, fases de progresso e mudanças nos artefatos                                             | Criar sua própria UI de progresso ou depurar o que uma execução realmente fez |
+| Webhooks                   | Entrega por push, em nível mais amplo: os cinco eventos do ciclo de vida do agente (`agent.started`, `agent.action`, `agent.completed`, `agent.failed`, `agent.cancelled`). Consulte [eventos de webhook](/pt-BR/webhooks/events) | Reagir ao término de uma execução sem manter um loop de consulta aberto       |
+| Visualização em tempo real | Uma visualização do navegador do agente que pode ser acompanhada por humanos. Solicite o rastro com `?liveView=true`, e cada entrada em `activeBrowserSessions` inclui uma `liveViewUrl`                                    | Acompanhar uma execução navegando em tempo real                               |
+
+Ao ordenar eventos de rastro manualmente, primeiro agrupe-os por `agent.id`: `producerSequence` é monotônica para cada agente emissor, portanto uma única ordenação global intercala incorretamente os eventos de um orquestrador com os de seus subagentes. Os eventos também podem chegar por um breve período após o evento terminal `run.finished`; portanto, continue consultando durante uma curta janela adicional antes de renderizar o estado final.
+
+<CodeGroup>
+  <AgentTracePollPython />
+
+  <AgentTracePollJS />
+
+  <AgentTracePollCURL />
+</CodeGroup>
+
+<div id="execution-traces-and-snapshots">
+  ## Rastros de execução e snapshots
+</div>
+
+Cada execução registra um rastro de execução canônico — uma sequência ordenada de eventos que abrange chamadas de ferramenta, resumos de raciocínio, atualizações de progresso, sessões de navegador e alterações nos artefatos de resultado. Use-o para depurar uma execução ou criar uma UI de progresso em tempo real:
+
+<CodeGroup>
+  <AgentTracePython />
+
+  <AgentTraceJS />
+
+  <AgentTraceCURL />
+</CodeGroup>
+
+Os eventos de rastro `artifact.updated` fazem referência ao resultado de trabalho do agente por meio de `snapshotId`. Obtenha o conteúdo completo de um snapshot usando o endpoint de snapshots:
+
+<CodeGroup>
+  <AgentSnapshotPython />
+
+  <AgentSnapshotJS />
+
+  <AgentSnapshotCURL />
+</CodeGroup>
+
+<Note>Rastros e snapshots são registrados em execuções do Spark 2, ou seja, em todas as novas execuções; jobs iniciados em modelos Spark 1 antes de serem descontinuados não os incluem. Consulte as referências da API de [rastro](/pt-BR/api-reference/endpoint/agent-trace) e [snapshot](/pt-BR/api-reference/endpoint/agent-snapshot) para conferir o esquema completo de eventos e o catálogo de [erros do agente](/pt-BR/api-reference/errors#agent) para as falhas retornadas por esses endpoints.</Note>
+
+<div id="getting-the-agents-source-data">
+  ## Obtendo os dados de origem do agente
+</div>
+
+Uma execução grava seus resultados parciais em artefatos à medida que avança, e você pode recuperá-los depois de obter o rastro da execução. Cada evento `artifact.updated` descreve uma alteração em um artefato: `artifact.kind` pode ser `json`, `markdown`, `html`, `screenshot` ou `text`; `artifact.path` indica onde a execução o salvou; e `artifact.snapshotId` é o identificador que você usa para obter seu conteúdo em `GET /agent/{jobId}/snapshots/{snapshotId}`. O endpoint de snapshots retorna esse conteúdo em um campo `snapshot` como uma string: para artefatos `json`, essa string é codificada em JSON e precisa ser decodificada, enquanto, para artefatos `markdown`, `html` e `text`, ela é o próprio conteúdo.
+
+Para obter o conteúdo de página produzido por uma execução, busque o rastro, filtre os eventos `artifact.updated` pelo `kind` desejado e, em seguida, busque cada snapshot:
+
+<CodeGroup>
+  <AgentArtifactsPython />
+
+  <AgentArtifactsJS />
+
+  <AgentArtifactsCURL />
+</CodeGroup>
+
+Duas coisas importantes antes de usar isso como base:
+
+* **Os artefatos são o resultado da execução, não um arquivo de cada página.** O que uma execução grava em um artefato depende de como ela processa seu prompt. Portanto, trate o conjunto de artefatos como o que aquela execução específica produziu, e não como um registro garantido de todas as páginas que ela abriu.
+* **Os resultados das ferramentas contêm o restante.** Cada evento `tool_call.finished` inclui um campo `result` com o que a ferramenta retornou. É nele que aparece o conteúdo que nunca se tornou um artefato.
+
 <div id="share-agent-runs">
   ## Compartilhar execuções de agentes
 </div>
@@ -140,51 +243,33 @@ Jobs de agente são executados de forma assíncrona. Ao enviar um job, você rec
 Você pode compartilhar execuções de agentes diretamente no Agent Playground. Os links compartilhados são públicos — qualquer pessoa com o link pode ver a saída e a atividade da execução — e você pode revogar o acesso a qualquer momento para desativar o link. As páginas compartilhadas não são indexadas por mecanismos de busca.
 
 <div id="model-selection">
-  ## Seleção de modelos
+  ## Seleção de modelo
 </div>
 
-O Firecrawl Agent oferece dois modelos. **O Spark 1 Mini é 60% mais barato** e é o padrão — perfeito para a maioria dos casos de uso. Atualize para o Spark 1 Pro quando precisar de máxima precisão em tarefas complexas.
+O Firecrawl Agent é executado no **Spark 2** — mais barato e mais rápido que os modelos Spark 1 anteriores, com precisão comparável. Ele é o modelo padrão: todas as execuções usam `spark-2`, independentemente de você definir o parâmetro `model`.
 
-| Model | Cost | Accuracy | Best For |
-|-------|------|----------|----------|
-| `spark-1-mini` | **60% mais barato** | Padrão | A maioria das tarefas (padrão) |
-| `spark-1-pro` | Padrão | Mais alta | Pesquisa complexa, extrações críticas |
+<Note>
+  **Os modelos Spark 1 estão descontinuados.** Os nomes dos modelos Spark 1 continuam aceitos por compatibilidade retroativa, mas as solicitações que os utilizam são direcionadas para `spark-2`.
+</Note>
 
-<Tip>
-  **Comece com o Spark 1 Mini** (padrão) — ele lida bem com a maioria das tarefas de extração com um custo 60% menor. Altere para o Pro apenas para pesquisas complexas em múltiplos domínios ou quando a precisão for crítica.
-</Tip>
-
-<div id="spark-1-mini-default">
-  ### Spark 1 Mini (Padrão)
+<div id="spark-2">
+  ### Spark 2
 </div>
 
-`spark-1-mini` é nosso modelo eficiente, ideal para tarefas simples de extração de dados.
+`spark-2` abrange toda a gama de tarefas que antes exigiam escolher entre Mini e Pro, eliminando a necessidade de abrir mão da precisão para reduzir custos.
 
-**Use o Mini quando:**
+**Destaques:**
 
-* Extraindo dados simples (informações de contato, preços, etc.)
-* Trabalhando com sites bem estruturados
-* Custo-benefício é uma prioridade
-* Executando trabalhos de extração em grande escala
-
-<div id="spark-1-pro">
-  ### Spark 1 Pro
-</div>
-
-`spark-1-pro` é o nosso principal modelo, projetado para máxima precisão em tarefas complexas de extração.
-
-**Use o Pro quando:**
-
-* Realizar análises competitivas complexas
-* Extrair dados que exigem raciocínio profundo
-* A precisão for crítica para o seu caso de uso
-* Lidar com dados ambíguos ou difíceis de encontrar
+* Menor custo por execução
+* Tempo de execução mais rápido
+* Precisão comparável ao antigo carro-chefe Spark 1
+* O único modelo com um orçamento de raciocínio: passe `effort` (`low`, `medium` ou `high`) para controlar o quanto ele raciocina
 
 <div id="specifying-a-model">
   ### Especificando um modelo
 </div>
 
-Informe o parâmetro `model` para selecionar qual modelo usar:
+O parâmetro `model` é opcional — todas as solicitações usam `spark-2`:
 
 <CodeGroup>
   <AgentWithModelPython />
@@ -198,13 +283,16 @@ Informe o parâmetro `model` para selecionar qual modelo usar:
   ## Parâmetros
 </div>
 
-| Parâmetro    | Tipo   | Obrigatório | Descrição                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ------------ | ------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `prompt`     | string | **Sim**     | Descrição em linguagem natural dos dados que você quer extrair (máx. 10.000 caracteres)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `model`      | string | Não         | Modelo a ser utilizado: `spark-1-mini` (padrão) ou `spark-1-pro`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `urls`       | array  | Não         | Lista opcional de URLs para direcionar a extração                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `schema`     | object | Não         | schema JSON opcional para saída estruturada                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| `maxCredits` | number | Não         | Número máximo de créditos a serem usados nesta tarefa de agente. O padrão é **2.500** se não for definido. O painel suporta valores de até **2.500**; para limites mais altos, defina `maxCredits` via API (valores acima de 2.500 são sempre tratados como requisições pagas). Se o limite for atingido, o job falha e **nenhum dado é retornado**. Execuções com falha não são cobradas: créditos usados para raciocínio de IA nunca são cobrados em caso de falha, quaisquer créditos usados para chamadas de ferramentas durante a execução (scraping, busca, mapeamento etc.) são reembolsados, e a resposta informa `creditsUsed: 0`. |
+| Parâmetro               | Tipo    | Obrigatório | Descrição                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------------------- | ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt`                | string  | **Sim**     | Descrição em linguagem natural dos dados que você quer extrair (máx. 10.000 caracteres)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `model`                 | string  | Não         | O padrão é `spark-2`, modelo usado em todas as execuções. Os modelos Spark 1 estão descontinuados e são direcionados para `spark-2`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `effort`                | string  | Não         | Orçamento de raciocínio: `low`, `medium` ou `high`. Todas as execuções usam `spark-2`, portanto `effort` pode ser enviado com ou sem `model`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `urls`                  | array   | Não         | Lista opcional de URLs para direcionar a extração                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `schema`                | object  | Não         | schema JSON opcional para resultado estruturado                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `strictConstrainToURLs` | boolean | Não         | Se `true`, o agente visita apenas as URLs fornecidas no array `urls`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `webhook`               | object  | Não         | Webhook para receber eventos do ciclo de vida do agente (`agent.started`, `agent.action`, `agent.completed`, `agent.failed`, `agent.cancelled`). Consulte os [payloads de webhook](/pt-BR/api-reference/endpoint/webhook-agent-started)                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `maxCredits`            | number  | Não         | Número máximo de créditos a serem usados nesta tarefa de agente. O padrão é **2.500** se não for definido. O painel suporta valores de até **2.500**; para limites mais altos, defina `maxCredits` via API (valores acima de 2.500 são sempre tratados como requisições pagas). Se o limite for atingido, o job falha e **nenhum dado é retornado**. Execuções com falha não são cobradas: créditos usados para raciocínio de IA nunca são cobrados em caso de falha, quaisquer créditos usados para chamadas de ferramentas durante a execução (scraping, busca, mapeamento etc.) são reembolsados, e a resposta informa `creditsUsed: 0`. |
 
 <div id="agent-vs-extract-whats-improved">
   ## Agent vs Extract: O que melhorou
@@ -304,7 +392,7 @@ agente pode ser caro, mas há algumas maneiras de reduzir o custo:
 * **Comece com execuções gratuitas**: Use suas 5 requisições gratuitas diárias para entender os preços
 * **Defina o parâmetro `maxCredits`**: Limite seus gastos definindo um número máximo de créditos que você está disposto a usar. O painel limita isso a 2.500 créditos; para definir um limite maior, use o parâmetro `maxCredits` diretamente via API (observação: valores acima de 2.500 são sempre cobrados como requisições pagas)
 * **Otimize os prompts**: Prompts mais específicos geralmente usam menos créditos
-* **Divida tarefas grandes em execuções menores**: Uma única execução do agente tem um limite de resultado com base na capacidade de geração do modelo subjacente (~150-200 linhas de dados estruturados). Para jobs grandes de extração, divida por categoria, região ou lote de URLs (3-5 URLs por execução) e mescle os resultados. Isso também mantém cada execução bem abaixo do limite de `maxCredits`.
+* **Divida tarefas grandes em execuções menores**: Uma única execução do agente retorna aproximadamente 150-200 linhas de dados estruturados. Para jobs grandes de extração, divida por categoria, região ou lote de URLs (3-5 URLs por execução) e mescle os resultados. Isso também mantém cada execução bem abaixo do limite de `maxCredits`.
 * **Monitore o uso**: Acompanhe seu consumo pelo painel
 * **Ajuste expectativas**: Pesquisas complexas em múltiplos domínios vão consumir mais créditos do que extrações simples de uma única página
 

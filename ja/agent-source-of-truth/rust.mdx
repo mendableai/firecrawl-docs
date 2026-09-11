@@ -66,7 +66,9 @@ let results = client
     .await?;
 ```
 
-### 複雑な例
+<div id="complex-example">
+  ### 複雑な例
+</div>
 
 ```rust
 use firecrawl::{
@@ -119,7 +121,7 @@ let results = client
 
 * `query`
   * 型: `impl AsRef<str>`
-  * 使用する場面: 検索クエリが必要な場合。
+  * 使用する場面: 検索queryが必要な場合。
   * 注: 結果を特定のドメインに限定するには `site:example.com` を使用します。
 
 * `options.sources`
@@ -130,7 +132,7 @@ let results = client
 * `options.categories`
   * 型: `Vec<SearchCategory>`
   * 使用する場面: カテゴリで結果を絞り込みたい場合。
-  * 確認済みの値: `Github`, `Research`, `Pdf`
+  * 確認済みの値: `Research`, `Pdf`
 
 * `options.limit`
   * 型: u32
@@ -159,23 +161,27 @@ let results = client
 * `options.integration`
   * 型: `Option<String>`
   * 使用する場面: サーバー側の追跡のためにインテグレーション識別子が必要な場合。
-  * 注: 製品で意図的に設定している場合を除き、agent 指向の例では省略します。
+  * 注: 製品で意図的に設定している場合を除き、エージェント 指向の例では省略します。
 
 <div id="scrape">
   ## スクレイピング
 </div>
 
-### これを使う理由
+<div id="why-use-it-2">
+  ### これを使う理由
+</div>
 
 URLがすでにあり、1つ以上のフォーマットで構造化されたコンテンツを取得したい場合は、スクレイピングを使用します。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### 推奨SDKメソッド
 </div>
 
 `client.scrape(url, options)` → `Result<Document, FirecrawlError>` (SDKではHTTPレスポンスの`data`フィールドが取り出された状態で返されます) 。
 
-### 簡単な例
+<div id="simple-example-2">
+  ### 簡単な例
+</div>
 
 ```rust
 use firecrawl::{Client, ScrapeOptions, Format};
@@ -188,7 +194,9 @@ let doc = client
     .await?;
 ```
 
-### 複雑な例
+<div id="complex-example-2">
+  ### 複雑な例
+</div>
 
 ```rust
 use firecrawl::{
@@ -239,7 +247,7 @@ let doc = client
     .await?;
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### パラメータ
 </div>
 
@@ -373,11 +381,13 @@ let doc = client
   ## Interact
 </div>
 
-### なぜこれを使うのか
+<div id="why-use-it-3">
+  ### なぜこれを使うのか
+</div>
 
 ページで、スクレイピング開始後にブラウザのアクションやコードの実行が必要な場合は、interact を使用します。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### 推奨SDKメソッド
 </div>
 
@@ -385,7 +395,9 @@ let doc = client
 
 ブラウザセッションを終了するには、`client.stop_interaction(job_id)` を使用します (`/v2/scrape/{jobId}/interact` に対する HTTP `DELETE`) 。
 
-### 簡単な例
+<div id="simple-example-3">
+  ### 簡単な例
+</div>
 
 ```rust
 use firecrawl::{Client, ScrapeExecuteOptions};
@@ -401,7 +413,7 @@ let result = client
     .await?;
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### 複雑な使用例
 </div>
 
@@ -430,7 +442,7 @@ let stopped = client.stop_interaction("<scrapeJobId>").await?;
 // stopped: ScrapeBrowserDeleteResponse { success, session_duration_ms, credits_billed, error, ... }
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### パラメータ
 </div>
 

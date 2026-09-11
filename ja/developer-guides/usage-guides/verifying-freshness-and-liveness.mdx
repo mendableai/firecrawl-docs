@@ -1,0 +1,201 @@
+---
+title: "鮮度と稼働性の確認"
+description: "コンテンツの鮮度と、ページが示す状態が最新かどうかの違いを理解する"
+og:title: "鮮度と稼働性の確認 | Firecrawl"
+og:description: "コンテンツの鮮度と、ページが示す状態が最新かどうかの違いを理解する"
+sidebarTitle: "鮮度と稼働性の確認"
+---
+
+スクレイピングが成功しても、そのページが返した内容がわかるだけです。**ページが示す状態**が最新であることまでは保証されません。これらは別の問題です。
+
+* **鮮度** → このコンテンツは最新のものですか？それとも Firecrawl のキャッシュから再利用されたコピーですか？`maxAge`で制御します。
+* **稼働性** → 対象となるものは現在も存在し、有効ですか？利用可能な証拠に基づいて、アプリケーション側で判断します。
+
+このガイドでは、その違いと `maxAge` のトレードオフを説明し、鮮度が重要なアクションのためのチェックリストと具体例を紹介します。
+
+<div id="quick-comparison">
+  ## 簡単な比較
+</div>
+
+|                              | 鮮度                                                                       | 稼働性                                                                          |
+| ---------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| **確認すること**                   | このコンテンツは新しいか、それともキャッシュから再利用されたものか？                                       | ページで説明されている対象は現在も有効か？                                                        |
+| **制御方法**                     | `maxAge` リクエストパラメータ                                                      | 独自のドメインロジック                                                                  |
+| **Firecrawlが報告する情報**         | `metadata.cacheState` (`"hit"` または `"miss"`) と、ヒット時の `metadata.cachedAt` | 直接的には何もなし — ページ上の情報のみ                                                        |
+| **得られる根拠**                   | レスポンスがキャッシュから返されたかどうか                                                    | ページコンテンツ、`metadata.statusCode`、および `metadata.url` と `metadata.sourceURL` の比較 |
+| **コンテンツを含むHTTP 200で判断できるか？** | **いいえ** — 200はコンテンツの鮮度を示すものではない                                          | **いいえ** — 200が示すのはページレスポンスのみ                                                 |
+
+***
+
+<div id="the-freshness-tradeoff-maxage">
+  ## 鮮度とレイテンシのトレードオフ (`maxAge`)
+</div>
+
+Firecrawl は、以前にスクレイピングしたページをキャッシュし、利用可能な場合は新しいコピーを返すことでレイテンシを削減します。`maxAge` は、Firecrawl がページを再取得せずに返せるキャッシュ済みコピーの最大経過時間 (ミリ秒) です。
+
+* **`maxAge` を省略**: Firecrawl は最近キャッシュされたコンテンツを返す場合があります。デフォルトの期間は 2 日間ですが、一部のサイトでは異なる期間が使用される場合があります。
+* **`maxAge: 0` を設定**: Firecrawl はそのリクエストではキャッシュを使用せず、ページを取得します。より新しい取得結果を得る代わりに、レイテンシと信頼性が犠牲になります。
+
+キャッシュはデフォルトで有効にしておくことを推奨します。古いデータによって誤った判断やコストの高い判断につながる読み取りに限り、`maxAge: 0` によるレイテンシコストを負担してください。ページあたりに消費されるクレジット数は変わりません。
+
+`metadata.cacheState` は、Firecrawl がリクエストに対してキャッシュを検討した場合に返されるため、`maxAge` の調整時に役立つ確認項目です。`maxAge: 0` のレスポンスには含まれません。このリクエストではキャッシュが完全にスキップされるためです。
+
+キャッシュの仕組み、一般的な `maxAge` の値、キャッシュヒットの照合ルール、キャッシュを自動的にバイパスするリクエストオプションについては、[高速スクレイピング](/ja/features/fast-scraping)を参照してください。
+
+<div id="where-maxage-applies">
+  ### `maxAge` が適用される箇所
+</div>
+
+| エンドポイント                   | 動作                                                                                      |
+| ------------------------- | --------------------------------------------------------------------------------------- |
+| `/scrape`                 | リクエストボディ内の `maxAge` が適用されます                                                             |
+| `/crawl`, `/batch/scrape` | `scrapeOptions` 内の `maxAge` が適用されます                                                     |
+| `/search`                 | Search はスクレイピング対象のページに独自の鮮度期間を適用するため、`scrapeOptions` 内の `maxAge` は反映されません               |
+| `/parse`                  | `/parse` は指定したファイルを常に処理し、キャッシュされたコンテンツの提供や保存は行わないため、`maxAge` と `storeInCache` は効果がありません |
+
+`/search` で見つけたページを最新の状態で取得する必要がある場合は、その URL を `/scrape` で `maxAge: 0` を指定して再度スクレイピングしてください。
+
+***
+
+<div id="freshness-is-not-liveness">
+  ## 鮮度は稼働性を意味しない
+</div>
+
+`maxAge: 0` を指定しても、結果が示すのは、その取得時にページが返した内容だけです。ページがコンテンツを含む HTTP 200 を返していても、古い状態、利用不能な状態、または何らかの変更が加えられた状態を示している場合があります。
+
+したがって、ステータスコードもコンテンツの有無も、稼働性を判断する決め手にはなりません。稼働性は、ソース固有の根拠に基づいてアプリケーションが導き出す結論です。
+
+***
+
+<div id="freshness-sensitive-action-checklist">
+  ## 鮮度が重要なアクションのチェックリスト
+</div>
+
+現在の状態に依存するアクションを実行する前には、スクレイピングの出力を**証拠であって、確証ではない**ものとして扱ってください。
+
+1. 最終取得には `maxAge: 0` を使用し、レスポンスがキャッシュから返されないようにします。
+2. HTTP 200 や空でないコンテンツを、稼働中である確証と見なさないでください。
+3. レンダリングされたコンテンツとリダイレクトの兆候を確認します。`metadata.sourceURL` はリクエストした URL、`metadata.url` はエンジンがレスポンスの URL として報告するものです。両者が異なる場合、別のリソースへのリダイレクトを示している可能性があります。値が一致していても、リダイレクトが発生していない証拠にはなりません。
+4. 利用可能な場合は、ソース固有の API や識別子を優先してください。レンダリングされたページでは見えない明示的なステータスが提供されていることがよくあります。
+5. 判断不能な証拠は `unknown` として扱い、アクティブだと仮定せず、高コストまたは不可逆なステップに進む前に停止してください。
+
+***
+
+<div id="worked-example-collect-current-page-evidence">
+  ## 実践例: 現在のページの情報を収集する
+</div>
+
+キャッシュをスキップし、アプリケーション独自の検証ルールに使用するレンダリングされたコンテンツとレスポンスメタデータを収集します。スクレイピングは判断材料を提供しますが、ドメイン固有の状態を判定するものではありません。
+
+<CodeGroup>
+  ```python Python
+  import os
+
+  from firecrawl import Firecrawl
+
+  firecrawl = Firecrawl(api_key=os.environ["FIRECRAWL_API_KEY"])
+
+  def collect_current_page_evidence(url: str) -> dict:
+      # max_age=0 は、このリクエストで Firecrawl のキャッシュをスキップします。
+      doc = firecrawl.scrape(url, formats=["markdown"], max_age=0)
+
+      metadata = doc.metadata
+      requested_url = (metadata.source_url if metadata else None) or url
+      response_url = metadata.url if metadata else None
+
+      return {
+          "markdown": doc.markdown or "",
+          "status_code": metadata.status_code if metadata else None,
+          "requested_url": requested_url,
+          "response_url": response_url,
+          "possible_redirect": bool(response_url and response_url != requested_url),
+      }
+
+
+  evidence = collect_current_page_evidence("https://example.com/resource")
+  # ここでソース固有のコンテンツ、ステータス、API、識別子を確認します。
+  # 判定できない場合は、状態を unknown のままにします。
+  ```
+
+  ```js Node
+  import { Firecrawl } from "firecrawl";
+
+  const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWL_API_KEY });
+
+  async function collectCurrentPageEvidence(url) {
+    // maxAge: 0 は、このリクエストで Firecrawl のキャッシュをスキップします。
+    const doc = await firecrawl.scrape(url, {
+      formats: ["markdown"],
+      maxAge: 0,
+    });
+
+    const requestedURL = doc.metadata?.sourceURL ?? url;
+    const responseURL = doc.metadata?.url;
+
+    return {
+      markdown: doc.markdown ?? "",
+      statusCode: doc.metadata?.statusCode,
+      requestedURL,
+      responseURL,
+      possibleRedirect: Boolean(responseURL && responseURL !== requestedURL),
+    };
+  }
+
+  const evidence = await collectCurrentPageEvidence("https://example.com/resource");
+  // ここでソース固有のコンテンツ、ステータス、API、識別子を確認します。
+  // 判定できない場合は、状態を unknown のままにします。
+  ```
+
+  ```bash cURL
+  curl -s -X POST "https://api.firecrawl.dev/v2/scrape" \
+    -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "url": "https://example.com/resource",
+      "formats": ["markdown"],
+      "maxAge": 0
+    }'
+  ```
+</CodeGroup>
+
+重要なのは、収集後の処理です。Firecrawl はページの判断材料を提供し、アプリケーションはソース固有のルールに基づいてそれを解釈します。ルールで判定できない場合は、状態を `unknown` のままにします。
+
+***
+
+<div id="recommendations-by-scenario">
+  ## シナリオ別の推奨事項
+</div>
+
+| シナリオ                                | 推奨アプローチ                                      |
+| ----------------------------------- | -------------------------------------------- |
+| 製品説明、ドキュメント、または参照コンテンツを読む           | `maxAge` を省略し、デフォルトのキャッシュ期間を使用する             |
+| 定期的に更新されるダッシュボードまたはレポート             | 更新間隔に合わせてゼロ以外の `maxAge` を設定する                |
+| 現在の状態に依存するアクションの直前に行う最終確認           | `maxAge: 0` でキャッシュをスキップし、上記のチェックリストを使用する     |
+| オブジェクトが実際にまだ有効であることを確認する            | ソースの API またはステータスフィールドを優先し、スクレイピングは証拠としてのみ扱う |
+| 曖昧なレンダリング済みページ (200 だが肯定的なシグナルがない)  | `unknown` に分類し、不可逆なステップの前に停止する               |
+
+***
+
+<div id="key-takeaways">
+  ## 要点
+</div>
+
+1. **鮮度と稼働性は別の問題です。** `maxAge` は鮮度を制御します。稼働性は、得られた証拠に基づいて判断します。
+
+2. **HTTP 200 とコンテンツがあっても、その状態が最新であることの証明にはなりません。**
+
+3. **鮮度が重要なアクションでは、`maxAge: 0` を使用し、チェックリストに従ってください。** レンダリングされたコンテンツを確認し、リダイレクトの可能性を示す証拠として `metadata.url` と `metadata.sourceURL` を比較し、ソース固有の API を優先してください。
+
+4. **判断に足る証拠がない場合は、`unknown` として扱います。** スクレイピングだけでオブジェクトを `active` にしてはなりません。コストが高い、または元に戻せない手順の前に停止してください。
+
+5. **Firecrawl には稼働性を示すフィールドはありません。** その判定は、アプリケーション側で独自のドメイン用語に基づいて行います。
+
+***
+
+<div id="further-reading">
+  ## 関連資料
+</div>
+
+* [スクレイピング](/ja/features/scrape)
+* [高速スクレイピング](/ja/features/fast-scraping)
+* [データ抽出器の選び方](/ja/developer-guides/usage-guides/choosing-the-data-extractor)

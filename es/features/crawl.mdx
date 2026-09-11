@@ -39,6 +39,8 @@ Rastrear envía una URL a Firecrawl y descubre y extrae de forma recursiva todas
 * Admite filtrado por ruta, límites de profundidad y control de subdominios/enlaces externos
 * Devuelve resultados mediante polling, WebSocket o webhook
 
+Cada página que un crawl extrae pasa por el mismo pipeline de scraping, así que todo lo que scrape puede hacer con una página, crawl puede hacerlo con todas las páginas que alcance. [Capacidades](/es/capabilities) enumera cuáles son, dónde se ejecuta cada capacidad y si requiere una clave de API.
+
 <PlaygroundCTA />
 
 <div id="installation">
@@ -75,8 +77,7 @@ Envía un trabajo de rastreo llamando a `POST /v2/crawl` con una URL inicial. El
   alcancen para cubrir el `limit`; si no es así, devuelve un error **402 (Pago requerido)**.
   Establece un `limit` más bajo que se ajuste al tamaño de rastreo previsto (por ejemplo, `limit: 100`) para
   evitarlo. Se aplican créditos adicionales para ciertas opciones: el modo JSON cuesta 4
-  créditos adicionales por página, el proxy mejorado cuesta 4 créditos adicionales por
-  página y el análisis de PDF cuesta 1 crédito por página de PDF.
+  créditos adicionales por página y el análisis de PDF cuesta 1 crédito por página de PDF.
 </Info>
 
 <div id="scrape-options">
@@ -281,6 +282,98 @@ Cada solicitud de webhook de Firecrawl incluye un encabezado `X-Firecrawl-Signat
 
 Para ver ejemplos completos de implementación en JavaScript y Python, consulta la [documentación de seguridad de webhooks](/es/webhooks/security). Para consultar la documentación completa sobre webhooks, incluidos payloads de eventos detallados, estructura de payloads, configuración avanzada y solución de problemas, consulta la [documentación de webhooks](/es/webhooks/overview).
 
+<div id="execution-and-result-accounting">
+  ## Ejecución y contabilización de resultados
+</div>
+
+Un crawl que finaliza no es lo mismo que un crawl que ha llegado a todas las páginas. Esta sección describe qué informan actualmente los endpoints de crawl sobre una ejecución: los contadores, el contrato de paginación, los registros de fallos y los límites de alcance, para que puedas valorar por ti mismo si una ejecución está lo bastante completa como para actuar en consecuencia. Ninguno de estos registros garantiza que sea completo.
+
+<div id="reading-the-status-counters">
+  ### Lectura de los contadores de estado
+</div>
+
+Cada respuesta de [Get Crawl Status](/es/api-reference/endpoint/crawl-get) (`GET /v2/crawl/{id}`) incluye los contadores que describen la ejecución:
+
+| Campo                                    | Significado                                                                                                                                                                |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `status`                                 | Uno de `scraping`, `completed`, `failed` o `cancelled`                                                                                                                     |
+| `total`                                  | `completed` más las páginas aún en curso: activas, en cola y en el backlog. **Las páginas fallidas no se cuentan.**                                                        |
+| `completed`                              | Número de páginas rastreadas correctamente                                                                                                                                 |
+| `creditsUsed`                            | Créditos consumidos por el crawl hasta el momento                                                                                                                          |
+| `createdAt` / `completedAt` / `duration` | Hora de inicio, hora de finalización (solo en estados terminales) y segundos transcurridos                                                                                 |
+| `expiresAt`                              | Momento en que los resultados dejan de poder recuperarse desde la API                                                                                                      |
+| `next`                                   | URL de la siguiente página de resultados de 10 MB. También se emite siempre que `status` no sea `completed`; consulta [Paginación de resultados](#paging-through-results). |
+
+<Warning>
+  Que `completed == total` en un crawl finalizado **no** significa que todas las páginas descubiertas se hayan procesado con éxito. Como `total` suma las páginas completadas, activas, en cola y en el backlog, y excluye las fallidas, un crawl en estado terminal siempre tiene `active`, `queued` y `backlog` en cero, de modo que ambos contadores convergen haya habido fallos o no. Los contadores de estado no permiten saber si algo falló. Las páginas fallidas solo se enumeran mediante [Get Crawl Errors](#failed-and-blocked-pages).
+</Warning>
+
+El array `data` contiene únicamente las páginas que Firecrawl extrajo correctamente. Las páginas que se intentaron pero nunca produjeron un resultado no aparecen en `data`: consúltalas en Get Crawl Errors, más abajo.
+
+<div id="paging-through-results">
+  ### Paginar los resultados
+</div>
+
+Las respuestas tienen un límite de 10 MB. Cuando una respuesta se trunca, `next` contiene la URL de la siguiente página de resultados.
+
+`next` no es solo una señal de que «quedan más datos»: también se emite siempre que `status` no sea `completed`, por lo que un crawl en estado terminal `failed` o `cancelled` puede devolver una URL en `next` aunque no queden más resultados. No uses la ausencia de `next` como condición de salida del bucle: en un crawl fallido o cancelado nunca desaparece.
+
+La condición terminal es el campo de estado. Para leer una ejecución hasta el final:
+
+1. Haz poll a `GET /v2/crawl/{id}` hasta que `status` sea `completed`, `failed` o `cancelled`.
+2. Mientras `next` esté presente **y** la última página haya devuelto un array `data` no vacío, sigue `next` para recopilar los resultados restantes.
+3. Detente cuando `next` no esté presente o cuando una página no devuelva documentos nuevos.
+
+Los SDKs oficiales gestionan esta paginación por ti y devuelven todos los resultados de una vez.
+
+<div id="failed-and-blocked-pages">
+  ### Páginas fallidas y bloqueadas
+</div>
+
+[Get Crawl Errors](/es/api-reference/endpoint/crawl-get-errors) (`GET /v2/crawl/{id}/errors`) registra las páginas que no llegaron a `data`. Devuelve dos arrays:
+
+* `errors` — trabajos de scraping con error, cada uno con `id`, `url`, `error` (el mensaje de error) y un `timestamp` del fallo. Son páginas que Firecrawl no pudo extraer: errores de red, tiempos de espera agotados y similares. Los enlaces a la página de inicio de un sitio externo que se omitieron intencionalmente se informan aquí con el código de error `EXTERNAL_LINK`.
+* `robotsBlocked` — URL que se intentaron procesar, pero fueron bloqueadas por el robots.txt del sitio.
+
+<Note>
+  No se garantiza que esta lista sea una enumeración completa de todos los fallos: actualmente algunas clases de fallos internos se filtran de `errors` antes de construir la respuesta. Tómala como el registro de fallos que Firecrawl informa, no como una prueba de que no ocurrió nada más. El código de error mencionado arriba (`EXTERNAL_LINK`) se devuelve hoy en los objetos de error, pero aún no forma parte del schema publicado de `GET /crawl/{id}/errors`; está pendiente de una actualización de la referencia de la API.
+</Note>
+
+Una página en la que el sitio objetivo devolvió un error HTTP como 404 *no* es un error de crawl: Firecrawl la extrajo correctamente, por lo que aparece en `data` con el código de estado del sitio en `metadata.statusCode`.
+
+<div id="what-the-crawler-is-scoped-to-reach">
+  ### Hasta dónde puede llegar el rastreador
+</div>
+
+La cobertura está limitada por los parámetros de alcance que definas, todos documentados en la [referencia de configuración](#configuration-reference) y en la [referencia del endpoint Crawl](/es/api-reference/endpoint/crawl-post):
+
+* **Solo rutas hijas de forma predeterminada.** El crawl ignora los subenlaces que no son hijos de la URL que proporcionas. Usa `crawlEntireDomain` para rutas hermanas y superiores, `allowSubdomains` para subdominios y `allowExternalLinks` para seguir enlaces fuera del dominio.
+* **`includePaths` / `excludePaths` se aplican al pathname de la URL**, como patrones de expresión regular; no a la URL completa ni a los parámetros de consulta. Establece `regexOnFullURL: true` para que la coincidencia se haga contra la URL completa, incluidas las cadenas de consulta. La URL inicial también se compara con `includePaths`: si no coincide, el crawl puede devolver 0 páginas.
+* **Modo sitemap.** Con el valor predeterminado `sitemap: "include"`, las URL provienen del sitemap y del descubrimiento recursivo de enlaces. `"skip"` usa únicamente los enlaces HTML, por lo que se omiten las páginas que solo están en el sitemap, como PDF o páginas muy anidadas. `"only"` rastrea el sitemap y la URL inicial, y no descubre enlaces a partir del HTML.
+* **`maxDiscoveryDepth`** limita cuántos saltos de descubrimiento de enlaces se siguen desde la raíz. Las páginas que están en la profundidad máxima sí se extraen, pero no se siguen los enlaces encontrados en ellas.
+* **`limit`** limita la cantidad de páginas y su valor predeterminado es `10000`.
+* **`ignoreQueryParameters`** evita volver a extraer la misma ruta con distintos parámetros de consulta.
+* **Se respeta robots.txt** salvo que `ignoreRobotsTxt` esté habilitado (solo Enterprise).
+
+`maxConcurrency` adopta de forma predeterminada el límite de concurrencia de tu equipo, definido por tu plan; consulta [Límites de tasa](/es/rate-limits).
+
+<div id="when-results-vary-between-runs">
+  ### Cuando los resultados varían entre ejecuciones
+</div>
+
+Los resultados del rastreo pueden variar entre ejecuciones con la misma configuración. Las páginas se extraen de forma concurrente, por lo que el orden en que se descubren los enlaces depende de la latencia de la red y de qué páginas terminan de cargarse primero. Esto significa que diferentes ramas de un sitio pueden explorarse en distinta medida cerca del límite de profundidad, especialmente con valores altos de `maxDiscoveryDepth`.
+
+Para que una ejecución sea más reproducible:
+
+* Establece `maxConcurrency` en `1`. Como indica la [referencia de configuración](#configuration-reference), `maxConcurrency` es el «número máximo de scrapes concurrentes»: limita cuántas solicitudes están en curso a la vez. Eso reduce el entrelazado dependiente de la latencia, pero no elimina la variación entre ejecuciones: el descubrimiento del sitemap se encola fuera de ese límite, los sitemaps anidados se obtienen como trabajos independientes y el array `data` devuelto se ordena por hora de finalización y no por orden de descubrimiento. Establecer `delay` también fuerza la concurrencia a 1.
+* Usa `sitemap: "only"` si el sitio tiene un sitemap completo, de modo que el conjunto de URL provenga del sitemap y no del descubrimiento de enlaces.
+
+<div id="knowing-when-a-crawl-is-done">
+  ### Cómo saber cuándo ha terminado un crawl
+</div>
+
+Si no estás haciendo polling, los [webhook events](#event-types) te indican lo mismo: `crawl.page` se emite por cada página extraída correctamente, y `crawl.completed` (o `crawl.failed`) se emite cuando finaliza la ejecución. Los resultados del trabajo se pueden recuperar desde la API durante las 24 horas posteriores a su finalización; pasado ese plazo, consúltalos en los [activity logs](https://www.firecrawl.dev/app/logs).
+
 <div id="configuration-reference">
   ## Referencia de configuración
 </div>
@@ -297,7 +390,7 @@ El conjunto completo de parámetros disponibles al enviar un trabajo de rastreo:
 | `regexOnFullURL`        | `boolean`  | `false`        | Hace coincidir `includePaths`/`excludePaths` con la URL completa (incluidos los parámetros de consulta) en lugar de solo con la ruta                                                                                                                                                                                                                                                                                                                                               |
 | `crawlEntireDomain`     | `boolean`  | `false`        | Sigue enlaces internos a URL del mismo nivel o superiores, no solo a rutas hijas                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `allowSubdomains`       | `boolean`  | `false`        | Sigue enlaces a subdominios del dominio principal                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `allowExternalLinks`    | `boolean`  | `false`        | Sigue enlaces a sitios web externos                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `allowExternalLinks`    | `boolean`  | `false`        | Sigue enlaces a sitios web externos. Los enlaces externos se siguen un salto (no se rastrean sus propios enlaces), y se omiten los enlaces que apuntan a la página de inicio de un sitio externo — consulta [Enlaces externos](#external-links).                                                                                                                                                                                                                                   |
 | `sitemap`               | `string`   | `"include"`    | Gestión del sitemap: `"include"` (predeterminado), `"skip"` o `"only"`                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `ignoreQueryParameters` | `boolean`  | `false`        | Evita volver a extraer la misma ruta con distintos parámetros de consulta                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `ignoreRobotsTxt`       | `boolean`  | `false`        | Ignora las reglas de robots.txt del sitio web. **Solo Enterprise** — contacta con support@firecrawl.com para habilitarlo.                                                                                                                                                                                                                                                                                                                                                          |
@@ -313,13 +406,14 @@ El conjunto completo de parámetros disponibles al enviar un trabajo de rastreo:
 </div>
 
 <Warning>
-  De forma predeterminada, crawl ignora los subenlaces que no son descendientes de la URL que proporcionas. Por ejemplo, `website.com/other-parent/blog-1` no se devolvería si hicieras crawl de `website.com/blogs/`. Usa el parámetro `crawlEntireDomain` para incluir rutas hermanas y superiores. Para hacer crawl de subdominios como `blog.website.com` al hacer crawl de `website.com`, usa el parámetro `allowSubdomains`.
+  De forma predeterminada, el rastreo ignora los subenlaces que no son descendientes de la URL que proporcionas. Por ejemplo, `website.com/other-parent/blog-1` no se devolvería si hicieras rastreo de `website.com/blogs/`. Usa el parámetro `crawlEntireDomain` para incluir rutas hermanas y superiores. Para hacer rastreo de subdominios como `blog.website.com` al hacer rastreo de `website.com`, usa el parámetro `allowSubdomains`.
 </Warning>
 
-* **Descubrimiento del sitemap**: De forma predeterminada, el crawler incluye el sitemap del sitio web para descubrir URL (`sitemap: "include"`). Si estableces `sitemap: "skip"`, solo se encontrarán las páginas accesibles mediante enlaces HTML desde la URL raíz. Recursos como PDF o páginas muy anidadas incluidas en el sitemap, pero no enlazadas directamente desde el HTML, no se encontrarán. Para obtener la máxima cobertura, mantén la configuración predeterminada.
-* **Uso de créditos**: Cada página rastreada cuesta 1 crédito. El modo JSON añade 4 créditos por página, el proxy mejorado añade 4 créditos por página y el análisis de PDF cuesta 1 crédito por cada página del PDF.
-* **Expiración de resultados**: Los resultados del trabajo están disponibles a través de la API durante 24 horas después de completarse. Después de ese plazo, consulta los resultados en los [registros de actividad](https://www.firecrawl.dev/app/logs).
-* **Errores de crawl**: El array `data` contiene las páginas que Firecrawl extrajo correctamente. Usa el endpoint [Get Crawl Errors](/es/api-reference/endpoint/crawl-get-errors) para recuperar las páginas que fallaron debido a errores de red, tiempos de espera o bloqueos de robots.txt.
-* **Resultados no deterministas**: Los resultados de crawl pueden variar entre ejecuciones con la misma configuración. Las páginas se extraen de forma concurrente, por lo que el orden en que se descubren los enlaces depende de la latencia de la red y de qué páginas terminan de cargarse primero. Esto significa que diferentes ramas de un sitio pueden explorarse en distinta medida cerca del límite de profundidad, especialmente con valores altos de `maxDiscoveryDepth`. Para obtener resultados más deterministas, establece `maxConcurrency` en `1` o usa `sitemap: "only"` si el sitio tiene un sitemap completo.
+* **Descubrimiento del sitemap**: De forma predeterminada, el rastreador incluye el sitemap del sitio web para descubrir URL (`sitemap: "include"`). Si estableces `sitemap: "skip"`, solo se encontrarán las páginas accesibles mediante enlaces HTML desde la URL raíz. Recursos como PDF o páginas muy anidadas incluidas en el sitemap, pero no enlazadas directamente desde el HTML, no se encontrarán. Para obtener la máxima cobertura, mantén la configuración predeterminada.
+* **Uso de créditos**: Cada página rastreada cuesta 1 crédito. El modo JSON añade 4 créditos por página y el análisis de PDF cuesta 1 crédito por cada página del PDF.
+* **Expiración de resultados**: Los resultados del trabajo están disponibles a través de la API durante 24 horas después de completarse. Después de ese plazo, consulta los resultados en los [activity logs](https://www.firecrawl.dev/app/logs).
+* **Errores de rastreo**: El array `data` contiene las páginas que Firecrawl extrajo correctamente. Usa el endpoint [Get Crawl Errors](/es/api-reference/endpoint/crawl-get-errors) para recuperar las páginas que fallaron debido a errores de red, tiempos de espera o bloqueos de robots.txt.
+* <a id="external-links" />**Enlaces externos**: Con `allowExternalLinks: true`, el rastreador sigue los enlaces que apuntan fuera de tu dominio y scrapea cada página enlazada una vez; después no rastrea los enlaces encontrados en esas páginas externas. Los enlaces a la **página de inicio** de un sitio externo (una URL raíz sin ruta, por ejemplo, `https://example.com/`) se omiten intencionadamente para evitar incluir un sitio no relacionado completo; estos aparecen en [Get Crawl Errors](/es/api-reference/endpoint/crawl-get-errors) con el código `EXTERNAL_LINK`. Se siguen las redirecciones hasta su destino, incluido un enlace que se resuelve en su URL canónica (por ejemplo, `http → https` o la variante `www`), por lo que solo se omiten las redirecciones que llegan a una página de inicio externa.
+* **Resultados no deterministas**: Los resultados del rastreo pueden variar entre ejecuciones con la misma configuración, porque las páginas se extraen de forma concurrente y el orden de descubrimiento de enlaces depende de la latencia de la red. Consulta [Ejecución y contabilización de resultados](#execution-and-result-accounting) para saber qué varía y cómo hacer que una ejecución sea más reproducible.
 
 > ¿Eres un agente de IA que necesita una clave de API de Firecrawl? Consulta [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para obtener instrucciones de incorporación automatizada.

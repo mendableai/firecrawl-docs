@@ -328,7 +328,7 @@
             "type": "boolean"
           },
           "proxy": {
-            "description": "Especifica el tipo de proxy que se utilizará.\n\n - **basic**: Proxies para hacer scraping de sitios web con soluciones anti‑bots nulas o básicas. Son rápidos y normalmente funcionan.\n - **enhanced**: Proxies mejorados para hacer scraping de sitios web con soluciones anti‑bots avanzadas. Son más lentos, pero más fiables en ciertos sitios. Cuestan hasta 5 créditos por solicitud.\n - **auto**: Firecrawl reintentará automáticamente el scraping con proxies mejorados si el proxy basic falla. Si el reintento con enhanced tiene éxito, se cobrarán 5 créditos por el scraping. Si el primer intento con basic tiene éxito, solo se cobrará el coste normal.\n\nSi no especificas un tipo de proxy, Firecrawl usará basic por defecto.",
+            "description": "Especifica el tipo de proxy que se utilizará.\n\n - **basic**: Proxies para hacer scraping de sitios web con soluciones anti‑bots nulas o básicas. Son rápidos y normalmente funcionan.\n - **enhanced**: Proxies mejorados para hacer scraping de sitios web con soluciones anti‑bots avanzadas. Son más lentos, pero más fiables en ciertos sitios. Se facturan al mismo costo en créditos que basic.\n - **auto**: Firecrawl reintentará automáticamente el scraping con proxies mejorados si el proxy basic falla. Los proxies mejorados no conllevan ningún recargo de créditos, por lo que, de cualquier manera, solo se cobrará el coste normal.\n\nSi no especificas un tipo de proxy, Firecrawl usará basic por defecto.",
             "enum": [
               "basic",
               "enhanced",
@@ -3009,7 +3009,7 @@
                           "type": "string"
                         },
                         "plan_credits": {
-                          "description": "Número de créditos del plan. Esto no incluye créditos de cupones, paquetes de créditos ni créditos de recarga automática.",
+                          "description": "Número de créditos del plan. Esto no incluye créditos de cupones ni créditos añadidos mediante pago por uso.",
                           "example": 500000,
                           "type": "number"
                         },

@@ -20,7 +20,7 @@ og:description: "組織が管理するポリシーを使って、すべてのエ
 脅威保護 には、組織レベルで設定する 3 つのモードがあります。
 
 * **Off** (デフォルト) — チェックは実行されません。
-* **Normal** — URL は [Google Web Risk](https://cloud.google.com/web-risk) と照合され、マルウェア、ソーシャルエンジニアリング (フィッシング) 、不要なソフトウェアに関連するページやサイトが検出されます。**スキャンした URL 1 件あたり +2 クレジット。**
+* **Normal** — URL は [Google Web Risk](https://cloud.google.com/security/products/web-risk) と照合され、マルウェア、ソーシャルエンジニアリング (フィッシング) 、不要なソフトウェアに関連するページやサイトが検出されます。**スキャンした URL ごとに +2 クレジット。**
 * **Zscaler** — URL は、組織独自の [Zscaler Internet Access](https://www.zscaler.com/products-and-solutions/zscaler-internet-access) (ZIA) テナントと照合されます。ブロックするよう選択した Zscaler 定義の URL カテゴリに加え、カスタム URL カテゴリとカスタム URL リストが対象です。以下の [Zscaler モード](#zscaler-mode) を参照してください。**スキャン料金なし** — 分類は独自のテナントに対して実行されます。
 
 これらのチェックは、データを保護するために設計されています。Normal モードでは、ほとんどのリクエストで定期的に同期される脅威リストに対してローカルでチェックが完了するため、スクレイピングする URL が分類器に送信されることはありません。Zscaler モードでは、URL の分類は組織独自の ZIA テナントに対して行われます。これは、組織の Web ポリシーをすでに把握しているのと同じシステムです。すべてのモードで、トラフィックに関する判定が Firecrawl に保存されることはありません。

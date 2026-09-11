@@ -14,40 +14,33 @@ Firecrawl provides powerful document parsing capabilities, allowing you to extra
 
 Firecrawl currently supports the following document formats:
 
-- **Excel Spreadsheets** (`.xlsx`, `.xls`)
-  - Each worksheet is converted to an HTML table
+- **Excel Spreadsheets** (`.xlsx`, `.xls`, `.xlsm`, `.xlsb`, `.ods`)
+  - Each worksheet is converted to a table
   - Worksheets are separated by H2 headings with the sheet name
   - Preserves cell formatting and data types
 
-- **Word Documents** (`.docx`, `.doc`, `.odt`, `.rtf`)
+- **Word Documents** (`.docx`, `.doc`, `.docm`, `.odt`, `.rtf`)
   - Extracts text content while preserving document structure
   - Maintains headings, paragraphs, lists, and tables
   - Preserves basic formatting and styling
+
+- **PowerPoint Presentations** (`.pptx`, `.ppt`, `.pptm`, `.odp`)
+  - Extracts slide content in reading order
+  - Includes speaker notes
+
+- **EPUB eBooks** (`.epub`)
+  - Extracts chapter content while preserving document structure
+
+- **CSV Files** (`.csv`)
+  - Converted to a table
 
 - **PDF Documents** (`.pdf`)
   - Extracts text content with layout information
   - Preserves document structure including sections and paragraphs
   - Handles both text-based and scanned PDFs (with OCR support)
-  - Supports `mode` option to control parsing strategy: `fast` (text-only), `auto` (text with OCR fallback, default), or `ocr` (force OCR)
+  - Optional per-page markdown and typed layout blocks with bounding boxes
   - Priced at 1 credit per-page. See [Pricing](https://firecrawl.dev/pricing) for details.
-
-### PDF Parsing Modes
-
-Use the `parsers` option to control how PDFs are processed:
-
-| Mode | Description |
-|------|-------------|
-| `auto` | Attempts fast text-based extraction first, falls back to OCR if needed. This is the default. |
-| `fast` | Text-based parsing only (embedded text). Fastest option, but will not extract text from scanned or image-heavy pages. |
-| `ocr` | Forces OCR parsing on every page. Use for scanned documents or when `auto` misclassifies a page. |
-
-```js
-// Object syntax with mode
-parsers: [{ type: "pdf", mode: "ocr", maxPages: 20 }]
-
-// Default (auto mode)
-parsers: [{ type: "pdf" }]
-```
+  - See [PDF options](/features/parse#pdf-options) for the full reference: parsing modes, page caps, per-page markdown, and layout blocks.
 
 ## How to Use Document Parsing
 

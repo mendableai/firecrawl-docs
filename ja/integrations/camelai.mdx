@@ -5,13 +5,24 @@ og:title: "Camel AI | Firecrawl"
 og:description: "Firecrawl は Camel AI と連携し、データローダーとして機能します。"
 ---
 
+<Note>
+  **公式 CAMEL ドキュメント:** [docs.camel-ai.org/key&#95;modules/loaders](https://docs.camel-ai.org/key_modules/loaders)
+
+  Firecrawl は CAMEL ローダーとして提供され、あらゆるサイトをエージェント向けの LLM 対応 Markdown に変換します
+</Note>
+
 <div id="installation">
   ## インストール
 </div>
 
 ```bash
 pip install camel-ai
+```
 
+ローダーが自動的に読み取れるよう、Firecrawl キーを設定します：
+
+```bash
+export FIRECRAWL_API_KEY="fc-your-api-key"
 ```
 
 <div id="usage">
@@ -21,32 +32,43 @@ pip install camel-ai
 Camel AI と Firecrawl を使うことで、ウェブ上のデータを活用するマルチエージェントシステムを迅速に構築できます。
 
 <div id="using-firecrawl-to-gather-an-entire-website">
-  ### Firecrawl でウェブサイト全体を収集する
+  ### Firecrawl を使用して Web サイト全体を収集する
 </div>
 
+`crawl` はジョブの完了後に戻ります。`status` を確認し、`data` から Markdown を読み取ります。
+
 ```python
-mock_app = MockFirecrawlApp.return_value
-firecrawl = Firecrawl(
-    api_key='FC_API_KEY', api_url='https://api.test.com'
-)
-url = 'https://example.com'
-response = [{'markdown': 'Markdown コンテンツ'}]
-mock_app.crawl_url.return_value = respons
-result = firecrawl.markdown_crawl(url)
+from camel.loaders import Firecrawl
+
+firecrawl = Firecrawl()
+
+response = firecrawl.crawl(url="https://www.camel-ai.org/about")
+print(response["status"])  # クロールが完了すると "completed" になる
+
+print(response["data"][0]["markdown"])
 ```
 
 <div id="using-firecrawl-to-gather-a-single-page">
-  ### Firecrawl を使って 1 ページを取得する
+  ### Firecrawl を使って1ページを取得する
 </div>
 
 ```python
-mock_app = MockFirecrawlApp.return_value
-firecrawl = Firecrawl(
-    api_key='test_api_key', api_url='https://api.test.com'
-)
-url = 'https://example.com'
-response = 'Scraped content'
-mock_app.scrape_url.return_value = response
+from camel.loaders import Firecrawl
 
-result = firecrawl.scrape(url)
+firecrawl = Firecrawl()
+
+response = firecrawl.scrape(url="https://www.camel-ai.org/about")
+print(response["markdown"])
 ```
+
+<Tip>
+  `Firecrawl()` は環境変数から `FIRECRAWL_API_KEY` を読み取ります。`api_key=...` を渡すと上書きでき、`api_url=...` を渡すと[セルフホスト](/ja/contributing/self-host)インスタンスを指定できます。
+</Tip>
+
+<div id="resources">
+  ## リソース
+</div>
+
+* [CAMELローダーのドキュメント](https://docs.camel-ai.org/key_modules/loaders)
+* [CAMELとFirecrawlのウォークスルー](https://www.camel-ai.org/blogs/firecrawl)
+* [Firecrawlのスクレイピング](/ja/features/scrape)と[クロール](/ja/features/crawl)のドキュメント

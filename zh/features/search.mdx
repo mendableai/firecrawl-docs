@@ -27,6 +27,7 @@ import SearchTimeCURL from "/snippets/zh/v2/search/time/curl.mdx";
 import SearchTimeCLI from "/snippets/zh/v2/search/time/cli.mdx";
 import SearchResponse from "/snippets/zh/v2/search/base/output.mdx";
 import PlaygroundCTA from "/snippets/zh/shared/playground-cta-search.mdx";
+import GovLegalFeedbackCTA from "/snippets/zh/gov-legal-feedback-cta.mdx";
 
 进行网页搜索，并通过一次 API 调用从每个结果中获取干净、结构化的内容。将查询传递给 `/search`，Firecrawl 会返回标题、描述和 URL。添加 `scrapeOptions` 后，还可为每个结果获取完整页面的 markdown、HTML、links 或 screenshots。
 
@@ -57,6 +58,8 @@ import PlaygroundCTA from "/snippets/zh/shared/playground-cta-search.mdx";
 
   <InstallationCLI />
 </CodeGroup>
+
+<GovLegalFeedbackCTA src="docs-search" />
 
 <div id="basic-usage">
   ### 基本用法
@@ -110,48 +113,62 @@ SDKs 会直接返回数据对象。cURL 会返回完整的负载。
 你可以在一次调用中请求多个 source (例如 `sources: ["web", "news"]`) 。此时，`limit` 参数会**按每种 source 类型分别生效**——因此，当 `limit: 5` 且 `sources: ["web", "news"]` 时，会分别返回最多 5 条 web 结果和最多 5 条 news 结果 (合计最多 10 条) 。如果你需要为不同的 source 设置不同的参数 (例如不同的 `limit` 值或不同的 `scrapeOptions`) ，请分别发起独立的调用。
 
 <div id="search-categories">
-  ## 搜索类别
+  ## 搜索分类
 </div>
 
-使用 `categories` 参数按特定类别过滤搜索结果：
+使用 `categories` 参数按特定分类筛选搜索结果：
 
-* `github`：在 GitHub 的仓库、代码、Issue 和文档中搜索
-* `research`：搜索学术与科研网站 (arXiv、Nature、IEEE、PubMed 等)
-* `pdf`：搜索 PDF 文档
+* `research`：将网页搜索限制在学术与科研类网站 (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov 等) 。自 2026-11-16 起，该分类将改为搜索[研究索引](/zh/features/research)并返回 paper 记录，请参见下方警告
+* `pdf`：搜索 PDF
+* `developer`：搜索[Developer Index](/zh/features/developer)——来自公共代码仓库的 issue、已合并的 pull request 和 README，以及精选的文档站点
 
-<div id="github-category-search">
-  ### GitHub 分类搜索
-</div>
+<Warning>
+  **`research` 分类将于 2026-11-16 发生变更。** 它将搜索[研究索引](/zh/features/research) (PubMed、bioRxiv、medRxiv、arXiv) ，而不再将网页结果限定在 14 个学术网站内。结果将从 `data.web` 移至 `data.research`，并以 paper 记录形式返回：`paperId`、`primaryId`、`ids`、`title`、`abstract`、`score`。在此之前，凡是使用该分类的响应都会附带一个 `warnings` 条目。
 
-在 GitHub 仓库中进行定向搜索：
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v2/search \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer fc-YOUR_API_KEY" \
-  -d '{
-    "query": "Python 网页抓取",
-    "categories": ["github"],
-    "limit": 10
-  }'
-```
+  如果你需要 paper 记录，请在该日期前更新解析逻辑，或现在就改用 [`GET /search/research/papers`](/zh/api-reference/endpoint/research-search-papers)。如果你需要来自学术网站的网页，请改用 [`includeDomains`](#domain-filters)。
+</Warning>
 
 <div id="research-category-search">
   ### 研究类别搜索
 </div>
 
-搜索学术与科研类网站：
+将网页搜索限定在学术与科研类网站。搜索结果会返回托管在这些域名上的网页——包括落地页、摘要页和出版商页面——并附带常规 snippet：
 
 ```bash cURL
 curl -X POST https://api.firecrawl.dev/v2/search \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer fc-YOUR_API_KEY" \
   -d '{
-    "query": "机器学习 transformer",
-    "categories": ["研究"],
+    "query": "machine learning transformers",
+    "categories": ["research"],
     "limit": 10
   }'
 ```
+
+若要搜索论文本身，而非托管论文的网站，请使用 [研究索引](/zh/features/research)。它可搜索 PubMed、bioRxiv、medrxiv 和 arXiv 中的论文摘要，并读取论文中的相关段落：
+
+```bash cURL
+curl -s "https://api.firecrawl.dev/v2/search/research/papers?query=CRISPR%20base%20editing%20off-target%20effects&k=10"
+```
+
+<div id="developer-category-search">
+  ### 开发者类别搜索
+</div>
+
+在[Developer Index](/zh/features/developer)中搜索与编程问题相关的一手资料：
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v2/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "how do I configure retries",
+    "categories": ["developer"],
+    "limit": 10
+  }'
+```
+
+开发者结果会在标准`web`组中返回，每项均带有`category: "developer"`；`developer`类别无法与其他类别组合使用。如需获取包含匹配段落的排序结果，或使用仓库和文档来源筛选条件，请使用[开发者搜索端点](/zh/features/developer#search-the-developer-index)。
 
 <div id="mixed-category-search">
   ### 混合类别搜索
@@ -165,7 +182,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   -H "Authorization: Bearer fc-YOUR_API_KEY" \
   -d '{
     "query": "神经网络",
-    "categories": ["github", "research"],
+    "categories": ["research", "pdf"],
     "limit": 15
   }'
 ```
@@ -211,7 +228,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
 ```
 
 <div id="category-response-format">
-  ### 分类响应格式
+  ### 类别响应格式
 </div>
 
 每条搜索结果都包含一个 `category` 字段，用于标示其来源：
@@ -222,16 +239,16 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   "data": {
     "web": [
       {
-        "url": "https://github.com/example/neural-network",
-        "title": "神经网络实现",
-        "description": "基于 PyTorch 的神经网络实现",
-        "category": "github"
-      },
-      {
         "url": "https://arxiv.org/abs/2024.12345",
         "title": "神经网络架构的最新进展",
-        "description": "探讨神经网络改进的研究论文"
+        "description": "探讨神经网络改进的研究论文",
         "category": "research"
+      },
+      {
+        "url": "https://example.com/neural-networks.pdf",
+        "title": "神经网络综述",
+        "description": "神经网络架构综述",
+        "category": "pdf"
       }
     ]
   }
@@ -533,6 +550,22 @@ Firecrawl 的搜索 API 支持通过多种参数自定义搜索：
   ```
 </CodeGroup>
 
+<div id="safe-search">
+  ### 安全搜索
+</div>
+
+将 `safe` 设为 `true`，即可过滤搜索结果中的露骨内容 (SafeSearch) 。省略此参数时，返回的结果不会经过筛选，与之前完全一致。
+
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v2/search \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -d '{
+    "query": "firecrawl",
+    "safe": true
+  }'
+```
+
 <div id="zero-data-retention-zdr">
   ## 零数据保留 (ZDR)
 </div>
@@ -587,7 +620,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   ### 结合使用 Search ZDR 和 Scrape ZDR
 </div>
 
-如果你使用的是带内容抓取 (`scrapeOptions`) 的 search，则 `enterprise` 参数适用于搜索部分，而 `scrapeOptions` 中的 `zeroDataRetention` 则适用于抓取部分。要让这两部分都实现完整的 ZDR，请同时设置这两个参数：
+如果你使用的是带内容抓取 (`scrapeOptions`) 的 search，`enterprise` 参数会自动为所有生成的抓取结果启用 ZDR。以下示例请求会对流程中的搜索和抓取部分均启用 ZDR：
 
 ```bash cURL
 curl -X POST https://api.firecrawl.dev/v2/search \
@@ -598,8 +631,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
     "limit": 5,
     "enterprise": ["zdr"],
     "scrapeOptions": {
-      "formats": ["markdown"],
-      "zeroDataRetention": true
+      "formats": ["markdown"]
     }
   }'
 ```
@@ -608,17 +640,15 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   ## 成本影响
 </div>
 
-每次搜索的费用为每 10 条搜索结果消耗 2 个额度，并向上取整 (1–10 条结果 = 2 个额度，11–20 条 = 4 个额度，依此类推) 。如果启用了抓取选项，每个搜索结果会按标准抓取费用计费：
+每次搜索的成本为每 10 条搜索结果消耗 2 个额度，并向上取整 (1–10 条结果 = 2 个额度，11–20 条 = 4 个额度，依此类推) 。如果启用了抓取选项，每个搜索结果会按标准抓取成本计费：
 
 * **Basic scrape**：每个网页 1 个额度
 * **PDF parsing**：每个 PDF 页面 1 个额度
-* **Enhanced proxy mode**：每个网页额外 4 个额度
 * **JSON mode**：每个网页额外 4 个额度
 
 为控制成本，可以：
 
 * 如果不需要 PDF 解析，将其设置为 `parsers: []`
-* 在可能的情况下使用 `proxy: "basic"` 而不是 `"enhanced"`，或者将其设置为 `"auto"`
 * 使用 `limit` 参数限制搜索结果数量
 
 <div id="advanced-scraping-options">
@@ -628,6 +658,20 @@ curl -X POST https://api.firecrawl.dev/v2/search \
 有关抓取选项的更多详细信息，请参阅 [Scrape 功能文档](https://docs.firecrawl.dev/features/scrape)。除 FIRE-1 Agent 和 Change-Tracking 功能外，其余均受此搜索端点支持。
 
 > 你是需要 Firecrawl API 密钥的 AI 代理吗？请参见 [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) 了解自动化入门说明。
+
+<div id="measured-performance">
+  ## 性能实测
+</div>
+
+已有独立评测方对 Firecrawl Search 与其他搜索 API 进行了基准测试。下列数据直接摘自各评测方在所示日期公布的结果。
+
+| 指标                 | 数值                                        | 来源                                                                             | 日期                                   | n / ±                                                                                             |
+| ------------------ | ----------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| 代理得分 (平均相关性 × 质量)  | 14.58，8 项中排名第 2 (平均相关性 4.30/5，质量 3.39/5)  | [AIMultiple — Agentic Search Benchmark](https://aimultiple.com/agentic-search) | 2025 年 12 月 (来源更新于 2026 年 5 月 25 日)  | 95% 置信区间 13.12–15.98，n=100 条取自 AIMultiple 自身自然搜索流量的 AI/LLM 领域查询 (10,000 次自助重采样) ；该来源指出结果无法推广至其他领域 |
+
+<Note>
+  以上均为第三方测量结果，各自采用不同的测试框架、任务集与方法论——彼此之间以及与 Firecrawl 自身的基准测试均不具备直接可比性。点估计排名为 8 项中第 2；配对自助检验显示，与 Brave、Exa 或 Parallel Search Pro 相比并无统计学上的显著差距。Firecrawl 自有的第一方基准测试页面 (包括开源的 Developer Index 评测) 请见 [firecrawl.dev/benchmarks](https://www.firecrawl.dev/benchmarks)。
+</Note>
 
 <div id="search-feedback">
   ## 搜索反馈

@@ -372,6 +372,8 @@ API または SDK を使って agent-browser コマンドを実行するには�
 
   ```bash agent-browser
   # セッションのレスポンスで返される cdpUrl を使用
+  CDP_URL=YOUR_SESSION_CDP_URL
+
   agent-browser open https://example.com --cdp "$CDP_URL"
   agent-browser snapshot --cdp "$CDP_URL"
   ```
@@ -401,7 +403,7 @@ API または SDK を使って agent-browser コマンドを実行するには�
   ## 料金
 </div>
 
-料金体系はシンプルで、ブラウザの稼働1分あたり2クレジットです。無料プランでは最大5時間まで無料で利用できます。
+料金はセッションの操作方法によって異なります。セッションで `prompt` を使用する場合はブラウザ 1 分あたり 7 credits、使用しない場合 (Playwright の `code` のみ) はブラウザ 1 分あたり 2 credits です。課金はブラウザ利用時間 1 分単位で、最低利用時間は 1 分です。
 
 <div id="rate-limits">
   ## レート制限

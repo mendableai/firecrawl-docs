@@ -52,14 +52,12 @@ Firecrawl 会根据你指定或自动检测到的位置，自动选择最合适�
   ## 代理类型
 </div>
 
-Firecrawl 支持三种类型的代理：
+<Warning>
+  `proxy` 参数已弃用。建议使用默认值 `auto`，让 Firecrawl 为你处理代理选择。
+</Warning>
 
-* **basic**：用于抓取大多数网站的代理。速度快，通常能正常工作。
-* **enhanced**：用于抓取复杂网站并同时保持隐私的增强型代理。速度较慢，但在某些网站上更可靠。[进一步了解 Enhanced 模式 →](/zh/features/enhanced-mode)
-* **auto**：如果 basic 代理抓取失败，Firecrawl 会自动使用 enhanced 代理重试抓取。如果使用 enhanced 重试成功，该次抓取将收取 5 点额度；如果第一次使用 basic 抓取就成功，则只会收取正常费用。
-
-***
-
-> **注意：** 关于使用 enhanced 代理的详细信息，包括额度成本和重试策略，请参阅[Enhanced 模式文档](/zh/features/enhanced-mode)。
+* **basic**：用于抓取大多数网站的代理。
+* **enhanced**：用于抓取复杂网站并同时保持隐私的增强型代理。[进一步了解 Enhanced 模式 →](/zh/features/enhanced-mode)
+* **auto**：推荐使用。如果 basic 代理抓取失败，Firecrawl 会自动使用 enhanced 代理重试抓取。
 
 > 你是需要 Firecrawl API 密钥的 AI 代理吗？请参阅 [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) 了解自动化接入说明。

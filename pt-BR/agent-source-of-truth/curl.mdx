@@ -119,7 +119,7 @@ Respostas bem-sucedidas incluem `success`, `data`, `warning` opcional, `id` e `c
   * Tipo: array de objetos de categoria tipados
   * Use quando: você quiser filtrar os resultados por categoria.
   * Formatos de objeto confirmados:
-    * `{ "type": "github" }`
+    * `{ "type": "developer" }`
     * `{ "type": "research" }`
     * `{ "type": "pdf" }`
 
@@ -151,30 +151,30 @@ Respostas bem-sucedidas incluem `success`, `data`, `warning` opcional, `id` e `c
   * Tipo: array de strings (`"anon"` ou `"zdr"` por item)
   * Use quando: você precisar de controles de busca empresariais.
   * Valores:
-    * `"zdr"`: zero data retention de ponta a ponta
-    * `"anon"`: zero data retention anônimo
+    * `"zdr"`: retenção zero de dados de ponta a ponta
+    * `"anon"`: retenção zero de dados anônima
 
 * `scrapeOptions`
   * Tipo: objeto
-  * Use quando: você quiser fazer scraping de cada resultado de busca (consulte os parâmetros de Scrape para os campos).
+  * Use quando: você quiser fazer scraping de cada resultado de busca (consulte os parâmetros de scraping para os campos).
 
 <div id="scrape">
   ## Scraping
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### Por que usar
 </div>
 
 Use o scraping quando você já tiver uma URL e quiser conteúdo estruturado em um ou mais formatos.
 
-<div id="endpoint">
+<div id="endpoint-2">
   ### Endpoint
 </div>
 
 `POST /scrape`
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Exemplo simples
 </div>
 
@@ -188,7 +188,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
   }'
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Exemplo complexo
 </div>
 
@@ -226,7 +226,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
   }'
 ```
 
-<div id="response">
+<div id="response-2">
   ### Resposta
 </div>
 
@@ -238,7 +238,7 @@ As respostas bem-sucedidas incluem `success` e `data`. Campos comuns de `data` (
 * `warning`: aviso opcional de extração ou formatação
 * `changeTracking`: presente quando o formato `changeTracking` é solicitado
 
-<div id="parameters">
+<div id="parameters-2">
   ### Parâmetros
 </div>
 
@@ -360,19 +360,19 @@ As respostas bem-sucedidas incluem `success` e `data`. Campos comuns de `data` (
   ## Interagir
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### Por que usar
 </div>
 
 Use o recurso de interagir quando uma página exigir ações no navegador ou execução de código após o início de um scraping.
 
-<div id="endpoint">
+<div id="endpoint-3">
   ### Endpoint
 </div>
 
 `POST /scrape/{jobId}/interact`
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Exemplo simples
 </div>
 
@@ -385,7 +385,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   }'
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Exemplo complexo
 </div>
 
@@ -400,7 +400,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   }'
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### Parâmetros
 </div>
 
@@ -421,13 +421,15 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   * Tipo: integer (segundos; mínimo 1, máximo 300, padrão: 30)
   * Use quando: precisar de um tempo limite de execução.
 
-<div id="response">
+<div id="response-3">
   ### Resposta
 </div>
 
 As respostas bem-sucedidas incluem `success` e campos de execução, como `stdout`, `result` (alias de `stdout`), `stderr`, `exitCode`, `killed` e `error` (pode ser nulo).
 
-### DELETE /scrape/{jobId}/interact
+<div id="delete-scrapeinteract">
+  ### DELETE /scrape/{jobId}/interact
+</div>
 
 <div id="example">
   ### Exemplo
@@ -444,19 +446,21 @@ Sem corpo JSON. Uma resposta bem-sucedida inclui `success`.
   ## Perguntar (Depuração com agente)
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-4">
   ### Por que usar
 </div>
 
 Use o ask quando uma chamada da API Firecrawl falhar ou retornar resultados inesperados. O agente de suporte por IA diagnostica o problema, propõe parâmetros de correção e, opcionalmente, valida a correção na API em produção. Latência típica: 15-30 segundos.
 
-<div id="endpoint">
+<div id="endpoint-4">
   ### Endpoint
 </div>
 
 `POST /support/ask`
 
-### Exemplo básico
+<div id="simple-example-4">
+  ### Exemplo básico
+</div>
 
 ```bash
 curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
@@ -467,7 +471,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
   }'
 ```
 
-<div id="complex-example">
+<div id="complex-example-4">
   ### Exemplo complexo
 </div>
 
@@ -482,7 +486,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
   }'
 ```
 
-<div id="response">
+<div id="response-4">
   ### Resposta
 </div>
 
@@ -495,7 +499,7 @@ As respostas bem-sucedidas incluem `requestId`, `answer`, `confidence`, `fixPara
 * `validation.result`: `success`, `failure` ou `skipped`.
 * `feedback`: presente quando o agente fica preso; `null` em caso de sucesso.
 
-<div id="parameters">
+<div id="parameters-4">
   ### Parâmetros
 </div>
 
@@ -515,19 +519,19 @@ As respostas bem-sucedidas incluem `requestId`, `answer`, `confidence`, `fixPara
   ## Busca na documentação
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-5">
   ### Por que usar
 </div>
 
 Use `docs-search` para pesquisar na documentação do Firecrawl.
 
-<div id="endpoint">
+<div id="endpoint-5">
   ### Endpoint
 </div>
 
 `POST /support/docs-search`
 
-<div id="example">
+<div id="example-2">
   ### Exemplo
 </div>
 
@@ -540,7 +544,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/docs-search" \
   }'
 ```
 
-<div id="parameters">
+<div id="parameters-5">
   ### Parâmetros
 </div>
 

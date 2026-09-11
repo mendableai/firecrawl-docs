@@ -1,0 +1,201 @@
+---
+title: "验证内容新鲜度与对象存活状态"
+description: "了解内容新鲜度与页面所反映的状态是否仍然有效之间的区别"
+og:title: "验证内容新鲜度与对象存活状态 | Firecrawl"
+og:description: "了解内容新鲜度与页面所反映的状态是否仍然有效之间的区别"
+sidebarTitle: "验证内容新鲜度与对象存活状态"
+---
+
+成功的 抓取 会告诉你页面返回了什么，但不能证明**页面所反映的状态**仍然有效。这是两个不同的问题。
+
+* **新鲜度** → 内容是最新的，还是复用了 Firecrawl 缓存中的副本？由 `maxAge` 控制。
+* **存活状态** → 底层对象是否仍然存在且处于活跃状态？你的应用需要根据现有证据自行判断。
+
+本指南将解释两者的区别，介绍 `maxAge` 的权衡，并为对新鲜度敏感的操作提供检查清单和示例。
+
+<div id="quick-comparison">
+  ## 快速对比
+</div>
+
+|                              | 新鲜度                                                                      | 存活状态                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| **问题**                       | 此内容是最新的，还是从缓存中复用的？                                                       | 页面描述的对象是否仍处于活跃状态？                                                       |
+| **由您控制**                     | `maxAge` 请求参数                                                            | 您自己的业务逻辑                                                                |
+| **Firecrawl 提供的信息**          | `metadata.cacheState` (`"hit"` 或 `"miss"`) ，以及缓存命中时的 `metadata.cachedAt` | 不直接提供任何信息——仅有页面证据                                                       |
+| **可获得的证据**                   | 响应是否来自缓存                                                                 | 页面内容、`metadata.statusCode`，以及 `metadata.url` 与 `metadata.sourceURL` 的对比 |
+| **包含内容的 HTTP 200 能否作为判断依据？** | **不能**——200 并不能说明内容的新旧程度                                                 | **不能**——200 仅描述页面响应                                                     |
+
+***
+
+<div id="the-freshness-tradeoff-maxage">
+  ## 新鲜度与性能的权衡 (`maxAge`)
+</div>
+
+Firecrawl 会缓存之前抓取的页面，并在有可用副本时返回较新的副本，从而降低延迟。`maxAge` 指 Firecrawl 可以返回缓存副本而非重新获取页面时，该缓存副本允许的最大时长 (以毫秒为单位) 。
+
+* **省略 `maxAge`**：Firecrawl 可能会返回最近缓存的内容。默认时间窗口为 2 天；对于某些网站，Firecrawl 可能会使用不同的时间窗口。
+* **设置 `maxAge: 0`**：Firecrawl 会跳过该请求的缓存并重新获取页面。这会以延迟和可靠性为代价，换取更新鲜的结果。
+
+默认应启用缓存。仅在内容过期会导致错误或高成本决策的读取操作中承担 `maxAge: 0` 带来的延迟成本——它不会改变该页面消耗的额度。
+
+当 Firecrawl 针对该请求考虑使用缓存时，会返回 `metadata.cacheState`，因此在调整 `maxAge` 时可用它进行检查。`maxAge: 0` 的响应中不会包含它，因为该请求会完全跳过缓存。
+
+有关缓存机制、常见的 `maxAge` 值、缓存命中匹配规则，以及会自动绕过缓存的请求选项，请参见[快速抓取](/zh/features/fast-scraping)。
+
+<div id="where-maxage-applies">
+  ### `maxAge` 的适用位置
+</div>
+
+| 端点                        | 行为                                                                  |
+| ------------------------- | ------------------------------------------------------------------- |
+| `/scrape`                 | 请求正文中的 `maxAge` 会生效                                                 |
+| `/crawl`, `/batch/scrape` | `scrapeOptions` 中的 `maxAge` 会生效                                     |
+| `/search`                 | Search 会对其抓取的页面采用自身的时效窗口，因此 `scrapeOptions` 中的 `maxAge` 不会生效        |
+| `/parse`                  | `/parse` 始终处理你提供的文件，既不返回也不存储缓存内容，因此 `maxAge` 和 `storeInCache` 均不起作用 |
+
+如果需要重新获取通过 `/search` 找到的页面，请使用 `/scrape` 并设置 `maxAge: 0`，再次抓取该 URL。
+
+***
+
+<div id="freshness-is-not-liveness">
+  ## 新鲜度不代表存活状态
+</div>
+
+即使设置了 `maxAge: 0`，结果也只能反映页面在该次获取时返回的内容。页面可能返回包含内容的 HTTP 200，但其实际状态可能已过时、不可用或发生其他变化。
+
+因此，状态码和内容是否存在都无法判断页面是否处于存活状态。存活状态需要由你的应用根据特定来源的证据来判断。
+
+***
+
+<div id="freshness-sensitive-action-checklist">
+  ## 对新鲜度敏感的操作的检查清单
+</div>
+
+在执行依赖当前状态的操作前，应将抓取输出视为**证据，而非确证**：
+
+1. **最终获取时使用 `maxAge: 0`**，确保响应不会从缓存中返回。
+2. **不要将 HTTP 200 或非空内容视为资源仍处于存活状态的证明。**
+3. **检查渲染后的内容和重定向迹象。** `metadata.sourceURL` 是你请求的 URL；`metadata.url` 是引擎在响应中报告的 URL。两者不同时，可能表示发生了重定向，跳转至其他资源。两者相同也不能证明未发生重定向。
+4. **尽可能优先使用来源专用的 API 或标识符**——它们通常会提供渲染页面中看不到的明确状态。
+5. **将无法判定的证据视为 `unknown`**，不要假定其仍处于活跃状态；应在执行成本高昂或不可逆的步骤前停止。
+
+***
+
+<div id="worked-example-collect-current-page-evidence">
+  ## 实战示例：收集当前页面证据
+</div>
+
+跳过缓存，然后收集渲染后的内容和响应元数据，供应用程序根据自身的验证规则进行判断。抓取只提供证据；不会决定特定领域的状态。
+
+<CodeGroup>
+  ```python Python
+  import os
+
+  from firecrawl import Firecrawl
+
+  firecrawl = Firecrawl(api_key=os.environ["FIRECRAWL_API_KEY"])
+
+  def collect_current_page_evidence(url: str) -> dict:
+      # max_age=0 会跳过此请求的 Firecrawl 缓存。
+      doc = firecrawl.scrape(url, formats=["markdown"], max_age=0)
+
+      metadata = doc.metadata
+      requested_url = (metadata.source_url if metadata else None) or url
+      response_url = metadata.url if metadata else None
+
+      return {
+          "markdown": doc.markdown or "",
+          "status_code": metadata.status_code if metadata else None,
+          "requested_url": requested_url,
+          "response_url": response_url,
+          "possible_redirect": bool(response_url and response_url != requested_url),
+      }
+
+
+  evidence = collect_current_page_evidence("https://example.com/resource")
+  # 在此执行针对来源的内容、状态、API 或标识符检查。
+  # 如果无法得出结论，请将状态保持为 unknown。
+  ```
+
+  ```js Node
+  import { Firecrawl } from "firecrawl";
+
+  const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWL_API_KEY });
+
+  async function collectCurrentPageEvidence(url) {
+    // maxAge: 0 会跳过此请求的 Firecrawl 缓存。
+    const doc = await firecrawl.scrape(url, {
+      formats: ["markdown"],
+      maxAge: 0,
+    });
+
+    const requestedURL = doc.metadata?.sourceURL ?? url;
+    const responseURL = doc.metadata?.url;
+
+    return {
+      markdown: doc.markdown ?? "",
+      statusCode: doc.metadata?.statusCode,
+      requestedURL,
+      responseURL,
+      possibleRedirect: Boolean(responseURL && responseURL !== requestedURL),
+    };
+  }
+
+  const evidence = await collectCurrentPageEvidence("https://example.com/resource");
+  // 在此执行针对来源的内容、状态、API 或标识符检查。
+  // 如果无法得出结论，请将状态保持为 unknown。
+  ```
+
+  ```bash cURL
+  curl -s -X POST "https://api.firecrawl.dev/v2/scrape" \
+    -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "url": "https://example.com/resource",
+      "formats": ["markdown"],
+      "maxAge": 0
+    }'
+  ```
+</CodeGroup>
+
+关键分界点在于收集完成后：Firecrawl 提供页面证据；应用程序根据针对来源的规则来解读这些证据。如果这些规则无法得出结论，请将状态保持为 `unknown`。
+
+***
+
+<div id="recommendations-by-scenario">
+  ## 按场景的建议
+</div>
+
+| 场景                        | 推荐做法                             |
+| ------------------------- | -------------------------------- |
+| 阅读产品文案、文档或参考内容            | 省略 `maxAge`，使用默认缓存时长             |
+| 按计划刷新的 Dashboard 或报告      | 将非零 `maxAge` 设为与刷新间隔相匹配          |
+| 在依赖当前状态的操作前进行最终检查         | 使用 `maxAge: 0` 跳过缓存，并执行上述检查清单    |
+| 确认某个对象是否确实仍处于活动状态         | 优先使用来源的 API 或状态字段；仅将抓取作为证据 |
+| 渲染后的页面存在歧义 (200，但没有肯定信号)  | 将其归类为 `unknown`；在执行不可逆步骤前停止      |
+
+***
+
+<div id="key-takeaways">
+  ## 要点总结
+</div>
+
+1. **新鲜度和存活状态是两个不同的问题。** `maxAge` 控制新鲜度；存活状态则需你根据证据自行判断。
+
+2. **HTTP 200 和内容并不能证明所表示的状态仍是最新状态。**
+
+3. **对于对新鲜度敏感的操作，请使用 `maxAge: 0` 并遵循检查清单。** 检查渲染后的内容，对比 `metadata.url` 与 `metadata.sourceURL` 以查找可能的重定向迹象，并优先使用特定来源的 API。
+
+4. **将无法定论的证据视为 `unknown`。** 仅凭一次 抓取 绝不能将对象标记为 `active`；在执行成本高昂或不可逆的步骤前停止。
+
+5. **Firecrawl 没有存活状态字段。** 你的应用应根据自身领域的定义作出判断。
+
+***
+
+<div id="further-reading">
+  ## 延伸阅读
+</div>
+
+* [抓取](/zh/features/scrape)
+* [快速抓取](/zh/features/fast-scraping)
+* [选择数据提取器](/zh/developer-guides/usage-guides/choosing-the-data-extractor)

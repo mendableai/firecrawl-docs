@@ -105,7 +105,6 @@ if (result.changeTracking.json) {
 }
 ```
 
-
 <div id="git-diff-results-example">
   ### Git Diff 比对结果示例：
 </div>
@@ -119,7 +118,6 @@ if (result.changeTracking.json) {
 ...
 ```
 
-
 <div id="json-comparison-results-example">
   ### JSON 比较结果示例：
 </div>
@@ -132,7 +130,6 @@ if (result.changeTracking.json) {
   }
 }
 ```
-
 
 <div id="typescript-interface">
   ### TypeScript 接口
@@ -182,12 +179,11 @@ interface ScrapeParams {
 }
 ```
 
-
 <div id="python-sdk">
   ## Python SDK
 </div>
 
-<div id="basic-usage">
+<div id="basic-usage-2">
   ### 基本用法
 </div>
 
@@ -207,7 +203,7 @@ print("可见性：", result.changeTracking.visibility)  # 'visible' 或 'hidden
 print("上次抓取时间：", result.changeTracking.previousScrapeAt)  # 上次抓取的 ISO 时间戳
 ```
 
-<div id="advanced-options">
+<div id="advanced-options-2">
   ### 高级选项
 </div>
 
@@ -241,7 +237,6 @@ if 'json' in result.changeTracking:
     print(result.changeTracking.json.title.current)  # Current title
 ```
 
-
 <div id="python-data-model">
   ### Python 数据模型
 </div>
@@ -259,7 +254,6 @@ class ChangeTrackingData(pydantic.BaseModel):
     diff: Optional[Dict[str, Any]] = None
     json: Optional[Any] = None
 ```
-
 
 <div id="change-tracking-modes">
   ## 变更追踪模式
@@ -309,7 +303,6 @@ changeTracking 功能支持两种模式：
 ```
 
 要使用 JSON 模式，你需要提供一个 schema，用于定义要提取和比较的字段。
-
 
 <div id="important-facts">
   ## 重要提示
@@ -375,7 +368,6 @@ changeTracking 功能支持两种模式：
 }
 ```
 
-
 <div id="tracking-product-price-changes">
   ### 监控产品价格变动
 </div>
@@ -421,7 +413,6 @@ if result.changeTracking.changeStatus == 'changed':
     print(f"价格从 {result.changeTracking.json.price.previous} 变更为 {result.changeTracking.json.price.current}")
 ```
 
-
 <div id="monitoring-content-changes-with-git-diff">
   ### 使用 git diff 监控内容变更
 </div>
@@ -454,7 +445,6 @@ if result.changeTracking.changeStatus == 'changed':
     print('内容变更:')
     print(result.changeTracking.diff.text)
 ```
-
 
 <div id="billing">
   ## 计费

@@ -1,7 +1,15 @@
 ---
-title: "Introdução"
-description: "Referência da API do Firecrawl"
+title: 'Introdução'
+description: 'Referência da API do Firecrawl'
+canonical: "https://docs.firecrawl.dev/api-reference/introduction"
 ---
+
+<Warning>
+  **Esta página documenta a API v0, descontinuada em 1º de abril de 2025.** Ela é mantida para
+  referência histórica e não descreve como o Firecrawl funciona atualmente. Documentação
+  atual: [API Reference](/pt-BR/api-reference/introduction). Para migrar uma integração v0 existente, consulte
+  [Migrando da v0](/pt-BR/migrating-from-v0).
+</Warning>
 
 <div id="base-url">
   ## URL base
@@ -17,7 +25,7 @@ https://api.firecrawl.dev
   ## Autenticação
 </div>
 
-Para autenticar, é necessário incluir o cabeçalho Authorization. O cabeçalho deve conter `Bearer fc_123456789`, em que `fc_123456789` representa sua chave de API.
+Para a autenticação, é necessário incluir um header Authorization. O header deve conter `Bearer fc_123456789`, onde `fc_123456789` representa sua API Key.
 
 ```bash
 Authorization: Bearer fc_123456789
@@ -26,22 +34,22 @@ Authorization: Bearer fc_123456789
 ​
 
 <div id="response-codes">
-  ## Códigos de resposta
+  ## Response codes
 </div>
 
-Firecrawl utiliza códigos de status HTTP convencionais para indicar o resultado das suas requisições.
+O Firecrawl utiliza códigos de HTTP status convencionais para indicar o resultado das suas requests.
 
-Normalmente, códigos de status HTTP 2xx indicam sucesso, códigos 4xx representam falhas relacionadas ao usuário e códigos 5xx sinalizam problemas de infraestrutura.
+Em geral, códigos de HTTP status 2xx indicam sucesso, códigos 4xx representam falhas relacionadas ao usuário e códigos 5xx sinalizam problemas de infraestrutura.
 
-Status | Descrição
---- | ---
-200 | A requisição foi bem-sucedida.
-400 | Verifique se os parâmetros estão corretos.
-401 | A chave de API não foi fornecida.
-402 | Pagamento exigido
-404 | O recurso solicitado não pôde ser localizado.
-429 | O limite de requisições foi excedido.
-5xx | Indica um erro de servidor no Firecrawl.
+| Status | Description                                       |
+| ------ | ------------------------------------------------- |
+| 200    | A request foi bem-sucedida.                       |
+| 400    | Verifique se os parameters estão corretos.        |
+| 401    | A API key não foi fornecida.                      |
+| 402    | Payment required                                  |
+| 404    | Não foi possível localizar o resource solicitado. |
+| 429    | O limite de taxa foi excedido.                    |
+| 5xx    | Indica um erro de server no Firecrawl.            |
 
 Consulte a seção Error Codes para uma explicação detalhada de todos os possíveis erros da API.
 

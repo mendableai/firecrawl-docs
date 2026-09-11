@@ -1,0 +1,6 @@
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v2/parse \
+  -H 'Authorization: Bearer VOTRE_CLÉ_API' \
+  -F 'file=@./report.pdf' \
+  -F 'options={"parsers":[{"type":"pdf","pageMarkers":true}]};type=application/json'
+```

@@ -1,63 +1,47 @@
 ---
 title: "在 Claude 中使用 Firecrawl MCP"
-description: "通过 OAuth 将 Claude 连接到 Firecrawl"
+description: "通过原生连接器将 Firecrawl 添加到 Claude.ai"
 ---
 
-通过远程账户连接器为 Claude 添加 Firecrawl 功能。
+通过原生 Firecrawl 连接器将 Firecrawl 添加到 Claude.ai。无需添加自定义连接器或粘贴服务器 URL。
 
 <Note>
   想找 Claude Code 的设置方法？请参见 [Claude Code
   指南](/zh/quickstarts/claude-code)。
 </Note>
 
-<div id="quick-setup">
-  ## 快速开始
+<div id="add-to-claude">
+  ## 添加到 Claude
 </div>
 
-<div id="1-add-a-custom-connector">
-  ### 1. 添加自定义连接器
+<Card title="添加到 Claude" icon="/images/agent-clients/claude-ai.svg" href="https://claude.ai/directory/connectors/firecrawl" cta="在 Claude 中打开" arrow>
+  在 Claude.ai 中打开 Firecrawl 连接器并完成连接。
+</Card>
+
+1. 在 [Claude.ai 中打开 Firecrawl 连接器](https://claude.ai/directory/connectors/firecrawl)。
+2. 连接 Firecrawl。Claude 在浏览器中打开 Firecrawl 后，登录、选择团队并授权访问。
+3. 在对话中，打开 **+** 菜单，进入 **连接器**，然后启用 Firecrawl。
+
+对于 Team 或 Enterprise 套餐，组织所有者可能需要先允许使用该连接器，成员才能连接。
+
+通过此连接器发出的请求将使用你登录时所选团队的额度和套餐。你可以随时在 [MCP 设置](https://www.firecrawl.dev/app/settings?tab=mcp)中查看或撤销连接。
+
+<div id="try">
+  ## 试用
 </div>
 
-前往 Claude.ai 的 [Settings &gt; 连接器](https://claude.ai/settings/connectors)，然后点击 **Add custom connector**。
+启用 Firecrawl 后，试试：
 
-填写以下连接器信息：
-
-* **URL:** `https://mcp.firecrawl.dev/v2/mcp-oauth`
-* **OAuth Client ID:** 留空
-* **OAuth Client Secret:** 留空
-
-点击 **Add** 以保存连接器。
-
-Claude 会在你的浏览器中打开 Firecrawl。登录后，选择要使用的团队并批准访问权限。你的原始 API 密钥绝不会被放入连接器 URL 中。有关端点协议和其他受支持的模式，请参见[将 MCP 客户端连接到你的账户](/zh/developer-guides/mcp-setup-guides/oauth)。
-
-<div id="2-enable-in-conversation">
-  ### 2. 在对话中启用
-</div>
-
-在任意 Claude.ai 对话中，点击左下角的 **+** 按钮，进入 **连接器**，然后启用 Firecrawl 连接器。
-
-<div id="quick-demo">
-  ## 快速演示
-</div>
-
-启用 Firecrawl 连接器后，试试以下 prompt：
-
-**进行网页搜索：**
-
-```
-Search for the latest Next.js 15 features
+```text
+Search the web for the latest Firecrawl release notes and summarize the sources.
 ```
 
-**抓取网页：**
-
-```
+```text
 Scrape firecrawl.dev and tell me what it does
 ```
 
-**查看文档：**
+<div id="more">
+  ## 更多
+</div>
 
-```
-Find and scrape the Stripe API docs for payment intents
-```
-
-Claude 将自动使用 Firecrawl 的搜索和抓取工具来获取所需信息。
+如需在其他客户端中配置登录，请参见 [For Humans](/zh/mcp-server/oauth)；如需开始使用免密钥模式，请参见 [For Agents](/zh/mcp-server/keyless)。

@@ -1,0 +1,84 @@
+---
+title: エージェント向け
+description: "エージェントはAPIキーなしですぐに利用を開始できます。APIキーを追加すると、より多く利用できます。"
+og:title: 'エージェント向け'
+og:description: "Codex、Claude Code、Cursor、またはその他のエージェントハーネスでFirecrawl MCPをセットアップします。"
+sidebarTitle: 'エージェント向け'
+---
+
+import { McpClientSelector } from "/snippets/shared/agent-first-onboarding.jsx";
+
+<div id="try-keyless">
+  ## キーレスで試す
+</div>
+
+<div id="try-instantly" />
+
+<Visibility for="humans">
+  <McpClientSelector variant="agent" showSeeAll={false} />
+</Visibility>
+
+<Visibility for="agents">
+  キーレスサーバーのURL (Streamable HTTP、認証情報不要) : `https://mcp.firecrawl.dev/v2/mcp`
+
+  * Codex: `codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp`
+  * Claude Code: `claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp`
+  * Cursor または任意のJSON設定対応クライアント: `{"mcpServers": {"firecrawl": {"url": "https://mcp.firecrawl.dev/v2/mcp"}}}`
+  * OpenCode (`opencode.json`) : `{"mcp": {"firecrawl": {"type": "remote", "url": "https://mcp.firecrawl.dev/v2/mcp", "enabled": true}}}`
+
+  ChatGPT と Claude では、代わりにネイティブの Firecrawl コネクタを使用します。詳細は[人間向け](/ja/mcp-server/oauth.md#chatgpt-and-claude)を参照してください。
+</Visibility>
+
+キーレスMCPにはレート制限があり、Search、スクレイピング、解析を利用できます。API キーを追加すると、すべてのツールとより高い制限を利用できます。
+
+<div id="add-an-api-key">
+  ## APIキーを追加する
+</div>
+
+[Firecrawl APIキーを作成](https://www.firecrawl.dev/app/api-keys)し、クライアント設定内の同じエンドポイントにBearerトークンとして追加します。
+
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+<div id="verify-your-connection">
+  ## 接続を確認する
+</div>
+
+クライアントのMCPステータスまたはツール一覧を開き、`firecrawl` が接続されていることを確認します。キーレス接続では `firecrawl_search`、`firecrawl_scrape`、`firecrawl_parse` が表示されます。APIキーを使用する接続では、プラン、デプロイ、チームポリシーに応じて、[すべてのツール機能](/ja/mcp-server/tools)を利用できます。
+
+<div id="try">
+  ## 試す
+</div>
+
+```text
+Firecrawl の最新リリースノートをウェブで検索し、そのソースを要約してください。
+```
+
+Firecrawl ツールが表示されない場合は、MCP 構成を保存した後、クライアントを再起動するか再読み込みしてください。
+
+<div id="more">
+  ## その他
+</div>
+
+<CardGroup cols={2}>
+  <Card title="ツールを選択" icon="wrench" href="/ja/mcp-server/tools">
+    適切な Firecrawl MCP ツールを見つけ、接続方法ごとの利用可否を確認します。
+  </Card>
+
+  <Card title="ローカルで実行" icon="terminal" href="/ja/mcp-server/local">
+    オープンソースのサーバーを stdio または Streamable HTTP 経由で起動します。
+  </Card>
+</CardGroup>
+
+現在のキーレスアクセスの利用可能枠とプランの制限については、[レート制限](/ja/rate-limits#keyless-no-api-key)を参照してください。

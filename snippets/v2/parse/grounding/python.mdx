@@ -1,0 +1,9 @@
+```python Python
+def ground(doc, quote: str):
+    start = doc["markdown"].find(quote)
+    for page in doc["blocks"]:
+        for block in page["items"]:
+            span = block["markdownSpan"]
+            if span and span[0] <= start < span[1]:
+                return page["pageNumber"], block["bbox"]
+```

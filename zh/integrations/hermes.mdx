@@ -1,0 +1,136 @@
+---
+title: "Hermes Agent"
+description: "在 Hermes Agent 中将 Firecrawl 用作默认的网页搜索和提取后端"
+---
+
+<Note>
+  **Hermes 官方文档：**[网页搜索](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-search) · [浏览器](https://hermes-agent.nousresearch.com/docs/user-guide/features/browser)
+
+  Nous Research 开发的 [Hermes Agent](https://hermes-agent.nousresearch.com/) 默认使用 Firecrawl 作为 `web_search` 和 `web_extract` 的后端。
+</Note>
+
+<div id="overview">
+  ## 概述
+</div>
+
+Hermes Agent 是 Nous Research 推出的开源终端和桌面代理。它提供以下网页工具：
+
+| 工具                | 功能                 |
+| ----------------- | ------------------ |
+| **`web_search`**  | 进行网页搜索并返回按相关性排序的结果 |
+| **`web_extract`** | 获取并提取 URL 中的可读内容   |
+
+Firecrawl 是搜索和提取功能的**默认**提供商。您可以设置 `FIRECRAWL_API_KEY`、使用自托管的 `FIRECRAWL_API_URL`，或使用 Nous 工具网关。如果您拥有多个提供商的凭据，可在 `hermes tools` 或 `config.yaml` 中选择 Firecrawl。通过 Firecrawl 云模式实现的浏览器自动化为可选功能。
+
+<div id="quick-start">
+  ## 快速入门
+</div>
+
+1. 前往 [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com/) 安装 Hermes Agent
+2. 添加 Firecrawl 密钥：
+
+```bash
+# ~/.hermes/.env
+FIRECRAWL_API_KEY=fc-your-key-here
+```
+
+在 [firecrawl.dev](https://www.firecrawl.dev/app/api-keys) 获取密钥。
+
+3. 或通过交互式方式配置：
+
+```bash
+hermes tools
+```
+
+选择 **网页搜索和提取** → **Firecrawl**。
+
+4. 验证：
+
+```bash
+hermes setup
+```
+
+<div id="capabilities">
+  ## 功能
+</div>
+
+| 功能          | Hermes 中的支持情况         |
+| ----------- | --------------------- |
+| **搜索**      | 默认使用 `web_search` 后端  |
+| **提取 / 抓取** | 默认使用 `web_extract` 后端 |
+| **浏览器**     | 可选的 Firecrawl 云浏览器提供商 |
+
+<div id="use-firecrawl-for-one-capability-only">
+  ### 仅使用 Firecrawl 的一种能力
+</div>
+
+Hermes 支持分别选择搜索和提取后端，因此你可以将免费搜索后端与 Firecrawl 提取功能搭配使用 (反之亦然) ：
+
+```yaml
+# ~/.hermes/config.yaml
+web:
+  search_backend: "searxng"
+  extract_backend: "firecrawl"
+```
+
+当这些键为空时，两者都会使用 `web.backend`，随后 Hermes 会根据可用凭据自动检测。自动检测时，其他提供商的凭据可能会优先于 Firecrawl；因此，如需确保使用 Firecrawl，请显式设置 `search_backend`、`extract_backend` 或 `web.backend`。
+
+<div id="browser-cloud-mode">
+  ### 浏览器云模式
+</div>
+
+要使用 Firecrawl 实现浏览器自动化：
+
+```bash
+# ~/.hermes/.env
+FIRECRAWL_API_KEY=fc-your-key-here
+```
+
+```bash
+hermes setup tools
+# → 浏览器自动化 → Firecrawl
+```
+
+可选：
+
+```bash
+# 自托管 Firecrawl（不设置则默认使用云端 API）
+FIRECRAWL_API_URL=http://localhost:3002
+
+# 会话 TTL，单位为秒（默认值：300）
+FIRECRAWL_BROWSER_TTL=600
+```
+
+<div id="nous-portal-managed-firecrawl">
+  ## Nous Portal (托管 Firecrawl)
+</div>
+
+订阅付费版 [Nous Portal](https://portal.nousresearch.com/) 后，可通过 Hermes **工具网关**使用托管 Firecrawl 进行网页搜索和提取，无需单独的 Firecrawl 密钥：
+
+```bash
+hermes setup --portal
+```
+
+已安装的版本可通过 `hermes tools` 启用网页工具。
+
+<div id="self-hosted-firecrawl">
+  ## 自托管 Firecrawl
+</div>
+
+```bash
+# ~/.hermes/.env
+FIRECRAWL_API_URL=http://localhost:3002
+```
+
+设置 `FIRECRAWL_API_URL` 后，如果 Firecrawl 服务器已禁用身份验证 (在 Firecrawl 实例上设置 `USE_DB_AUTHENTICATION=false`) ，则无需 API 密钥。
+
+<div id="resources">
+  ## 资源
+</div>
+
+* [Hermes Agent](https://hermes-agent.nousresearch.com/)
+* [Hermes 网页搜索文档 (默认使用 Firecrawl) ](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-search#firecrawl-default)
+* [Hermes 浏览器文档 (Firecrawl 云模式) ](https://hermes-agent.nousresearch.com/docs/user-guide/features/browser#firecrawl-cloud-mode)
+* [Firecrawl 搜索](/zh/features/search)
+* [Firecrawl 抓取](/zh/features/scrape)
+* [Nous Research 模型快速入门](/zh/quickstarts/nous-research) (通过 Hermes 模型调用 API 工具)

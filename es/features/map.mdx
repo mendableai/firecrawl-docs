@@ -137,7 +137,7 @@ Especifica el país y los idiomas preferidos para obtener contenido relevante se
 
 Cuando especificas la configuración de ubicación, Firecrawl usará, si está disponible, un proxy adecuado y emulará la configuración de idioma y zona horaria correspondientes. De forma predeterminada, la ubicación se establece en &quot;US&quot; si no se especifica.
 
-<div id="usage">
+<div id="usage-2">
   ### Uso
 </div>
 
@@ -161,5 +161,7 @@ Para más detalles sobre las ubicaciones compatibles, consulta la [documentació
 </div>
 
 Este punto de conexión prioriza la velocidad, por lo que es posible que no capture todos los enlaces del sitio web. Se basa principalmente en el sitemap del sitio web, complementado con datos de rastreo en caché y resultados de motores de búsqueda. Para obtener una lista de URL más completa y actualizada, considera usar el punto de conexión [/crawl](/es/features/crawl) en su lugar.
+
+Si necesitas un descubrimiento recursivo más exhaustivo, con registros auditables de resultados y errores en lugar de una aproximación rápida, usa [/crawl](/es/features/crawl), que descubre páginas mediante el recorrido recursivo de enlaces además del sitemap e informa de lo que devolvió y de lo que no pudo obtener; consulta [Ejecución y registro de resultados](/es/features/crawl#execution-and-result-accounting). Para obtener los enlaces de una página concreta, solicita el [formato `links`](/es/features/scrape#scrape-formats) desde [/scrape](/es/features/scrape).
 
 > ¿Eres un agente de IA que necesita una clave de API de Firecrawl? Consulta [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para obtener instrucciones de incorporación automatizada.

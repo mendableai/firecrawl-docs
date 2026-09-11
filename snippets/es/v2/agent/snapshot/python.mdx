@@ -1,0 +1,10 @@
+```python Python
+from firecrawl import Firecrawl
+
+app = Firecrawl(api_key="fc-YOUR_API_KEY")
+
+# Los eventos de traza artifact.updated hacen referencia al contenido de la instantánea mediante snapshotId
+snapshot = app.get_agent_snapshot("JOB_ID", "SNAPSHOT_ID")
+
+print(snapshot.snapshot)
+```

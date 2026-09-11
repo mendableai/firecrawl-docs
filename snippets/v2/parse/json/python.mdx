@@ -1,0 +1,21 @@
+```python Python
+from firecrawl import Firecrawl
+from firecrawl.v2.types import ScrapeOptions
+from pydantic import BaseModel
+
+firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
+
+class Invoice(BaseModel):
+    vendor: str
+    total: float
+
+doc = firecrawl.parse(
+    "./invoice.pdf",
+    options=ScrapeOptions(formats=[{
+        "type": "json",
+        "schema": Invoice.model_json_schema(),
+    }]),
+)
+
+print(doc.json)
+```

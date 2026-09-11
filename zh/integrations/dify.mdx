@@ -1,64 +1,263 @@
 ---
 title: "Dify"
-description: "了解如何在 Dify 上使用 Firecrawl"
-og:title: "Dify | Firecrawl"
-og:description: "了解如何在 Dify 上使用 Firecrawl"
+description: "适用于 Dify 工作流的官方 Firecrawl 插件，支持知识库网站同步"
 ---
 
-<div id="sync-data-from-websites-for-dify-workflows">
-  ## 为 Dify 工作流从网站同步数据
+<Note>
+  **Dify 官方插件：** [marketplace.dify.ai/plugins/langgenius/firecrawl](https://marketplace.dify.ai/plugins/langgenius/firecrawl)
+
+  Dify 团队官方插件 • 安装量超过 170,000 次 • 支持 Chatflow 和代理应用 • 免费使用
+</Note>
+
+<div id="dify-integration-overview">
+  ## Dify 集成概览
 </div>
 
-Firecrawl 可在 [Dify（LLM 工作流构建器）](https://cloud.dify.ai/) 中使用。本文介绍如何从网页抓取数据，将其解析为 Markdown，并通过其 Firecrawl 集成将其导入 Dify 知识库。
+Dify 是一个开源的 LLM 应用开发平台。通过官方 Firecrawl 插件，您可以直接在 AI 工作流中抓取和爬取网页。
+
+<CardGroup cols={2}>
+  <Card title="Chatflow 和工作流应用" icon="diagram-project">
+    使用 Firecrawl 节点构建用于提取数据的可视化流水线
+  </Card>
+
+  <Card title="代理应用" icon="robot">
+    让 AI 代理能够按需抓取实时网页数据
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-tools-in-dify">
+  ## Dify 中的 Firecrawl 工具
+</div>
+
+该插件提供七个 actions。
+
+<AccordionGroup>
+  <Accordion title="搜索" icon="magnifying-glass">
+    进行网页搜索，并可选择抓取返回的结果，一步获取最新的结果元数据或完整页面内容。
+
+    **使用场景：** 研究助手、发现竞争对手、基于实时来源为答案提供依据。
+  </Accordion>
+
+  <Accordion title="抓取" icon="file-code">
+    将任意 URL 转换为干净的结构化数据，将原始 HTML 转化为可直接使用的洞察。
+
+    **使用场景：** 提取产品数据、抓取文章内容、通过 JSON 模式获取结构化数据。
+  </Accordion>
+
+  <Accordion title="爬取" icon="spider">
+    递归爬取网站及其子域名，收集大量内容。
+
+    **使用场景：** 全站内容提取、文档抓取、多页面数据收集。
+  </Accordion>
+
+  <Accordion title="映射" icon="sitemap">
+    生成网站中所有 URL 的完整映射。
+
+    **使用场景：** 网站结构分析、SEO 审核、为批量抓取发现 URL。
+  </Accordion>
+
+  <Accordion title="爬取任务" icon="list-check">
+    根据任务 ID 获取抓取结果，或取消正在执行的任务。
+
+    **使用场景：** 监控长时间运行的爬取任务、管理异步抓取工作流、按需取消操作。
+  </Accordion>
+
+  <Accordion title="创建监控" icon="bell">
+    创建定时监控，按固定周期重新检查目标。
+
+    **使用场景：** 保持已采集数据的时效性、监控变更日志、跟踪竞争对手。
+  </Accordion>
+
+  <Accordion title="监控检查" icon="clock-rotate-left">
+    获取监控详情及检查结果，仅对发生变化的页面采取操作。
+
+    **使用场景：** 增量更新知识库、变更告警、触发下游流程。
+  </Accordion>
+</AccordionGroup>
+
+<div id="getting-started">
+  ## 快速开始
+</div>
+
+<Steps>
+  <Step title="安装 Firecrawl 插件">
+    前往 [Dify 插件市场](https://marketplace.dify.ai/plugins/langgenius/firecrawl)，安装 Firecrawl 工具
+  </Step>
+
+  <Step title="获取 Firecrawl API 密钥">
+    前往 [Firecrawl API 密钥](https://www.firecrawl.dev/app/api-keys) 页面，创建新的 API 密钥
+  </Step>
+
+  <Step title="在 Dify 中授权">
+    进入 **插件 &gt; Firecrawl &gt; 待授权**，输入您的 API 密钥
+  </Step>
+
+  <Step title="添加到工作流">
+    将 Firecrawl 工具拖入您的 Chatflow、工作流或代理应用
+  </Step>
+
+  <Step title="配置并测试">
+    设置参数并测试工作流
+  </Step>
+</Steps>
+
+<div id="usage-patterns">
+  ## 使用模式
+</div>
+
+<Tabs>
+  <Tab title="Chatflow 应用">
+    **可视化流水线集成**
+
+    1. 将 Firecrawl Node 添加到流水线
+    2. 选择操作 (Map、Crawl、Scrape) 
+    3. 定义输入变量
+    4. 依次执行流水线
+
+    **示例流程：**
+
+    ```
+    用户输入 → Firecrawl（Scrape）→ LLM 处理 → 响应
+    ```
+  </Tab>
+
+  <Tab title="工作流应用">
+    **自动化数据处理**
+
+    构建包含以下内容的多步骤工作流：
+
+    * 定时抓取
+    * 数据转换
+    * 数据库存储
+    * 通知
+
+    **示例流程：**
+
+    ```
+    定时触发器 → Firecrawl（Crawl）→ 数据处理 → 存储
+    ```
+  </Tab>
+
+  <Tab title="代理应用">
+    **AI 驱动的网页访问**
+
+    为代理提供实时网页抓取能力：
+
+    1. 将 Firecrawl 工具添加到代理
+    2. 代理自主决定何时抓取
+    3. LLM 分析提取的内容
+    4. 代理提供有据可依的响应
+
+    &#42;&#42;使用场景：&#42;&#42;可引用实时文档的客户支持代理
+  </Tab>
+</Tabs>
+
+<div id="common-use-cases">
+  ## 常见用例
+</div>
+
+<CardGroup cols={2}>
+  <Card title="具备实时数据的 AI 聊天机器人" icon="messages">
+    构建由 RAG 驱动、可抓取并引用实时网站内容的聊天机器人
+  </Card>
+
+  <Card title="内容分析代理" icon="brain">
+    可通过抓取和分析多个来源来研究主题的代理
+  </Card>
+
+  <Card title="竞争对手监控" icon="binoculars">
+    跟踪竞争对手网站并在发生变更时发出告警的自动化工作流
+  </Card>
+
+  <Card title="数据丰富管道" icon="database">
+    从网站提取并丰富数据，再导入结构化数据库
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-actions">
+  ## Firecrawl actions
+</div>
+
+| 工具       | 描述            | 最适用场景         |
+| -------- | ------------- | ------------- |
+| **搜索**   | 可选返回页面内容的网页搜索 | 基于实时来源生成答案    |
+| **抓取**   | 单页数据提取        | 快速获取内容        |
+| **爬取**   | 多页面递归爬取       | 全站内容提取        |
+| **映射**   | URL 发现和网站映射   | SEO 分析、URL 列表 |
+| **爬取任务** | 异步任务管理        | 长时间运行的操作      |
+| **创建监控** | 定期重新检查目标      | 保持已采集数据最新     |
+| **监控检查** | 监控详情和检查结果     | 仅处理发生变化的页面    |
+
+<div id="best-practices">
+  ## 最佳实践
+</div>
+
+<CardGroup cols={2}>
+  <Card title="代理应用" icon="robot">
+    * 让代理自行决定何时抓取
+    * 使用自然语言指令
+    * 在 LLM 设置中启用工具调用
+    * 大规模抓取时监控 token 使用量
+  </Card>
+
+  <Card title="工作流应用" icon="diagram-project">
+    * 对大型网站，先使用 Map，再使用 Crawl
+    * 设置合适的爬取限制
+    * 添加错误处理节点
+    * 先用小型数据集进行测试
+  </Card>
+</CardGroup>
+
+<div id="dify-vs-other-platforms">
+  ## Dify 与其他平台对比
+</div>
+
+| 功能        | Dify        | Make   | Zapier | n8n     |
+| --------- | ----------- | ------ | ------ | ------- |
+| **类型**    | LLM 应用平台    | 工作流自动化 | 工作流自动化 | 工作流自动化  |
+| **最适用场景** | AI 代理和聊天机器人 | 可视化工作流 | 快速自动化  | 开发者自主控制 |
+| **定价**    | 开源 + 云服务    | 按操作次数  | 按任务次数  | 按执行次数   |
+| **AI 原生** | 是           | 部分支持   | 部分支持   | 部分支持    |
+| **自托管**   | 是           | 否      | 否      | 是       |
+
+<Tip>
+  **专业提示：** Dify 擅长构建需要代理动态访问网页的 AI 原生应用，非常适合需要实时数据的聊天机器人、研究助手和 AI 工具。
+</Tip>
+
+<div id="sync-websites-into-the-dify-knowledge-base">
+  ## 将网站同步到 Dify 知识库
+</div>
+
+Firecrawl 还可以将网页抓取为 Markdown，并通过 [Dify Cloud](https://cloud.dify.ai/) 将其导入 Dify 知识库。
 
 <div id="configuring-firecrawl">
   ### 配置 Firecrawl
 </div>
 
-首先，需要在设置页面的 Data Source 部分配置 Firecrawl 凭据。
+打开头像菜单，前往 **DataSource** 页面，并配置 Firecrawl 凭据。
 
-<img
-  className="block"
-  src="/images/fc_dify_config.avif"
-  alt="配置 Firecrawl 密钥"
-/>
+<img className="block" src="/images/fc_dify_config.avif" alt="配置 Firecrawl 密钥" />
 
-登录你的 Firecrawl 账户，获取 API Key，然后在 Dify 中输入并保存。
+登录你的 Firecrawl 账户，获取 API 密钥，然后在 Dify 中输入并保存。
 
-<img
-  className="block"
-  src="/images/fc_dify_savekey.png"
-  alt="保存 Firecrawl 密钥"
-/>
+<img className="block" src="/images/fc_dify_savekey.png" alt="保存 Firecrawl 密钥" />
 
-<div id="scrape-target-webpage">
+<div id="scrape-the-target-webpage">
   ### 抓取目标网页
 </div>
 
-现在进入有趣的部分：抓取与爬取。在知识库创建页面中，选择“Sync from website”，并输入要抓取的 URL。
+在知识库创建页面中，选择“Sync from website”，选择 Firecrawl 作为提供商，并输入要抓取的 URL。
 
-<img
-  className="block"
-  src="/images/fc_dify_webscrape.webp"
-  alt="Scraping setup"
-/>
+<img className="block" src="/images/fc_dify_webscrape.webp" alt="Scraping setup" />
 
-可配置选项包括：是否爬取子页面、页面爬取上限、页面抓取最大深度、排除路径、仅包含路径，以及内容提取范围。完成配置后，点击“Run”以预览解析后的页面。
+配置选项包括：是否爬取子页面、页面爬取上限、页面抓取最大深度、排除路径、仅包含路径，以及内容提取范围。完成配置后，点击“Run”以预览解析后的页面。
 
-<img
-  className="block"
-  src="/images/fc_dify_fcoptions.webp"
-  alt="Set Firecrawl configuration"
-/>
+<img className="block" src="/images/fc_dify_fcoptions.webp" alt="Set Firecrawl configuration" />
 
 <div id="review-import-results">
   ### 查看导入结果
 </div>
 
-将网页解析后的文本导入后，它会被存储到知识库文档中。查看导入结果，然后点击 Add URL 继续导入新的网页。
+导入的页面文本会存储在知识库文档中。查看结果，然后点击 Add URL 导入更多页面。
 
-<img
-  className="block"
-  src="/images/fc_dify_results.webp"
-  alt="查看 Firecrawl 抓取结果"
-/>
+<img className="block" src="/images/fc_dify_results.webp" alt="查看 Firecrawl 抓取结果" />

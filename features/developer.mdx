@@ -1,33 +1,89 @@
 ---
-title: "Developer Index (Beta)"
-description: "Search GitHub issues, merged pull requests, repository READMEs, and curated documentation sites. Private beta."
+title: "Developer Index"
+description: "Search issues, merged pull requests, repository READMEs, and curated documentation sites"
+og:title: "Developer Index | Firecrawl"
+og:description: "Use Firecrawl's developer index to answer coding questions from issues, merged pull requests, READMEs, and documentation."
+icon: "code"
 ---
 
-<Note>
-  **Private beta.** The developer index is in beta test. This page is unlisted (not linked from the navigation, the Search feature page, or the MCP tools page) so it can be shared for reference while the feature is in beta. Result types, ranking signals, and filters may still change.
-</Note>
-
-Firecrawl Developer is an index built for coding agents. It covers GitHub issues, merged pull requests, repository READMEs, and curated documentation sites, so an agent can answer a question about code behavior, a library or framework, an API contract, an error message, or a known bug from primary sources rather than from a general web page.
+Firecrawl Developer is an index built for coding agents. It covers issues, merged pull requests, and READMEs from public code repositories, alongside curated documentation sites, so an agent can answer a question about code behavior, a library or framework, an API contract, an error message, or a known bug from primary sources rather than from a general web page.
 
 - Find the issue or pull request where a bug was reported and fixed
 - Read the passages of a README or a documentation page that answer one specific question
 - Trace an API contract back to the pull request that changed it
 - Recover the discussion behind an error message
 
-## Two ways in
+<Note>
+To give your agent access to the Developer Index, we strongly recommend using our [CLI](/sdks/cli) or [MCP](/mcp-server), combined with our [**dedicated developer skill**](https://github.com/firecrawl/cli/tree/main/skills/firecrawl-developer-index), which you can install with:
+```bash
+npx -y firecrawl-cli@latest setup developer-index
+```
+</Note>
 
-| Surface | Use it when |
+## Endpoints
+
+| Task | Endpoint |
 | --- | --- |
-| The `developer` category on [`/search`](/features/search) | You want developer results alongside ordinary web results in a single call |
-| The developer search endpoint | You want ranked developer results only, with matched passages and the index filters |
+| Search the developer index | [`GET` or `POST /search/developer`](/api-reference/endpoint/developer-search) |
+| Add developer results to a web search | [`POST /search`](/api-reference/endpoint/search) with `categories: ["developer"]` |
 
-Throughout this page, `categories` is the request parameter and always takes an array. A single value in it, such as `developer`, is a category.
+## Search the developer index
 
-## Developer category on `/search`
+Send a natural-language question and get back ranked developer results with the passages that matched. This is the path to reach for when you want developer sources only, with the result type, repository, and documentation source filters available.
 
-Pass `developer` in the `categories` array on `/search`. The API returns developer results in a `developer` group next to `web`, and both SDKs expose that group as `.developer`.
+A developer search costs 2 credits per 10 results, rounded up (1–10 results = 2 credits, 11–20 = 4 credits, and so on). No API key is needed to get started; add one for higher rate limits.
 
-`/search` accepts keyless requests, so the examples below run without an API key. Add one for higher rate limits. See [Rate limits](/rate-limits#keyless-no-api-key) for the current keyless allowance.
+<CodeGroup>
+
+```bash cURL
+# No API key needed to get started; add -H "Authorization: Bearer $FIRECRAWL_API_KEY" for higher rate limits:
+curl -s "https://api.firecrawl.dev/v2/search/developer?query=how%20do%20I%20configure%20retries&k=10"
+```
+
+```bash CLI
+firecrawl developer "how do I configure retries" --limit 10
+```
+
+</CodeGroup>
+
+`POST` is available on the same path, and is the easier form when you want to pass array filters as JSON:
+
+```bash cURL
+# No API key needed to get started; add -H "Authorization: Bearer $FIRECRAWL_API_KEY" for higher rate limits:
+curl -X POST https://api.firecrawl.dev/v2/search/developer \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "how do I configure retries",
+    "k": 10,
+    "types": ["issue", "pull_request"]
+  }'
+```
+
+Each result carries a stable `id` such as `issue:owner/repo#123`, a `url`, and its matched `passages` in markdown, so tables and code blocks survive. The artifact kind is encoded in the `id` prefix: `doc:`, `issue:`, `pull_request:`, or `readme:`. `title` is frequently absent on `doc` results, where the source page carries no usable title, so fall back to `url` rather than assuming the field is present.
+
+When you scope a search with `sources` or `repos`, the response echoes them back with an `indexed` flag per entry, so you can distinguish an id that is not in the index from a query that simply found nothing. See the [developer search reference](/api-reference/endpoint/developer-search) for the echo shape.
+
+Optional filters narrow the search:
+
+- `k` sets how many results come back, defaulting to 10, and `passages` how many matched passages each one carries
+- `types` picks which of `doc`, `issue`, `pull_request`, and `readme` to search
+- `repos` scopes the repository half of the index, and `sources` scopes the documentation half
+- `skills` set to `only` limits the search to indexed agent-skill files
+- `language`, `topic`, `license`, `min_stars`, `max_stars`, `archived`, and `fork` filter on repository attributes, such as `language=Rust`, `topic=async`, or `license=MIT`
+
+Those seven filters describe a code repository, so sending one without a `sources` scope returns no `doc` results. Read [how the repository filters scope a search](/api-reference/endpoint/developer-search#how-the-repository-filters-scope-a-search) before you send one.
+
+See the [developer search reference](/api-reference/endpoint/developer-search) for every filter's type and bounds, how `repos` and `sources` scope a search, and the full response schema.
+
+<Note>
+  The Python and Node SDKs reach the Developer Index through the `developer` category shown below. They do not expose a dedicated method for this endpoint, so call it over HTTP, through the [CLI](/sdks/cli), or through [MCP](/mcp-server).
+</Note>
+
+## Add developer results to a web search
+
+Pass `developer` as the only entry in the `categories` array on `/search`. The response returns developer results in the standard `web` group, each tagged `category: "developer"`. The `developer` category cannot be combined with other categories.
+
+No API key is needed to get started — `/search` accepts keyless requests, and the `developer` category comes with it, subject to the [keyless allowance](/rate-limits#keyless-no-api-key). Send a key for higher rate limits.
 
 <CodeGroup>
 
@@ -42,20 +98,21 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   }'
 ```
 
+```bash CLI
+firecrawl search "how do I configure retries" --categories developer --limit 10
+```
+
 ```python Python
 from firecrawl import Firecrawl
 
-firecrawl = Firecrawl(
-  # No API key needed to get started; add one for higher rate limits:
-  # api_key="fc-YOUR-API-KEY",
-)
+firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
 
 result = firecrawl.search(
     "how do I configure retries",
     categories=["developer"],
     limit=10,
 )
-for item in result.developer or []:
+for item in result.web or []:
     print(item.url, item.title)
 ```
 
@@ -71,181 +128,17 @@ const result = await firecrawl.search("how do I configure retries", {
   categories: ["developer"],
   limit: 10,
 });
-for (const item of result.developer ?? []) {
+for (const item of result.web ?? []) {
   console.log(item.url, item.title);
 }
 ```
 
 </CodeGroup>
 
-Developer results in this group carry `url`, `title`, and `description`, the same shape as a web result.
+Developer results carry `url`, `title`, `description`, and `position`, the same shape as a web result, plus `category: "developer"`. SDK users read them from `result.web`.
 
-```json
-{
-  "success": true,
-  "data": {
-    "web": [
-      {
-        "url": "https://example.com/blog/retry-strategies",
-        "title": "Retry strategies for HTTP clients",
-        "description": "An overview of backoff and retry patterns"
-      }
-    ],
-    "developer": [
-      {
-        "url": "https://github.com/firecrawl/firecrawl/issues/1234",
-        "title": "Retries are not applied to 429 responses",
-        "description": "Reported behavior and the fix that landed"
-      }
-    ]
-  }
-}
-```
+This surface returns the web result shape, not the ranked developer shape. For the matched passages and the index filters, use the [developer search endpoint](#search-the-developer-index).
 
 <Note>
-  **SDK users:** developer results arrive in their own group, not in `.web`. Read them with `result.developer`.
+The hosted [MCP server](/mcp-server) exposes both surfaces, and neither writes anything. See [MCP tools](/mcp-server/tools) for `firecrawl_developer_search`, for developer results through `firecrawl_search`, and for which of the two the keyless tool surface carries.
 </Note>
-
-## Developer search endpoint
-
-| Task | Endpoint |
-| --- | --- |
-| Search the developer index | `GET` or `POST /v2/search/developer/search` |
-
-The canonical path is `/v2/search/developer/search`, and it accepts requests without an API key so you can try it before signing up. `/v2/developer/search` serves the same search and always requires a key. A developer search bills as one search.
-
-<CodeGroup>
-
-```bash cURL
-# No API key needed to get started; add -H "Authorization: Bearer $FIRECRAWL_API_KEY" for higher rate limits:
-curl -s "https://api.firecrawl.dev/v2/search/developer/search?query=how%20do%20I%20configure%20retries&k=10"
-```
-
-```bash cURL (POST)
-# No API key needed to get started; add -H "Authorization: Bearer $FIRECRAWL_API_KEY" for higher rate limits:
-curl -X POST https://api.firecrawl.dev/v2/search/developer/search \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "how do I configure retries",
-    "k": 10,
-    "types": ["issue", "pull_request"]
-  }'
-```
-
-</CodeGroup>
-
-<Note>
-  The Python and Node SDKs reach the developer index through the `developer` category shown above. They do not yet expose a dedicated method for this endpoint, so call it over HTTP for now.
-</Note>
-
-### Filters
-
-All filters are optional.
-
-| Filter | Meaning |
-| --- | --- |
-| `k` | Number of ranked results to return. Defaults to 20, maximum 100 |
-| `types` | Result kinds to search. Any of `doc`, `issue`, `pull_request`, `readme`. Defaults to all four |
-| `repos` | Repository slugs to scope to, such as `firecrawl/firecrawl` |
-| `sources` | Documentation source ids to scope to, at most 20. See below |
-| `passages` | Matched passages to return per result. Defaults to 1, maximum 5 |
-| `language` | Repository language |
-| `topic` | Repository topic |
-| `license` | Repository license |
-| `min_stars` | Lower bound on repository stars |
-| `max_stars` | Upper bound on repository stars |
-| `archived` | Include or exclude archived repositories |
-| `fork` | Include or exclude forks |
-
-Repeatable filters accept either form on `GET`: a repeated query parameter such as `types=issue&types=pull_request`, or one comma separated value such as `types=issue,pull_request`. On `POST`, pass an array in the JSON body.
-
-### How `repos` and `sources` scope a search
-
-The index has two halves, and these two filters scope them independently:
-
-- `repos` scopes the GitHub half, meaning the `issue`, `pull_request`, and `readme` types
-- `sources` scopes the documentation half, meaning the `doc` type
-- Passing both combines the two halves rather than intersecting them, so you get matching results from either
-
-Because each filter only applies to one half, a filter that cannot match any requested type is rejected rather than silently returning nothing:
-
-- `repos` with no GitHub type in `types` returns `400` with `repos cannot match any requested type; add github types or drop repos`
-- `sources` with no `doc` in `types` returns `400` with `sources cannot match any requested type; add doc or drop sources`
-
-### Which values `sources` accepts
-
-`sources` is not a fixed enum. It takes documentation source ids, each a nonempty string of at most 512 bytes, and at most 20 per request. Which ids exist depends on which documentation sites are currently enrolled in the index, so the set changes as sites are added.
-
-To confirm an id resolves, pass it and read the `sources` array the response adds. It appears only when you sent `sources`, and reports each id exactly as you requested it along with whether it is indexed:
-
-```json
-{
-  "success": true,
-  "results": [],
-  "sources": [
-    { "source": "some-docs-site", "indexed": true },
-    { "source": "not-enrolled", "indexed": false }
-  ]
-}
-```
-
-`indexed: true` means the source has a published generation, so documentation evidence from it may appear. `indexed: false` means nothing from that id can match, which distinguishes an unenrolled source from a query that simply found nothing.
-
-`repos` echoes back the same way, as a `repos` array reporting `indexed` plus a per type breakdown of `issue`, `pullRequest`, and `readme`.
-
-### Response
-
-```json
-{
-  "success": true,
-  "results": [
-    {
-      "id": "issue:firecrawl/firecrawl#1234",
-      "type": "issue",
-      "url": "https://github.com/firecrawl/firecrawl/issues/1234",
-      "title": "Retries are not applied to 429 responses",
-      "passages": [
-        {
-          "text": "The client treats 429 as a terminal status, so the backoff never runs."
-        }
-      ]
-    }
-  ],
-  "coverage": {
-    "doc": "ok",
-    "issue": "ok",
-    "pull_request": "ok",
-    "readme": "ok"
-  },
-  "reranked": true
-}
-```
-
-- `id` is a stable result id, such as `issue:owner/repo#123`
-- `type` is one of `doc`, `issue`, `pull_request`, or `readme`
-- `passages` holds the matched passages in markdown, so tables and code blocks survive
-- `coverage` reports index health per result type, one of `ok`, `degraded`, `unavailable`, or `skipped`
-- `reranked` reports whether the ranked list went through the reranking stage
-
-Check `coverage` when a result type you expected is missing. A `degraded` or `unavailable` status means the gap came from the index rather than from the query.
-
-## Use it from MCP
-
-The [MCP server](/mcp-server) exposes both surfaces. Neither writes anything.
-
-| Tool | Purpose |
-| --- | --- |
-| `firecrawl_search` with `categories: ["developer"]` | Developer results alongside web results |
-| `firecrawl_developer_search` | Ranked developer results with matched passages |
-
-```json
-{
-  "name": "firecrawl_developer_search",
-  "arguments": {
-    "query": "how do I configure retries",
-    "k": 10
-  }
-}
-```
-
-`firecrawl_developer_search` takes `query` and an optional `k` only, and returns each hit as a markdown block with its id, type, url, title, and matched passages. Use the endpoint directly when you need the repository and result type filters.

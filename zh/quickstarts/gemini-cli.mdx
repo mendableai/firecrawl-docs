@@ -4,92 +4,43 @@ description: "为 Google Gemini CLI 添加 Firecrawl 的网页抓取与搜索功
 sidebarTitle: "Gemini CLI"
 ---
 
-通过 MCP 为 [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) 添加 Firecrawl 的搜索、抓取、爬取和浏览器工具。
+通过远程托管的 MCP 服务器为 [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) 添加 Firecrawl 的免密钥 Search、Scrape 和 Parse 工具。
 
 <div id="quick-setup">
-  ## 快速开始
+  ## 快速设置
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. 获取 API 密钥
-</div>
-
-前往 [firecrawl.dev/app](https://www.firecrawl.dev/app) 注册，并复制你的 API 密钥。
-
-<div id="2-add-firecrawl-to-gemini-cli">
-  ### 2. 将 Firecrawl 添加到 Gemini CLI
-</div>
-
-Gemini CLI 会从 `~/.gemini/settings.json` (全局) 或项目中的 `.gemini/settings.json` 读取 MCP 配置。添加以下内容：
+将以下内容添加到 `~/.gemini/settings.json` 或项目的 `.gemini/settings.json` 中：
 
 ```json
 {
   "mcpServers": {
     "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
+      "httpUrl": "https://mcp.firecrawl.dev/v2/mcp"
     }
   }
 }
 ```
 
-将 `fc-YOUR-API-KEY` 替换为你的 Firecrawl API 密钥。
+重启 Gemini CLI，运行 `/mcp list`，确认 `firecrawl_search`、`firecrawl_scrape` 和 `firecrawl_parse` 是否可用。
 
-<div id="3-launch-gemini-cli">
-  ### 3. 启动 Gemini CLI
+免密钥访问的限额由使用同一公共 IP 的用户共享。通过 [For Humans](/zh/mcp-server/oauth) 从交互式客户端登录，或为无人值守使用[添加 API 密钥](/zh/mcp-server/keyless#add-an-api-key)。
+
+<div id="try-it">
+  ## 试用
 </div>
 
-```bash
-gemini
+```text
+Use Firecrawl to search the web for "Gemini context window" and summarize the sources.
 ```
 
-确认服务器已启动：
-
-```
-/mcp list
-```
-
-你应该能看到 `firecrawl` 及其工具。
-
-<div id="quick-demo">
-  ## 快速演示
-</div>
-
-```
-Use firecrawl to search the web for "Gemini 2.5 context window" and summarize the top 5 results.
-```
-
-```
+```text
 Scrape https://ai.google.dev/gemini-api/docs and outline the sections.
 ```
-
-```
-Crawl https://example.com and extract the product names from /products.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## 远程托管 URL (无需 Node.js)
-</div>
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "url": "https://mcp.firecrawl.dev/v2/mcp"
-    }
-  }
-}
-```
-
-此配置使用免密钥 Firecrawl 工具集。对于账户关联或无人值守的设置，请参阅[托管 MCP 连接模式](/zh/developer-guides/mcp-setup-guides/oauth)；API 密钥应保存在 Authorization 请求头或安全密钥存储中，切勿放入 URL。
 
 <div id="troubleshooting">
   ## 故障排查
 </div>
 
-* **工具未显示** — 编辑 `settings.json` 后，请重启 Gemini CLI；MCP 服务器仅在启动时加载。
-* **`spawn npx ENOENT`** — 请安装 Node.js 18+，或使用远程托管 URL。
-* **触发速率限制** — 请前往 [firecrawl.dev/pricing](https://www.firecrawl.dev/pricing) 升级你的 Firecrawl 套餐。
+* **工具未显示：**编辑 `settings.json` 后，请重启 Gemini CLI；MCP 服务器在启动时加载。
+* **Crawl 或其他工具缺失：**免密钥仅提供 Search、Scrape 和 Parse。请通过 OAuth 或 API 密钥连接，以使用更广泛的工具集。

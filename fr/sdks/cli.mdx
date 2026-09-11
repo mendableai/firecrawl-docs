@@ -1,6 +1,6 @@
 ---
-title: "Skills + CLI"
-description: "Les skills Firecrawl permettent simplement aux agents IA comme Claude Code, Antigravity et OpenCode d’utiliser Firecrawl via la CLI."
+title: "CLI"
+description: "Les skills Firecrawl permettent simplement aux agents IA comme Codex, Claude Code, Cursor et OpenCode d’utiliser Firecrawl via la CLI."
 og:title: "CLI | Firecrawl"
 og:description: "Les skills Firecrawl permettent simplement aux agents IA d’utiliser Firecrawl via la CLI. Les agents IA peuvent obtenir des données web grâce à une interface plus efficace et plus économe en contexte"
 ---
@@ -24,26 +24,26 @@ import AgentBasic from "/snippets/fr/v2/cli/agent/basic.mdx";
 import AgentOptions from "/snippets/fr/v2/cli/agent/options.mdx";
 import InteractCLI from "/snippets/fr/v2/interact/quickstart/cli.mdx";
 
-Recherchez, scrapez, interagissez, lancez des crawls, cartographiez et exécutez des jobs d’agent directement depuis le terminal. Le CLI Firecrawl fonctionne seul ou avec des skills que des agents IA de développement comme Claude Code, Antigravity et OpenCode peuvent découvrir et utiliser automatiquement.
+Recherchez, scrapez, interagissez, lancez des crawls, cartographiez et exécutez des tâches d’agent directement depuis le terminal. Le CLI Firecrawl fonctionne seul ou avec des skills que des agents IA de codage comme Codex, Claude Code, Cursor et OpenCode peuvent découvrir et utiliser automatiquement.
 
 <div id="installation">
   ## Installation
 </div>
 
-Si vous utilisez un agent IA comme Claude Code, vous pouvez installer les skills Firecrawl ci-dessous et l’agent les configurera pour vous.
+Si vous utilisez un agent IA comme Codex, Claude Code, Cursor ou OpenCode, vous pouvez installer les skills Firecrawl ci-dessous et l’agent les configurera pour vous.
 
 ```bash
 npx -y firecrawl-cli@latest init --all --browser
 ```
 
-* `--all` installe tous les segments de skills Firecrawl (CLI, build, workflows) sur tous les agents de codage IA détectés
+* `--all` ignore la sélection d’agent et initialise tous les agents détectés
 * `--browser` ouvre automatiquement le navigateur pour l’authentification Firecrawl
 
 <Note>
   Après avoir installé les skills, redémarrez votre agent pour qu’il les détecte.
 </Note>
 
-Vous pouvez également installer manuellement la CLI Firecrawl au niveau global avec npm :
+Vous pouvez également installer manuellement la CLI Firecrawl au niveau global avec npm :
 
 <InstallationCLI />
 
@@ -75,15 +75,23 @@ Avant d’utiliser la CLI, vous devez vous authentifier avec votre clé API Fire
 
 <AuthLogout />
 
-<div id="self-hosted-local-development">
-  ### Auto-hébergé / Développement local
+<div id="connect-the-cli-to-self-hosted-firecrawl">
+  ### Connecter la CLI à Firecrawl auto-hébergé
 </div>
 
-Pour les instances Firecrawl auto-hébergées ou le développement local, utilisez l’option `--api-url` :
+Commencez par réussir un scrape en suivant le [guide d’auto-hébergement](/fr/contributing/self-host). Pointez ensuite la CLI vers cette API avec `--api-url` ou `FIRECRAWL_API_URL` :
 
 <AuthSelfHosted />
 
-Lorsque vous utilisez une URL d’API personnalisée (toute URL différente de `https://api.firecrawl.dev`), l’authentification par clé d’API est automatiquement contournée, ce qui vous permet d’utiliser des instances locales sans clé d’API.
+Lorsque vous utilisez une URL d’API personnalisée au lieu de `https://api.firecrawl.dev`, la CLI ignore l’authentification par clé API de Firecrawl Cloud. Cela correspond au démarrage rapide sur réseau de confiance, où `USE_DB_AUTHENTICATION=false`.
+
+<Warning>
+  Conservez une API non authentifiée sur un réseau de confiance. Si vous ajoutez un proxy
+  d’authentification ou une autre couche de contrôle d’accès, vérifiez que la CLI peut envoyer les
+  identifiants requis par cette couche avant de vous appuyer sur cette méthode.
+</Warning>
+
+La CLI ne peut appeler que les fonctionnalités activées dans votre déploiement. Consultez la [prise en charge des fonctionnalités auto-hébergées](/fr/contributing/self-host#self-hosted-feature-support) avant d’utiliser des commandes réservées au Cloud ou dépendantes d’un fournisseur.
 
 <div id="check-status">
   ### Vérifier l&#39;état
@@ -186,7 +194,7 @@ Recherchez sur le Web et, si besoin, extrayez le contenu des résultats.
 | ---------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `--limit <number>`           | Nombre maximal de résultats (par défaut : 5, max : 100)                                               |
 | `--sources <sources>`        | Sources à interroger : `web`, `images`, `news` (séparées par des virgules)                            |
-| `--categories <categories>`  | Filtrer par catégorie : `github`, `research`, `pdf` (séparées par des virgules)                       |
+| `--categories <categories>`  | Filtrer par catégorie : `research`, `pdf`, `developer` (séparées par des virgules)                    |
 | `--tbs <value>`              | Filtre temporel : `qdr:h` (heure), `qdr:d` (jour), `qdr:w` (semaine), `qdr:m` (mois), `qdr:y` (année) |
 | `--location <location>`      | Ciblage géographique (p. ex. &quot;Berlin,Germany&quot;)                                              |
 | `--country <code>`           | Code de pays ISO (par défaut : US)                                                                    |
@@ -198,6 +206,28 @@ Recherchez sur le Web et, si besoin, extrayez le contenu des résultats.
 | `--json`                     | Résultat au format JSON                                                                               |
 | `--output <path>`            | Enregistrer le résultat dans un fichier                                                               |
 | `--pretty`                   | Affichage JSON formaté                                                                                |
+
+***
+
+<div id="developer">
+  ### Développeur
+</div>
+
+Effectuez des recherches dans le [Developer Index](/fr/features/developer) — tickets, pull requests fusionnées et fichiers README issus de dépôts de code publics, ainsi que sites de documentation sélectionnés.
+
+```bash CLI
+firecrawl developer "how do I configure retries" --limit 10
+```
+
+**Options disponibles :**
+
+| Option             | Description                                                                            |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| `--limit <number>` | Nombre de résultats à renvoyer (par défaut : 10, max. : 100)                           |
+| `--skills-only`    | Rechercher uniquement les fichiers de compétences d’agent indexés (par défaut : false) |
+| `--json`           | Afficher au format JSON compact                                                        |
+| `--output <path>`  | Enregistrer la sortie dans un fichier                                                  |
+| `--pretty`         | Formater la sortie JSON pour une meilleure lisibilité                                  |
 
 ***
 
@@ -366,21 +396,21 @@ Recherchez et collectez des données sur le web à l&#39;aide de prompts en lang
 
 **Options disponibles :**
 
-| Option                      | Description                                                                                             |
-| --------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `--urls <urls>`             | Liste facultative d’URL sur lesquelles concentrer l’agent (séparées par des virgules)                   |
-| `--model <model>`           | Modèle à utiliser : `spark-1-mini` (par défaut, 60 % moins cher) ou `spark-1-pro` (meilleure précision) |
-| `--schema <json>`           | Schéma JSON pour la sortie structurée (chaîne JSON intégrée)                                            |
-| `--schema-file <path>`      | Chemin vers le fichier de schéma JSON pour la sortie structurée                                         |
-| `--max-credits <number>`    | Nombre maximal de crédits à utiliser (la tâche échoue si la limite est atteinte)                        |
-| `--webhook <url-or-json>`   | URL ou configuration du webhook                                                                         |
-| `--status`                  | Consulter l’état d’une tâche d’agent existante                                                          |
-| `--cancel`                  | Annuler une tâche d’agent active à l’aide de l’ID de tâche                                              |
-| `--wait`                    | Attendre que l’agent ait terminé avant de renvoyer les résultats                                        |
-| `--poll-interval <seconds>` | Intervalle d’interrogation pendant l’attente (par défaut : 5)                                           |
-| `--timeout <seconds>`       | Délai d’attente maximal (par défaut : aucun délai)                                                      |
-| `--output <path>`           | Enregistrer la sortie dans un fichier                                                                   |
-| `--json`                    | Sortie au format JSON                                                                                   |
+| Option                      | Description                                                                                                                                                   |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--urls <urls>`             | Liste facultative d’URL sur lesquelles concentrer l’agent (séparées par des virgules)                                                                         |
+| `--model <model>`           | Modèle à utiliser. Utilise par défaut `spark-2`, le modèle utilisé pour chaque exécution. Les modèles Spark 1 sont obsolètes et sont redirigés vers `spark-2` |
+| `--schema <json>`           | Schéma JSON pour la sortie structurée (chaîne JSON intégrée)                                                                                                  |
+| `--schema-file <path>`      | Chemin vers le fichier de schéma JSON pour la sortie structurée                                                                                               |
+| `--max-credits <number>`    | Nombre maximal de crédits à utiliser (la tâche échoue si la limite est atteinte)                                                                              |
+| `--webhook <url-or-json>`   | URL ou configuration du webhook                                                                                                                               |
+| `--status`                  | Consulter l’état d’une tâche d’agent existante                                                                                                                |
+| `--cancel`                  | Annuler une tâche d’agent active à l’aide de l’ID de tâche                                                                                                    |
+| `--wait`                    | Attendre que l’agent ait terminé avant de renvoyer les résultats                                                                                              |
+| `--poll-interval <seconds>` | Intervalle d’interrogation pendant l’attente (par défaut : 5)                                                                                                 |
+| `--timeout <seconds>`       | Délai d’attente maximal (par défaut : aucun délai)                                                                                                            |
+| `--output <path>`           | Enregistrer la sortie dans un fichier                                                                                                                         |
+| `--json`                    | Sortie au format JSON                                                                                                                                         |
 
 ***
 
@@ -420,11 +450,13 @@ Ces options sont disponibles pour toutes les commandes :
 
 | Option            | Raccourci | Description                                                                              |
 | ----------------- | --------- | ---------------------------------------------------------------------------------------- |
-| `--status`        |           | Afficher la version, l’état d’authentification, le niveau de concurrence et les crédits |
+| `--status`        |           | Afficher la version, l’état d’authentification, le niveau de concurrence et les crédits  |
 | `--api-key <key>` | `-k`      | Ignorer la clé d’API enregistrée pour cette commande                                     |
 | `--api-url <url>` |           | Utiliser une URL d’API personnalisée (pour l’auto-hébergement ou le développement local) |
 | `--help`          | `-h`      | Afficher l’aide pour une commande                                                        |
 | `--version`       | `-V`      | Afficher la version de la CLI                                                            |
+
+`init` accepte également `--skip-auth`, `--skip-install`, `--skip-skills` et `--agent <name>`. Voir `firecrawl init --help`.
 
 <div id="output-handling">
   ## Gestion de la sortie
@@ -501,7 +533,7 @@ firecrawl map https://example.com --search "blog" -o blog-urls.txt
 firecrawl search "machine learning best practices 2024" --scrape --scrape-formats markdown --pretty
 ```
 
-<div id="agent">
+<div id="agent-2">
   ### Agent
 </div>
 
@@ -524,8 +556,8 @@ jq -r '.data.web[].url' search-results.json
 # Récupérer les titres des résultats de recherche
 jq -r '.data.web[] | "\(.title): \(.url)"' search-results.json
 
-# Extract links and process with jq
-firecrawl https://example.com --format links | jq '.links[].url'
+# Extraire les liens au format JSON et afficher une URL par ligne
+firecrawl https://example.com --format links --json | jq -r '.links[]'
 
 # Count URLs from map
 firecrawl map https://example.com | wc -l

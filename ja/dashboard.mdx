@@ -13,16 +13,16 @@ og:description: "Firecrawlダッシュボードとその主要機能の概要"
 
 プレイグラウンドでは、Firecrawl のエンドポイントをコードに統合する前に、ブラウザ上で直接試すことができます。
 
-* **[Scrape](https://www.firecrawl.dev/app/playground?endpoint=scrape)** — 単一のページからコンテンツを抽出します。
-* **[Search](https://www.firecrawl.dev/app/playground?endpoint=search)** — Web を検索し、スクレイピングされた結果を取得します。
-* **[Crawl](https://www.firecrawl.dev/app/playground?endpoint=crawl)** — Web サイト全体をクロールし、各ページからコンテンツを抽出します。
-* **[Map](https://www.firecrawl.dev/app/playground?endpoint=map)** — Web サイト上のすべての URL を検出します。
+* **[Scrape](https://www.firecrawl.dev/app/playground?endpoint=scrape)**: 単一のページからコンテンツを抽出します。
+* **[Search](https://www.firecrawl.dev/app/playground?endpoint=search)**: Web を検索し、スクレイピングされた結果を取得します。
+* **[Crawl](https://www.firecrawl.dev/app/playground?endpoint=crawl)**: Web サイト全体をクロールし、各ページからコンテンツを抽出します。
+* **[Map](https://www.firecrawl.dev/app/playground?endpoint=map)**: Web サイト上のすべての URL を検出します。
 
 <div id="browser">
   ## ブラウザ
 </div>
 
-[ブラウザセッションをライブで使ってwebを操作](https://www.firecrawl.dev/app/browser)できます。永続的なプロファイルを作成し、アクションを実行し、スクリーンショットを取得できます。認証や複雑な操作が必要なページで便利です。
+[ブラウザセッションをライブで使ってwebを操作](https://www.firecrawl.dev/app/browser)できます。永続的なプロファイルを作成し、アクションを実行し、スクリーンショットを取得できます。これは、認証や複雑な操作が必要なページで便利です。
 
 <div id="agent">
   ## Agent
@@ -35,6 +35,8 @@ og:description: "Firecrawlダッシュボードとその主要機能の概要"
 </div>
 
 [アクティビティログ](https://www.firecrawl.dev/app/logs) では、ステータス、所要時間、消費されたクレジットを含む、最近のAPIリクエストの履歴を確認できます。
+
+失敗した行またはエラーで終了した行には、アクション列にきらめきアイコン付きの **Debug issue** ボタンが表示されます。このボタンをクリックすると、そのジョブに対してFirecrawlのサポートエージェントが実行され、コピー可能な修正案を含む診断結果が返されます。詳細は[Askでデバッグ](/ja/features/ask#debug-from-activity-logs)を参照してください。
 
 <div id="usage">
   ## 使用状況
@@ -54,9 +56,9 @@ og:description: "Firecrawlダッシュボードとその主要機能の概要"
 
 [設定](https://www.firecrawl.dev/app/settings) ページには、3 つのタブがあります。
 
-* **Team** — メンバーの招待、ロールの割り当て、チームの管理を行います。詳しくは、以下の [Team management &amp; roles](#team-management--roles) を参照してください。
-* **課金** — 現在のプラン、請求書、自動チャージ設定の確認や、クーポンの適用を行います。あわせて [課金](/ja/billing) も参照してください。
-* **Advanced** — webhook 署名シークレットとチーム削除。
+* **Team**: メンバーの招待、ロールの割り当て、チームの管理を行います。詳しくは、以下の [チーム管理とロール](#team-management--roles) を参照してください。
+* **課金**: 現在のプランと請求書の確認、月ごとの従量課金の上限の設定、クーポンの適用を行います。あわせて [課金](/ja/billing) も参照してください。
+* **Advanced**: webhook 署名シークレットとチーム削除。
 
 ***
 
@@ -85,12 +87,12 @@ Firecrawl では、共有アカウント上で共同作業するためにチー�
 | 保留中の招待を取り消す             |   ✓   |    ✗   |
 | チーム名を編集する               |   ✓   |    ✗   |
 | **課金**                  |       |        |
-| 請求書と利用状況を表示する           |   ✓   |    ✓   |
-| クレジットクーポンを適用する          |   ✓   |    ✓   |
+| 請求書と利用状況を表示する           |   ✓   |    ✗   |
+| クレジットクーポンを適用する          |   ✓   |    ✗   |
 | サブスクリプションと課金ポータルを管理する   |   ✓   |    ✗   |
 | **設定**                  |       |        |
 | webhook 署名シークレットを表示する   |   ✓   |    ✓   |
 | webhook 署名シークレットを再生成する  |   ✓   |    ✗   |
 | チームを削除する                |   ✓   |    ✗   |
 
-要するに、**Admins** はチーム管理、課金、設定を完全に管理できます。一方、**Members** はチームのリソースを使用したり、利用状況を確認したり、クーポンを適用したりできますが、チームやサブスクリプションを変更することはできません。
+要するに、**Admins** はチーム管理、課金、設定を完全に管理できます。一方、**Members** はチームのリソースを使用し、使用状況 ページで利用状況を確認できますが、課金タブへのアクセスやチームの変更はできません。

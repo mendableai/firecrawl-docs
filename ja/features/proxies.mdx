@@ -52,14 +52,12 @@ Firecrawl は、指定または自動検出されたロケーションに基づ�
   ## プロキシタイプ
 </div>
 
-Firecrawl は3種類のプロキシをサポートしています：
+<Warning>
+  `proxy` パラメータは非推奨です。Firecrawl にプロキシの選択を任せる、デフォルトの `auto` を推奨します。
+</Warning>
 
-* **basic**: ほとんどのサイトをスクレイピングするためのプロキシ。高速で、通常は問題なく動作します。
-* **enhanced**: プライバシーを維持しながら複雑なサイトをスクレイピングするための強化プロキシ。速度は遅くなりますが、特定のサイトではより信頼性があります。[Enhanced Mode の詳細はこちら →](/ja/features/enhanced-mode)
-* **auto**: basic プロキシが失敗した場合、Firecrawl は自動的に強化プロキシでスクレイピングを再試行します。強化プロキシでの再試行が成功した場合、そのスクレイピングには5クレジットが請求されます。最初の basic での試行が成功した場合は、通常のコストのみが請求されます。
-
-***
-
-> **Note:** クレジットコストや再試行戦略を含む強化プロキシの詳細な使用方法については、[Enhanced Mode のドキュメント](/ja/features/enhanced-mode)を参照してください。
+* **basic**: ほとんどのサイトをスクレイピングするためのプロキシ。
+* **enhanced**: プライバシーを維持しながら複雑なサイトをスクレイピングするための強化プロキシ。[Enhanced Mode の詳細はこちら →](/ja/features/enhanced-mode)
+* **auto**: 推奨。basic プロキシが失敗した場合、Firecrawl は自動的に強化プロキシでスクレイピングを再試行します。
 
 > Firecrawl API キーが必要な AI agent ですか？ 自動オンボーディング手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md)を参照してください。

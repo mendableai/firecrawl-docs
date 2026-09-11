@@ -9,19 +9,21 @@ import ProxyPython from "/snippets/ja/v2/scrape/proxy/python.mdx";
 import ProxyNode from "/snippets/ja/v2/scrape/proxy/js.mdx";
 import ProxyCURL from "/snippets/ja/v2/scrape/proxy/curl.mdx";
 
+<Warning>
+  `proxy` パラメータは非推奨です。Firecrawl がプロキシ選択を自動で処理する、デフォルトの `auto` を推奨します。
+</Warning>
+
 Firecrawl は、さまざまな複雑さのウェブサイトをスクレイピングできるように、異なるプロキシタイプを提供しています。リクエストにどのプロキシ戦略を使用するかを制御するには、`proxy` パラメータを設定します。
 
 <div id="proxy-types">
   ## プロキシタイプ
 </div>
 
-Firecrawl は 3 つのプロキシタイプをサポートしています。
-
-| Type | Description | Speed | Cost |
-|------|-------------|-------|------|
-| `basic` | ほとんどのサイトに適した標準プロキシ | Fast | 1 credit |
-| `enhanced` | 複雑なサイト向けの強化プロキシ | Slower | 1 リクエストあたり 5 クレジット |
-| `auto` | まず `basic` を試し、失敗した場合は `enhanced` で再試行 | Varies | `basic` が成功した場合は 1 credit、`enhanced` が必要な場合は 5 credits |
+| Type       | Description                                   |
+| ---------- | --------------------------------------------- |
+| `basic`    | ほとんどのサイトに適した標準プロキシ                            |
+| `enhanced` | 複雑なサイト向けの強化プロキシ                               |
+| `auto`     | **推奨。**まず `basic` を試し、失敗した場合は `enhanced` で再試行 |
 
 プロキシを指定しない場合、Firecrawl はデフォルトで `auto` を使用します。
 
@@ -39,8 +41,18 @@ Firecrawl は 3 つのプロキシタイプをサポートしています。
   <ProxyCURL />
 </CodeGroup>
 
+<div id="when-firecrawl-escalates">
+  ## Firecrawlがエスカレーションする条件
+</div>
+
+Firecrawlはbasicプロキシで開始します。ターゲットが**401、403、429**を返した場合、Firecrawlはプロキシが不十分だったと判断し、同じURLを強化プロキシ経由でリトライします。404や5xxを含むその他のステータスコードでは、プロキシを変えても結果は変わらないため、エスカレーションは発生しません。
+
+エスカレーションはリクエストごとに最大1回です。すでに強化プロキシで実行中のリクエストでさらに401、403、429が返された場合は、再度リトライされることなくそのまま結果として返されます。
+
+これを検知したり処理したりする必要はありません。リトライは同一リクエストの一部であり、受け取るレスポンスが最終結果です。
+
 <Info>
-  強化プロキシのリクエストには、**1 リクエストあたり 5 クレジット**かかります。`auto` を使用する場合、この 5 クレジットのコストが適用されるのは、基本プロキシが失敗し、強化プロキシでの再試行が成功した場合のみです。
+  強化プロキシのリクエストのコストはbasicリクエストと同じで、**1リクエストあたり1クレジット**です。エスカレーションによるリトライは別途課金されないため、basicで開始して強化プロキシで完了したリクエストのコストも1クレジットのままです。
 </Info>
 
-> Firecrawl API キーが必要な AI エージェントですか？自動オンボーディング手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) を参照してください。
+> Firecrawl APIキーが必要なAIエージェントの方は、自動オンボーディングの手順について[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md)をご覧ください。

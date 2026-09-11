@@ -1,0 +1,94 @@
+---
+title: "Pesquise no índice para desenvolvedores"
+openapi: "/pt-BR/api-reference/v2-openapi.json GET /search/developer"
+---
+
+Pesquise issues, pull requests mesclados e READMEs de repositórios de código públicos, além de sites de documentação selecionados. Os resultados são ranqueados e incluem as passagens correspondentes em Markdown.
+
+`POST` está disponível no mesmo caminho para passar filtros de array como JSON.
+
+Filtros repetíveis aceitam qualquer uma das formas em `GET`: um parâmetro de query repetido, como `types=issue&types=pull_request`, ou um valor separado por vírgulas, como `types=issue,pull_request`.
+
+<div id="how-repos-and-sources-scope-a-search">
+  ## Como `repos` e `sources` restringem uma busca
+</div>
+
+O índice tem duas partes, e esses dois filtros restringem cada uma delas de forma independente:
+
+* `repos` restringe a parte do repositório, ou seja, os tipos `issue`, `pull_request` e `readme`
+* `sources` restringe a parte da documentação, ou seja, o tipo `doc`
+* Informar ambos combina as duas partes, em vez de cruzá-las, para que você receba resultados correspondentes de qualquer uma delas
+
+Como cada filtro se aplica a apenas uma parte, um filtro que não pode corresponder a nenhum tipo solicitado é rejeitado, em vez de não retornar resultados silenciosamente:
+
+* `repos` sem nenhum tipo de repositório em `types` retorna `400`, informando que `repos` não pode corresponder a nenhum tipo solicitado e que você deve adicionar tipos de repositório ou remover `repos`
+* `sources` sem `doc` em `types` retorna `400` com `sources cannot match any requested type; add doc or drop sources`
+
+<div id="how-the-repository-filters-scope-a-search">
+  ## Como os filtros de repositório restringem uma busca
+</div>
+
+Os sete filtros de repositório — `language` (como `Rust`), `topic` (como `async`), `license` (como `MIT`), `min_stars`, `max_stars`, `archived` e `fork` — descrevem um repositório de código. A maioria das páginas de documentação do índice vem de sites rastreados sem um repositório associado, e nenhum atributo de repositório pode incluir ou excluir essas páginas.
+
+Por isso, uma solicitação que envia um desses filtros sem especificar `sources` não retorna resultados `doc`. A resposta contém apenas evidências de repositório: os tipos `issue`, `pull_request` e `readme`, pois a parte da documentação do índice não foi consultada. Isso é intencional, não uma falha do índice.
+
+Para manter os resultados da documentação, remova os filtros de repositório. Você também pode restringir a parte da documentação com `sources` e consultar o eco de `sources` na resposta para confirmar que o ID está indexado.
+
+<CodeGroup>
+  ```bash cURL
+  # Não é necessária uma chave de API para começar; adicione -H "Authorization: Bearer $FIRECRAWL_API_KEY" para limites de taxa mais altos:
+  curl -s "https://api.firecrawl.dev/v2/search/developer?query=how%20do%20I%20configure%20retries&k=10&language=Rust&license=MIT"
+  ```
+
+  ```bash cURL (POST)
+  curl -X POST https://api.firecrawl.dev/v2/search/developer \
+    -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "query": "how do I configure retries",
+      "k": 10,
+      "types": ["issue", "pull_request"],
+      "language": "Rust",
+      "license": "MIT"
+    }'
+  ```
+</CodeGroup>
+
+<div id="which-values-sources-accepts">
+  ## Quais valores `sources` aceita
+</div>
+
+`sources` não é um enum fixo. Aceita IDs de fontes de documentação, cada um uma string não vazia de até 512 caracteres, com no máximo 20 por solicitação. Os IDs correspondem aos sites de documentação presentes no índice, e esse conjunto cresce ao longo do tempo.
+
+Para confirmar que um ID é reconhecido, informe-o e verifique o array `sources` adicionado à resposta. Ele só aparece quando você envia `sources` e informa cada ID exatamente como foi solicitado, além de indicar se está indexado:
+
+```json
+{
+  "success": true,
+  "results": [],
+  "sources": [
+    { "source": "some-docs-site", "indexed": true },
+    { "source": "unknown-docs-site", "indexed": false }
+  ]
+}
+```
+
+`indexed: true` significa que a fonte tem uma geração publicada; portanto, evidências da documentação dela podem aparecer. `indexed: false` significa que nada desse id pode corresponder, o que diferencia um id que não está no índice de uma query que simplesmente não encontrou nada.
+
+`repos` também é retornado da mesma forma, como um array `repos` que informa `indexed` e apresenta uma divisão por tipo em `types`:
+
+```json
+{
+  "success": true,
+  "results": [],
+  "repos": [
+    {
+      "repo": "firecrawl/firecrawl",
+      "indexed": true,
+      "types": { "issue": true, "pullRequest": true, "readme": true }
+    }
+  ]
+}
+```
+
+Para uma visão geral do fluxo de trabalho, consulte o [guia do índice para desenvolvedores](/pt-BR/features/developer).

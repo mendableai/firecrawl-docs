@@ -1,0 +1,16 @@
+```python Python
+from firecrawl import Firecrawl
+
+app = Firecrawl(api_key="fc-YOUR_API_KEY")
+
+# 直近のエージェント実行を一覧表示する
+page = app.list_agents()
+
+for run in page.agents:
+    print(run.id, run.status, run.target_hint)
+
+# `next` のカーソルを使って次のページを取得する
+if page.next:
+    before = int(page.next.split("before=")[-1])
+    older = app.list_agents(before=before)
+```

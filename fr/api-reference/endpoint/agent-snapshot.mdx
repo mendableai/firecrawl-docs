@@ -1,0 +1,27 @@
+---
+title: 'Obtenir un instantané d’agent'
+openapi: '/fr/api-reference/v2-openapi.json GET /agent/{jobId}/snapshots/{snapshotId}'
+noindex: true
+---
+
+Pendant l’exécution d’un agent, ses artefacts de sortie sont versionnés : le résultat JSON structuré à mesure qu’il prend forme, ainsi que les artefacts Markdown, HTML, texte ou captures d’écran qu’il produit. Chaque modification génère un [événement de trace](/fr/api-reference/endpoint/agent-trace) `artifact.updated` qui référence la nouvelle version par son `snapshotId`. Ce point de terminaison récupère le contenu complet d’un tel instantané.
+
+<div id="what-its-for">
+  ## À quoi cela sert
+</div>
+
+* **Résultats partiels** — prévisualisez la sortie structurée de l’agent avant la fin de l’exécution. L’artefact de résultat JSON (`artifactId: "result"`) est capturé à mesure qu’il évolue, de sorte que chaque `snapshotId` représente un état à un instant donné des `data` finales.
+* **Artefacts rendus** — récupérez le contenu des artefacts non JSON produits par l’agent, tels qu’un rapport Markdown ou une capture d’écran d’une page qu’il a visitée.
+* **Inspection de l’exécution** — associez-les à la trace pour reconstituer précisément l’évolution de la sortie tout au long de l’exécution.
+
+<div id="how-it-works">
+  ## Fonctionnement
+</div>
+
+Le champ `change` de l’événement `artifact.updated` indique comment l’instantané se compare au précédent : `init` (première version), `partial`, `append`, `modify` ou `update`. Chaque modification génère un nouveau `snapshotId` : récupérez le plus récent pour connaître l’état actuel ou parcourez l’historique pour comparer les versions.
+
+Le champ `snapshot` de la réponse contient le contenu de l’artefact sous forme de chaîne. Pour les artefacts `json`, il est encodé en JSON : parsez-le avant de l’utiliser.
+
+<Note>Les instantanés sont enregistrés lors des exécutions Spark 2, c’est-à-dire à chaque nouvelle exécution. Les jobs démarrés sur des modèles Spark 1 avant leur retrait ne disposent d’aucun instantané et renvoient `400`.</Note>
+
+> Êtes-vous un agent IA ayant besoin d’une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour connaître les instructions d’intégration automatisée.

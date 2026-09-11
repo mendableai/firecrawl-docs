@@ -5,20 +5,19 @@ og:title: "LlamaIndex | Firecrawl"
 og:description: "O Firecrawl integra-se ao LlamaIndex como leitor de documentos."
 ---
 
-> Observação: esta integração ainda usa a [versão v0 da API do Firecrawl](/pt-BR/v0/introduction). Você pode instalar a versão 0.0.20 do SDK para Python ou a 0.0.36 do SDK para Node.
-
 <div id="installation">
   ## Instalação
 </div>
 
 ```bash
-pip install firecrawl-py==0.0.20 llama_index llama-index llama-index-readers-web
-
+pip install 'firecrawl-py>=4.3.3' llama-index llama-index-readers-web
 ```
 
 <div id="usage">
   ## Uso
 </div>
+
+`FireCrawlWebReader` oferece suporte aos modos `scrape`, `crawl`, `map`, `search` e `extract`.
 
 <div id="using-firecrawl-to-gather-an-entire-website">
   ### Usando o Firecrawl para coletar um site inteiro
@@ -33,7 +32,7 @@ import os
 # Inicialize o FireCrawlWebReader para rastrear um site
 firecrawl_reader = FireCrawlWebReader(
     api_key="<your_api_key>",  # Substitua pela sua chave de API em https://www.firecrawl.dev/
-    mode="scrape",  # Escolha entre "crawl" e "scrape" para extrair uma única página
+    mode="crawl",  # "scrape", "crawl", "map", "search" ou "extract"
     params={"additional": "parameters"}  # Parâmetros adicionais opcionais
 )
 
@@ -46,7 +45,7 @@ index = SummaryIndex.from_documents(documents)
 
 # Ajuste o nível de log para DEBUG para obter saídas mais detalhadas
 query_engine = index.as_query_engine()
-response = query_engine.query("O que o autor fez quando estava crescendo?")
+response = query_engine.query("What did the author do growing up?")
 display(Markdown(f"<b>{response}</b>"))
 ```
 
@@ -60,7 +59,7 @@ from llama_index.readers.web import FireCrawlWebReader
 # Inicialize o FireCrawlWebReader com sua chave de API e o modo desejado
 firecrawl_reader = FireCrawlWebReader(
     api_key="<your_api_key>",  # Substitua pela sua chave de API em https://www.firecrawl.dev/
-    mode="scrape",  # Escolha entre "crawl" e "scrape"
+    mode="scrape",  # "scrape", "crawl", "map", "search" ou "extract"
     params={"additional": "parameters"}  # Parâmetros adicionais opcionais
 )
 
@@ -70,6 +69,6 @@ index = SummaryIndex.from_documents(documents)
 
 # Defina o nível de log como DEBUG para obter saídas mais detalhadas
 query_engine = index.as_query_engine()
-response = query_engine.query("O que o autor fazia quando estava crescendo?")
+response = query_engine.query("What did the author do growing up?")
 display(Markdown(f"<b>{response}</b>"))
 ```

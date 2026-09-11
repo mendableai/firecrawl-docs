@@ -376,7 +376,7 @@
                 ],
                 "id": "550e8400-e29b-41d4-a716-446655440000",
                 "metadata": {},
-                "success": false,
+                "success": true,
                 "type": "agent.cancelled",
                 "webhookId": "d4e5f6a7-0005-0000-0000-000000000000"
               },
@@ -403,8 +403,8 @@
                     "$ref": "#/components/schemas/WebhookMetadata"
                   },
                   "success": {
-                    "const": false,
-                    "description": "Toujours `false` pour cet événement.",
+                    "const": true,
+                    "description": "Toujours `true` pour cet événement.",
                     "type": "boolean"
                   },
                   "type": {

@@ -3,99 +3,13 @@ title: "Cursor での MCP のウェブ検索とスクレイピング"
 description: "2分で Cursor にウェブスクレイピングと検索を追加"
 ---
 
-Firecrawl の MCP を使って、Cursor にウェブスクレイピングと検索機能を追加します。
+ホスト型 MCP サーバーを通じて、Firecrawl のキーなしの Search、Scrape、Parse ツールを Cursor に追加します。
 
 <div id="quick-setup">
-  ## かんたんセットアップ
+  ## クイックセットアップ
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. APIキーを取得
-</div>
-
-[firecrawl.dev/app](https://firecrawl.dev/app) にサインアップして、APIキーをコピーします。
-
-<div id="2-add-to-cursor">
-  ### 2. Cursor に追加
-</div>
-
-設定 (`Cmd+,`) を開き、「MCP」を検索して、以下を追加します：
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "your_api_key_here"
-      }
-    }
-  }
-}
-```
-
-`your_api_key_here` を実際の Firecrawl API キーに置き換えてください。
-
-<div id="3-restart-cursor">
-  ### 3. Cursor を再起動する
-</div>
-
-完了です！これで Cursor から Web を検索してスクレイピングできるようになりました。
-
-<div id="quick-demo">
-  ## クイックデモ
-</div>
-
-Cursor Chat (`Cmd+K`) で試してみてください：
-
-**検索：**
-
-```
-TypeScript ベストプラクティス 2025 を検索
-```
-
-**スクレイピング：**
-
-```
-firecrawl.devをスクレイピングして、その機能を教えて
-```
-
-**ドキュメントを取得:**
-
-```
-React hooksのドキュメントをスクレイピングし、useEffectについて説明してください
-```
-
-Cursor は Firecrawl のツールを自動で使用します。
-
-<div id="windows-troubleshooting">
-  ## Windows でのトラブルシューティング
-</div>
-
-Windows で `spawn npx ENOENT` または &quot;No server info found&quot; エラーが表示される場合、Cursor が PATH 内の `npx` を見つけられていません。次のいずれかの方法を試してください:
-
-**オプション A: `npx.cmd` のフルパスを使う**
-
-コマンド プロンプトで `where npx` を実行してフルパスを取得し、そのパスで設定を更新します:
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "command": "C:\\Program Files\\nodejs\\npx.cmd",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "your_api_key_here"
-      }
-    }
-  }
-}
-```
-
-`command` のパスを、`where npx` の出力結果に置き換えてください。
-
-**オプション B: リモートホストされた URL を使用する (Node.js は不要)&#x20;**
+Cursorの設定を開き、**MCP** を選択して、以下を追加します。
 
 ```json
 {
@@ -107,6 +21,25 @@ Windows で `spawn npx ENOENT` または &quot;No server info found&quot; エラ
 }
 ```
 
-この構成では、キー不要の Firecrawl ツールセットを使用します。アカウント接続型または無人のセットアップについては、[ホスト型 MCP 接続モード](/ja/developer-guides/mcp-setup-guides/oauth)に従ってください。APIキーは Authorization ヘッダーまたは安全なシークレットストアに保管し、URL には決して含めないでください。
+Cursorを再起動し、`firecrawl_search`、`firecrawl_scrape`、`firecrawl_parse`が利用できることを確認します。
 
-`YOUR-API-KEY` を Firecrawl APIキーに置き換えてください。
+キーなしアクセスには、同じパブリックIPを使用するユーザー間で共有される制限があります。対話型クライアントから[For Humans](/ja/mcp-server/oauth)でサインインするか、ユーザー操作なしで利用する場合は[APIキーを追加](/ja/mcp-server/keyless#add-an-api-key)してください。
+
+<div id="try-it">
+  ## 試してみる
+</div>
+
+```text
+最新のTypeScriptのリリースノートを検索し、ソースを要約してください。
+```
+
+```text
+https://firecrawl.dev をスクレイピングして、どんなサービスなのか説明してください。
+```
+
+<div id="troubleshooting">
+  ## トラブルシューティング
+</div>
+
+* **サーバーに接続できない:** URL が `https://mcp.firecrawl.dev/v2/mcp` と完全に一致していることを確認し、Cursor の MCP ステータスを確認してください。
+* **クロールなどのツールが表示されない:** キーなしで利用できるのは Search、Scrape、Parse のみです。より幅広いツールを利用するには、OAuth または API キーで接続してください。

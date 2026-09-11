@@ -22,7 +22,6 @@ O Firecrawl está integrado ao [CrewAI, o framework para orquestração de agent
 pip install firecrawl-py 'crewai[tools]'
 ```
 
-
 <div id="tools">
   ## Ferramentas
 </div>
@@ -43,7 +42,9 @@ from crewai_tools import FirecrawlCrawlWebsiteTool
 tool = FirecrawlCrawlWebsiteTool(url='firecrawl.dev')
 ```
 
-#### Arguments
+<div id="arguments">
+  #### Arguments
+</div>
 
 - `api_key`: Opcional. Especifica a chave de API do Firecrawl. O padrão é a variável de ambiente `FIRECRAWL_API_KEY`.
 - `url`: A URL base a partir da qual o rastreamento será iniciado.
@@ -64,7 +65,7 @@ tool = FirecrawlCrawlWebsiteTool(url='firecrawl.dev')
   ### FirecrawlScrapeWebsiteTool
 </div>
 
-<div id="example">
+<div id="example-2">
   #### Exemplo
 </div>
 
@@ -76,7 +77,7 @@ from crewai_tools import FirecrawlScrapeWebsiteTool
 tool = FirecrawlScrapeWebsiteTool(url='firecrawl.dev')
 ```
 
-<div id="arguments">
+<div id="arguments-2">
   #### Argumentos
 </div>
 
@@ -95,7 +96,7 @@ tool = FirecrawlScrapeWebsiteTool(url='firecrawl.dev')
   ### FirecrawlSearchTool
 </div>
 
-<div id="example">
+<div id="example-3">
   #### Exemplo
 </div>
 
@@ -107,7 +108,7 @@ from crewai_tools import FirecrawlSearchTool
 tool = FirecrawlSearchTool(query='o que é o Firecrawl?')
 ```
 
-<div id="arguments">
+<div id="arguments-3">
   #### Argumentos
 </div>
 

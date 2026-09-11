@@ -1,0 +1,15 @@
+```js Node
+import { Firecrawl } from "firecrawl";
+import fs from "node:fs";
+
+const firecrawl = new Firecrawl({ apiKey: "fc-VOTRE-CLÉ-API" });
+
+const doc = await firecrawl.parse(
+  { data: fs.readFileSync("./report.pdf"), filename: "report.pdf" },
+  { parsers: [{ type: "pdf", pages: true }] },
+);
+
+for (const page of doc.pages) {
+  console.log(page.pageNumber, page.markdown.slice(0, 80));
+}
+```

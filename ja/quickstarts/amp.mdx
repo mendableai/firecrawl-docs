@@ -4,65 +4,13 @@ description: "Sourcegraph Amp に Firecrawl の Web スクレイピングと検�
 sidebarTitle: "Amp"
 ---
 
-MCP 経由で、Firecrawl の検索、スクレイピング、クロール、ブラウザツールを [Sourcegraph Amp](https://ampcode.com) に追加します。
+ホスト型 MCP サーバーを通じて、Firecrawl のキーレス Search、スクレイピング、Parse ツールを [Sourcegraph Amp](https://ampcode.com) に追加します。
 
 <div id="quick-setup">
-  ## クイックスタート
+  ## クイックセットアップ
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. APIキーを取得する
-</div>
-
-[firecrawl.dev/app](https://www.firecrawl.dev/app)でサインアップし、APIキーをコピーします。
-
-<div id="2-add-firecrawl-to-amp">
-  ### 2. Amp に Firecrawl を追加する
-</div>
-
-Amp の設定を開き、MCP Server を追加します。Amp は標準の MCP 設定に対応しています。
-
-```json
-{
-  "amp.mcpServers": {
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
-    }
-  }
-}
-```
-
-`fc-YOUR-API-KEY` をお使いの Firecrawl APIキーに置き換えてください。
-
-<div id="3-reload-amp">
-  ### 3. Ampを再読み込み
-</div>
-
-Ampウィンドウを再読み込みします。これで、Firecrawlのツールをエージェントで利用できます。
-
-<div id="quick-demo">
-  ## クイックデモ
-</div>
-
-```
-Search the web for "Sourcegraph Cody vs Amp" and summarize the differences.
-```
-
-```
-スクレイピング https://docs.firecrawl.dev and list the core endpoints.
-```
-
-```
-クロール https://example.com and output a site map as JSON.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## リモートホストのURL (Node.jsは不要)
-</div>
+Ampの設定を開き、このリモートMCPサーバーを追加します。
 
 ```json
 {
@@ -74,11 +22,25 @@ Search the web for "Sourcegraph Cody vs Amp" and summarize the differences.
 }
 ```
 
-この構成では、キー不要のFirecrawlツールセットを使用します。アカウント接続または無人運用のセットアップについては、[ホスト型MCP接続モード](/ja/developer-guides/mcp-setup-guides/oauth)に従ってください。APIキーはURLには含めず、Authorizationヘッダーまたは安全なシークレットストアに保管してください。
+Ampを再読み込みし、`firecrawl_search`、`firecrawl_scrape`、`firecrawl_parse`が利用可能であることを確認します。
+
+キーレスのアクセスには、同じパブリックIPを使用するユーザー間で共有される制限があります。[For Humans](/ja/mcp-server/oauth)を使用して対話型クライアントからサインインするか、ユーザー操作なしでの利用には[APIキーを追加](/ja/mcp-server/keyless#add-an-api-key)してください。
+
+<div id="try-it">
+  ## 試してみる
+</div>
+
+```text
+Search the web for "Sourcegraph Cody vs Amp" and summarize the sources.
+```
+
+```text
+スクレイピング https://docs.firecrawl.dev and list the core endpoints.
+```
 
 <div id="troubleshooting">
   ## トラブルシューティング
 </div>
 
-* **サーバーが起動しない** — Amp の MCP ログビューで stderr の出力を確認してください。
-* **`npx` が見つからない** — Node.js 18 以降をインストールするか、上記のリモートホストのURLを使用してください。
+* **サーバーに接続できない:** URL が `https://mcp.firecrawl.dev/v2/mcp` と完全に一致していることを確認し、Amp の MCP ログを確認してください。
+* **Crawl などのツールが表示されない:** キーレス で利用できるのは Search、スクレイピング、Parse のみです。より幅広いツールを利用するには、OAuth または API キーで接続してください。

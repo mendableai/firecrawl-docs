@@ -51,12 +51,10 @@ Para obtener todos los detalles, consulta la [referencia de la API de `location.
   ## Tipos de proxy
 </div>
 
-Firecrawl admite tres tipos de proxy:
+<Warning>
+  El parámetro `proxy` está obsoleto. Recomendamos `auto`, que permite que Firecrawl gestione la selección de proxy por ti.
+</Warning>
 
-* **basic**: Proxies para extraer datos de la mayoría de los sitios. Rápidos y suelen funcionar.
-* **enhanced**: Proxies mejorados para extraer datos de sitios complejos manteniendo la privacidad. Más lentos, pero más fiables en ciertos sitios. [Más información sobre el modo Enhanced →](/es/features/enhanced-mode)
-* **auto**: Firecrawl volverá a intentar automáticamente con proxies enhanced si el proxy basic falla. Si el reintento con enhanced tiene éxito, se cobrarán 5 créditos por la extracción. Si el primer intento con basic tiene éxito, solo se cobrará el costo regular.
-
-***
-
-> **Nota:** Para información detallada sobre el uso de proxies enhanced, incluidos los costos en créditos y las estrategias de reintento, consulta la [documentación del modo Enhanced](/es/features/enhanced-mode).
+* **basic**: Proxies para extraer datos de la mayoría de los sitios.
+* **enhanced**: Proxies mejorados para extraer datos de sitios complejos manteniendo la privacidad. [Más información sobre el modo Enhanced →](/es/features/enhanced-mode)
+* **auto**: Recomendado. Firecrawl volverá a intentar automáticamente con proxies enhanced si el proxy basic falla.

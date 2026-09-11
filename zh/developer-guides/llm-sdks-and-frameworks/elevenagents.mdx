@@ -5,7 +5,7 @@ og:title: "ElevenAgents | Firecrawl"
 og:description: "使用 Firecrawl 为 ElevenLabs 语音和聊天代理提供实时网页访问"
 ---
 
-使用 Firecrawl，让你的 [ElevenAgents](https://elevenlabs.io/agents) 语音和聊天代理能够实时抓取、搜索和爬取网页。本指南涵盖两种集成方式：
+使用 Firecrawl，让你的 [ElevenAgents](https://elevenlabs.io/agents) 语音和聊天代理能够实时访问网页。本指南涵盖两种集成方式：
 
 1. **MCP 服务器** — 连接托管的 Firecrawl MCP 服务器，无需编写代码即可完成设置。
 2. **服务器 Webhook 工具** — 将自定义工具指向 Firecrawl 的 REST API，以完全控制请求。
@@ -34,11 +34,11 @@ og:description: "使用 Firecrawl 为 ElevenLabs 语音和聊天代理提供实�
 | 字段          | 值                                  |
 | ----------- | ---------------------------------- |
 | **名称**      | Firecrawl                          |
-| **描述**      | 从任意网站搜索、抓取、爬取并提取内容。                |
+| **描述**      | 使用 Firecrawl 搜索、抓取和解析网页内容。         |
 | **服务器类型**   | Streamable HTTP                    |
 | **服务器 URL** | `https://mcp.firecrawl.dev/v2/mcp` |
 
-此 URL 会启用免密钥 Firecrawl 工具集。如需进行账户关联或无人值守设置，请参阅[托管 MCP 连接模式](/zh/developer-guides/mcp-setup-guides/oauth)；请将 API 密钥保存在 Authorization 请求头或安全密钥存储中，切勿放在 URL 中。
+免密钥 MCP 仅提供 Search、Scrape 和 Parse，且共享限额。如需使用更广泛的工具集，请[登录](/zh/mcp-server/oauth)或[添加 API 密钥](/zh/mcp-server/keyless#add-an-api-key)。请将 API 密钥保存在环境变量或密钥存储中，切勿放在 URL 中。
 
 <Note>
   你必须选择 **Streamable HTTP** 作为服务器类型。默认的 SSE 选项不适用于 Firecrawl MCP 端点。
@@ -46,12 +46,12 @@ og:description: "使用 Firecrawl 为 ElevenLabs 语音和聊天代理提供实�
 
 4. 在 **Tool Approval Mode** 下，选择一个审批级别：
    * **No Approval** — 代理可自由使用工具。适合只读抓取场景。
-   * **Fine-Grained Tool Approval** — 可让你预先选择哪些工具可自动运行，哪些需要审批。适合控制高成本的爬取操作。
+   * **Fine-Grained Tool Approval** — 可让你预先选择哪些工具可自动运行，哪些需要审批。
    * **Always Ask** (默认) — 代理会在每次调用工具前请求许可。
 
 5. 勾选 **I trust this server**，然后点击 **Add Server**。
 
-ElevenLabs 将连接到该服务器，并列出可用工具 (scrape、search、crawl、map 等) 。
+ElevenLabs 将连接到免密钥服务器，并列出 Search、Scrape 和 Parse。
 
 <div id="attach-it-to-an-agent">
   ### 将其连接到代理
@@ -154,7 +154,7 @@ Firecrawl API 默认会以 Markdown 格式返回页面内容。代理会接收 J
 
 4. 点击 **Add tool**。
 
-<div id="update-the-system-prompt">
+<div id="update-the-system-prompt-2">
   ### 更新系统 prompt
 </div>
 
@@ -169,7 +169,9 @@ Firecrawl API 默认会以 Markdown 格式返回页面内容。代理会接收 J
 始终简明扼要地总结信息，并注明来源 URL。
 ```
 
-### 试试看
+<div id="test-it-2">
+  ### 试试看
+</div>
 
 点击 **Preview**，然后试着提问：
 

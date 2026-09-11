@@ -44,11 +44,11 @@ Ainsi, l’obtention de données web au format dont vous avez besoin devient rap
 Permet d’extraire des données structurées à partir de pages scrappées.
 
 <CodeGroup>
+  <ExtractPython />
 
-<ExtractPython />
-<ExtractNode />
-<ExtractCURL />
+  <ExtractNode />
 
+  <ExtractCURL />
 </CodeGroup>
 
 Résultat :
@@ -62,9 +62,7 @@ Résultat :
 Vous pouvez désormais extraire sans schéma en transmettant simplement un `prompt` au point de terminaison. Le LLM choisit la structure des données.
 
 <CodeGroup>
-
-<ExtractNoSchemaCURL />
-
+  <ExtractNoSchemaCURL />
 </CodeGroup>
 
 Résultat :
@@ -77,6 +75,7 @@ Résultat :
 
 L’objet `jsonOptions` accepte les paramètres suivants :
 
-- `schema` : Le schéma à utiliser pour l’extraction.
-- `systemPrompt` : L’invite système à utiliser pour l’extraction.
-- `prompt` : L’invite à utiliser pour l’extraction sans schéma.
+* `schema` : Le schéma à utiliser pour l’extraction.
+* `systemPrompt` : L’invite système à utiliser pour l’extraction.
+* `prompt` : L’invite à utiliser pour l’extraction sans schéma.
+* `checkPromptInjection` : Booléen facultatif (valeur par défaut : `false`). Lorsqu’il est activé, analyse le contenu de la page scrapée à la recherche de tentatives d’injection d’invite avant d’exécuter l’extraction. Si une injection est détectée, la requête échoue avec un code 403 et le code d’erreur `SCRAPE_PROMPT_INJECTION_DETECTED`. Ajoute 4 crédits lorsque la vérification est exécutée. Voir [Détection d’injection d’invite](/fr/features/llm-extract#prompt-injection-detection).

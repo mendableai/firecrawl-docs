@@ -1,6 +1,8 @@
 ```bash CLI
-# より高精度な結果を得るにはSpark 1 Proを使用
-firecrawl agent "Competitive analysis across multiple domains" --model spark-1-pro --wait
+# Spark 2がデフォルト — すべての実行はSpark 2上で行われます
+firecrawl agent "Competitive analysis across multiple domains" --model spark-2 --wait
+
+# 非推奨: Spark 1のモデル名も引き続き利用できますが、spark-2にルーティングされます。
 
 # Set max credits to limit costs
 firecrawl agent "Gather contact information from company websites" --max-credits 100 --wait

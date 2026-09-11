@@ -6,7 +6,7 @@ openapi: '/pt-BR/api-reference/v2-openapi.json DELETE /scrape/{jobId}/interact'
 
 Use este endpoint para encerrar a sessão interativa do navegador de um job de scraping. Encerrar a sessão libera recursos do navegador e finaliza a cobrança.
 
-Os créditos são cobrados com base na duração da sessão: **2 créditos por minuto de navegador**, calculados proporcionalmente por segundo.
+Os créditos são cobrados com base na duração da sessão: **7 créditos por minuto de navegador** se a sessão usou um `prompt`, ou **2 créditos por minuto de navegador** se não usou. A duração é calculada proporcionalmente por segundo, com uma cobrança mínima de um minuto de navegador.
 
 <div id="path-parameters">
   ## Parâmetros de caminho

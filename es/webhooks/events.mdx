@@ -79,7 +79,6 @@ Se envía cuando la tarea de rastreo comienza a procesarse.
 }
 ```
 
-
 <div id="crawlpage">
   ### `crawl.page`
 </div>
@@ -113,7 +112,6 @@ Se envía por cada página que se extrae. El arreglo `data` contiene el contenid
 }
 ```
 
-
 <div id="crawlcompleted">
   ### `crawl.completed`
 </div>
@@ -129,7 +127,6 @@ Se envía cuando el trabajo de rastreo finaliza y todas las páginas han sido pr
   "metadata": {}
 }
 ```
-
 
 <div id="batch-scrape-events">
   ## Eventos de scraping por lotes
@@ -150,7 +147,6 @@ Se envía cuando comienza una operación de scraping por lotes.
   "metadata": {}
 }
 ```
-
 
 <div id="batch_scrapepage">
   ### `batch_scrape.page`
@@ -185,7 +181,6 @@ Se envía por cada URL individual que se extrae. El arreglo `data` contiene el c
 }
 ```
 
-
 <div id="batch_scrapecompleted">
   ### `batch_scrape.completed`
 </div>
@@ -201,7 +196,6 @@ Se envía cuando se han procesado todas las URL del lote.
   "metadata": {}
 }
 ```
-
 
 <div id="monitor-events">
   ## Eventos del Monitor
@@ -245,7 +239,6 @@ Se envía cuando el trabajo de extracción comienza a ejecutarse.
 }
 ```
 
-
 <div id="extractcompleted">
   ### `extract.completed`
 </div>
@@ -274,7 +267,6 @@ Se envía cuando una operación de extracción se completa correctamente. El arr
 }
 ```
 
-
 <div id="extractfailed">
   ### `extract.failed`
 </div>
@@ -292,10 +284,11 @@ Se envía cuando falla la extracción. El campo `error` contiene el motivo del e
 }
 ```
 
-
 <div id="agent-events">
   ## Eventos del agente
 </div>
+
+Se envían para los trabajos iniciados con un `webhook` en [`/v2/agent`](/es/features/agent).
 
 <div id="agentstarted">
   ### `agent.started`
@@ -312,7 +305,6 @@ Se envía cuando el trabajo del agente comienza su procesamiento.
   "metadata": {}
 }
 ```
-
 
 <div id="agentaction">
   ### `agent.action`
@@ -342,7 +334,6 @@ Se envía tras cada ejecución de una herramienta (`scrape`, `search`, etc.).
   El valor de `creditsUsed` en los eventos de `action` es una **estimación** del total de créditos utilizados hasta ese momento. El recuento final y preciso de créditos solo está disponible en los eventos `completed`, `failed` o `cancelled`.
 </Note>
 
-
 <div id="agentcompleted">
   ### `agent.completed`
 </div>
@@ -368,7 +359,6 @@ Se envía cuando el agente finaliza correctamente. El array `data` contiene los 
 }
 ```
 
-
 <div id="agentfailed">
   ### `agent.failed`
 </div>
@@ -390,7 +380,6 @@ Se envía cuando el agente se encuentra con un error. El campo `error` contiene 
 }
 ```
 
-
 <div id="agentcancelled">
   ### `agent.cancelled`
 </div>
@@ -410,7 +399,6 @@ Se envía cuando el usuario cancela la tarea del agente.
   "metadata": {}
 }
 ```
-
 
 <div id="event-filtering">
   ## Filtrado de eventos

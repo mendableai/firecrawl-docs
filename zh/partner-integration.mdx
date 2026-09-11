@@ -132,7 +132,7 @@ POST /partner/v1/api-keys/validate
 * 用户可以随时手动删除 API 密钥。
 * 已删除的 API 密钥不会进行软删除。Firecrawl 无法区分某个密钥是已被删除，还是从未存在过。
 
-<div id="request">
+<div id="request-2">
   #### 请求
 </div>
 
@@ -149,7 +149,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/validate" \
 | -------- | ------ | -- | ----------- |
 | `apiKey` | string | 是  | 待验证的 API 密钥 |
 
-<div id="response">
+<div id="response-2">
   #### 响应
 </div>
 
@@ -167,7 +167,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/validate" \
 | `teamName` | string | 与此 API 密钥关联的团队名称   |
 | `email`    | string | 与此 API 密钥关联的用户邮箱地址 |
 
-<div id="errors">
+<div id="errors-2">
   #### 错误
 </div>
 
@@ -189,7 +189,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/validate" \
 POST /partner/v1/api-keys/rotate
 ```
 
-<div id="request">
+<div id="request-3">
   #### 请求
 </div>
 
@@ -206,7 +206,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/rotate" \
 | -------- | ------ | -- | -------------- |
 | `apiKey` | string | 是  | 要删除并替换的 API 密钥 |
 
-<div id="response">
+<div id="response-3">
   #### 响应
 </div>
 
@@ -222,7 +222,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/rotate" \
 | -------- | ------ | ----------- |
 | `apiKey` | string | 新创建的 API 密钥 |
 
-<div id="errors">
+<div id="errors-3">
   #### 错误
 </div>
 

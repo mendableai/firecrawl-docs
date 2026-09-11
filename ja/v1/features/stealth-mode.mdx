@@ -1,29 +1,27 @@
 ---
 title: "拡張モード"
-description: "プライバシーを保護しながら複雑なサイトを信頼性高くスクレイピングするために拡張プロキシを使用する"
+description: "プライバシーを保護しながら複雑なサイトを信頼性高くスクレイピングするために強化プロキシを使用する"
 og:title: "拡張モード | Firecrawl"
-og:description: "プライバシーを保護しながら複雑なサイトを信頼性高くスクレイピングするために拡張プロキシを使用する"
+og:description: "プライバシーを保護しながら複雑なサイトを信頼性高くスクレイピングするために強化プロキシを使用する"
 ---
 
 import ProxyPython from "/snippets/ja/v1/scrape/proxy/python.mdx";
 import ProxyNode from "/snippets/ja/v1/scrape/proxy/js.mdx";
 import ProxyCURL from "/snippets/ja/v1/scrape/proxy/curl.mdx";
-import ProxyRetryPython from "/snippets/ja/v1/scrape/proxy-retry/python.mdx";
-import ProxyRetryNode from "/snippets/ja/v1/scrape/proxy-retry/js.mdx";
-import ProxyRetryCURL from "/snippets/ja/v1/scrape/proxy-retry/curl.mdx";
+
+<Warning>
+  `proxy` パラメータは非推奨です。Firecrawl によるプロキシ選択を可能にする `auto` の使用を推奨します。
+</Warning>
 
 Firecrawl は、複雑さの異なるサイトをスクレイピングできるよう、複数のプロキシタイプを提供しています。プロキシタイプは `proxy` パラメータで指定できます。
-
 
 <div id="proxy-types">
   ### プロキシタイプ
 </div>
 
-Firecrawl は 3 種類のプロキシをサポートしています:
-
-- **basic**: ほとんどのサイトをスクレイピングするためのプロキシ。高速で、通常は問題なく動作します。
-- **enhanced**: 複雑なサイトをプライバシーを保護しながらスクレイピングするための高機能プロキシ。速度は遅めですが、特定のサイトではより信頼性があります。
-- **auto**: basic プロキシが失敗した場合、Firecrawl が自動的に enhanced プロキシで再試行します。enhanced での再試行が成功した場合、そのスクレイプには 5 クレジットが請求されます。最初の basic で成功した場合は、通常のコストのみが請求されます。
+* **basic**: ほとんどのサイトをスクレイピングするためのプロキシ。
+* **enhanced**: 複雑なサイトをプライバシーを保護しながらスクレイピングするための強化プロキシ。
+* **auto**: 推奨。basic プロキシが失敗した場合、Firecrawl が自動的に強化プロキシで再試行します。
 
 プロキシを指定しない場合、Firecrawl はデフォルトで basic を使用します。
 
@@ -31,34 +29,12 @@ Firecrawl は 3 種類のプロキシをサポートしています:
   ### Enhancedモードの利用
 </div>
 
-複雑なウェブサイトをスクレイピングする場合は、プライバシーを保護しつつ成功率を高めるためにEnhancedモードを利用できます。
-
 <CodeGroup>
+  <ProxyPython />
 
-<ProxyPython />
+  <ProxyNode />
 
-<ProxyNode />
-
-<ProxyCURL />
-
+  <ProxyCURL />
 </CodeGroup>
 
-**注:** Enhancedプロキシのリクエストは1回あたり5クレジットかかります。
-
-<div id="using-enhanced-as-a-retry-mechanism">
-  ## リトライ手段としての Enhanced の活用
-</div>
-
-一般的なパターンとして、まずはデフォルトのプロキシ設定でスクレイピングを試し、レスポンスの `metadata.statusCode` フィールドに特定のエラーステータスコード（401、403、500）が含まれている場合に Enhanced モードでリトライします。これらのステータスコードは、サイト側でリクエストがブロックされている可能性を示します。
-
-<CodeGroup>
-
-<ProxyRetryPython />
-
-<ProxyRetryNode />
-
-<ProxyRetryCURL />
-
-</CodeGroup>
-
-この方法により、必要な場合にのみ Enhanced モードを使うことで、クレジット消費を最適化できます。
+**注:** Enhancedプロキシのリクエストは現在、基本リクエストと同じく1回あたり1クレジットです。

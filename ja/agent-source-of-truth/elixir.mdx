@@ -94,7 +94,7 @@ config :firecrawl, api_key: System.get_env("FIRECRAWL_API_KEY")
 
 * `query`
   * Type: string
-  * Use when: 検索クエリが必要な場合。
+  * Use when: 検索queryが必要な場合。
   * Notes: 結果を特定のドメインに限定するには `site:example.com` を使用します。
 
 * `sources`
@@ -110,10 +110,10 @@ config :firecrawl, api_key: System.get_env("FIRECRAWL_API_KEY")
   * Type: list of atoms, strings, or maps
   * Use when: 結果をカテゴリで絞り込みたい場合。
   * Confirmed values:
-    * `"github"` or `:github`
+    * `"developer"` or `:developer`
     * `"research"` or `:research`
     * `"pdf"` or `:pdf`
-    * `%{type: "github" | "research" | "pdf"}`
+    * `%{type: "developer" | "research" | "pdf"}`
 
 * `limit`
   * Type: integer
@@ -154,19 +154,21 @@ config :firecrawl, api_key: System.get_env("FIRECRAWL_API_KEY")
   ## スクレイピング
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### これを使う理由
 </div>
 
 URL がすでに分かっており、1 つ以上のフォーマットで構造化されたコンテンツを取得したい場合は、スクレイピングを使用します。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### 推奨SDKメソッド
 </div>
 
 `Firecrawl.scrape_and_extract_from_url(params \\ [], opts \\ [])`
 
-### 基本的な例
+<div id="simple-example-2">
+  ### 基本的な例
+</div>
 
 ```elixir
 {:ok, res} = Firecrawl.scrape_and_extract_from_url(
@@ -175,7 +177,9 @@ URL がすでに分かっており、1 つ以上のフォーマットで構造�
 )
 ```
 
-### 応用例
+<div id="complex-example-2">
+  ### 応用例
+</div>
 
 ```elixir
 {:ok, res} = Firecrawl.scrape_and_extract_from_url(
@@ -208,7 +212,7 @@ URL がすでに分かっており、1 つ以上のフォーマットで構造�
 )
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### パラメータ
 </div>
 
@@ -332,19 +336,19 @@ URL がすでに分かっており、1 つ以上のフォーマットで構造�
   ## Interact
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### これを使う理由
 </div>
 
 ページで、スクレイピング開始後にブラウザのアクションやコードの実行が必要な場合は、Interact を使用します。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### 推奨SDKメソッド
 </div>
 
 `Firecrawl.interact_with_scrape_browser_session(job_id, params \\ [], opts \\ [])`
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### シンプルな例
 </div>
 
@@ -357,7 +361,7 @@ URL がすでに分かっており、1 つ以上のフォーマットで構造�
 )
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### 複雑な例
 </div>
 
@@ -370,7 +374,7 @@ URL がすでに分かっており、1 つ以上のフォーマットで構造�
 )
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### パラメータ
 </div>
 

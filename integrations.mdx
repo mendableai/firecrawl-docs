@@ -1,23 +1,223 @@
 ---
 title: Integrations
-description: "Firecrawl allows you to turn entire websites into LLM-ready markdown"
+description: "Add Firecrawl web search, scraping, and interaction to the coding agents, app builders, frameworks, and automation platforms you already use"
 og:title: "Integrations | Firecrawl"
-og:description: "Firecrawl allows you to turn entire websites into LLM-ready markdown"
+og:description: "Add Firecrawl web search, scraping, and interaction to the coding agents, app builders, frameworks, and automation platforms you already use"
 ---
 
+Firecrawl plugs into the tools you already build with. Pick your platform below, or call the [API](/api-reference/v2-introduction) directly.
+
+## Coding agents and assistants
+
+Give your agent live web search, scraping, and browser interaction over MCP or the [Firecrawl CLI](/sdks/cli).
+
 <CardGroup cols={2}>
-  <Card title="Vercel Marketplace" icon="bolt" href="quickstarts/vercel-marketplace">
-    Add Firecrawl to Vercel projects with automatic API key setup
-  </Card>
   <Card
-    title="Langchain"
+    title="Claude Code"
     icon={
       <img
-        src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/langchain.png"
-        alt="Firecrawl Document Loader"
+        src="/images/integrations/claude-code.png"
+        alt="Claude Code"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
       />
     }
-    href="integrations/langchain"
+    href="/quickstarts/claude-code"
+  >
+    Set up Firecrawl MCP in Claude Code
+  </Card>
+  <Card
+    title="Codex"
+    icon={
+      <img
+        src="/images/agent-clients/codex.svg"
+        alt="Codex"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/quickstarts/codex-cli"
+  >
+    Use Firecrawl MCP in OpenAI Codex
+  </Card>
+  <Card
+    title="Cursor"
+    icon={
+      <img
+        src="/images/integrations/cursor.png"
+        alt="Cursor"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/quickstarts/cursor"
+  >
+    One-click install Firecrawl MCP in Cursor
+  </Card>
+  <Card
+    title="Hermes Agent"
+    icon={
+      <img
+        src="/images/integrations/hermes.png"
+        alt="Hermes Agent"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/hermes"
+  >
+    The default web search and extract backend for Hermes Agent
+  </Card>
+  <Card
+    title="OpenClaw"
+    icon={
+      <img
+        src="/images/integrations/openclaw.png"
+        alt="OpenClaw"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/quickstarts/openclaw"
+  >
+    Scrape, search, and browse from OpenClaw agents
+  </Card>
+  <Card
+    title="OpenCode"
+    icon={
+      <img
+        src="/images/integrations/opencode.png"
+        alt="OpenCode"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/quickstarts/opencode"
+  >
+    Wire Firecrawl MCP into OpenCode
+  </Card>
+  <Card
+    title="Amp"
+    icon={
+      <img
+        src="/images/integrations/amp.png"
+        alt="Amp"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/quickstarts/amp"
+  >
+    Wire Firecrawl MCP into Sourcegraph Amp
+  </Card>
+  <Card
+    title="Windsurf"
+    icon={
+      <img
+        src="/images/integrations/windsurf.svg"
+        alt="Windsurf"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/quickstarts/windsurf"
+  >
+    Set up Firecrawl MCP in Windsurf
+  </Card>
+  <Card
+    title="Antigravity"
+    icon={
+      <img
+        src="/images/integrations/antigravity.png"
+        alt="Google Antigravity"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/quickstarts/antigravity"
+  >
+    Add Firecrawl MCP to Google's agentic IDE
+  </Card>
+</CardGroup>
+
+## App builders and platforms
+
+Connect Firecrawl once, then build on live web data from the platform you deploy on.
+
+<CardGroup cols={2}>
+  <Card
+    title="Replit"
+    icon={
+      <img
+        src="/images/integrations/replit.png"
+        alt="Replit"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/replit"
+  >
+    Search, scrape, and interact in Replit Agent apps
+  </Card>
+  <Card
+    title="Lovable"
+    icon={
+      <img
+        src="/images/integrations/lovable.png"
+        alt="Lovable"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/lovable"
+  >
+    Connect your Lovable app to Firecrawl
+  </Card>
+  <Card
+    title="Vercel Marketplace"
+    icon={
+      <img
+        src="/images/integrations/vercel.png"
+        alt="Vercel"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/quickstarts/vercel-marketplace"
+  >
+    Add Firecrawl to Vercel projects with automatic API key setup
+  </Card>
+</CardGroup>
+
+## Agent frameworks
+
+Use Firecrawl as a loader, reader, or tool inside your agent code.
+
+<CardGroup cols={2}>
+  <Card
+    title="LangChain"
+    icon={
+      <img
+        src="/images/integrations/langchain.png"
+        alt="LangChain"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/langchain"
   >
     Check out Firecrawl Document Loader
   </Card>
@@ -25,84 +225,220 @@ og:description: "Firecrawl allows you to turn entire websites into LLM-ready mar
     title="LlamaIndex"
     icon={
       <img
-        src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/llamaindex.jpeg"
-        alt="Firecrawl Reader"
+        src="/images/integrations/llamaindex.jpeg"
+        alt="LlamaIndex"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
       />
     }
-    href="integrations/llamaindex"
+    href="/integrations/llamaindex"
   >
     Check out Firecrawl Reader
-  </Card>
-  <Card
-    title="Dify"
-    icon={
-      <img
-        src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/dify.jpeg"
-        alt="Dify"
-      />
-    }
-    href="integrations/dify"
-  >
-    Extract structured data from web pages
-  </Card>
-  <Card
-    title="Flowise"
-    icon={
-      <img
-        src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/flowise.png"
-        alt="Flowise"
-      />
-    }
-    href="integrations/flowise"
-  >
-    Sync data directly from websites
   </Card>
   <Card
     title="CrewAI"
     icon={
       <img
-        src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/crewai.png"
-        alt="Crew AI"
+        src="/images/integrations/crewai.png"
+        alt="CrewAI"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
       />
     }
-    href="integrations/crewai"
+    href="/integrations/crewai"
   >
-    Coordinate AI agents for web scraping tasks
+    Orchestrate collaborative, autonomous AI agents
+  </Card>
+  <Card
+    title="CAMEL-AI"
+    icon={
+      <img
+        src="/images/integrations/camel-ai.png"
+        alt="CAMEL-AI"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/camelai"
+  >
+    Connect Firecrawl with Camel AI
+  </Card>
+  <Card
+    title="Praison AI"
+    icon={
+      <img
+        src="/images/integrations/praison.jpg"
+        alt="Praison AI"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/praison"
+  >
+    Scrape data from the web with the Firecrawl tool
+  </Card>
+</CardGroup>
+
+## Visual AI builders
+
+Drag Firecrawl nodes into a visual canvas to build agents and RAG pipelines.
+
+<CardGroup cols={2}>
+  <Card
+    title="Dify"
+    icon={
+      <img
+        src="/images/integrations/dify.jpeg"
+        alt="Dify"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/dify"
+  >
+    Add Firecrawl to Chatflow, Workflow, and Agent apps
   </Card>
   <Card
     title="Langflow"
     icon={
       <img
-        src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/langflow.webp"
+        src="/images/integrations/langflow_2.png"
         alt="Langflow"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
       />
     }
-    href="integrations/langflow"
+    href="/integrations/langflow"
   >
-    Design visual web data pipelines
+    Build AI apps with a visual builder
   </Card>
   <Card
-    title="Camel AI"
+    title="Flowise"
     icon={
       <img
-        src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/camelai.jpg"
-        alt="CamelAI"
+        src="/images/integrations/flowise.png"
+        alt="Flowise"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
       />
     }
-    href="integrations/camelai"
+    href="/integrations/flowise"
   >
-    Design visual web data pipelines
+    Build LLM flows with drag and drop
+  </Card>
+</CardGroup>
+
+## Workflow automation
+
+Run Firecrawl on a schedule or a trigger and route results anywhere.
+
+<CardGroup cols={2}>
+  <Card
+    title="Zapier"
+    icon={
+      <img
+        src="/images/integrations/zapier-logomark.png"
+        alt="Zapier"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/zapier"
+  >
+    Connect Firecrawl with 9,000+ apps
+  </Card>
+  <Card
+    title="Make"
+    icon={
+      <img
+        src="/images/integrations/make.png"
+        alt="Make"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/make"
+  >
+    Use Firecrawl with Make
+  </Card>
+  <Card
+    title="n8n"
+    icon={
+      <img
+        src="/images/integrations/n8n.webp"
+        alt="n8n"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/n8n"
+  >
+    Use Firecrawl with n8n
+  </Card>
+  <Card
+    title="Pipedream"
+    icon={
+      <img
+        src="/images/integrations/pipedream.png"
+        alt="Pipedream"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/pipedream"
+  >
+    Use Firecrawl in your Pipedream workflows
+  </Card>
+</CardGroup>
+
+## Tooling and data platforms
+
+Expose Firecrawl through a tool layer, or sync web data into your knowledge base.
+
+<CardGroup cols={2}>
+  <Card
+    title="Composio"
+    icon={
+      <img
+        src="/images/integrations/composio.png"
+        alt="Composio"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
+      />
+    }
+    href="/integrations/composio"
+  >
+    Use Firecrawl with Composio
   </Card>
   <Card
     title="SourceSync.ai"
     icon={
       <img
-        src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/sourcesyncai.png"
+        src="/images/integrations/sourcesyncai.png"
         alt="SourceSync.ai"
+        width="24"
+        height="24"
+        style={{ objectFit: "contain" }}
       />
     }
-    href="integrations/sourcesyncai"
+    href="/integrations/sourcesyncai"
   >
     Build RAG applications with web data
   </Card>
 </CardGroup>
+
+<Note>
+Don't see your platform? Firecrawl works anywhere you can make an HTTP request. See the [API reference](/api-reference/v2-introduction), the [SDKs](/sdks/overview), or the [MCP server](/mcp-server).
+</Note>

@@ -23,16 +23,16 @@ Intégrez Firecrawl à OpenClaw pour donner à vos agents la capacité d’effec
   ## Configuration
 </div>
 
-Demandez à votre agent d’installer le CLI Firecrawl, de s’authentifier, puis d’initialiser la compétence avec cette commande :
+Demandez à votre agent d’installer le CLI Firecrawl, de s’authentifier, puis d’initialiser la compétence avec cette commande :
 
 ```bash
 npx -y firecrawl-cli init --browser --all
 ```
 
-* `--all` installe la compétence Firecrawl sur chaque agent de codage IA détecté
+* `--all` ignore la sélection d’agent et initialise chaque agent détecté
 * `--browser` ouvre automatiquement le navigateur pour l’authentification Firecrawl
 
-ou installez tout séparément :
+ou installez tout séparément :
 
 ```bash
 npm install -g firecrawl-cli
@@ -42,7 +42,7 @@ firecrawl login --browser
 export FIRECRAWL_API_KEY="fc-YOUR-API-KEY"
 ```
 
-Assurez-vous que tout est correctement configuré :
+Assurez-vous que tout est correctement configuré :
 
 ```bash
 firecrawl --status

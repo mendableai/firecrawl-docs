@@ -1,0 +1,27 @@
+---
+title: 'エージェント スナップショットを取得'
+openapi: '/ja/api-reference/v2-openapi.json GET /agent/{jobId}/snapshots/{snapshotId}'
+noindex: true
+---
+
+エージェント の実行中は、出力アーティファクトがバージョン管理されます。これには、生成途中の構造化 JSON の結果や、生成された Markdown、HTML、テキスト、スクリーンショットのアーティファクトが含まれます。変更のたびに、新しいバージョンを `snapshotId` で参照する `artifact.updated` [トレースイベント](/ja/api-reference/endpoint/agent-trace) が発行されます。このエンドポイントでは、そのようなスナップショットの完全な内容を 1 件取得できます。
+
+<div id="what-its-for">
+  ## 用途
+</div>
+
+* **部分結果** — 実行が完了する前に、エージェントの構造化された出力をプレビューできます。JSON 結果アーティファクト (`artifactId: "result"`) は内容の増加に応じてスナップショットされるため、各 `snapshotId` は最終的な `data` のある時点での状態を表します。
+* **レンダリング済みアーティファクト** — Markdown レポートや訪問先ページのスクリーンショットなど、エージェントが生成した JSON 以外のアーティファクトの内容を取得できます。
+* **実行の調査** — トレースと組み合わせることで、実行中に出力がどのように変化したかを正確に再現できます。
+
+<div id="how-it-works">
+  ## 仕組み
+</div>
+
+`artifact.updated` イベントの `change` フィールドは、スナップショットが前のスナップショットからどのように変化したかを示します。値は `init` (初回バージョン) 、`partial`、`append`、`modify`、`update` のいずれかです。変更のたびに新しい `snapshotId` が付与されます。現在の状態を取得するには最新のものを取得し、バージョン間の差分を確認するには履歴をたどります。
+
+レスポンスの `snapshot` フィールドには、アーティファクトの内容が string として含まれます。`json` アーティファクトでは JSON エンコードされているため、使用前に解析してください。
+
+<Note>スナップショットは Spark 2 での実行時、つまりすべての新規実行時に記録されます。廃止前に Spark 1 モデルで開始されたジョブにはスナップショットがなく、`400` が返されます。</Note>
+
+> Firecrawl APIキーが必要な AI エージェント ですか？自動オンボーディング手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) を参照してください。

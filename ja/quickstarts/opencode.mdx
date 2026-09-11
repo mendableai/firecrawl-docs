@@ -4,91 +4,46 @@ description: "OpenCode に Firecrawl の Web スクレイピングと検索を�
 sidebarTitle: "OpenCode"
 ---
 
-MCP 経由で、Firecrawl の検索、スクレイピング、クロール、ブラウザの各ツールを [OpenCode](https://opencode.ai) に追加します。
+ホスト型MCPサーバーを通じて、Firecrawl のキーなしの Search、Scrape、Parse ツールを [OpenCode](https://opencode.ai) に追加します。
 
 <div id="quick-setup">
-  ## クイックスタート
+  ## クイックセットアップ
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. APIキーを取得
-</div>
-
-[firecrawl.dev/app](https://www.firecrawl.dev/app)で登録し、APIキーをコピーします。
-
-<div id="2-add-firecrawl-to-opencode">
-  ### 2. OpenCode に Firecrawl を追加する
-</div>
-
-OpenCode は `~/.config/opencode/config.json` (グローバル) またはプロジェクト内の `./opencode.json` から設定を読み込みます。以下を追加します:
+以下を `~/.config/opencode/opencode.json` またはプロジェクトの `opencode.json` に追加します。
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
     "firecrawl": {
-      "type": "local",
-      "command": ["npx", "-y", "firecrawl-mcp"],
-      "environment": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
+      "type": "remote",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "enabled": true
     }
   }
 }
 ```
 
-`fc-YOUR-API-KEY` をご自身の Firecrawl APIキーに置き換えてください。
+OpenCodeを再起動し、`/mcp`を入力して、`firecrawl_search`、`firecrawl_scrape`、`firecrawl_parse`が利用可能であることを確認します。
 
-<div id="3-start-opencode">
-  ### 3. OpenCodeを起動する
+キーなしアクセスには、同じパブリックIPを使用するユーザー間で共有される制限があります。対話型クライアントから[For Humans](/ja/mcp-server/oauth)でサインインするか、ユーザー操作なしで利用する場合は[APIキーを追加](/ja/mcp-server/keyless#add-an-api-key)してください。
+
+<div id="try-it">
+  ## 試してみる
 </div>
 
-```bash
-opencode
+```text
+Search the web for the latest Bun release notes and summarize the sources.
 ```
 
-OpenCode は起動時に MCP サーバーを読み込みます。Firecrawl が接続されていることを確認してください:
-
-```
-/mcp
-```
-
-<div id="quick-demo">
-  ## クイックデモ
-</div>
-
-```
-Search the web for "Bun 2.0 changelog" and summarize the top results.
-```
-
-```
+```text
 Scrape https://docs.firecrawl.dev/introduction and list the code examples.
 ```
-
-```
-Crawl https://example.com/blog and save each post as markdown.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## リモートホストのURL (Node.js不要)
-</div>
-
-```json
-{
-  "mcp": {
-    "firecrawl": {
-      "type": "remote",
-      "url": "https://mcp.firecrawl.dev/v2/mcp"
-    }
-  }
-}
-```
-
-この構成では、キー不要のFirecrawlツールセットを使用します。アカウント接続型または無人セットアップの場合は、[ホスト型MCP接続モード](/ja/developer-guides/mcp-setup-guides/oauth)に従ってください。APIキーはURLではなく、Authorizationヘッダーまたは安全なシークレットストアに保管してください。
 
 <div id="troubleshooting">
   ## トラブルシューティング
 </div>
 
-* **サーバーが接続されていない** — MCP の読み込みエラーを確認するには、`opencode doctor` を実行します。
-* **`npx` で権限が拒否される** — Node.js 18 以降をインストールし、シェルがそのインストールを認識していることを確認してください (`which npx`) 。
+* **サーバーが接続されない:** `opencode doctor` を実行し、リモート URL を確認してください。
+* **クロールまたは他のツールが見当たらない:** キーなしで利用できるのは Search、Scrape、Parse のみです。より幅広いツールを利用するには、OAuth または APIキー で接続してください。

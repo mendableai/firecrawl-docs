@@ -14,14 +14,14 @@ El seguimiento de cambios te permite supervisar y detectar modificaciones en el 
   ## Descripción general
 </div>
 
-El seguimientoDeCambios te permite:
+El seguimiento de cambios te permite:
 
 - Detectar si una página web ha cambiado desde el último scrape
 - Ver los cambios específicos entre scrapes
 - Obtener datos estructurados sobre lo que ha cambiado
 - Controlar la visibilidad de los cambios
 
-Usando el formato `seguimientoDeCambios`, puedes supervisar cambios en un sitio web y recibir información sobre:
+Usando el formato `changeTracking`, puedes supervisar cambios en un sitio web y recibir información sobre:
 
 - `previousScrapeAt`: La marca de tiempo del scrape anterior con el que se compara la página actual (`null` si no hubo scrape previo)
 - `changeStatus`: El resultado de la comparación entre las dos versiones de la página
@@ -41,7 +41,7 @@ Usando el formato `seguimientoDeCambios`, puedes supervisar cambios en un sitio 
   ### Uso básico
 </div>
 
-Para usar el seguimientoDeCambios en el SDK de JavaScript, incluye `'changeTracking'` en el array de formatos al hacer scraping de una URL:
+Para usar el seguimiento de cambios en el SDK de JavaScript, incluye `'changeTracking'` en el array de formatos al hacer scraping de una URL:
 
 ```javascript
 const app = new FirecrawlApp({ apiKey: 'your-api-key' });
@@ -105,7 +105,6 @@ if (result.changeTracking.json) {
 }
 ```
 
-
 <div id="git-diff-results-example">
   ### Ejemplo de resultados de Git diff:
 </div>
@@ -119,7 +118,6 @@ if (result.changeTracking.json) {
 ...
 ```
 
-
 <div id="json-comparison-results-example">
   ### Ejemplo de resultados de comparación de JSON:
 </div>
@@ -132,7 +130,6 @@ if (result.changeTracking.json) {
   }
 }
 ```
-
 
 <div id="typescript-interface">
   ### Interfaz de TypeScript
@@ -182,16 +179,15 @@ interface ScrapeParams {
 }
 ```
 
-
 <div id="python-sdk">
   ## SDK de Python
 </div>
 
-<div id="basic-usage">
+<div id="basic-usage-2">
   ### Uso básico
 </div>
 
-Para usar el seguimientoDeCambios en el SDK de Python, incluye &#39;changeTracking&#39; en la lista de formatos al extraer una URL:
+Para usar el seguimiento de cambios en el SDK de Python, incluye &#39;changeTracking&#39; en la lista de formatos al extraer una URL:
 
 ```python
 from firecrawl import FirecrawlApp, ChangeTrackingOptions
@@ -207,7 +203,7 @@ print("Visibilidad:", result.changeTracking.visibility)  # 'visible' o 'oculta'
 print("Fecha de raspado anterior:", result.changeTracking.previousScrapeAt)  # Marca de tiempo ISO del raspado anterior
 ```
 
-<div id="advanced-options">
+<div id="advanced-options-2">
   ### Opciones avanzadas
 </div>
 
@@ -241,7 +237,6 @@ if 'json' in result.changeTracking:
     print(result.changeTracking.json.title.current)  # Título actual
 ```
 
-
 <div id="python-data-model">
   ### Modelo de datos en Python
 </div>
@@ -260,12 +255,11 @@ class ChangeTrackingData(pydantic.BaseModel):
     json: Optional[Any] = None
 ```
 
-
 <div id="change-tracking-modes">
-  ## Modos de seguimientoDeCambios
+  ## Modos de seguimiento de cambios
 </div>
 
-La función de seguimientoDeCambios admite dos modos:
+La función de seguimiento de cambios admite dos modos:
 
 <div id="git-diff-mode">
   ### Modo Git-Diff
@@ -310,7 +304,6 @@ Ejemplo de salida:
 
 Para utilizar el modo JSON, debes proporcionar un esquema que defina los campos que se deben extraer y comparar.
 
-
 <div id="important-facts">
   ## Datos importantes
 </div>
@@ -343,7 +336,7 @@ Estos son algunos detalles importantes que debes conocer al usar la función de 
 // Solicitud
 {
     "url": "https://firecrawl.dev",
-    "formats": ["markdown", "seguimientoDeCambios"]
+    "formats": ["markdown", "changeTracking"]
 }
 
 // Respuesta
@@ -375,7 +368,6 @@ Estos son algunos detalles importantes que debes conocer al usar la función de 
 }
 ```
 
-
 <div id="tracking-product-price-changes">
   ### Seguimiento de cambios en precios de productos
 </div>
@@ -383,7 +375,7 @@ Estos son algunos detalles importantes que debes conocer al usar la función de 
 ```javascript
 // JavaScript
 const result = await app.scrapeUrl('https://example.com/product', {
-  formatos: ['markdown', 'seguimientoDeCambios'],
+  formatos: ['markdown', 'changeTracking'],
   changeTrackingOptions: {
     modes: ['json'],
     schema: {
@@ -421,7 +413,6 @@ if result.changeTracking.changeStatus == 'changed':
     print(f"El precio cambió de {result.changeTracking.json.price.previous} a {result.changeTracking.json.price.current}")
 ```
 
-
 <div id="monitoring-content-changes-with-git-diff">
   ### Monitorear cambios de contenido con git-diff
 </div>
@@ -455,9 +446,8 @@ if result.changeTracking.changeStatus == 'changed':
     print(result.changeTracking.diff.text)
 ```
 
-
 <div id="billing">
   ## Facturación
 </div>
 
-Usar la funcionalidad básica de seguimientoDeCambios y el modo `git-diff` no tiene costo adicional. Sin embargo, si usas el modo `json` para comparar datos estructurados, el scraping de la página costará 5 créditos por página.
+Usar la funcionalidad básica de seguimiento de cambios y el modo `git-diff` no tiene costo adicional. Sin embargo, si usas el modo `json` para comparar datos estructurados, el scraping de la página costará 5 créditos por página.

@@ -1,116 +1,476 @@
 ---
 title: 集成
-description: "Firecrawl 帮你将整站内容转换为适配 LLM 的 Markdown"
+description: "将 Firecrawl 网页搜索、抓取和交互功能添加到您已在使用的编码代理、应用构建工具、框架和自动化平台中"
 og:title: "集成 | Firecrawl"
-og:description: "Firecrawl 帮你将整站内容转换为适配 LLM 的 Markdown"
+og:description: "将 Firecrawl 网页搜索、抓取和交互功能添加到您已在使用的编码代理、应用构建工具、框架和自动化平台中"
 ---
 
+Firecrawl 可集成到您正在使用的开发工具中。请在下方选择您的平台，或直接调用 [API](/zh/api-reference/v2-introduction)。
+
+<div id="coding-agents-and-assistants">
+  ## 编程代理与助手
+</div>
+
+通过 MCP 或 [Firecrawl CLI](/zh/sdks/cli)，为你的代理提供实时网页搜索、抓取和浏览器交互能力。
+
 <CardGroup cols={2}>
-  <Card title="Vercel Marketplace" icon="bolt" href="zh/quickstarts/vercel-marketplace">
-    将 Firecrawl 添加到 Vercel 项目中，并自动配置 API 密钥
+  <Card
+    title="Claude Code"
+    icon={
+  <img
+    src="/images/integrations/claude-code.png"
+    alt="Claude Code"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/quickstarts/claude-code"
+  >
+    在 Claude Code 中配置 Firecrawl MCP
   </Card>
 
   <Card
-    title="Langchain"
+    title="Codex"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/langchain.png"
-    alt="Firecrawl Document Loader"
+    src="/images/agent-clients/codex.svg"
+    alt="Codex"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="zh/integrations/langchain"
+    href="/zh/quickstarts/codex-cli"
   >
-    查看 Firecrawl Document Loader
+    在 OpenAI Codex 中使用 Firecrawl MCP
+  </Card>
+
+  <Card
+    title="Cursor"
+    icon={
+  <img
+    src="/images/integrations/cursor.png"
+    alt="Cursor"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/quickstarts/cursor"
+  >
+    在 Cursor 中一键安装 Firecrawl MCP
+  </Card>
+
+  <Card
+    title="Hermes Agent"
+    icon={
+  <img
+    src="/images/integrations/hermes.png"
+    alt="Hermes Agent"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/integrations/hermes"
+  >
+    Hermes Agent 的默认网页搜索和提取后端
+  </Card>
+
+  <Card
+    title="OpenClaw"
+    icon={
+  <img
+    src="/images/integrations/openclaw.png"
+    alt="OpenClaw"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/quickstarts/openclaw"
+  >
+    通过 OpenClaw 代理进行抓取、搜索和浏览
+  </Card>
+
+  <Card
+    title="OpenCode"
+    icon={
+  <img
+    src="/images/integrations/opencode.png"
+    alt="OpenCode"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/quickstarts/opencode"
+  >
+    将 Firecrawl MCP 接入 OpenCode
+  </Card>
+
+  <Card
+    title="Amp"
+    icon={
+  <img
+    src="/images/integrations/amp.png"
+    alt="Amp"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/quickstarts/amp"
+  >
+    将 Firecrawl MCP 接入 Sourcegraph Amp
+  </Card>
+
+  <Card
+    title="Windsurf"
+    icon={
+  <img
+    src="/images/integrations/windsurf.svg"
+    alt="Windsurf"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/quickstarts/windsurf"
+  >
+    在 Windsurf 中配置 Firecrawl MCP
+  </Card>
+
+  <Card
+    title="Antigravity"
+    icon={
+  <img
+    src="/images/integrations/antigravity.png"
+    alt="Google Antigravity"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/quickstarts/antigravity"
+  >
+    将 Firecrawl MCP 添加到 Google 的代理式 IDE
+  </Card>
+</CardGroup>
+
+<div id="app-builders-and-platforms">
+  ## 应用构建平台
+</div>
+
+只需连接一次 Firecrawl，即可在部署应用的平台上利用实时网页数据进行构建。
+
+<CardGroup cols={2}>
+  <Card
+    title="Replit"
+    icon={
+  <img
+    src="/images/integrations/replit.png"
+    alt="Replit"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/integrations/replit"
+  >
+    在 Replit Agent 应用中搜索、抓取和交互
+  </Card>
+
+  <Card
+    title="Lovable"
+    icon={
+  <img
+    src="/images/integrations/lovable.png"
+    alt="Lovable"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/integrations/lovable"
+  >
+    将您的 Lovable 应用连接到 Firecrawl
+  </Card>
+
+  <Card
+    title="Vercel Marketplace"
+    icon={
+  <img
+    src="/images/integrations/vercel.png"
+    alt="Vercel"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/quickstarts/vercel-marketplace"
+  >
+    将 Firecrawl 添加到 Vercel 项目，自动配置 API 密钥
+  </Card>
+</CardGroup>
+
+<div id="agent-frameworks">
+  ## 代理框架
+</div>
+
+在代理代码中将 Firecrawl 用作加载器、读取器或工具。
+
+<CardGroup cols={2}>
+  <Card
+    title="LangChain"
+    icon={
+  <img
+    src="/images/integrations/langchain.png"
+    alt="LangChain"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/integrations/langchain"
+  >
+    了解 Firecrawl Document Loader
   </Card>
 
   <Card
     title="LlamaIndex"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/llamaindex.jpeg"
-    alt="Firecrawl Reader"
+    src="/images/integrations/llamaindex.jpeg"
+    alt="LlamaIndex"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="zh/integrations/llamaindex"
+    href="/zh/integrations/llamaindex"
   >
-    查看 Firecrawl Reader
-  </Card>
-
-  <Card
-    title="Dify"
-    icon={
-  <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/dify.jpeg"
-    alt="Dify"
-  />
-}
-    href="zh/integrations/dify"
-  >
-    从网页提取结构化数据
-  </Card>
-
-  <Card
-    title="Flowise"
-    icon={
-  <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/flowise.png"
-    alt="Flowise"
-  />
-}
-    href="zh/integrations/flowise"
-  >
-    直接从网站同步数据
+    了解 Firecrawl Reader
   </Card>
 
   <Card
     title="CrewAI"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/crewai.png"
-    alt="Crew AI"
+    src="/images/integrations/crewai.png"
+    alt="CrewAI"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="zh/integrations/crewai"
+    href="/zh/integrations/crewai"
   >
-    协同 AI 代理执行网页抓取任务
+    编排协作式自主 AI 代理
+  </Card>
+
+  <Card
+    title="CAMEL-AI"
+    icon={
+  <img
+    src="/images/integrations/camel-ai.png"
+    alt="CAMEL-AI"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/integrations/camelai"
+  >
+    将 Firecrawl 与 Camel AI 连接起来
+  </Card>
+
+  <Card
+    title="Praison AI"
+    icon={
+  <img
+    src="/images/integrations/praison.jpg"
+    alt="Praison AI"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/integrations/praison"
+  >
+    使用 Firecrawl 工具从网页抓取数据
+  </Card>
+</CardGroup>
+
+<div id="visual-ai-builders">
+  ## 可视化 AI 构建器
+</div>
+
+将 Firecrawl 节点拖到可视化画布中，构建代理和 RAG 流水线。
+
+<CardGroup cols={2}>
+  <Card
+    title="Dify"
+    icon={
+  <img
+    src="/images/integrations/dify.jpeg"
+    alt="Dify"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/integrations/dify"
+  >
+    在 Chatflow、工作流和代理应用中添加 Firecrawl
   </Card>
 
   <Card
     title="Langflow"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/langflow.webp"
+    src="/images/integrations/langflow_2.png"
     alt="Langflow"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="zh/integrations/langflow"
+    href="/zh/integrations/langflow"
   >
-    设计可视化网页数据管道
+    使用可视化构建器创建 AI 应用
   </Card>
 
   <Card
-    title="Camel AI"
+    title="Flowise"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/camelai.jpg"
-    alt="CamelAI"
+    src="/images/integrations/flowise.png"
+    alt="Flowise"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="zh/integrations/camelai"
+    href="/zh/integrations/flowise"
   >
-    设计可视化网页数据管道
+    通过拖放构建 LLM 流程
+  </Card>
+</CardGroup>
+
+<div id="workflow-automation">
+  ## 工作流自动化
+</div>
+
+按计划或触发条件运行 Firecrawl，并将结果发送到任意位置。
+
+<CardGroup cols={2}>
+  <Card
+    title="Zapier"
+    icon={
+<img
+  src="/images/integrations/zapier-logomark.png"
+  alt="Zapier"
+  width="24"
+  height="24"
+  style={{ objectFit: "contain" }}
+/>
+}
+    href="/zh/integrations/zapier"
+  >
+    将 Firecrawl 与 9,000 多款应用连接
+  </Card>
+
+  <Card
+    title="Make"
+    icon={
+<img
+  src="/images/integrations/make.png"
+  alt="Make"
+  width="24"
+  height="24"
+  style={{ objectFit: "contain" }}
+/>
+}
+    href="/zh/integrations/make"
+  >
+    在 Make 中使用 Firecrawl
+  </Card>
+
+  <Card
+    title="n8n"
+    icon={
+<img
+  src="/images/integrations/n8n.webp"
+  alt="n8n"
+  width="24"
+  height="24"
+  style={{ objectFit: "contain" }}
+/>
+}
+    href="/zh/integrations/n8n"
+  >
+    在 n8n 中使用 Firecrawl
+  </Card>
+
+  <Card
+    title="Pipedream"
+    icon={
+<img
+  src="/images/integrations/pipedream.png"
+  alt="Pipedream"
+  width="24"
+  height="24"
+  style={{ objectFit: "contain" }}
+/>
+}
+    href="/zh/integrations/pipedream"
+  >
+    在 Pipedream 工作流中使用 Firecrawl
+  </Card>
+</CardGroup>
+
+<div id="tooling-and-data-platforms">
+  ## 工具和数据平台
+</div>
+
+通过工具层集成 Firecrawl，或将网页数据同步到知识库。
+
+<CardGroup cols={2}>
+  <Card
+    title="Composio"
+    icon={
+  <img
+    src="/images/integrations/composio.png"
+    alt="Composio"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/zh/integrations/composio"
+  >
+    将 Firecrawl 与 Composio 搭配使用
   </Card>
 
   <Card
     title="SourceSync.ai"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/sourcesyncai.png"
+    src="/images/integrations/sourcesyncai.png"
     alt="SourceSync.ai"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="zh/integrations/sourcesyncai"
+    href="/zh/integrations/sourcesyncai"
   >
     使用网页数据构建 RAG 应用
   </Card>
 </CardGroup>
+
+<Note>
+  没有找到您使用的平台？只要能发起 HTTP 请求的地方，都可以使用 Firecrawl。请参见 [API 参考](/zh/api-reference/v2-introduction)、[SDKs](/zh/sdks/overview) 或 [MCP 服务器](/zh/mcp-server)。
+</Note>

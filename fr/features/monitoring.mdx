@@ -26,10 +26,13 @@ import CheckOutputMixed from "/snippets/fr/v2/monitor/check/output/mixed.mdx";
 import DiffMarkdown from "/snippets/fr/v2/monitor/diff/markdown.mdx";
 import DiffJson from "/snippets/fr/v2/monitor/diff/json.mdx";
 import DiffMixed from "/snippets/fr/v2/monitor/diff/mixed.mdx";
+import GovLegalFeedbackCTA from "/snippets/fr/gov-legal-feedback-cta.mdx";
 
 Le monitoring Firecrawl exécute des vérifications récurrentes et vous avertit, vous ou votre agent, lorsque quelque chose change ou apparaît. Utilisez `/monitor` pour [surveiller des pages connues](/fr/features/monitoring-page), [lancer un crawl planifié sur un site web](/fr/features/monitoring-website) ou [exécuter une recherche web continue](/fr/features/monitoring-web-scale) afin d’obtenir de nouveaux résultats correspondant à un objectif.
 
 Tous les types de moniteur suivent le même workflow : choisissez une ou plusieurs cibles, définissez une planification, ajoutez un objectif optionnel en langage clair, puis recevez des notifications par webhook, e-mail ou Slack lorsque quelque chose d’important se produit. Cette page couvre la configuration commune. Pour la configuration et les exemples propres à chaque cible, consultez les pages de monitoring [Page](/fr/features/monitoring-page), [Website](/fr/features/monitoring-website) ou [Entire web-scale](/fr/features/monitoring-web-scale).
+
+<GovLegalFeedbackCTA src="docs-monitoring" />
 
 <CardGroup cols={3}>
   <Card title="surveillance de page" icon="file-lines" href="/fr/features/monitoring-page">
@@ -162,7 +165,7 @@ L&#39;intervalle minimal est de 5 minutes. Les réponses de l&#39;API renvoient 
   ## Suivi des modifications
 </div>
 
-Les moniteurs [Page](/fr/features/monitoring-page) et [website](/fr/features/monitoring-website) calculent par défaut les différences dans le markdown de chaque page et indiquent `same`, `changed`, `new`, `removed` ou `error`. Si vous souhaitez détecter des modifications dans des **champs structurés précis** (prix, titre, indicateur de disponibilité, éléments d’une liste, etc.), activez le suivi des modifications en mode JSON en ajoutant le format `suiviDesModifications` avec `modes: ["json"]` aux `scrapeOptions` de la cible.
+Les moniteurs [Page](/fr/features/monitoring-page) et [website](/fr/features/monitoring-website) calculent par défaut les différences dans le markdown de chaque page et indiquent `same`, `changed`, `new`, `removed` ou `error`. Le même calcul de différences est disponible en un seul appel via le format [suivi des modifications](/fr/features/change-tracking) lorsque vous exécutez vous-même le scrape. Si vous souhaitez détecter des modifications dans des **champs structurés précis** (prix, titre, indicateur de disponibilité, éléments d’une liste, etc.), activez le suivi des modifications en mode JSON en ajoutant le format `suiviDesModifications` avec `modes: ["json"]` aux `scrapeOptions` de la cible.
 
 <Note>
   Le suivi des modifications s’applique aux cibles `scrape` et `crawl`. Les moniteurs web à grande échelle (`search`) génèrent des alertes sur les nouveaux résultats plutôt que de calculer des différences sur des pages connues. Voir [Statuses and dedup](/fr/features/monitoring-web-scale#statuses-and-dedup).
@@ -220,24 +223,26 @@ Une page en mode mixte est marquée comme `changed` dès que **l&#39;une ou l&#3
   ### Webhooks
 </div>
 
-Lorsqu&#39;un moniteur dispose d&#39;un `webhook`, Firecrawl peut envoyer deux événements de moniteur :
+Lorsqu&#39;un moniteur dispose d&#39;un `webhook`, Firecrawl peut envoyer deux événements de moniteur :
 
-* `monitor.page` : envoyé à mesure que chaque scrape surveillé se termine dans le worker de scrape.
-* `monitor.check.completed` : envoyé une fois la vérification complète consolidée. Inclut l&#39;état de la vérification et des totaux récapitulatifs. Utilisez les événements `monitor.page` ou l&#39;API de vérification du moniteur pour obtenir des résultats au niveau des pages.
+* `monitor.page` : envoyé à mesure que chaque scrape surveillé se termine dans le worker de scrape.
+* `monitor.check.completed` : envoyé une fois la vérification complète consolidée. Inclut l&#39;état de la vérification et des totaux récapitulatifs. Utilisez les événements `monitor.page` ou l&#39;API de vérification du moniteur pour obtenir des résultats au niveau des pages.
 
 `monitor.page` inclut `isMeaningful` et `judgment` lorsque l&#39;évaluation des changements significatifs a été exécutée pour une page modifiée.
 
 <WebhookConfig />
 
-payload de `monitor.page` :
+payload de `monitor.page` :
 
 <PagePayload />
 
-payload de `monitor.check.completed` :
+payload de `monitor.check.completed` :
 
 <CheckCompletedPayload />
 
 `success` vaut `true` lorsque la vérification s&#39;est terminée sans erreur de page. Il vaut `false` pour les vérifications en échec ou partielles, et `error` contient la raison de l&#39;échec lorsqu&#39;elle est disponible.
+
+Votre point de terminaison doit répondre avec un état `2xx` en moins de 10 secondes. Les livraisons échouées font l&#39;objet de trois nouvelles tentatives, après 1, 5 et 15 minutes, puis le webhook est marqué comme en échec. Consultez [Délais et nouvelles tentatives](/fr/webhooks/overview#timeouts--retries) pour le tableau complet.
 
 <div id="email">
   ### E-mail
@@ -288,9 +293,9 @@ Utilisez `GET /v2/monitor/{monitorId}/checks` pour lister les vérifications, et
   <GetCheckCURL />
 </CodeGroup>
 
-La liste des vérifications peut être filtrée selon le `status` de la vérification : `queued`, `running`, `completed`, `failed`, `partial` ou `skipped_overlap`.
+La liste des vérifications peut être filtrée selon le `status` de la vérification : `queued`, `running`, `completed`, `failed`, `partial`, `skipped_overlap` ou `skipped_no_credits`. Il s’agit de l’ensemble complet. Consultez [Vérifications ignorées et moniteurs en pause](#skipped-checks-and-paused-monitors) pour comprendre la signification des deux états d’ignorance.
 
-La réponse détaillée d’une vérification inclut `estimatedCredits`, `actualCredits`, des compteurs récapitulatifs et un tableau `pages` paginé. `estimatedCredits` correspond au plafond réservé pour la vérification ; `actualCredits` correspond au montant final facturé une fois que Firecrawl sait combien de pages ont changé et ont nécessité une analyse. Utilisez l’URL `next` au niveau racine pour récupérer la page de résultats suivante, conformément à la pagination du crawl. Vous pouvez filtrer les pages par `status` : `same`, `new`, `changed`, `removed` ou `error`. Chaque page modifiée inclut des données `diff` inline ; les pages des moniteurs en mode JSON incluent également un `snapshot` avec l’extraction actuelle.
+La réponse détaillée d’une vérification inclut `estimatedCredits`, `actualCredits`, des compteurs récapitulatifs et un tableau `pages` paginé. `estimatedCredits` correspond au plafond réservé pour la vérification ; `actualCredits` correspond au montant final facturé une fois que Firecrawl sait combien de pages ont changé et ont nécessité une évaluation. Utilisez l’URL `next` au niveau racine pour récupérer la page de résultats suivante, conformément à la pagination du crawl. Vous pouvez filtrer les pages par `status` : `same`, `new`, `changed`, `removed` ou `error`. Chaque page modifiée inclut des données `diff` inline ; les pages des moniteurs en mode JSON incluent également un `snapshot` avec l’extraction actuelle.
 
 <Tabs>
   <Tab title="Mode Markdown">
@@ -305,6 +310,40 @@ La réponse détaillée d’une vérification inclut `estimatedCredits`, `actual
     <CheckOutputMixed />
   </Tab>
 </Tabs>
+
+<div id="skipped-checks-and-paused-monitors">
+  ## Vérifications ignorées et moniteurs en pause
+</div>
+
+Une vérification planifiée peut se terminer sans s&#39;exécuter. Elle est alors enregistrée avec un état « ignorée », et non un échec, et elle n&#39;est pas facturée.
+
+| État                 | Ce qui s&#39;est passé                                                                                                                                                                                                                                     |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `skipped_overlap`    | La vérification précédente de ce moniteur était encore en cours au moment où celle-ci devait démarrer ; elle a donc été ignorée plutôt que de s&#39;exécuter en parallèle. La vérification planifiée suivante s&#39;exécute normalement.                    |
+| `skipped_no_credits` | La vérification des crédits pour ce moniteur a refusé l&#39;exécution. `actualCredits` vaut `0` et `error` en indique la raison. Ce cas couvre aussi bien une équipe à court de crédits qu&#39;un job accordé par un partenaire qui l&#39;a ensuite retiré. |
+
+Une vérification `skipped_no_credits` se résout d&#39;elle-même dès que sa cause disparaît. Il suffit d&#39;ajouter des crédits : aucune réinitialisation n&#39;est nécessaire sur le moniteur.
+
+<div id="there-is-no-failure-counter-to-read">
+  ### Il n&#39;existe aucun compteur d&#39;échecs à consulter
+</div>
+
+Firecrawl ne conserve ni ne renvoie de nombre total d&#39;échecs, de taux d&#39;erreur ou de nombre de sauts consécutifs pour un moniteur. L&#39;objet moniteur renvoie `status`, `nextRunAt`, `lastRunAt`, `currentCheckId` et `lastCheckSummary`, et une vérification renvoie ses propres `status` et `error`. Aucune de ces valeurs ne constitue un cumul.
+
+Pour obtenir une série ou un taux, calculez-les à partir de la liste des vérifications. `GET /v2/monitor/{monitorId}/checks` renvoie les vérifications du plus récent au plus ancien : compter la suite initiale de vérifications partageant le même état vous donne donc la série en cours, qu&#39;une seule vérification ayant un état différent vient interrompre.
+
+<div id="automatic-pausing">
+  ### Mise en pause automatique
+</div>
+
+Firecrawl ne met un moniteur en pause que dans un seul cas : lorsqu&#39;un moniteur s&#39;exécute sur des crédits accordés via une [partner integration](/fr/partner-credits) et que le partenaire retire ce job, chaque vérification est ignorée avec `skipped_no_credits` et une erreur indiquant que le partenaire a révoqué le job. Cette condition ne se résout jamais d&#39;elle-même : après trois vérifications ignorées consécutives de ce type, Firecrawl fait passer l&#39;`status` du moniteur à `paused` et efface `nextRunAt`, ce qui interrompt la planification.
+
+Deux conséquences en découlent.
+
+* L&#39;épuisement des crédits ne met pas un moniteur en pause. Une équipe ayant dépassé son solde conserve sa planification et continue d&#39;enregistrer des vérifications `skipped_no_credits` jusqu&#39;à ce que des crédits redeviennent disponibles.
+* La mise en pause est un changement d&#39;état, pas une notification. Il n&#39;existe ni événement webhook ni e-mail de mise en pause. Consultez l&#39;`status` du moniteur pour la constater, et utilisez `PATCH /v2/monitor/{monitorId}` pour le repasser à `active` une fois l&#39;accès sous-jacent rétabli.
+
+Un moniteur en pause conserve sa configuration et son historique de vérifications : mettre en pause n&#39;est pas supprimer.
 
 <div id="pricing">
   ## Tarification

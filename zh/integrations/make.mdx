@@ -1,0 +1,294 @@
+---
+title: "Make"
+description: "Firecrawl 与 Make 的官方集成和工作流自动化"
+---
+
+<Note>
+  **Make 官方集成：**[make.com/en/integrations/firecrawl](https://www.make.com/en/integrations/firecrawl)
+
+  连接 3,000 多款应用 • 可视化工作流构建器 • 企业级自动化 • AI 驱动的自动化方案
+</Note>
+
+<div id="make-integration-overview">
+  ## Make 集成概览
+</div>
+
+Make (原名 Integromat) 提供由 Firecrawl 团队维护、经过验证并获得官方支持的 Firecrawl 集成。
+
+<CardGroup cols={2}>
+  <Card title="可视化工作流构建器" icon="diagram-project">
+    使用 Make 直观的可视化界面设计复杂的自动化流程
+  </Card>
+
+  <Card title="企业级就绪" icon="building">
+    借助企业级自动化和控制功能实现安全扩展
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-modules-in-make">
+  ## Make 中的 Firecrawl 模块
+</div>
+
+<AccordionGroup>
+  <Accordion title="操作（7 个模块）" icon="bolt">
+    <div id="crawl-a-website">
+      ### 爬取网站
+    </div>
+
+    爬取一个 URL，获取多个页面的内容
+
+    ***
+
+    <div id="extract-a-website">
+      ### 提取网站
+    </div>
+
+    使用 LLM 从页面中提取结构化数据
+
+    ***
+
+    <div id="scrape-a-website">
+      ### 抓取网站
+    </div>
+
+    抓取一个 URL，获取单个页面的内容
+
+    ***
+
+    <div id="map-a-website">
+      ### 映射网站
+    </div>
+
+    根据选项映射多个 URL
+
+    ***
+
+    <div id="search-a-website">
+      ### 搜索网站
+    </div>
+
+    利用 Firecrawl 的抓取功能进行网页搜索
+
+    ***
+
+    <div id="get-crawl-status">
+      ### 获取爬取状态
+    </div>
+
+    获取指定爬取事件 ID 的状态
+
+    ***
+
+    <div id="get-extract-status">
+      ### 获取提取状态
+    </div>
+
+    获取指定提取事件 ID 的状态
+  </Accordion>
+
+  <Accordion title="搜索（1 个模块）" icon="magnifying-glass">
+    <div id="search-a-website-2">
+      ### 搜索网站
+    </div>
+
+    获取任意搜索查询的完整页面内容
+  </Accordion>
+
+  <Accordion title="高级" icon="code">
+    <div id="make-an-api-call">
+      ### 发起 API 调用
+    </div>
+
+    执行任意已授权的 API 调用，以满足自定义用例
+  </Accordion>
+</AccordionGroup>
+
+<div id="popular-app-integrations">
+  ## 热门应用集成
+</div>
+
+<Tabs>
+  <Tab title="数据存储">
+    **Google Sheets** - 在电子表格中追踪并记录抓取数据
+
+    **Airtable** - 利用抓取内容构建结构化数据库
+
+    **Google Drive** - 存储抓取的文件和报告
+
+    **Notion** - 整理研究资料和网页数据
+  </Tab>
+
+  <Tab title="通信">
+    **Slack** - 接收网站变更和更新告警
+
+    **Telegram Bot** - 接收监控即时通知
+
+    **Gmail** - 通过电子邮件发送报告和摘要
+
+    **Microsoft 365 Email** - 企业级电子邮件自动化
+  </Tab>
+
+  <Tab title="CRM 和销售">
+    **HubSpot CRM** - 利用网页数据丰富线索
+
+    **monday.com** - 追踪竞争对手情报
+
+    **ClickUp** - 管理研究任务
+  </Tab>
+
+  <Tab title="AI 工具">
+    **OpenAI (ChatGPT, DALL-E)** - 分析和总结抓取内容
+
+    **Google Gemini AI** - 处理数据并提取洞察
+
+    **Perplexity AI** - 增强研究工作流
+
+    **Make AI Agents** - 构建自适应的 AI 驱动自动化流程
+  </Tab>
+</Tabs>
+
+<div id="common-workflow-patterns">
+  ## 常见工作流模式
+</div>
+
+<CardGroup cols={2}>
+  <Card title="竞争对手监控" icon="binoculars">
+    **定时任务** → Firecrawl (抓取) → Google Sheets (记录) → Slack (告警) 
+
+    跟踪竞争对手网站，并即时接收通知
+  </Card>
+
+  <Card title="线索信息补充" icon="users">
+    **Google Forms** → Firecrawl (抓取公司网站) → HubSpot CRM (更新) 
+
+    自动使用公司数据补充线索信息
+  </Card>
+
+  <Card title="内容聚合" icon="newspaper">
+    **定时任务** → Firecrawl (爬取博客) → OpenAI (总结) → Gmail (发送摘要) 
+
+    自动完成内容策划与分发
+  </Card>
+
+  <Card title="价格监控" icon="chart-line">
+    **定时任务 (每小时)&#x20;**&#x20;→ Firecrawl (抓取) → 筛选 → Telegram (告警) 
+
+    实时跟踪价格并发送告警
+  </Card>
+</CardGroup>
+
+<div id="getting-started">
+  ## 快速开始
+</div>
+
+<Steps>
+  <Step title="注册 Firecrawl">
+    前往 [firecrawl.dev](https://firecrawl.dev) 获取 API 密钥
+  </Step>
+
+  <Step title="在 Make 中创建场景">
+    登录 [Make](https://make.com)，然后点击“创建新场景”
+  </Step>
+
+  <Step title="添加 Firecrawl 模块">
+    搜索“Firecrawl”，然后选择所需的操作
+  </Step>
+
+  <Step title="使用 API 密钥连接">
+    添加 Firecrawl API 密钥以完成身份验证
+  </Step>
+
+  <Step title="配置并测试">
+    设置工作流参数并运行测试
+  </Step>
+</Steps>
+
+<div id="firecrawl-actions-overview">
+  ## Firecrawl actions 概览
+</div>
+
+| 模块       | 使用场景        | 最适用场景  |
+| -------- | ----------- | ------ |
+| **抓取网站** | 单页数据提取      | 快速获取数据 |
+| **爬取网站** | 多页面内容采集     | 全站抓取   |
+| **提取网站** | AI 驱动的结构化提取 | 复杂数据提取 |
+| **搜索网站** | 搜索 + 完整内容   | 自动化研究  |
+| **映射网站** | 发现 URL      | SEO 分析 |
+
+<div id="best-practices">
+  ## 最佳实践
+</div>
+
+<CardGroup cols={2}>
+  <Card title="性能" icon="gauge-high">
+    * 单个页面使用 **抓取** (速度最快) 
+    * 大型网站使用带限额的 **爬取**
+    * 合理设置计划，避免触发限流
+    * 添加错误处理模块
+  </Card>
+
+  <Card title="成本优化" icon="piggy-bank">
+    * 策略性地设置计划 (每小时/每天/每周) 
+    * 使用筛选条件，避免不必要的运行
+    * 设置 crawl 限额，控制 API 使用量
+    * 先在 Firecrawl playground 中进行测试
+  </Card>
+</CardGroup>
+
+<div id="industry-use-cases">
+  ## 行业用例
+</div>
+
+<AccordionGroup>
+  <Accordion title="电子商务" icon="cart-shopping">
+    * 竞争对手价格监控
+    * 产品可用性跟踪
+    * 评论汇总与分析
+    * 库存水平监控
+  </Accordion>
+
+  <Accordion title="房地产" icon="house">
+    * 汇总多个来源的房源信息
+    * 市场趋势分析
+    * 房产数据补充
+    * 竞争性定价洞察
+  </Accordion>
+
+  <Accordion title="营销" icon="bullhorn">
+    * 竞争对手内容监控
+    * SEO 效果跟踪
+    * 反向链接分析
+    * 社交媒体提及跟踪
+  </Accordion>
+
+  <Accordion title="金融" icon="chart-line">
+    * 市场数据收集
+    * 新闻与情绪汇总
+    * 监管申报监控
+    * 股价跟踪
+  </Accordion>
+
+  <Accordion title="人力资源与招聘" icon="user-tie">
+    * 职位信息汇总
+    * 公司调研自动化
+    * 候选人背景信息补充
+    * 薪资基准分析
+  </Accordion>
+</AccordionGroup>
+
+<div id="make-vs-zapier-vs-n8n">
+  ## Make、Zapier 与 n8n 对比
+</div>
+
+| 功能       | Make           | Zapier     | n8n           |
+| -------- | -------------- | ---------- | ------------- |
+| **部署方式** | 可视化构建器，云端      | 无代码，云端     | 自托管或云端        |
+| **定价**   | 按操作次数计费        | 按任务计费      | 按执行次数计费       |
+| **集成**   | 3,000+ 款应用     | 9,000+ 款应用 | 1,000+ 款应用和服务 |
+| **复杂度**  | 高级工作流          | 简单工作流      | 复杂工作流         |
+| **最适合**  | 可视化自动化，中等复杂度需求 | 快速实现自动化    | 开发者掌控         |
+| **学习曲线** | 中等             | 简单         | 中等偏高          |
+
+<Tip>
+  **提示：** Make 擅长可视化工作流设计和复杂自动化。非常适合需要比 Zapier 更强控制力、但偏好可视化构建而非 n8n 代码优先方式的团队。
+</Tip>

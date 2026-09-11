@@ -26,17 +26,39 @@ import {
 } from "/snippets/shared/agent-first-onboarding.jsx";
 import GeneralFeedbackCTA from "/snippets/ja/general-feedback-cta.mdx";
 
-<Note>
-  **AIエージェント向け:** すべてのドキュメントの完全なインデックスについては、[llms.txt](/ja/llms.txt)を参照してください。
-</Note>
-
-<GeneralFeedbackCTA src="docs-introduction" />
-
 <div id="get-started">
   ## はじめに
 </div>
 
-<McpClientSelector />
+<Visibility for="humans">
+  <McpClientSelector variant="human" />
+</Visibility>
+
+<Visibility for="agents">
+  Streamable HTTP 経由で接続します。キーなしで利用できるサーバー URL (Search、スクレイピング、解析 用、認証情報不要) は `https://mcp.firecrawl.dev/v2/mcp` です。
+
+  * Codex: `codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp`
+  * Claude Code: `claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp`
+  * Cursor または任意の JSON 設定対応クライアント: `{"mcpServers": {"firecrawl": {"url": "https://mcp.firecrawl.dev/v2/mcp"}}}`
+  * OpenCode (`opencode.json`) : `{"mcp": {"firecrawl": {"type": "remote", "url": "https://mcp.firecrawl.dev/v2/mcp", "enabled": true}}}`
+  * ChatGPT または Claude.ai: 標準の Firecrawl コネクタを使用します — [ChatGPT](https://chatgpt.com/plugins?q=firecrawl) または [Claude](https://claude.ai/directory/connectors/firecrawl)。
+
+  両方のセットアップ方法と API キーの設定については、[MCP Get Started](/ja/mcp-server.md)、[For Agents](/ja/mcp-server/keyless.md)、および [For Humans](/ja/mcp-server/oauth.md)を参照してください。
+</Visibility>
+
+<div id="build-directly-with-the-api">
+  ### API を直接使って構築する
+</div>
+
+最初のページを今すぐスクレイピングしましょう。このリクエストにはアカウントや API キーは必要ありません。
+
+<ScrapeCURL />
+
+より高い上限が必要になったら、[API キー](https://www.firecrawl.dev/app/api-keys)を追加してください。[Python SDK](/ja/sdks/python)、[Node SDK](/ja/sdks/node)、または [APIリファレンス](/ja/api-reference/endpoint/scrape)を参照し、アプリケーションに組み込んでください。
+
+<div id="other-ways-to-get-started">
+  ## その他の始め方
+</div>
 
 <div id="install-the-firecrawl-cli">
   ### Firecrawl CLIをインストールする
@@ -50,16 +72,20 @@ npx -y firecrawl-cli@latest init --all --browser
 
 <Note>
   セットアップ後に、コーディングエージェントを再起動して、新しいスキルを認識できるようにしてください。セットアップ方法の詳細は
-  [Skills + CLI](/ja/sdks/cli) を参照してください。
+  [CLI](/ja/sdks/cli) を参照してください。
 </Note>
 
 <div id="set-up-with-an-agent">
   ### エージェントを使ってセットアップ
 </div>
 
-この Firecrawl のセットアップ用 prompt をエージェントに渡してください。
+この Firecrawl のセットアップ用 prompt をエージェントに渡すか、[すべての MCP セットアップオプション](/ja/mcp-server)を確認してください。
 
 <AgentSetupButton />
+
+<Note>
+  **AI エージェント向け:** ドキュメントのインデックスには [llms.txt](https://docs.firecrawl.dev/llms.txt)、全文には [llms-full.txt](https://docs.firecrawl.dev/llms-full.txt) を使用してください。
+</Note>
 
 <div id="build-and-test-directly">
   ### 直接 Build してテスト
@@ -99,11 +125,13 @@ npx -y firecrawl-cli@latest init --all --browser
   ### なぜ Firecrawl なのか？
 </div>
 
-* **LLM対応の出力**: クリーンなMarkdown、構造化されたJSON、スクリーンショットなどを出力できます。
+* **LLM対応の出力**: クリーンなMarkdown、構造化 JSON、スクリーンショットなどを出力できます。
 * **複雑なケースにも対応**: プロキシ、アンチボット、JavaScriptレンダリング、動的コンテンツに対応します。
 * **高い信頼性**: 高い稼働率と安定した結果を実現し、本番運用向けに設計されています。
 * **高速**: 数秒で結果を返し、高スループット向けに最適化されています。
 * **MCP Server**: [Model Context Protocol (MCP) ](/ja/mcp-server) を介して、FirecrawlをあらゆるAIツールに接続できます。
+
+<GeneralFeedbackCTA src="docs-introduction" />
 
 ***
 
@@ -179,7 +207,7 @@ npx -y firecrawl-cli@latest init --all --browser
 
 <CardGroup cols={2}>
   <Card title="Agent" icon="robot" href="/ja/features/agent">
-    AI を活用した自律的な Web データ収集
+    AI を活用した自律的なウェブデータ収集
   </Card>
 
   <Card title="Interact" icon="hand-pointer" href="/ja/features/interact">
@@ -192,6 +220,10 @@ npx -y firecrawl-cli@latest init --all --browser
 
   <Card title="Browser Sandbox" icon="browser" href="/ja/features/browser">
     インタラクティブなワークフロー向けのマネージドブラウザセッション
+  </Card>
+
+  <Card title="解析" icon="file-magnifying-glass" href="/ja/features/parse">
+    ローカルの PDF、DOCX、XLSX、HTML などを Markdown または構造化 JSON に変換
   </Card>
 
   <Card title="Map" icon="map" href="/ja/features/map">

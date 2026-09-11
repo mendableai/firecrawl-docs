@@ -1,0 +1,58 @@
+---
+title: "Praison AI"
+description: "Faça scraping da web com o Firecrawl como ferramenta do Praison AI"
+---
+
+<Note>
+  **Documentação oficial do Praison:** [praison.ai/docs/tools/external/firecrawl](https://praison.ai/docs/tools/external/firecrawl)
+
+  Ofereça aos agentes do Praison acesso a scraping da web em tempo real com o Firecrawl
+</Note>
+
+<div id="overview">
+  ## Visão geral
+</div>
+
+O Praison AI pode usar o Firecrawl como ferramenta para que os agentes façam scraping de páginas da web e usem o conteúdo limpo durante as execuções.
+
+<div id="quick-start">
+  ## Início rápido
+</div>
+
+1. Instale o extra de ferramentas:
+
+```bash
+pip install "praisonai[tools]"
+```
+
+2. Defina `FIRECRAWL_API_KEY` para o Firecrawl Cloud
+3. Passe uma ferramenta do Firecrawl para seu agente:
+
+```python
+from praisonaiagents import Agent
+from praisonai_tools import FirecrawlTool
+
+agent = Agent(
+    name="WebScraper",
+    instructions="You are a web scraping assistant. Use Firecrawl to extract content.",
+    tools=[FirecrawlTool()],
+)
+
+print(agent.chat("Scrape the content from https://praison.ai/docs"))
+```
+
+<div id="what-you-can-do">
+  ## O que você pode fazer
+</div>
+
+| Capacidade       | Caso de uso                                                                       |
+| ---------------- | --------------------------------------------------------------------------------- |
+| **Scraping**     | Obtém conteúdo limpo da página para o contexto do agente (`FirecrawlTool.scrape`) |
+| **Rastreamento** | Coleta páginas de um site (`FirecrawlTool.crawl(url, limit=10)`)                  |
+
+<div id="resources">
+  ## Recursos
+</div>
+
+* [Guia do `FirecrawlTool` da Praison](https://praison.ai/docs/tools/external/firecrawl)
+* [Documentação de scraping do Firecrawl](/pt-BR/features/scrape)

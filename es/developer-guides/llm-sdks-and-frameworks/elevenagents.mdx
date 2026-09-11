@@ -5,7 +5,7 @@ og:title: "ElevenAgents | Firecrawl"
 og:description: "Dales a los agentes de voz y chat de ElevenLabs acceso a la web en tiempo real con Firecrawl"
 ---
 
-Dales a tus agentes de voz y chat de [ElevenAgents](https://elevenlabs.io/agents) la capacidad de hacer scraping, buscar y rastrear la web en tiempo real con Firecrawl. Esta guía cubre dos opciones de integración:
+Dales a tus agentes de voz y chat de [ElevenAgents](https://elevenlabs.io/agents) acceso a la web en tiempo real con Firecrawl. Esta guía cubre dos opciones de integración:
 
 1. **MCP Server** — conecta el MCP Server alojado de Firecrawl para una configuración sin código.
 2. **Herramienta de webhook del servidor** — dirige una herramienta personalizada a la API REST de Firecrawl para tener control total sobre las solicitudes.
@@ -31,14 +31,14 @@ La forma más rápida de dar acceso web a un agente. ElevenAgents admite servido
 2. Selecciona **Custom MCP Server** en la biblioteca de integraciones.
 3. Completa los siguientes campos:
 
-| Campo           | Valor                                                                  |
-| --------------- | ---------------------------------------------------------------------- |
-| **Name**        | Firecrawl                                                              |
-| **Description** | Busca, hace scraping, crawl y extrae contenido de cualquier sitio web. |
-| **Server type** | Streamable HTTP                                                        |
-| **Server URL**  | `https://mcp.firecrawl.dev/v2/mcp`                                     |
+| Campo           | Valor                                                       |
+| --------------- | ----------------------------------------------------------- |
+| **Name**        | Firecrawl                                                   |
+| **Description** | Busca, hace scraping y procesa contenido web con Firecrawl. |
+| **Server type** | Streamable HTTP                                             |
+| **Server URL**  | `https://mcp.firecrawl.dev/v2/mcp`                          |
 
-Esta URL activa el conjunto de herramientas sin clave de Firecrawl. Para una configuración vinculada a una cuenta o sin supervisión, sigue los [modos de conexión MCP alojados](/es/developer-guides/mcp-setup-guides/oauth); conserva las claves de API en una cabecera Authorization o en un almacén seguro de secretos, nunca en una URL.
+El MCP sin clave ofrece exactamente Search, scraping y procesar, con límites compartidos. [Inicia sesión](/es/mcp-server/oauth) o [añade una clave de API](/es/mcp-server/keyless#add-an-api-key) para acceder a un conjunto de herramientas más amplio. Conserva las claves de API en una variable de entorno o almacén de secretos, nunca en una URL.
 
 <Note>
   Debes seleccionar **Streamable HTTP** como tipo de servidor. La opción predeterminada SSE no funciona con el endpoint MCP de Firecrawl.
@@ -46,12 +46,12 @@ Esta URL activa el conjunto de herramientas sin clave de Firecrawl. Para una con
 
 4. En **Tool Approval Mode**, selecciona un nivel de aprobación:
    * **No Approval** — el agente usa las herramientas libremente. Adecuado para scraping de solo lectura.
-   * **Fine-Grained Tool Approval** — te permite preseleccionar qué herramientas pueden ejecutarse automáticamente y cuáles requieren aprobación. Útil para controlar operaciones de crawl costosas.
+   * **Fine-Grained Tool Approval** — te permite preseleccionar qué herramientas pueden ejecutarse automáticamente y cuáles requieren aprobación.
    * **Always Ask** (predeterminado) — el agente solicita permiso antes de cada llamada de herramienta.
 
 5. Marca **I trust this server** y luego haz clic en **Add Server**.
 
-ElevenLabs se conectará al servidor y mostrará las herramientas disponibles (scrape, search, crawl, map y más).
+ElevenLabs se conectará al servidor sin clave y mostrará Search, scraping y procesar.
 
 <div id="attach-it-to-an-agent">
   ### Añádelo a un agente
@@ -157,7 +157,9 @@ Crea una herramienta para buscar en la web y devolver resultados con contenido e
 
 4. Haz clic en **Add tool**.
 
-### Actualiza el System prompt
+<div id="update-the-system-prompt-2">
+  ### Actualiza el System prompt
+</div>
 
 En la pestaña **Agent**, actualiza el **System prompt**:
 
@@ -171,7 +173,7 @@ Eres un asistente experto con acceso a herramientas web.
 Siempre resume la información de forma concisa y cita la URL de origen.
 ```
 
-<div id="test-it">
+<div id="test-it-2">
   ### Pruébalo
 </div>
 

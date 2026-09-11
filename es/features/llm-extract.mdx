@@ -116,10 +116,38 @@ Al usar el modo JSON en v2, incluye un objeto en `formats` con el esquema incorp
 
 Parámetros:
 
-* `schema`: JSON Schema que describe la salida estructurada que deseas (obligatorio para la extracción basada en un esquema).
+* `schema`: esquema JSON que describe la salida estructurada que deseas (obligatorio para la extracción basada en un esquema).
 * `prompt`: Indicaciones opcionales para guiar la extracción (también se usa para la extracción sin esquema).
+* `checkPromptInjection`: Booleano opcional (predeterminado `false`). Cuando está habilitado, Firecrawl escanea el contenido de la página extraída en busca de intentos de inyección de prompts antes de ejecutar la extracción. Consulta [Detección de inyección de prompts](#prompt-injection-detection).
 
 **Importante:** A diferencia de v1, en v2 no existe un parámetro independiente `jsonOptions`. El esquema debe incluirse directamente dentro del objeto de formato en el array `formats`.
+
+<div id="prompt-injection-detection">
+  ### Detección de inyección de prompts
+</div>
+
+Las páginas web pueden contener texto oculto diseñado para manipular la extracción basada en LLM; por ejemplo, instrucciones que indican al modelo que ignore tu esquema y devuelva datos controlados por un atacante. Si extraes datos de URL no confiables o enviadas por usuarios, puedes habilitar una protección opcional que verifica el contenido extraído antes de ejecutar la extracción:
+
+```json
+{
+  "url": "https://example.com",
+  "formats": [
+    {
+      "type": "json",
+      "schema": { "type": "object", "properties": { "title": { "type": "string" } } },
+      "checkPromptInjection": true
+    }
+  ]
+}
+```
+
+Cómo funciona:
+
+* Una llamada a un clasificador dedicado inspecciona el contenido extraído de la página (se ejecuta en paralelo con la extracción, por lo que habilitarla no ralentiza los scrapings sin problemas).
+* Si se detecta un intento de inyección de prompts, la solicitud falla con un HTTP `403` y el código de error `SCRAPE_PROMPT_INJECTION_DETECTED` — no se devuelve ninguna salida de extracción.
+* La comprobación se factura como **+4 créditos** además del costo estándar del formato JSON cuando se ejecuta. Si el scraping falla después de que se haya ejecutado la comprobación (incluso cuando se detecta una inyección y se bloquea la solicitud), se facturan **5 créditos** en lugar de los 0 habituales por un scraping fallido, ya que la llamada al clasificador se ejecutó de todos modos.
+
+En v1, la misma opción está disponible como `jsonOptions.checkPromptInjection`. También se expone en todos los SDK oficiales (por ejemplo, `checkPromptInjection` en el SDK de JS, `check_prompt_injection` en el formato JSON v2 del SDK de Python&#39;s).
 
 <Note>
   **Los atributos HTML no están disponibles en la extracción JSON.** La extracción JSON funciona sobre la conversión de la página a markdown, que solo preserva el contenido de texto visible. Los atributos HTML (por ejemplo, `data-id`, atributos personalizados en elementos) se eliminan durante la conversión y el LLM no puede verlos. Si necesitas extraer valores de atributos HTML, usa el formato `rawHtml` y analiza los atributos en el lado del cliente, o usa una acción `executeJavascript` para inyectar los valores de los atributos en texto visible antes de la extracción.

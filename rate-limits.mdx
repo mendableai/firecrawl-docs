@@ -37,18 +37,18 @@ Time spent in the queue counts against the request's [`timeout`](/advanced-scrap
 </tr>
 <tr>
 <td style={{ padding: '8px 12px' }}>Standard</td>
+<td style={{ padding: '8px 12px' }}>25</td>
+<td style={{ padding: '8px 12px' }}>50,000</td>
+</tr>
+<tr>
+<td style={{ padding: '8px 12px' }}>Growth</td>
 <td style={{ padding: '8px 12px' }}>50</td>
 <td style={{ padding: '8px 12px' }}>100,000</td>
 </tr>
 <tr>
-<td style={{ padding: '8px 12px' }}>Growth</td>
-<td style={{ padding: '8px 12px' }}>100</td>
-<td style={{ padding: '8px 12px' }}>200,000</td>
-</tr>
-<tr>
 <td style={{ padding: '8px 12px' }}>Scale / Enterprise</td>
-<td style={{ padding: '8px 12px' }}>150+</td>
-<td style={{ padding: '8px 12px' }}>300,000+</td>
+<td style={{ padding: '8px 12px' }}>100+</td>
+<td style={{ padding: '8px 12px' }}>200,000+</td>
 </tr>
 </tbody>
 </table>
@@ -66,7 +66,7 @@ Rate limits are measured in requests per minute and are primarily in place to pr
 
 The hosted Firecrawl MCP keyless endpoint exposes exactly **Search, Scrape, and Parse** without an API key. Other hosted MCP tools require an account connection or an API key.
 
-For official Firecrawl clients, the CLI, SDKs, and REST API, keyless access also includes **Interact**. Research endpoints can be used without an API key on Firecrawl Cloud where the research index is enabled. No other endpoints (crawl, extract, map, batch scrape, etc.) are available without a key.
+For official Firecrawl clients, the CLI, SDKs, and REST API, keyless access also includes **Interact**. On Firecrawl Cloud, research and developer search endpoints can also be used without an API key. No other endpoints (crawl, extract, map, batch scrape, etc.) are available without a key.
 
 Keyless usage is free and capped per IP address per day by **two limits**, and exceeding either returns a `429`:
 

@@ -1,20 +1,19 @@
 ---
 title: "Index de recherche"
-description: "Recherchez des articles, lisez des passages d'articles, trouvez des travaux connexes et recherchez dans des dépôts GitHub associés"
+description: "Recherchez des articles, lisez des passages d'articles et trouvez des travaux connexes"
 og:title: "Index de recherche | Firecrawl"
-og:description: "Utilisez l'index de recherche de Firecrawl pour la récupération d'articles, l'expansion sémantique, la lecture d'articles et la recherche GitHub."
+og:description: "Utilisez l'index de recherche de Firecrawl pour la récupération d'articles, l'expansion sémantique et la lecture d'articles."
 icon: "book-open"
 ---
 
-import ResearchFeedbackCTA from "/snippets/fr/research-feedback-cta.mdx";
+Firecrawl Research est un index spécialement conçu pour les agents de recherche scientifique et d&#39;ingénierie. Il propose un ensemble d&#39;outils dédié à la recherche pour chercher des articles, examiner les métadonnées des articles, lire les passages pertinents du texte intégral et découvrir des articles connexes grâce à l&#39;expansion structurelle.
 
-Firecrawl Research est un index spécialement conçu pour les agents de recherche scientifique et d&#39;ingénierie. Il propose un ensemble d&#39;outils dédié à la recherche pour chercher des articles, examiner les métadonnées des articles, lire les passages pertinents du texte intégral, découvrir des articles connexes grâce à l&#39;expansion structurelle et rechercher dans des dépôts GitHub liés à la recherche.
+L&#39;index couvre environ 43 millions de résumés d&#39;articles. La majorité du corpus concerne les sciences biomédicales et de la vie — **PubMed**, **bioRxiv** et **medRxiv** — ainsi que **arXiv** pour la physique, les mathématiques et l&#39;informatique. Les articles sont accessibles par leurs identifiants de source, ainsi les références `pmid:`, `pmcid:` et `doi:` fonctionnent de la même manière que celles avec `arxiv:`.
 
 * Trouvez des articles par sujet, méthode, benchmark, auteur ou catégorie
 * Examinez les métadonnées canoniques des articles et les identifiants de source
 * Lisez, dans un article, les passages qui répondent à une question précise
 * À partir d&#39;articles de départ pertinents, élargissez vers des articles connexes, des articles citants ou des références
-* Recherchez dans l&#39;historique GitHub et les README des notes d&#39;implémentation, des bugs et des discussions de conception
 
 <Note>
   Pour donner à votre agent accès à l&#39;Index de recherche, nous vous recommandons vivement d&#39;utiliser notre [CLI](/fr/sdks/cli) ou [MCP](/fr/mcp-server), associé à notre [**skill de recherche dédié**](https://github.com/firecrawl/skills/blob/main/skills/firecrawl-research-index/SKILL.md), que vous pouvez installer avec :
@@ -24,7 +23,25 @@ Firecrawl Research est un index spécialement conçu pour les agents de recherch
   ```
 </Note>
 
-<ResearchFeedbackCTA src="docs-research" />
+<div id="how-this-relates-to-search">
+  ## Comparaison avec `/search`
+</div>
+
+<Note>
+  À partir du 2026-11-16, `categories: ["research"]` sur `/search` interrogera cet index et renverra les mêmes fiches d’articles dans `data.research`. Le tableau ci-dessous décrit le comportement en vigueur jusqu’à cette date. Consultez les [catégories de recherche](/fr/features/search#search-categories).
+</Note>
+
+Firecrawl propose deux fonctionnalités appelées « research », mais il ne s’agit pas de la même fonctionnalité :
+
+|                                              | index de recherche (cette page)                                                                                          | `/search` avec `categories: ["research"]`                                                                           |
+| :------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Ce qui est recherché                         | Un index d’articles contenant environ 43 M de résumés — PubMed, bioRxiv, medRxiv, arXiv                             | Le Web ouvert, restreint à environ 14 **sites web** académiques (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov, …) |
+| Ce que vous obtenez                          | Fiches d’articles classées : `paperId` canonique, `primaryId`, identifiants de source, titre, résumé complet, score | Résultats Web classiques : URL, titre, snippet                                                                      |
+| Peut-il lire le contenu d’un article ?  | Oui — lecture au niveau des passages via `GET /search/research/papers/{id}`                                              | Non                                                                                                                 |
+| Peut-il étendre la recherche par citations ? | Oui — `GET /search/research/papers/{id}/similar`                                                                         | Non                                                                                                                 |
+| Point de terminaison                         | `GET /search/research/papers`                                                                                            | `POST /search`                                                                                                      |
+
+Utilisez l’index de recherche pour vos recherches bibliographiques : trouver des articles, les lire et suivre les citations. Utilisez [`categories: ["research"]`](/fr/features/search#search-categories) si vous recherchez des pages Web classiques hébergées sur des domaines académiques.
 
 <div id="endpoints">
   ## Points de terminaison
@@ -35,7 +52,6 @@ Firecrawl Research est un index spécialement conçu pour les agents de recherch
 | Rechercher des articles scientifiques          | [`GET /search/research/papers`](/fr/api-reference/endpoint/research-search-papers)               |
 | Consulter les métadonnées ou lire des passages | [`GET /search/research/papers/{id}`](/fr/api-reference/endpoint/research-paper)                  |
 | Trouver des articles connexes                  | [`GET /search/research/papers/{id}/similar`](/fr/api-reference/endpoint/research-related-papers) |
-| Rechercher dans l’historique GitHub            | [`GET /search/research/github`](/fr/api-reference/endpoint/research-github-search)               |
 
 <div id="search-papers">
   ## Rechercher des articles scientifiques
@@ -87,11 +103,60 @@ Filtres facultatifs :
 * `from` : borne inférieure inclusive de création/mise à jour, `YYYY-MM-DD`
 * `to` : borne supérieure inclusive de création/mise à jour, `YYYY-MM-DD`
 
+<div id="biomedical-example">
+  ### Exemple biomédical
+</div>
+
+La majeure partie de l’index porte sur les sciences de la vie. Les requêtes cliniques et de biologie moléculaire fonctionnent donc de la même manière :
+
+<CodeGroup>
+  ```bash cURL
+  # Aucune clé API n’est nécessaire pour démarrer ; ajoutez -H "Authorization: Bearer $FIRECRAWL_API_KEY" pour bénéficier de limites de débit plus élevées :
+  curl -s "https://api.firecrawl.dev/v2/search/research/papers?query=CRISPR%20base%20editing%20off-target%20effects%20in%20primary%20human%20T%20cells&k=20"
+  ```
+
+  ```bash CLI
+  firecrawl research search-papers "CRISPR base editing off-target effects in primary human T cells" --limit 20
+  ```
+
+  ```python Python
+  from firecrawl import Firecrawl
+
+  firecrawl = Firecrawl(
+    # Aucune clé API n’est nécessaire pour démarrer ; ajoutez-en une pour bénéficier de limites de débit plus élevées :
+    # api_key="fc-YOUR-API-KEY",
+  )
+
+  result = firecrawl.v2.search_papers(
+    "CRISPR base editing off-target effects in primary human T cells",
+    k=20,
+  )
+  print(result)
+  ```
+
+  ```js Node
+  import { Firecrawl } from "firecrawl";
+
+  const firecrawl = new Firecrawl({
+    // Aucune clé API n’est nécessaire pour démarrer ; ajoutez-en une pour bénéficier de limites de débit plus élevées :
+    // apiKey: "fc-YOUR-API-KEY",
+  });
+
+  const result = await firecrawl.research.searchPapers(
+    "CRISPR base editing off-target effects in primary human T cells",
+    { k: 20 },
+  );
+  console.log(result);
+  ```
+</CodeGroup>
+
+Les résultats incluent un `primaryId` dans l’espace de noms utilisé par la source : les résultats biomédicaux sont donc renvoyés sous la forme `pmid:<id>`, `pmcid:<id>` ou `doi:<doi>`. Transmettez directement cette valeur aux points de terminaison d’inspection, de lecture et de contenus associés ci-dessous.
+
 <div id="inspect-a-paper">
   ## Examiner un article
 </div>
 
-Utilisez un `paperId` canonique ou un `primaryId` propre à la source.
+Utilisez un `paperId` canonique ou un `primaryId` propre à la source. Les formats de `primaryId` acceptés sont `arxiv:<id>`, `pmid:<id>`, `pmcid:<id>` et `doi:<doi>` — par exemple, `curl -s ".../v2/search/research/papers/pmid:<id>"` pour un enregistrement PubMed.
 
 <CodeGroup>
   ```bash cURL
@@ -231,49 +296,3 @@ Modes :
 * `similar` : voisinage de co-citation et de couplage bibliographique
 * `citers` : articles qui citent l’article de départ
 * `references` : articles cités par l’article de départ
-
-<div id="search-github-history">
-  ## Rechercher dans l’historique GitHub
-</div>
-
-Recherchez dans les issues, pull requests, discussions et README de dépôts GitHub des détails d’implémentation et des antécédents techniques.
-
-<CodeGroup>
-  ```bash cURL
-  # Aucune clé API n’est nécessaire pour démarrer ; ajoutez -H "Authorization: Bearer $FIRECRAWL_API_KEY" pour bénéficier de limites de débit supérieures :
-  curl -s "https://api.firecrawl.dev/v2/search/research/github?query=flash%20attention%20implementation%20notes&k=10"
-  ```
-
-  ```bash CLI
-  firecrawl research search-github "flash attention implementation notes" --limit 10
-  ```
-
-  ```python Python
-  from firecrawl import Firecrawl
-
-  firecrawl = Firecrawl(
-    # Aucune clé API n’est nécessaire pour démarrer ; ajoutez-en une pour bénéficier de limites de débit supérieures :
-    # api_key="fc-YOUR-API-KEY",
-  )
-
-  results = firecrawl.v2.search_github("flash attention implementation notes", k=10)
-  print(results)
-  ```
-
-  ```js Node
-  import { Firecrawl } from "firecrawl";
-
-  const firecrawl = new Firecrawl({
-    // Aucune clé API n’est nécessaire pour démarrer ; ajoutez-en une pour bénéficier de limites de débit supérieures :
-    // apiKey: "fc-YOUR-API-KEY",
-  });
-
-  const results = await firecrawl.research.searchGithub(
-    "flash attention implementation notes",
-    { k: 10 },
-  );
-  console.log(results);
-  ```
-</CodeGroup>
-
-Les résultats GitHub incluent le dépôt, l’URL, les métadonnées d’issue/PR lorsqu’elles sont disponibles, un extrait, ainsi que le contenu Markdown correspondant lorsqu’il est disponible.

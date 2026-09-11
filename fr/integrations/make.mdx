@@ -1,0 +1,294 @@
+---
+title: "Make"
+description: "Intégration officielle de Firecrawl à Make et automatisation des workflows"
+---
+
+<Note>
+  **Intégration officielle de Make :** [make.com/en/integrations/firecrawl](https://www.make.com/en/integrations/firecrawl)
+
+  Connectez plus de 3 000 applications • Créateur visuel de workflows • Automatisation à l’échelle de l’entreprise • Scénarios propulsés par l’IA
+</Note>
+
+<div id="make-integration-overview">
+  ## Présentation de l’intégration Make
+</div>
+
+Make (anciennement Integromat) propose une intégration Firecrawl vérifiée, officiellement prise en charge et maintenue par l’équipe Firecrawl.
+
+<CardGroup cols={2}>
+  <Card title="Créateur visuel de workflows" icon="diagram-project">
+    Concevez des automatisations complexes grâce à l’interface visuelle intuitive de Make
+  </Card>
+
+  <Card title="Prêt pour les entreprises" icon="building">
+    Passez à l’échelle en toute sécurité avec des automatisations et des contrôles de niveau entreprise
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-modules-in-make">
+  ## Modules Firecrawl dans Make
+</div>
+
+<AccordionGroup>
+  <Accordion title="Actions (7 modules)" icon="bolt">
+    <div id="crawl-a-website">
+      ### Crawler un site web
+    </div>
+
+    Explorez une URL et obtenez le contenu de plusieurs pages
+
+    ***
+
+    <div id="extract-a-website">
+      ### Extraire les données d’un site web
+    </div>
+
+    Extrayez des données structurées de pages à l’aide de LLM
+
+    ***
+
+    <div id="scrape-a-website">
+      ### Scraper un site web
+    </div>
+
+    Scrapez une URL et obtenez son contenu depuis une seule page
+
+    ***
+
+    <div id="map-a-website">
+      ### Cartographier un site web
+    </div>
+
+    Cartographiez plusieurs URL selon les options définies
+
+    ***
+
+    <div id="search-a-website">
+      ### Rechercher un site web
+    </div>
+
+    Effectuez une recherche web grâce aux capacités de scraping de Firecrawl
+
+    ***
+
+    <div id="get-crawl-status">
+      ### Obtenir l’état d’un crawl
+    </div>
+
+    Obtenez l’état d’un ID d’événement de crawl donné
+
+    ***
+
+    <div id="get-extract-status">
+      ### Obtenir l’état d’une extraction
+    </div>
+
+    Obtenez l’état d’un ID d’événement d’extraction donné
+  </Accordion>
+
+  <Accordion title="Recherche (1 module)" icon="magnifying-glass">
+    <div id="search-a-website-2">
+      ### Rechercher un site web
+    </div>
+
+    Récupérez le contenu complet des pages pour toute requête de recherche
+  </Accordion>
+
+  <Accordion title="Avancé" icon="code">
+    <div id="make-an-api-call">
+      ### Effectuer un appel d’API
+    </div>
+
+    Effectuez des appels d’API autorisés personnalisés pour des cas d’utilisation spécifiques
+  </Accordion>
+</AccordionGroup>
+
+<div id="popular-app-integrations">
+  ## Intégrations populaires
+</div>
+
+<Tabs>
+  <Tab title="Stockage de données">
+    **Google Sheets** - Suivez et enregistrez les données scrapées dans des feuilles de calcul
+
+    **Airtable** - Créez des bases de données structurées avec du contenu scrapé
+
+    **Google Drive** - Stockez les fichiers et rapports scrapés
+
+    **Notion** - Organisez vos recherches et vos données web
+  </Tab>
+
+  <Tab title="Communication">
+    **Slack** - Recevez des alertes sur les modifications et mises à jour de sites web
+
+    **Telegram Bot** - Recevez des notifications instantanées pour la surveillance
+
+    **Gmail** - Envoyez des rapports et des récapitulatifs par e-mail
+
+    **Microsoft 365 Email** - Automatisez les e-mails d&#39;entreprise
+  </Tab>
+
+  <Tab title="CRM et ventes">
+    **HubSpot CRM** - Enrichissez les leads avec des données web
+
+    **monday.com** - Suivez les informations sur vos concurrents
+
+    **ClickUp** - Gérez les tâches de recherche
+  </Tab>
+
+  <Tab title="Outils d'IA">
+    **OpenAI (ChatGPT, DALL-E)** - Analysez et résumez le contenu scrapé
+
+    **Google Gemini AI** - Traitez et extrayez des insights
+
+    **Perplexity AI** - Workflows de recherche avancés
+
+    **Make AI Agents** - Créez des automatisations adaptatives basées sur l&#39;IA
+  </Tab>
+</Tabs>
+
+<div id="common-workflow-patterns">
+  ## Modèles de workflows courants
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Surveillance des concurrents" icon="binoculars">
+    **Planification** → Firecrawl (Scrape) → Google Sheets (Journalisation) → Slack (Alerte)
+
+    Suivez les sites web de vos concurrents et recevez des notifications instantanées
+  </Card>
+
+  <Card title="Enrichissement des leads" icon="users">
+    **Google Forms** → Firecrawl (Scrape du site de l’entreprise) → HubSpot CRM (Mise à jour)
+
+    Enrichissez automatiquement vos leads avec les données de l’entreprise
+  </Card>
+
+  <Card title="Agrégation de contenu" icon="newspaper">
+    **Planification** → Firecrawl (Crawl du blog) → OpenAI (Résumé) → Gmail (Envoi du récapitulatif)
+
+    Curation et diffusion automatisées de contenu
+  </Card>
+
+  <Card title="Surveillance des prix" icon="chart-line">
+    **Planification (toutes les heures)** → Firecrawl (Scrape) → Filtre → Telegram (Alerte)
+
+    Suivi des prix et alertes en temps réel
+  </Card>
+</CardGroup>
+
+<div id="getting-started">
+  ## Prise en main
+</div>
+
+<Steps>
+  <Step title="Inscrivez-vous à Firecrawl">
+    Obtenez votre clé API sur [firecrawl.dev](https://firecrawl.dev)
+  </Step>
+
+  <Step title="Créez un scénario dans Make">
+    Connectez-vous à [Make](https://make.com) et cliquez sur « Créer un nouveau scénario »
+  </Step>
+
+  <Step title="Ajoutez le module Firecrawl">
+    Recherchez « Firecrawl » et sélectionnez l’action souhaitée
+  </Step>
+
+  <Step title="Connectez-vous avec votre clé API">
+    Ajoutez votre clé API Firecrawl pour vous authentifier
+  </Step>
+
+  <Step title="Configurez et testez">
+    Configurez les paramètres de votre workflow et exécutez un test
+  </Step>
+</Steps>
+
+<div id="firecrawl-actions-overview">
+  ## Vue d’ensemble des actions Firecrawl
+</div>
+
+| Module                                      | Cas d’utilisation                       | Idéal pour                     |
+| ------------------------------ | --------------------------------------- | ------------------------------ |
+| **Scraper un site web**        | Extraction de données d’une page unique | Collecte rapide de données     |
+| **Crawler un site web**        | Collecte de contenu sur plusieurs pages | Scraping de l’ensemble du site |
+| **Extraire les données d’un site web**     | Extraction structurée par IA            | Besoins complexes en données   |
+| **Rechercher un site web** | Recherche + contenu complet             | Automatisation de la recherche |
+| **Cartographier un site web**  | Découverte d’URL                        | Analyse SEO                    |
+
+<div id="best-practices">
+  ## Bonnes pratiques
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Performances" icon="gauge-high">
+    * Utilisez **Scrape** pour les pages individuelles (plus rapide)
+    * Utilisez **Crawl** avec des limites pour les sites volumineux
+    * Planifiez les exécutions de manière appropriée pour éviter les limites de débit
+    * Ajoutez des modules de gestion des erreurs
+  </Card>
+
+  <Card title="Optimisation des coûts" icon="piggy-bank">
+    * Planifiez stratégiquement (toutes les heures, tous les jours ou toutes les semaines)
+    * Utilisez des filtres pour éviter les exécutions inutiles
+    * Définissez des limites de crawl pour contrôler l’utilisation de l’API
+    * Testez d’abord dans le playground Firecrawl
+  </Card>
+</CardGroup>
+
+<div id="industry-use-cases">
+  ## Cas d&#39;utilisation par secteur
+</div>
+
+<AccordionGroup>
+  <Accordion title="E-commerce" icon="cart-shopping">
+    * Veille tarifaire concurrentielle
+    * Suivi de la disponibilité des produits
+    * Agrégation et analyse des avis
+    * Suivi des niveaux de stock
+  </Accordion>
+
+  <Accordion title="Immobilier" icon="house">
+    * Agrégation d&#39;annonces provenant de plusieurs sources
+    * Analyse des tendances du marché
+    * Enrichissement des données immobilières
+    * Veille tarifaire concurrentielle
+  </Accordion>
+
+  <Accordion title="Marketing" icon="bullhorn">
+    * Veille sur le contenu des concurrents
+    * Suivi des performances SEO
+    * Analyse des backlinks
+    * Suivi des mentions sur les réseaux sociaux
+  </Accordion>
+
+  <Accordion title="Finance" icon="chart-line">
+    * Collecte de données de marché
+    * Agrégation des actualités et analyse des sentiments
+    * Suivi des déclarations réglementaires
+    * Suivi des cours des actions
+  </Accordion>
+
+  <Accordion title="RH et recrutement" icon="user-tie">
+    * Agrégation des offres d&#39;emploi
+    * Automatisation de la recherche sur les entreprises
+    * Enrichissement des profils des candidats
+    * Comparaison des salaires
+  </Accordion>
+</AccordionGroup>
+
+<div id="make-vs-zapier-vs-n8n">
+  ## Make vs Zapier vs n8n
+</div>
+
+| Fonctionnalité             | Make                                              | Zapier                     | n8n                                    |
+| -------------------------- | ------------------------------------------------- | -------------------------- | -------------------------------------- |
+| **Configuration**          | Éditeur visuel, cloud                             | Sans code, cloud           | Auto-hébergé ou cloud                  |
+| **Tarification**           | Selon le nombre d’opérations                      | Par tâche                  | Selon le nombre d’exécutions           |
+| **Intégrations**           | Plus de 3 000 applications                        | Plus de 9 000 applications | Plus de 1 000 applications et services |
+| **Complexité**             | Workflows avancés                                 | Workflows simples          | Workflows complexes                    |
+| **Idéal pour**             | Automatisation visuelle, complexité intermédiaire | Automatisation rapide      | Contrôle pour les développeurs         |
+| **Courbe d’apprentissage** | Modérée                                           | Facile                     | Modérée à avancée                      |
+
+<Tip>
+  **Conseil de pro :** Make excelle dans la conception visuelle de workflows et les automatisations complexes. Idéal pour les équipes qui ont besoin de plus de contrôle que Zapier, mais préfèrent une approche visuelle à l’approche axée sur le code de n8n.
+</Tip>

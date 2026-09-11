@@ -1,24 +1,23 @@
 ---
-title: 'Llamaindex'
+title: 'LlamaIndex'
 description: 'Firecrawl はドキュメントリーダーとして LlamaIndex と連携します。'
-og:title: "Llamaindex | Firecrawl"
+og:title: "LlamaIndex | Firecrawl"
 og:description: "Firecrawl はドキュメントリーダーとして LlamaIndex と連携します。"
 ---
-
-> 注意: この連携は現在も [Firecrawl API の v0 版](/ja/v0/introduction) を使用しています。Python SDK は 0.0.20、Node SDK は 0.0.36 をインストールしてください。
 
 <div id="installation">
   ## インストール
 </div>
 
 ```bash
-pip install firecrawl-py==0.0.20 llama_index llama-index llama-index-readers-web
-
+pip install 'firecrawl-py>=4.3.3' llama-index llama-index-readers-web
 ```
 
 <div id="usage">
-  ## 使い方
+  ## 使用方法
 </div>
+
+`FireCrawlWebReader` は、`scrape`、`crawl`、`map`、`search`、`extract` モードをサポートしています。
 
 <div id="using-firecrawl-to-gather-an-entire-website">
   ### Firecrawlでウェブサイト全体を収集する
@@ -33,7 +32,7 @@ import os
 # ウェブサイトをクロールするために FireCrawlWebReader を初期化
 firecrawl_reader = FireCrawlWebReader(
     api_key="<your_api_key>",  # https://www.firecrawl.dev/ で取得した実際の API キーに置き換えてください
-    mode="scrape",  # 単一ページのスクレイピングには "crawl" か "scrape" を選択
+    mode="crawl",  # "scrape"、"crawl"、"map"、"search"、または "extract"
     params={"additional": "parameters"}  # 追加パラメータ（任意）
 )
 
@@ -46,7 +45,7 @@ index = SummaryIndex.from_documents(documents)
 
 # 詳細な出力のためにログレベルを DEBUG に設定
 query_engine = index.as_query_engine()
-response = query_engine.query("著者は子どもの頃に何をしていましたか？")
+response = query_engine.query("What did the author do growing up?")
 display(Markdown(f"<b>{response}</b>"))
 ```
 
@@ -60,7 +59,7 @@ from llama_index.readers.web import FireCrawlWebReader
 # APIキーと目的のモードで FireCrawlWebReader を初期化します
 firecrawl_reader = FireCrawlWebReader(
     api_key="<your_api_key>",  # https://www.firecrawl.dev/ で取得した実際のAPIキーに置き換えてください
-    mode="scrape",  # "crawl" または "scrape" を選択
+    mode="scrape",  # "scrape"、"crawl"、"map"、"search"、または "extract"
     params={"additional": "parameters"}  # 任意の追加パラメータ
 )
 
@@ -70,6 +69,6 @@ index = SummaryIndex.from_documents(documents)
 
 # より詳細な出力のため、ログレベルをDEBUGに設定します
 query_engine = index.as_query_engine()
-response = query_engine.query("著者は成長期に何をしていましたか？")
+response = query_engine.query("What did the author do growing up?")
 display(Markdown(f"<b>{response}</b>"))
 ```

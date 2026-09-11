@@ -1,0 +1,294 @@
+---
+title: "Make"
+description: "Integração oficial e automação de fluxos de trabalho do Firecrawl para o Make"
+---
+
+<Note>
+  **Integração oficial do Make:** [make.com/en/integrations/firecrawl](https://www.make.com/en/integrations/firecrawl)
+
+  Conecte-se a mais de 3.000 aplicativos • Criador visual de fluxos de trabalho • Automação de nível empresarial • Cenários com IA
+</Note>
+
+<div id="make-integration-overview">
+  ## Visão geral da integração com o Make
+</div>
+
+O Make (anteriormente Integromat) oferece uma integração verificada e oficialmente compatível com o Firecrawl, mantida pela equipe do Firecrawl.
+
+<CardGroup cols={2}>
+  <Card title="Criador visual de fluxos de trabalho" icon="diagram-project">
+    Crie automações complexas com a interface visual intuitiva do Make
+  </Card>
+
+  <Card title="Pronto para empresas" icon="building">
+    Escale com segurança usando automação e controles de nível empresarial
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-modules-in-make">
+  ## Módulos do Firecrawl no Make
+</div>
+
+<AccordionGroup>
+  <Accordion title="Ações (7 módulos)" icon="bolt">
+    <div id="crawl-a-website">
+      ### Rastreamento de um site
+    </div>
+
+    Rastreie uma URL e obtenha conteúdo de várias páginas
+
+    ***
+
+    <div id="extract-a-website">
+      ### Extrair dados de um site
+    </div>
+
+    Extraia dados estruturados de páginas usando LLMs
+
+    ***
+
+    <div id="scrape-a-website">
+      ### Fazer scraping de um site
+    </div>
+
+    Faça scraping de uma URL e obtenha o conteúdo de uma única página
+
+    ***
+
+    <div id="map-a-website">
+      ### Mapear um site
+    </div>
+
+    Mapeie várias URLs com base nas opções definidas
+
+    ***
+
+    <div id="search-a-website">
+      ### Buscar em um site
+    </div>
+
+    Faça buscas na web com os recursos de scraping do Firecrawl
+
+    ***
+
+    <div id="get-crawl-status">
+      ### Obter o status do rastreamento
+    </div>
+
+    Obtenha o status de um ID de evento de rastreamento
+
+    ***
+
+    <div id="get-extract-status">
+      ### Obter o status da extração
+    </div>
+
+    Obtenha o status de um ID de evento de extração
+  </Accordion>
+
+  <Accordion title="Busca (1 módulo)" icon="magnifying-glass">
+    <div id="search-a-website-2">
+      ### Buscar em um site
+    </div>
+
+    Recupere o conteúdo completo da página para qualquer consulta de busca
+  </Accordion>
+
+  <Accordion title="Avançado" icon="code">
+    <div id="make-an-api-call">
+      ### Fazer uma chamada de API
+    </div>
+
+    Faça chamadas de API autorizadas para casos de uso personalizados
+  </Accordion>
+</AccordionGroup>
+
+<div id="popular-app-integrations">
+  ## Integrações com aplicativos populares
+</div>
+
+<Tabs>
+  <Tab title="Armazenamento de dados">
+    **Google Sheets** - Acompanhe e registre dados extraídos em planilhas
+
+    **Airtable** - Crie bancos de dados estruturados com conteúdo extraído
+
+    **Google Drive** - Armazene arquivos e relatórios extraídos
+
+    **Notion** - Organize pesquisas e dados da web
+  </Tab>
+
+  <Tab title="Comunicação">
+    **Slack** - Receba alertas sobre alterações e atualizações em sites
+
+    **Telegram Bot** - Notificações instantâneas para monitoramento
+
+    **Gmail** - Envie relatórios e resumos por e-mail
+
+    **Microsoft 365 Email** - Automação corporativa de e-mails
+  </Tab>
+
+  <Tab title="CRM e vendas">
+    **HubSpot CRM** - Enriqueça leads com dados da web
+
+    **monday.com** - Acompanhe informações sobre concorrentes
+
+    **ClickUp** - Gerencie tarefas de pesquisa
+  </Tab>
+
+  <Tab title="Ferramentas de IA">
+    **OpenAI (ChatGPT, DALL-E)** - Analise e resuma conteúdo extraído
+
+    **Google Gemini AI** - Processe dados e extraia insights
+
+    **Perplexity AI** - Fluxos de trabalho de pesquisa aprimorados
+
+    **Make AI Agents** - Crie automações adaptáveis com IA
+  </Tab>
+</Tabs>
+
+<div id="common-workflow-patterns">
+  ## Padrões Comuns de Fluxos de Trabalho
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Monitoramento de Concorrentes" icon="binoculars">
+    **Agendamento** → Firecrawl (Scraping) → Google Sheets (Registro) → Slack (Alerta)
+
+    Acompanhe os sites dos concorrentes e receba notificações instantâneas
+  </Card>
+
+  <Card title="Enriquecimento de Leads" icon="users">
+    **Google Forms** → Firecrawl (Scraping do site da empresa) → HubSpot CRM (Atualização)
+
+    Enriqueça automaticamente leads com dados da empresa
+  </Card>
+
+  <Card title="Agregação de Conteúdo" icon="newspaper">
+    **Agendamento** → Firecrawl (Rastreamento do blog) → OpenAI (Resumir) → Gmail (Enviar resumo)
+
+    Curadoria e distribuição automatizadas de conteúdo
+  </Card>
+
+  <Card title="Monitoramento de Preços" icon="chart-line">
+    **Agendamento (por hora)** → Firecrawl (Scraping) → Filtro → Telegram (Alerta)
+
+    Acompanhamento de preços e alertas em tempo real
+  </Card>
+</CardGroup>
+
+<div id="getting-started">
+  ## Primeiros passos
+</div>
+
+<Steps>
+  <Step title="Cadastre-se no Firecrawl">
+    Obtenha sua chave de API em [firecrawl.dev](https://firecrawl.dev)
+  </Step>
+
+  <Step title="Crie um cenário no Make">
+    Faça login no [Make](https://make.com) e clique em &quot;Criar um novo cenário&quot;
+  </Step>
+
+  <Step title="Adicione o módulo do Firecrawl">
+    Busque por &quot;Firecrawl&quot; e selecione a ação desejada
+  </Step>
+
+  <Step title="Conecte-se usando a chave de API">
+    Adicione sua chave de API do Firecrawl para autenticar
+  </Step>
+
+  <Step title="Configure e teste">
+    Configure os parâmetros do fluxo de trabalho e execute um teste
+  </Step>
+</Steps>
+
+<div id="firecrawl-actions-overview">
+  ## Visão geral das ações do Firecrawl
+</div>
+
+| Módulo                        | Caso de uso                           | Ideal para                      |
+| ----------------------------- | ------------------------------------- | ------------------------------- |
+| **Fazer scraping de um site** | Extração de dados de uma única página | Captura rápida de dados         |
+| **Rastreamento de um site**   | Coleta de conteúdo de várias páginas  | Scraping de todo o site         |
+| **Extrair de um site**        | Extração estruturada com IA           | Necessidades complexas de dados |
+| **Buscar em um site**         | Busca + conteúdo completo             | Automação de pesquisa           |
+| **Mapear um site**            | Descoberta de URLs                    | Análise de SEO                  |
+
+<div id="best-practices">
+  ## Práticas recomendadas
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Desempenho" icon="gauge-high">
+    * Use **scraping** para páginas individuais (mais rápido)
+    * Use **rastreamento** com limites para sites grandes
+    * Configure o agendamento adequadamente para evitar limites de taxa
+    * Adicione módulos de tratamento de erros
+  </Card>
+
+  <Card title="Otimização de custos" icon="piggy-bank">
+    * Programe estrategicamente (a cada hora/diariamente/semanalmente)
+    * Use filtros para evitar execuções desnecessárias
+    * Defina limites de rastreamento para controlar o uso da API
+    * Teste primeiro no playground do Firecrawl
+  </Card>
+</CardGroup>
+
+<div id="industry-use-cases">
+  ## Casos de Uso por Setor
+</div>
+
+<AccordionGroup>
+  <Accordion title="E-commerce" icon="cart-shopping">
+    * Monitoramento de preços da concorrência
+    * Acompanhamento da disponibilidade de produtos
+    * Agregação e análise de avaliações
+    * Monitoramento dos níveis de estoque
+  </Accordion>
+
+  <Accordion title="Imóveis" icon="house">
+    * Agregação de listagens de múltiplas fontes
+    * Análise de tendências de mercado
+    * Enriquecimento de dados de imóveis
+    * Inteligência competitiva de preços
+  </Accordion>
+
+  <Accordion title="Marketing" icon="bullhorn">
+    * Monitoramento de conteúdo da concorrência
+    * Acompanhamento do desempenho de SEO
+    * Análise de backlinks
+    * Acompanhamento de menções nas redes sociais
+  </Accordion>
+
+  <Accordion title="Finanças" icon="chart-line">
+    * Coleta de dados de mercado
+    * Agregação de notícias e análise de sentimento
+    * Monitoramento de registros regulatórios
+    * Acompanhamento de preços de ações
+  </Accordion>
+
+  <Accordion title="RH e Recrutamento" icon="user-tie">
+    * Agregação de vagas de emprego
+    * Automação de pesquisas sobre empresas
+    * Enriquecimento de dados de candidatos
+    * Benchmarking salarial
+  </Accordion>
+</AccordionGroup>
+
+<div id="make-vs-zapier-vs-n8n">
+  ## Make vs Zapier vs n8n
+</div>
+
+| Recurso                  | Make                                 | Zapier                     | n8n                           |
+| ------------------------ | ------------------------------------ | -------------------------- | ----------------------------- |
+| **Configuração**         | Construtor visual, na nuvem          | Sem código, na nuvem       | Auto-hospedado ou na nuvem    |
+| **Preços**               | Por operação                         | Por tarefa                 | Por execução                  |
+| **Integrações**          | Mais de 3.000 apps                   | Mais de 9.000 apps         | Mais de 1.000 apps e serviços |
+| **Complexidade**         | Fluxos de trabalho avançados         | Fluxos de trabalho simples | Fluxos de trabalho complexos  |
+| **Ideal para**           | Automação visual, complexidade média | Automação rápida           | Controle para desenvolvedores |
+| **Curva de aprendizado** | Moderada                             | Fácil                      | Moderada a avançada           |
+
+<Tip>
+  **Dica:** O Make se destaca no design visual de fluxos de trabalho e em automações complexas. É perfeito para equipes que precisam de mais controle do que o Zapier oferece, mas preferem a criação visual à abordagem centrada em código do n8n.
+</Tip>

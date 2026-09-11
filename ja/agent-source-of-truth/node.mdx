@@ -40,7 +40,9 @@ const client = new Firecrawl({
   ## Search
 </div>
 
-### 使用する理由
+<div id="why-use-it">
+  ### 使用する理由
+</div>
 
 クエリから関連ページを見つけ、そこからスクレイピングまたは Interact する URL を選びたい場合に使用します。`site:` を使って結果をサイトに絞り込めます。例：`site:docs.firecrawl.dev crawl webhooks`
 
@@ -103,7 +105,7 @@ const results = await client.search("site:docs.firecrawl.dev crawl webhooks", {
 
 * `query`
   * 型: string
-  * 使用する場面: 検索クエリが必要な場合。
+  * 使用する場面: queryが必要な場合。
   * 注記: 結果を特定のドメインに限定するには、`site:example.com` を使用します。
 
 * `options` (任意。第 2 引数のデフォルトは `{}`)
@@ -122,10 +124,10 @@ const results = await client.search("site:docs.firecrawl.dev crawl webhooks", {
   * 型: カテゴリ名の配列、または型付きカテゴリオブジェクトの配列
   * 使用する場面: カテゴリで結果を絞り込みたい場合。
   * 確認済みの値:
-    * `"github"`: GitHub に特化した結果
+    * `"developer"`: Developer Index の結果
     * `"research"`: 研究・学術関連の結果
     * `"pdf"`: PDF に特化した結果
-    * `{ type: "github" | "research" | "pdf" }`: 型付きカテゴリオブジェクト形式
+    * `{ type: "developer" | "research" | "pdf" }`: 型付きカテゴリオブジェクト形式
 
 * `options.limit`
   * 型: number
@@ -155,19 +157,19 @@ const results = await client.search("site:docs.firecrawl.dev crawl webhooks", {
   ## スクレイピング
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### どのような場合に使うか
 </div>
 
 URLがすでにあり、1つ以上のフォーマットで構造化されたコンテンツを取得したい場合は、スクレイピングを使用します。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### 推奨SDKメソッド
 </div>
 
 `client.scrape(url, options?)` → `Promise<Document>`
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### シンプルな例
 </div>
 
@@ -177,7 +179,9 @@ const doc = await client.scrape("https://docs.firecrawl.dev", {
 });
 ```
 
-### 高度な例
+<div id="complex-example-2">
+  ### 高度な例
+</div>
 
 ```ts
 const doc = await client.scrape("https://example.com/pricing", {
@@ -212,7 +216,7 @@ const doc = await client.scrape("https://example.com/pricing", {
 });
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### パラメータ
 </div>
 
@@ -348,17 +352,19 @@ const doc = await client.scrape("https://example.com/pricing", {
   ## Interact
 </div>
 
-### これを使う理由
+<div id="why-use-it-3">
+  ### これを使う理由
+</div>
 
 `interact` は、スクレイピングジョブに紐づくブラウザセッション (`metadata.scrapeId` 経由) を、コードまたは自然言語で操作するために使います。SDK では、`code` または `prompt` の少なくとも一方が必要です。スクレイピング前の簡単な調整を超えるフローでは、スクレイピング時の `actions` よりも `interact` を使うことを推奨します。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### 推奨SDKメソッド
 </div>
 
 `client.interact(jobId, args)` → `Promise<ScrapeExecuteResponse>`
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### シンプルな例
 </div>
 
@@ -372,7 +378,7 @@ const result = await client.interact(jobId, {
 });
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### 複雑な例
 </div>
 
@@ -384,7 +390,7 @@ const result = await client.interact("<scrapeJobId>", {
 });
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### パラメータ
 </div>
 
@@ -442,19 +448,19 @@ const result = await client.interact("<scrapeJobId>", {
   ## Ask (エージェント型デバッグ)
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-4">
   ### どのような場合に使うか
 </div>
 
 Firecrawl API の呼び出しが失敗したり、想定外の結果が返ってきたりした場合は、ask を使用します。AI サポートエージェントが問題を診断し、修正に必要なパラメータを提案し、必要に応じて実際の API に対して修正内容を検証します。通常のレイテンシ: 15〜30 秒。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-4">
   ### 推奨SDKメソッド
 </div>
 
 Node.js SDKではまだ利用できません。`fetch`を直接使用してください。
 
-<div id="simple-example">
+<div id="simple-example-4">
   ### シンプルな例
 </div>
 
@@ -474,7 +480,7 @@ console.log(result.answer);
 console.log(result.fixParameters);
 ```
 
-<div id="complex-example">
+<div id="complex-example-4">
   ### 複雑な例
 </div>
 
@@ -532,7 +538,7 @@ if (!doc.markdown || doc.markdown.length < 100) {
 }
 ```
 
-<div id="parameters">
+<div id="parameters-4">
   ### パラメータ
 </div>
 
@@ -552,11 +558,15 @@ if (!doc.markdown || doc.markdown.length < 100) {
   ## ドキュメント検索
 </div>
 
-### なぜ使うのか
+<div id="why-use-it-5">
+  ### なぜ使うのか
+</div>
 
 docs-search を使うと、Firecrawl のドキュメントを検索できます。
 
-### 簡単な例
+<div id="simple-example-5">
+  ### 簡単な例
+</div>
 
 ```ts
 const response = await fetch(
@@ -576,7 +586,7 @@ const result = await response.json();
 console.log(result.answer);
 ```
 
-<div id="parameters">
+<div id="parameters-5">
   ### パラメータ
 </div>
 

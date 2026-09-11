@@ -1,0 +1,94 @@
+---
+title: "Rechercher dans l’index développeur"
+openapi: "/fr/api-reference/v2-openapi.json GET /search/developer"
+---
+
+Recherchez les tickets, les pull requests fusionnées et les README des dépôts de code publics, ainsi que les sites de documentation sélectionnés. Les résultats sont classés par pertinence et incluent les passages correspondants au format Markdown.
+
+`POST` est disponible sur le même chemin pour transmettre des filtres de tableau au format JSON.
+
+Les filtres répétables acceptent l’une ou l’autre forme avec `GET` : un paramètre de requête répété tel que `types=issue&types=pull_request`, ou une seule valeur séparée par des virgules telle que `types=issue,pull_request`.
+
+<div id="how-repos-and-sources-scope-a-search">
+  ## Comment `repos` et `sources` définissent le périmètre d’une recherche
+</div>
+
+L’index comporte deux parties, et ces deux filtres en définissent indépendamment le périmètre :
+
+* `repos` définit le périmètre de la partie des dépôts, c’est-à-dire des types `issue`, `pull_request` et `readme`
+* `sources` définit le périmètre de la partie documentation, c’est-à-dire du type `doc`
+* Fournir les deux combine les deux parties au lieu de les intersecter : vous obtenez donc des résultats correspondants de l’une ou l’autre
+
+Comme chaque filtre ne s’applique qu’à une seule partie, un filtre qui ne peut correspondre à aucun type demandé est rejeté plutôt que de ne rien renvoyer silencieusement :
+
+* `repos` sans type de dépôt dans `types` renvoie `400`, indiquant que `repos` ne peut correspondre à aucun type demandé et que vous devez ajouter des types de dépôt ou supprimer `repos`
+* `sources` sans `doc` dans `types` renvoie `400` avec `sources cannot match any requested type; add doc or drop sources`
+
+<div id="how-the-repository-filters-scope-a-search">
+  ## Comment les filtres de dépôt définissent le périmètre d’une recherche
+</div>
+
+Les sept filtres de dépôt — `language` (par exemple `Rust`), `topic` (par exemple `async`), `license` (par exemple `MIT`), `min_stars`, `max_stars`, `archived` et `fork` — décrivent un dépôt de code. La plupart des pages de documentation de l’index proviennent d’un site web exploré sans dépôt associé, et aucune propriété de dépôt ne peut inclure ou exclure une telle page.
+
+Une requête qui envoie l’un de ces filtres sans définir `sources` n’obtient donc aucun résultat `doc`. Sa réponse ne contient que des éléments du dépôt : les types `issue`, `pull_request` et `readme`, car la partie documentation de l’index n’a jamais été interrogée. C’est le comportement prévu, et non un problème d’indexation.
+
+Pour conserver les résultats de documentation, supprimez les filtres de dépôt. Vous pouvez également définir le périmètre de la partie documentation avec `sources`, puis consulter l’écho `sources` dans la réponse pour confirmer que l’identifiant est indexé.
+
+<CodeGroup>
+  ```bash cURL
+  # Aucune clé API n’est nécessaire pour démarrer ; ajoutez -H "Authorization: Bearer $FIRECRAWL_API_KEY" pour des limites de débit plus élevées :
+  curl -s "https://api.firecrawl.dev/v2/search/developer?query=how%20do%20I%20configure%20retries&k=10&language=Rust&license=MIT"
+  ```
+
+  ```bash cURL (POST)
+  curl -X POST https://api.firecrawl.dev/v2/search/developer \
+    -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "query": "how do I configure retries",
+      "k": 10,
+      "types": ["issue", "pull_request"],
+      "language": "Rust",
+      "license": "MIT"
+    }'
+  ```
+</CodeGroup>
+
+<div id="which-values-sources-accepts">
+  ## Valeurs acceptées par `sources`
+</div>
+
+`sources` n’est pas un enum fixe. Il accepte des identifiants de sources de documentation : chacun est une chaîne non vide de 512 caractères maximum, avec une limite de 20 par requête. Les identifiants correspondent aux sites de documentation présents dans l’index, et cette liste s’étoffe au fil du temps.
+
+Pour vérifier qu’un identifiant est résolu, transmettez-le et consultez le tableau `sources` ajouté à la réponse. Il n’apparaît que si vous avez envoyé `sources` et indique chaque identifiant exactement tel que vous l’avez demandé, ainsi que son statut d’indexation :
+
+```json
+{
+  "success": true,
+  "results": [],
+  "sources": [
+    { "source": "some-docs-site", "indexed": true },
+    { "source": "unknown-docs-site", "indexed": false }
+  ]
+}
+```
+
+`indexed: true` signifie que la source possède une génération publiée et que des éléments de preuve issus de sa documentation peuvent donc apparaître. `indexed: false` signifie qu’aucun élément associé à cet identifiant ne peut correspondre, ce qui permet de distinguer un identifiant absent de l’index d’une requête qui n’a tout simplement rien trouvé.
+
+`repos` est renvoyé de la même façon, sous la forme d’un tableau `repos` indiquant `indexed` et une répartition par type sous `types` :
+
+```json
+{
+  "success": true,
+  "results": [],
+  "repos": [
+    {
+      "repo": "firecrawl/firecrawl",
+      "indexed": true,
+      "types": { "issue": true, "pullRequest": true, "readme": true }
+    }
+  ]
+}
+```
+
+Pour une vue d’ensemble du workflow, consultez le [guide index développeur](/fr/features/developer).

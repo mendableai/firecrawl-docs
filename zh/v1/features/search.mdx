@@ -354,18 +354,16 @@ Firecrawl 的搜索 API 支持通过多种参数来自定义搜索：
   ## 成本说明
 </div>
 
-每次搜索的费用为每 10 条搜索结果消耗 2 个积分。如果启用了爬取选项，每个搜索结果将按标准爬取费用计费：
+每次搜索的费用为每 10 条搜索结果消耗 2 个积分。如果启用了抓取选项，每个搜索结果将按标准爬取费用计费：
 
-- **Basic scrape**：每个网页 1 个积分
-- **PDF parsing**：每个 PDF 页面 1 个积分
-- **Enhanced proxy mode**：每个网页额外 4 个积分
-- **JSON mode**：每个网页额外 4 个积分
+* **Basic scrape**：每个网页 1 个积分
+* **PDF parsing**：每个 PDF 页面 1 个积分
+* **JSON mode**：每个网页额外 4 个积分
 
 为帮助控制成本：
 
-- 如果不需要 PDF 解析，将 `parsers` 设为 `[]`
-- 在可能的情况下使用 `proxy: "basic"` 而不是 `"enhanced"`，或将其设置为 `"auto"`
-- 使用 `limit` 参数限制搜索结果数量
+* 如果不需要 PDF 解析，将 `parsers` 设为 `[]`
+* 使用 `limit` 参数限制搜索结果数量
 
 <div id="advanced-scraping-options">
   ## 高级抓取选项

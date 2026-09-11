@@ -1,0 +1,289 @@
+---
+title: "Replit"
+description: "用于 Firecrawl 网页搜索、抓取和浏览器交互的官方 Replit 连接器"
+---
+
+<Note>
+  **官方 Replit 连接器：**[在 Replit 中打开集成](https://replit.com/~?settings.show=true\&settings.tab=integrations)
+
+  搜索、抓取并与网页交互 • 专为 Replit Agent 打造 • 需 Core、Pro 或 Enterprise 套餐
+</Note>
+
+<div id="replit-connector-overview">
+  ## Replit 连接器概览
+</div>
+
+Firecrawl 是官方 Replit 连接器。在工作区中完成连接后，Replit Agent 在构建需要实时网页数据的应用时便可使用 Firecrawl。
+
+<CardGroup cols={2}>
+  <Card title="专为 Replit Agent 打造" icon="robot">
+    在 Integrations 中启用 Firecrawl，让 Agent 在构建过程中进行搜索、抓取和交互
+  </Card>
+
+  <Card title="无需 API 密钥即可开始" icon="bolt">
+    默认值：费用将计入您的 Replit 账户。自定义配置：使用 Firecrawl 密钥或领取 10,000 额度优惠
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-capabilities-in-replit">
+  ## Replit 中的 Firecrawl 功能
+</div>
+
+Replit Agent 可使用 Firecrawl 的 **搜索**、**抓取**、**交互**、**监控**、**爬取**和**解析**端点构建应用。连接器配置决定由哪个账户提供 API 密钥并承担 Firecrawl 使用费用；不会影响应用可使用哪些 Firecrawl API。
+
+<AccordionGroup>
+  <Accordion title="搜索" icon="magnifying-glass">
+    为研究、发现竞争对手和数据补充查找相关的实时网页来源及摘录。
+
+    **使用场景：**发现竞争对手、研究助手、潜在客户数据补充。
+  </Accordion>
+
+  <Accordion title="抓取" icon="file-code">
+    将任意 URL 转换为可供 LLM 使用的整洁数据，包括摘要、结构化字段和应用内容。
+
+    **使用场景：**提取产品数据、抓取文章、补充公司页面数据。
+  </Accordion>
+
+  <Accordion title="交互" icon="hand-pointer">
+    在动态网站上点击、填写表单，以及完成多步骤流程。
+
+    **使用场景：**表单工作流、已登录页面、多步骤数据收集。
+  </Accordion>
+
+  <Accordion title="监控" icon="bell">
+    按计划监控页面、网站或网页是否有重要更新。可在你构建的应用中通过 Firecrawl API 使用。
+
+    **使用场景：**关键词监控、更新日志告警、竞争对手跟踪。
+  </Accordion>
+
+  <Accordion title="爬取" icon="spider">
+    发现并抓取网站中可访问的页面。可在你构建的应用中通过 Firecrawl API 使用。
+
+    **使用场景：**导入文档、全站提取、多页面研究。
+  </Accordion>
+
+  <Accordion title="解析" icon="file-lines">
+    将 PDF 和 Word 文档转换为 Markdown 或 JSON。可在你构建的应用中通过 Firecrawl API 使用。
+
+    **使用场景：**解析报告、文档知识库、文件转结构化数据工作流。
+  </Accordion>
+</AccordionGroup>
+
+<div id="getting-started">
+  ## 入门指南
+</div>
+
+<Steps>
+  <Step title="打开集成">
+    在订阅 **Core**、**Pro** 或 **Enterprise** 套餐的 Replit 工作区中，打开 **集成**。
+  </Step>
+
+  <Step title="连接 Firecrawl">
+    选择 **启用新连接器**，选择 **Firecrawl**，使用默认配置，然后选择 **提交**。对于 Core 和 Pro 套餐，由账户管理员为协作工作区管理连接器；对于 Enterprise 套餐，则由管理员为组织管理连接器。
+  </Step>
+
+  <Step title="选择计费">
+    保持选中 **使用 Replit 默认配置** (无需 Firecrawl 账户) ，或者打开 **管理**，选择 **使用自定义配置**，然后粘贴您的 Firecrawl API 密钥，或领取 10,000 额度优惠；该优惠会创建并保存新的密钥。
+  </Step>
+
+  <Step title="验证连接">
+    在已连接工作区的应用中，要求代理运行服务器端连接器测试：
+
+    ```text
+    运行服务器端 Firecrawl 测试。
+    使用 Replit 连接器。
+    抓取 https://example.com。
+    使用连接器相对路径 /scrape。
+    仅返回页面标题和第一段。
+    不要泄露 API 密钥，也不要向我索要 API 密钥。
+    不要发布应用。
+    ```
+
+    如有提示，请确认建议的 Firecrawl 集成。当应用的服务器端连接器调用返回 **Example Domain** 及页面第一段，且不会在聊天或应用代码中要求您提供 API 密钥时，即表示连接正常。
+
+    <Note>
+      Replit 的 Firecrawl 连接器基础 URL 已包含 `/v2`。使用 `@replit/connectors-sdk` 时，请使用连接器相对路径 `/scrape`，而非 `/v1/scrape`。
+    </Note>
+  </Step>
+</Steps>
+
+<div id="billing-and-credentials">
+  ## 计费和凭据
+</div>
+
+<AccordionGroup>
+  <Accordion title="Replit 默认方式" icon="bolt">
+    * **凭据和计费：**Replit 提供其 API 密钥。Firecrawl 请求将通过 Replit 计费，并从 Replit 额度中扣除。
+    * **Firecrawl 账户：**无需。
+    * **10,000 额度优惠：**不包含。
+  </Accordion>
+
+  <Accordion title="领取合作伙伴额度" icon="gift">
+    * **凭据和计费：**Replit 会为您配置新的 Firecrawl 密钥。Firecrawl 使用将消耗已领取的合作伙伴额度。
+    * **Firecrawl 账户：**将为您配置与合作伙伴关联的账户和密钥。
+    * **10,000 额度优惠：**每位用户每个合作伙伴可领取一次，领取后 3 个月到期。
+    * **成功标志：**优惠会显示为 **已领取**，且 Replit 会提示其正在使用您的 API 密钥，而非通过 Replit 对连接器使用情况计费。
+  </Accordion>
+
+  <Accordion title="现有 Firecrawl 密钥" icon="key">
+    * **凭据和计费：**您提供密钥。使用将遵循该 Firecrawl 账户的套餐、额度和限制。
+    * **Firecrawl 账户：**必填。
+    * **10,000 额度优惠：**不会添加到现有密钥中。
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+  请将 Firecrawl API 密钥保存在连接器的自定义配置中。请勿将密钥粘贴到代理 prompt、应用程序源代码、截图、日志或拉取请求中。
+</Warning>
+
+<Tip>
+  **限时优惠：**打开 **管理**，选择 **使用自定义配置**，并领取 **10,000 免费 Firecrawl 额度**以配置一个**新**密钥。该优惠每位用户每个合作伙伴仅可享受一次，领取后 3 个月到期，并遵循 Firecrawl Free 套餐的限制。粘贴现有密钥不会将该优惠添加到该密钥中。Replit 默认计费不包含此优惠。完整条款请参见 [合作伙伴额度](/zh/partner-credits)。
+</Tip>
+
+<div id="usage-patterns">
+  ## 使用模式
+</div>
+
+<Tabs>
+  <Tab title="竞争对手分析">
+    **搜索并抓取竞争对手**
+
+    1. 让代理通过 Firecrawl `/search` 查找竞争对手
+    2. 抓取各竞争对手的网站，获取关键背景信息
+    3. 在简洁的 UI 中展示名称、摘要和详细信息
+
+    **示例 prompt：**
+
+    ```
+    使用 Firecrawl 构建一款竞争对手分析应用。搜索竞争对手，抓取其网站，并展示摘要。
+    ```
+  </Tab>
+
+  <Tab title="网页监控">
+    **使用 `/monitor` 的关键词监控应用**
+
+    在代理构建的应用中使用 Firecrawl API。
+
+    1. 让代理构建一个调用 Firecrawl `/monitor` 的应用
+    2. 让用户添加关键词和目标网站
+    3. 按计划执行检查，也支持手动扫描，并呈现重要变更
+
+    **示例 prompt：**
+
+    ```
+    使用 Firecrawl 构建一款关键词监控应用，监控选定网站，并在发生重要变更时发出告警。
+    ```
+  </Tab>
+</Tabs>
+
+<div id="industry-use-cases">
+  ## 行业应用场景
+</div>
+
+<AccordionGroup>
+  <Accordion title="电子商务" icon="cart-shopping">
+    * 竞争对手定价和商品组合追踪
+    * 商品库存检查
+    * 评论和商品列表汇总
+  </Accordion>
+
+  <Accordion title="营销与 SEO" icon="bullhorn">
+    * 竞争对手内容监控
+    * 基于实时页面的 SEO 审核
+    * 调研简报生成
+  </Accordion>
+
+  <Accordion title="销售与获客" icon="briefcase">
+    * 基于公开网页丰富公司信息
+    * 潜在客户调研助手
+    * 用于外联的账户简报生成
+  </Accordion>
+
+  <Accordion title="支持与知识库" icon="book">
+    * 始终保持最新的文档助手
+    * 帮助中心和更新日志监控
+    * 基于实时来源提供答案的内部工具
+  </Accordion>
+</AccordionGroup>
+
+<div id="official-blog-post">
+  ## 官方博客文章
+</div>
+
+<Card title="Firecrawl 现已成为官方 Replit 连接器" icon="rocket" href="https://www.firecrawl.dev/blog/firecrawl-official-replit-connector">
+  发布概览：在 Replit 工作区中连接 Firecrawl，利用实时网页数据构建应用。
+</Card>
+
+<div id="troubleshooting">
+  ## 故障排除
+</div>
+
+<div id="firecrawl-is-missing-from-integrations">
+  ### Integrations 中未显示 Firecrawl
+</div>
+
+* 确认工作区使用的是 Core、Pro 或 Enterprise 套餐。
+* 请工作区或组织管理员打开 **Integrations → Enable new connector**，然后启用 Firecrawl。
+* 确认该应用属于已启用 Firecrawl 的工作区或组织。
+
+<div id="agent-asks-for-an-api-key">
+  ### 代理要求提供 API 密钥
+</div>
+
+* 确认已为当前工作区或组织启用 Firecrawl。
+* 请代理将 **Firecrawl 连接器**附加到应用，并使用其服务器端连接器绑定。
+* 如果要使用自己的密钥，请打开 **管理**，选择 **使用自定义配置**，然后在此处添加密钥，而不要将其粘贴到 prompt 中。
+
+<div id="agent-reports-withheld-credentials">
+  ### 代理提示凭据不可用
+</div>
+
+即使已连接 Firecrawl，内联代理查询也可能返回空凭据。请改让代理通过应用服务端的 `@replit/connectors-sdk` 绑定运行测试。对于 Firecrawl v2 抓取，请使用相对于连接器的路径 `/scrape`；使用 `/v1/scrape` 会产生错误的 `/v2/v1/scrape` 请求。
+
+如果 **Manage** 中显示自定义配置为 **Claimed**，并提示 Replit 正在使用你的 API 密钥，则说明合作伙伴额度申领已成功，即使内联代理沙箱无法直接读取凭据也是如此。
+
+<div id="the-credit-claim-option-is-unavailable">
+  ### 额度申领选项不可用
+</div>
+
+* 确认你已在 **Manage** 中选择 **Use custom configurations**。
+* 检查该用户是否已领取 Replit 合作伙伴优惠；每位用户仅可通过每个合作伙伴享受一次该优惠。
+* 请工作区或组织管理员确认你是否有权访问连接器配置。
+
+Replit 使用情况最多可能需要 30 分钟才会显示在使用情况 Dashboard 中。
+
+<div id="faqs">
+  ## 常见问题
+</div>
+
+<AccordionGroup>
+  <Accordion title="我需要 Firecrawl API 密钥吗？">
+    不需要。默认情况下，连接器使用 Replit 的 API 密钥，费用会按请求计入您的 Replit 账户。在 **管理** 中，选择 **使用自定义配置**，即可粘贴您自己的 Firecrawl API 密钥，或领取 10,000 额度优惠，系统将为您生成新的密钥。该优惠每位用户针对每个合作伙伴仅限领取一次，有效期为 3 个月。
+  </Accordion>
+
+  <Accordion title="哪些 Replit 套餐包含此连接器？">
+    **Core**、**Pro** 和 **Enterprise** 套餐均支持 Replit 集成。在工作区中打开 Integrations，然后搜索 Firecrawl。
+  </Accordion>
+
+  <Accordion title="这与 Replit 在内部使用 Firecrawl 有何不同？">
+    Replit Agent 一直在后台使用 Firecrawl 获取最新文档和网页内容。官方连接器可让您的应用通过 Integrations 目录使用 Firecrawl。
+  </Accordion>
+</AccordionGroup>
+
+<div id="related-resources">
+  ## 相关资源
+</div>
+
+<CardGroup cols={2}>
+  <Card title="管理 Replit 连接器" icon="book" href="https://docs.replit.com/replitai/managing-connectors">
+    套餐可用性、设置、访问权限及连接器管理
+  </Card>
+
+  <Card title="Replit Agent 集成" icon="plug" href="https://docs.replit.com/features/integrations/overview">
+    Agent 如何查找并使用集成
+  </Card>
+
+  <Card title="客户案例" icon="newspaper" href="https://www.firecrawl.dev/blog/how-replit-uses-firecrawl-to-power-ai-agents">
+    Replit 如何利用 Firecrawl 赋能 Agent
+  </Card>
+</CardGroup>

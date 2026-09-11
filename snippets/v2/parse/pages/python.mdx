@@ -1,0 +1,14 @@
+```python Python
+from firecrawl import Firecrawl
+from firecrawl.v2.types import ScrapeOptions
+
+firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
+
+doc = firecrawl.parse(
+    "./report.pdf",
+    options=ScrapeOptions(parsers=[{"type": "pdf", "pages": True}]),
+)
+
+for page in doc.pages:
+    print(page.page_number, page.markdown[:80])
+```

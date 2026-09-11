@@ -1,57 +1,46 @@
 ---
 title: 'Parse'
-description: 'Envie um documento local ou não público e converta-o em dados limpos, prontos para LLM'
+description: 'Transforme documentos — PDFs, Word, Excel, PowerPoint e muito mais — em markdown limpo, conteúdo por página, blocos de layout e JSON estruturado'
 og:title: "Parse | Firecrawl"
-og:description: "Transforme PDFs locais, DOCX, XLSX, HTML e mais em Markdown ou JSON estruturado"
+og:description: "Transforme PDFs, DOCX, XLSX, HTML e muito mais em Markdown, blocos de layout com caixas delimitadoras ou JSON estruturado"
 icon: "file-magnifying-glass"
 version: "v2"
 sidebarTitle: "Parse"
 ---
 
-O endpoint `/parse` converte documentos locais ou não públicos em dados limpos, prontos para LLM. Envie o arquivo via `multipart/form-data` e receba Markdown, JSON, HTML, links, imagens ou um resumo — com a ordem de leitura e as tabelas preservadas.
+import ParsePagesPython from "/snippets/pt-BR/v2/parse/pages/python.mdx";
+import ParsePagesNode from "/snippets/pt-BR/v2/parse/pages/js.mdx";
+import ParsePagesCURL from "/snippets/pt-BR/v2/parse/pages/curl.mdx";
+import ParsePageMarkersPython from "/snippets/pt-BR/v2/parse/page-markers/python.mdx";
+import ParsePageMarkersNode from "/snippets/pt-BR/v2/parse/page-markers/js.mdx";
+import ParsePageMarkersCURL from "/snippets/pt-BR/v2/parse/page-markers/curl.mdx";
+import ParseBlocksPython from "/snippets/pt-BR/v2/parse/blocks/python.mdx";
+import ParseBlocksNode from "/snippets/pt-BR/v2/parse/blocks/js.mdx";
+import ParseBlocksCURL from "/snippets/pt-BR/v2/parse/blocks/curl.mdx";
+import ParseJsonPython from "/snippets/pt-BR/v2/parse/json/python.mdx";
+import ParseJsonNode from "/snippets/pt-BR/v2/parse/json/js.mdx";
+import ParseJsonCURL from "/snippets/pt-BR/v2/parse/json/curl.mdx";
+import ParseGroundingPython from "/snippets/pt-BR/v2/parse/grounding/python.mdx";
+import ParseGroundingNode from "/snippets/pt-BR/v2/parse/grounding/js.mdx";
+import VideoParseVsScrape from "/snippets/pt-BR/shared/video-parse-vs-scrape.mdx";
 
-* Transforme PDFs, DOCX, XLSX, HTML e mais em Markdown ou JSON estruturado
-* Análise até **5x mais rápida** com um mecanismo baseado em Rust
-* Arquivos de até **50 MB** por solicitação
-* Suporte a Zero Data Retention
+O Parse converte documentos em dados limpos e prontos para LLMs. Envie um arquivo para
+[`/parse`](/pt-BR/api-reference/endpoint/parse) — ou use [`/scrape`](/pt-BR/features/scrape)
+em uma URL pública de documento — e receba markdown, conteúdo por página, blocos
+de layout tipados ou JSON estruturado.
 
-<div id="when-to-use-parse">
-  ## Quando usar `/parse`
-</div>
+* **Preserva o layout**: títulos, parágrafos, tabelas e fórmulas organizados na ordem de leitura
+* **Inclui documentos digitalizados**: extração de texto nativo com OCR como alternativa para páginas que contêm apenas imagens
+* **Estrutura fundamentada**: blocos de layout tipados com caixas delimitadoras e links para intervalos de caracteres no markdown (PDFs)
+* **Compatível com formatos comuns**: PDF, Word, Excel, PowerPoint, OpenDocument, EPUB, CSV, HTML
+* Suporte a **Zero Data Retention**
 
-Use `/parse` quando o documento de origem for **um arquivo local** ou **não puder ser acessado publicamente por URL**. Se você tiver uma URL pública que aponte para um documento, prefira [`/scrape`](/pt-BR/features/scrape) — ele detecta automaticamente o tipo de arquivo pela extensão ou pelo tipo de conteúdo e o processa da mesma forma.
+Na dúvida entre o Parse e o [Scrape](/pt-BR/features/scrape)? Este vídeo explica as diferenças:
 
-| Origem                                                                      | Endpoint                                         |
-| --------------------------------------------------------------------------- | ------------------------------------------------ |
-| URL pública de um documento (por exemplo, `https://example.com/report.pdf`) | [`POST /scrape`](/pt-BR/api-reference/endpoint/scrape) |
-| Arquivo local ou bytes não públicos (PDF, DOCX, XLSX, HTML, ...)            | [`POST /parse`](/pt-BR/api-reference/endpoint/parse)   |
+<VideoParseVsScrape />
 
-<Tip>
-  **Usando o Firecrawl via MCP?** Use `firecrawl_parse` para arquivos locais. O MCP local pode ler o arquivo diretamente quando configurado com `FIRECRAWL_API_URL`. O MCP remoto hospedado primeiro retorna um comando de upload de curta duração e depois processa o `uploadRef` retornado. URLs públicas de documentos ainda devem usar `/scrape`.
-</Tip>
-
-<Tip>
-  **Tem uma URL pública para um PDF?** Use `/scrape` em vez disso -- ele detecta automaticamente os tipos de documento e retorna markdown limpo. Não é necessário usar uma biblioteca de PDF separada.
-
-  ```python Python
-  doc = firecrawl.scrape("https://example.com/report.pdf", formats=["markdown"])
-  ```
-</Tip>
-
-<div id="parsing">
-  ## Análise
-</div>
-
-<div id="parse-endpoint">
-  ### endpoint /parse
-</div>
-
-Usado para enviar um arquivo e receber o conteúdo analisado. A requisição é `multipart/form-data`, com um campo `file` obrigatório e um campo JSON `options` opcional.
-
-**Extensões compatíveis:** `.html`, `.htm`, `.pdf`, `.docx`, `.doc`, `.odt`, `.rtf`, `.xlsx`, `.xls`.
-
-<div id="usage">
-  ### Uso
+<div id="quickstart">
+  ## Guia de início rápido
 </div>
 
 <CodeGroup>
@@ -87,8 +76,14 @@ Usado para enviar um arquivo e receber o conteúdo analisado. A requisição é 
   ```
 </CodeGroup>
 
+<Note>
+  Tem uma **URL pública de documento** em vez de um arquivo? [`/scrape`](/pt-BR/features/scrape)
+  detecta o tipo de arquivo e faz o parsing da mesma forma — com as mesmas opções e o mesmo resultado:
+  `firecrawl.scrape("https://example.com/report.pdf")`.
+</Note>
+
 <div id="response">
-  ### Resposta
+  ## Resposta
 </div>
 
 Os SDKs retornam diretamente o objeto de documento. O cURL retorna o payload JSON.
@@ -116,56 +111,249 @@ Os SDKs retornam diretamente o objeto de documento. O cURL retorna o payload JSO
   quando não é possível determinar a contagem de páginas.
 </Note>
 
-<div id="options">
-  ## Opções
+Além do markdown do documento, três resultados abrangem os casos em que uma única
+string de markdown não é suficiente: [markdown por página](#per-page-markdown-pdf) e
+[blocos de layout](#layout-blocks-pdf) para documentos PDF, e
+[JSON estruturado](#structured-json-output) para todos os formatos. E quando tudo o que
+você precisa é da atribuição de página *dentro* do próprio markdown,
+[marcadores de página](#page-markers-pdf) anotam as quebras de página no local.
+
+<div id="per-page-markdown-pdf">
+  ## Markdown por página (PDF)
 </div>
 
-`/parse` aceita um subconjunto das opções de scraping no campo `options`. Configurações comuns:
+Defina `pages: true` no [parser de PDF](#pdf-options), e o documento também
+inclui um array `pages` com o markdown físico de cada página — útil quando você
+precisa saber de qual página veio o conteúdo ou processar as páginas de forma independente.
+Sem custo adicional.
+
+<CodeGroup>
+  <ParsePagesPython />
+
+  <ParsePagesNode />
+
+  <ParsePagesCURL />
+</CodeGroup>
+
+```json
+"pages": [
+  { "pageNumber": 1, "markdown": "# Annual Report\n\n..." },
+  { "pageNumber": 2, "markdown": "..." }
+]
+```
+
+<div id="page-markers-pdf">
+  ## Marcadores de página (PDF)
+</div>
+
+Defina `pageMarkers: true` no [parser de PDF](#pdf-options), e as páginas no
+`markdown` do documento serão separadas por um marcador de comentário HTML que identifica a
+página física seguinte:
+
+```markdown
+...fim da página 1
+
+---
+
+<!-- page 2 -->
+
+início da página 2...
+```
+
+Não há um novo campo de resposta — os marcadores são inseridos no markdown, portanto
+qualquer pipeline subsequente que processa apenas uma string de markdown mantém a atribuição
+por página. Os comentários são invisíveis quando o markdown é renderizado e
+fáceis de separar (`<!-- page N -->`, com numeração iniciando em 1). Sem custo adicional.
+
+<CodeGroup>
+  <ParsePageMarkersPython />
+
+  <ParsePageMarkersNode />
+
+  <ParsePageMarkersCURL />
+</CodeGroup>
+
+<Note>
+  Os marcadores aparecem apenas **entre** as páginas — não há marcador inicial para a página 1.
+  A numeração pode pular uma página quando o parser mescla conteúdo em uma quebra de página
+  (uma tabela ou frase que continua na página seguinte não deixa um limite para
+  marcar). Use [`pages: true`](#per-page-markdown-pdf) quando precisar de cada
+  página física separadamente; as duas options podem ser combinadas.
+</Note>
+
+<div id="layout-blocks-pdf">
+  ## Blocos de layout (PDF)
+</div>
+
+Defina `blocks: true` no [parser de PDF](#pdf-options), e o documento também
+passará a incluir um array `blocks`: para cada página, os blocos de layout tipados que o mecanismo de
+análise detectou, com geometria e origem. Este é o equivalente estruturado do
+markdown — use-o para fundamentação de citações, criar sobreposições de destaque
+ou auditar o conteúdo de um documento. Sem custo adicional.
+
+<Frame caption="Todos os blocos que o mecanismo detecta, tipados e posicionados — as mesmas regiões que se tornam o markdown.">
+  <img src="/images/pdf-blocks-overlay.png" alt="Uma página de PDF analisada com caixas delimitadoras coloridas sobrepostas a cada bloco de layout detectado: título, texto, cabeçalhos de seção, tabela, figura, legenda, rodapé e número da página" />
+</Frame>
+
+<CodeGroup>
+  <ParseBlocksPython />
+
+  <ParseBlocksNode />
+
+  <ParseBlocksCURL />
+</CodeGroup>
+
+```json
+"blocks": [
+  {
+    "pageNumber": 1,
+    "width": 1700,
+    "height": 2200,
+    "status": "ok",
+    "items": [
+      {
+        "id": "p1.b0",
+        "type": "title",
+        "label": "doc_title",
+        "bbox": [0.118, 0.054, 0.882, 0.092],
+        "content": "# Annual Report",
+        "markdownSpan": [0, 15],
+        "readingOrder": 0,
+        "source": "native_text",
+        "confidence": { "layout": 0.97, "ocr": null }
+      }
+    ]
+  }
+]
+```
+
+<div id="block-fields">
+  ### Campos do bloco
+</div>
+
+| Campo          | Descrição                                                                                                                                                                              |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`           | Estável dentro de uma resposta: `p<page>.b<index in reading order>`.                                                                                                                   |
+| `type`         | Tipo de bloco: `title`, `section_header`, `text`, `table`, `formula`, `figure`, `caption`, `page_number`, `page_header`, `page_footer`. Novos tipos podem surgir ao longo do tempo.    |
+| `label`        | Rótulo bruto do modelo de layout, repassado para compatibilidade futura.                                                                                                               |
+| `bbox`         | `[x0, y0, x1, y1]` normalizado de 0 a 1 em relação à página. Multiplique por `width`/`height` para obter coordenadas em pixels. `null` quando a página não tiver dimensões conhecidas. |
+| `content`      | O fragmento Markdown para o qual este bloco contribuiu.                                                                                                                                |
+| `markdownSpan` | Deslocamentos de caracteres `[start, end)` no `markdown` do documento que abrangem o fragmento deste bloco. `null` quando o pós-processamento reescreveu o fragmento.                  |
+| `readingOrder` | Posição na ordem de leitura detectada.                                                                                                                                                 |
+| `source`       | Caminho do pipeline que produziu o bloco (por exemplo, `native_text`, `layout_ocr`, `tsr`, `formula_model`).                                                                           |
+| `confidence`   | Pontuação de detecção de `layout` (0–1) e confiança do texto de `ocr` quando a fonte fornecer uma; `null` caso contrário — nunca um agregado inventado.                                |
+
+<div id="grounding-from-an-answer-back-to-the-page">
+  ### Fundamentação: de uma resposta à página
+</div>
+
+`markdownSpan` vincula cada bloco ao trecho exato do markdown que ele
+produziu. Isso torna a fundamentação de citações uma consulta, não uma inferência: encontre o
+texto citado no markdown, localize o bloco cujo intervalo abrange esse deslocamento
+e você terá o número da página e a caixa delimitadora — sem jamais precisar pedir
+coordenadas a um modelo de linguagem.
+
+<CodeGroup>
+  <ParseGroundingPython />
+
+  <ParseGroundingNode />
+</CodeGroup>
+
+<div id="structured-json-output">
+  ## Resultado JSON estruturado
+</div>
+
+Passe um schema JSON ou um prompt para extrair dados estruturados diretamente do documento:
+
+<CodeGroup>
+  <ParseJsonPython />
+
+  <ParseJsonNode />
+
+  <ParseJsonCURL />
+</CodeGroup>
+
+<div id="pdf-options">
+  ## Opções de PDF
+</div>
+
+Todo o comportamento relacionado a PDFs é controlado pela opção `parsers`, tanto em `/parse` quanto em
+`/scrape`:
+
+```json
+{
+  "parsers": [
+    {
+      "type": "pdf",
+      "mode": "auto",
+      "maxPages": 100,
+      "pages": true,
+      "blocks": true,
+      "pageMarkers": true
+    }
+  ]
+}
+```
+
+| Propriedade   | Tipo                        | Padrão          | Descrição                                                                                                                       |
+| ------------- | --------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `type`        | `"pdf"`                     | *(obrigatório)* | Tipo de parser.                                                                                                                 |
+| `mode`        | `"fast" \| "auto" \| "ocr"` | `"auto"`        | Estratégia de análise — veja abaixo.                                                                                            |
+| `maxPages`    | `integer`                   | —               | Limita o número de páginas a analisar.                                                                                          |
+| `pages`       | `boolean`                   | `false`         | Também retorna [Markdown por página](#per-page-markdown-pdf). Sem custo adicional.                                              |
+| `blocks`      | `boolean`                   | `false`         | Também retorna [blocos de layout](#layout-blocks-pdf) com caixas delimitadoras. Sem custo adicional.                            |
+| `pageMarkers` | `boolean`                   | `false`         | Anota as quebras de página no Markdown do documento com [marcadores `<!-- page N -->`](#page-markers-pdf). Sem custo adicional. |
+
+Passar `parsers: []` ignora completamente a análise e retorna o PDF em base64
+(1 crédito fixo).
+
+<div id="parsing-modes">
+  ### Modos de análise
+</div>
+
+| Modo   | Descrição                                                                                                                                                                                             |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auto` | Primeiro tenta a extração rápida baseada em texto e recorre ao OCR quando necessário. Este é o padrão.                                                                                                |
+| `fast` | Somente extração baseada em texto (texto incorporado). É a opção mais rápida, mas falha em páginas digitalizadas ou que contêm apenas imagens, em vez de retornar silenciosamente um resultado vazio. |
+| `ocr`  | Força o OCR em todas as páginas. Use para documentos digitalizados ou quando `auto` classificar uma página incorretamente.                                                                            |
+
+<div id="supported-formats">
+  ## Formatos compatíveis
+</div>
+
+**Extensões compatíveis:** `.html`, `.htm`, `.xhtml`, `.pdf`, `.docx`, `.doc`, `.docm`, `.odt`, `.ods`, `.odp`, `.rtf`, `.xlsx`, `.xls`, `.xlsm`, `.xlsb`, `.pptx`, `.ppt`, `.pptm`, `.epub`, `.csv`.
+
+Consulte [análise de documentos](/pt-BR/features/document-parsing) para saber como cada formato é
+convertido.
+
+<div id="request-reference">
+  ## Referência da requisição
+</div>
+
+A requisição é `multipart/form-data`, com uma parte `file` obrigatória e uma
+parte JSON `options` opcional. `options` aceita um subconjunto das opções de scraping:
 
 * `formats`: Array de formatos de resultado. O padrão é `["markdown"]`. Compatíveis: `markdown`, `html`, `rawHtml`, `links`, `images`, `summary` e `json` (com um schema ou prompt).
 * `onlyMainContent`: Retorna apenas o conteúdo principal do documento. O padrão é `true`.
 * `includeTags` / `excludeTags`: Inclusão ou exclusão em nível de tag (entradas HTML).
 * `redactPII`: Redige informações de identificação pessoal do markdown retornado.
 * `timeout`: Tempo limite da requisição em milissegundos. O padrão é `30000`, máximo de `300000`.
-* `parsers`: Controles do parser de arquivos. Para PDFs, defina `{ "type": "pdf", "mode": "fast" | "auto" | "ocr", "maxPages": <int> }`.
+* `parsers`: Controles do parser de arquivos — consulte as [opções de PDF](#pdf-options).
 
 <Note>
   `/parse` não oferece suporte a opções exclusivas do navegador, como `actions`, `waitFor`, `location`, `mobile` ou rastreamento de alterações.
 </Note>
 
-<div id="pdf-parser-modes">
-  ### Modos do parser de PDF
-</div>
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v2/parse \
-  -H 'Authorization: Bearer YOUR_API_KEY' \
-  -F 'file=@./scan.pdf' \
-  -F 'options={"parsers":[{"type":"pdf","mode":"ocr","maxPages":50}]};type=application/json'
-```
-
-* `fast`: extração somente de texto, opção mais rápida.
-* `auto` (padrão): prioriza texto, com fallback para OCR em páginas só com imagens.
-* `ocr`: OCR em todas as páginas — use em documentos digitalizados.
-
-<div id="structured-json-output">
-  ### Resultado JSON estruturado
-</div>
-
-Passe um schema JSON ou um prompt para extrair dados estruturados diretamente do documento:
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v2/parse \
-  -H 'Authorization: Bearer YOUR_API_KEY' \
-  -F 'file=@./invoice.pdf' \
-  -F 'options={"formats":[{"type":"json","schema":{"type":"object","properties":{"total":{"type":"number"},"vendor":{"type":"string"}}}}]};type=application/json'
-```
+<Tip>
+  **Usando o Firecrawl via MCP?** Use `firecrawl_parse` para arquivos locais. O MCP local pode ler o arquivo diretamente quando configurado com `FIRECRAWL_API_URL`. O MCP remoto hospedado primeiro retorna um comando de upload temporário e, em seguida, processa o `uploadRef` retornado. URLs públicas de documentos ainda devem usar `/scrape`.
+</Tip>
 
 <div id="considerations">
   ## Considerações
 </div>
 
 * O tamanho máximo do arquivo é de **50 MB** por requisição.
+* A análise de PDFs é cobrada a **1 crédito por página**; as opções `pages`, `blocks` e `pageMarkers` não geram custo adicional.
 * A análise de PDFs muito grandes ou digitalizados no modo `ocr` pode demorar mais — aumente o valor de `timeout` ou use `maxPages` para limitar o processamento.
 * Para lotes de arquivos, chame `/parse` para cada arquivo em paralelo; não há opção de upload em lote.
 

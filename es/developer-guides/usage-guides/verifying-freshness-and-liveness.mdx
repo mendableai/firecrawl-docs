@@ -1,0 +1,201 @@
+---
+title: "Verificación de actualidad y vigencia"
+description: "Comprende la diferencia entre la actualidad del contenido y si el estado representado por una página sigue vigente"
+og:title: "Verificación de actualidad y vigencia | Firecrawl"
+og:description: "Comprende la diferencia entre la actualidad del contenido y si el estado representado por una página sigue vigente"
+sidebarTitle: "Verificación de actualidad y vigencia"
+---
+
+Un scraping exitoso indica lo que devolvió la página. No demuestra que el **estado representado por la página** siga vigente. Son dos preguntas distintas.
+
+* **Actualidad** → ¿Este contenido es reciente o es una copia reutilizada de la caché de Firecrawl? Se controla mediante `maxAge`.
+* **Vigencia** → ¿Lo subyacente sigue existiendo y está activo? Tu aplicación lo determina a partir de la evidencia disponible.
+
+Esta guía explica la diferencia, analiza la disyuntiva de `maxAge` y ofrece una lista de verificación y un ejemplo práctico para acciones sensibles a la actualidad.
+
+<div id="quick-comparison">
+  ## Comparación rápida
+</div>
+
+|                                             | Actualidad                                                                          | Vigencia                                                                                     |
+| ------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Pregunta**                                | ¿Este contenido es reciente o proviene de la caché?                                 | ¿El objeto que describe la página sigue activo?                                              |
+| **Lo controlas con**                        | El parámetro de solicitud `maxAge`                                                  | Tu propia lógica de dominio                                                                  |
+| **Firecrawl informa**                       | `metadata.cacheState` (`"hit"` o `"miss"`) y `metadata.cachedAt` en caso de acierto | Nada directamente; solo indicios en la página                                                |
+| **Información disponible**                  | Si la respuesta proviene de la caché                                                | Contenido de la página, `metadata.statusCode` y `metadata.url` frente a `metadata.sourceURL` |
+| **¿Un HTTP 200 con contenido lo confirma?** | **No** — un 200 no indica la antigüedad del contenido                               | **No** — un 200 solo describe la respuesta de la página                                      |
+
+***
+
+<div id="the-freshness-tradeoff-maxage">
+  ## El equilibrio entre actualidad y rendimiento (`maxAge`)
+</div>
+
+Firecrawl almacena en caché páginas extraídas previamente y devuelve una copia reciente cuando hay una disponible, lo que reduce la latencia. `maxAge` es la antigüedad máxima, en milisegundos, de una copia en caché que Firecrawl puede devolver en lugar de recuperar la página de nuevo.
+
+* **Omita `maxAge`**: Firecrawl puede devolver contenido almacenado recientemente en caché. El período predeterminado es de 2 días; Firecrawl puede usar un período diferente para algunos sitios.
+* **Establezca `maxAge: 0`**: Firecrawl omite la caché para esa solicitud y recupera la página. Esto sacrifica latencia y fiabilidad a cambio de una recuperación más reciente.
+
+Mantenga la caché activada de forma predeterminada. Asuma el costo de latencia de `maxAge: 0` solo para las lecturas en las que contenido desactualizado podría provocar una decisión incorrecta o costosa; no cambia el costo de la página en créditos.
+
+`metadata.cacheState` se devuelve cuando Firecrawl considera su caché para la solicitud, por lo que resulta útil para comprobarlo mientras ajusta `maxAge`. No forma parte de una respuesta con `maxAge: 0`, porque esa solicitud omite la caché por completo.
+
+Para conocer el funcionamiento de la caché, los valores habituales de `maxAge`, las reglas de coincidencia para aciertos de caché y las opciones de solicitud que omiten la caché automáticamente, consulte [Scraping más rápido](/es/features/fast-scraping).
+
+<div id="where-maxage-applies">
+  ### Dónde se aplica `maxAge`
+</div>
+
+| Endpoint                  | Comportamiento                                                                                                                                              |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/scrape`                 | `maxAge` se respeta en el cuerpo de la solicitud                                                                                                            |
+| `/crawl`, `/batch/scrape` | `maxAge` se respeta dentro de `scrapeOptions`                                                                                                               |
+| `/search`                 | Search aplica su propia ventana de actualización a las páginas que scrapea, por lo que `maxAge` en `scrapeOptions` no surte efecto                          |
+| `/parse`                  | `/parse` siempre procesa el archivo que proporcionas y nunca devuelve ni almacena contenido en caché, por lo que `maxAge` y `storeInCache` no surten efecto |
+
+Si necesitas obtener una versión actualizada de una página que encontraste mediante `/search`, vuelve a hacer scraping de esa URL con `/scrape` y `maxAge: 0`.
+
+***
+
+<div id="freshness-is-not-liveness">
+  ## La actualidad no implica vigencia
+</div>
+
+Incluso con `maxAge: 0`, el resultado solo indica lo que devolvió la página en esa consulta. Una página puede devolver HTTP 200 con contenido y, aun así, reflejar un estado desactualizado, no disponible o que ha cambiado.
+
+Por tanto, ni el código de estado ni la presencia de contenido determinan la vigencia. La vigencia es una conclusión a la que llega tu aplicación a partir de evidencia específica de la fuente.
+
+***
+
+<div id="freshness-sensitive-action-checklist">
+  ## Lista de verificación para acciones sensibles a la actualidad
+</div>
+
+Antes de realizar una acción que dependa del estado actual, considere la salida del scraping como **evidencia, no como prueba**:
+
+1. **Use `maxAge: 0` para la recuperación final** para que la respuesta no se sirva desde la caché.
+2. **No considere que un HTTP 200 o contenido no vacío prueban la vigencia del recurso.**
+3. **Inspeccione el contenido renderizado y la evidencia de redirecciones.** `metadata.sourceURL` es la URL solicitada; `metadata.url` es la URL que el motor indica para la respuesta. Si difieren, puede indicar una redirección a otro recurso. Que coincidan no prueba que no se haya producido ninguna redirección.
+4. **Prefiera API o identificadores específicos de la fuente** cuando estén disponibles, ya que suelen exponer un estado explícito que una página renderizada oculta.
+5. **Considere la evidencia no concluyente como `unknown`** y deténgase antes de realizar el paso costoso o irreversible, en lugar de asumir que el recurso está activo.
+
+***
+
+<div id="worked-example-collect-current-page-evidence">
+  ## Ejemplo práctico: Recopilar evidencia de la página actual
+</div>
+
+Omite la caché y recopila el contenido renderizado y los metadatos de la respuesta para aplicar las reglas de validación de tu aplicación. El scraping aporta evidencia; no determina el estado específico del dominio.
+
+<CodeGroup>
+  ```python Python
+  import os
+
+  from firecrawl import Firecrawl
+
+  firecrawl = Firecrawl(api_key=os.environ["FIRECRAWL_API_KEY"])
+
+  def collect_current_page_evidence(url: str) -> dict:
+      # max_age=0 omite la caché de Firecrawl para esta solicitud.
+      doc = firecrawl.scrape(url, formats=["markdown"], max_age=0)
+
+      metadata = doc.metadata
+      requested_url = (metadata.source_url if metadata else None) or url
+      response_url = metadata.url if metadata else None
+
+      return {
+          "markdown": doc.markdown or "",
+          "status_code": metadata.status_code if metadata else None,
+          "requested_url": requested_url,
+          "response_url": response_url,
+          "possible_redirect": bool(response_url and response_url != requested_url),
+      }
+
+
+  evidence = collect_current_page_evidence("https://example.com/resource")
+  # Aplica aquí comprobaciones específicas de la fuente sobre el contenido, el estado, la API o los identificadores.
+  # Si no son concluyentes, mantén el estado como desconocido.
+  ```
+
+  ```js Node
+  import { Firecrawl } from "firecrawl";
+
+  const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWL_API_KEY });
+
+  async function collectCurrentPageEvidence(url) {
+    // maxAge: 0 omite la caché de Firecrawl para esta solicitud.
+    const doc = await firecrawl.scrape(url, {
+      formats: ["markdown"],
+      maxAge: 0,
+    });
+
+    const requestedURL = doc.metadata?.sourceURL ?? url;
+    const responseURL = doc.metadata?.url;
+
+    return {
+      markdown: doc.markdown ?? "",
+      statusCode: doc.metadata?.statusCode,
+      requestedURL,
+      responseURL,
+      possibleRedirect: Boolean(responseURL && responseURL !== requestedURL),
+    };
+  }
+
+  const evidence = await collectCurrentPageEvidence("https://example.com/resource");
+  // Aplica aquí comprobaciones específicas de la fuente sobre el contenido, el estado, la API o los identificadores.
+  // Si no son concluyentes, mantén el estado como desconocido.
+  ```
+
+  ```bash cURL
+  curl -s -X POST "https://api.firecrawl.dev/v2/scrape" \
+    -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "url": "https://example.com/resource",
+      "formats": ["markdown"],
+      "maxAge": 0
+    }'
+  ```
+</CodeGroup>
+
+La separación clave está después de la recopilación: Firecrawl aporta evidencia de la página; tu aplicación la interpreta mediante reglas específicas de la fuente. Si esas reglas no son concluyentes, mantén el estado como `unknown`.
+
+***
+
+<div id="recommendations-by-scenario">
+  ## Recomendaciones por escenario
+</div>
+
+| Escenario                                                            | Enfoque recomendado                                                                                |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Leer textos de productos, documentación o contenido de referencia    | Omite `maxAge` y usa la ventana de caché predeterminada                                            |
+| Dashboard o informe actualizado según una programación               | Usa un `maxAge` distinto de cero, ajustado al intervalo de actualización                           |
+| Comprobación final antes de una acción que depende del estado actual | Usa `maxAge: 0` para omitir la caché + la lista de verificación anterior                           |
+| Confirmar que un objeto sigue realmente activo                       | Prioriza la API o el campo de estado de la fuente; considera el scraping únicamente como evidencia |
+| Página renderizada ambigua (200, pero sin señal positiva)            | Clasifícala como `unknown`; detente antes del paso irreversible                                    |
+
+***
+
+<div id="key-takeaways">
+  ## Conclusiones clave
+</div>
+
+1. **La actualidad y la vigencia son conceptos distintos.** `maxAge` controla la actualidad; la vigencia se determina a partir de la evidencia.
+
+2. **Una respuesta HTTP 200 con contenido no demuestra que el estado representado esté actualizado.**
+
+3. **Para acciones sensibles a la actualidad, usa `maxAge: 0` y sigue la lista de verificación.** Inspecciona el contenido renderizado, compara `metadata.url` con `metadata.sourceURL` para detectar posibles redirecciones y prioriza las API específicas de la fuente.
+
+4. **Considera la evidencia no concluyente como `unknown`.** Un scraping por sí solo nunca debe cambiar el estado de un objeto a `active`; detente antes de realizar pasos costosos o irreversibles.
+
+5. **Firecrawl no tiene un campo de vigencia.** Tu aplicación realiza esa determinación según los términos de su propio dominio.
+
+***
+
+<div id="further-reading">
+  ## Más información
+</div>
+
+* [Scraping](/es/features/scrape)
+* [Scraping más rápido](/es/features/fast-scraping)
+* [Cómo elegir el extractor de datos](/es/developer-guides/usage-guides/choosing-the-data-extractor)

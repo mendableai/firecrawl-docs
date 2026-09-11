@@ -20,7 +20,7 @@ A política é definida uma única vez no nível da organização e se aplica au
 A Proteção contra ameaças tem três modos, definidos no nível da organização:
 
 * **Desativado** (padrão) — nenhuma verificação é realizada.
-* **Normal** — as URLs são verificadas com base no [Google Web Risk](https://cloud.google.com/web-risk), que sinaliza páginas e sites associados a malware, engenharia social (phishing) e software indesejado. **+2 créditos por URL verificada.**
+* **Normal** — as URLs são verificadas com base no [Google Web Risk](https://cloud.google.com/security/products/web-risk), que sinaliza páginas e sites associados a malware, engenharia social (phishing) e software indesejado. **+2 créditos por URL verificada.**
 * **Zscaler** — as URLs são verificadas no tenant do [Zscaler Internet Access](https://www.zscaler.com/products-and-solutions/zscaler-internet-access) (ZIA) da sua organização: as categorias de URL definidas pela Zscaler que você optar por bloquear, além das suas categorias de URL e listas de URLs personalizadas. Consulte o [modo Zscaler](#zscaler-mode) abaixo. **Sem taxas de verificação** — a classificação é feita no seu próprio tenant.
 
 As verificações foram projetadas para proteger seus dados. No modo Normal, a grande maioria das requisições é resolvida localmente com base em uma lista de ameaças sincronizada regularmente, então as URLs coletadas por scraping nunca são enviadas ao classificador. No modo Zscaler, a classificação de URLs ocorre no seu próprio tenant ZIA — o mesmo sistema que já aplica a política web da sua organização. Em todos os modos, nenhum veredito sobre o seu tráfego é armazenado pelo Firecrawl.

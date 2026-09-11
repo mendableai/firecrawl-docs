@@ -1,6 +1,13 @@
 ```bash cURL
-# 拍摄快照以查看交互元素
+# 先执行 scrape 以获取 scrapeId
 # 无需 API 密钥即可开始使用 — 添加 -H "Authorization: Bearer $FIRECRAWL_API_KEY" 以获得更高限流：
+RESPONSE=$(curl -s -X POST "https://api.firecrawl.dev/v2/scrape" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com", "formats": ["markdown"]}')
+
+SCRAPE_ID=$(echo $RESPONSE | jq -r '.data.metadata.scrapeId')
+
+# 拍摄快照以查看交互元素
 curl -s -X POST "https://api.firecrawl.dev/v2/scrape/$SCRAPE_ID/interact" \
   -H "Content-Type: application/json" \
   -d '{"code": "agent-browser snapshot -i", "language": "bash"}'

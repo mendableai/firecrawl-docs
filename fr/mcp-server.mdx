@@ -1,55 +1,65 @@
 ---
-title: Firecrawl MCP
-description: "Connectez Firecrawl à des clients MCP, des agents et des charges de travail non supervisées."
-og:title: 'Firecrawl MCP'
-og:description: "Connectez Firecrawl à votre client MCP via OAuth de compte, une clé API ou un essai sans clé."
-sidebarTitle: 'MCP'
+title: Premiers pas
+description: "Configurez Firecrawl MCP avec un accès sans clé, une connexion à un compte ou une clé API."
+og:title: 'Firecrawl MCP : Premiers pas'
+og:description: "Connectez Firecrawl MCP avec un accès sans clé, une connexion à un compte ou une clé API."
+sidebarTitle: 'Premiers pas'
 ---
 
-Firecrawl MCP permet aux clients IA d&#39;accéder à des données web en temps réel via le Model Context Protocol. Il est disponible sous la forme d&#39;un service hébergé ou d&#39;un serveur local open source.
-
-<div id="start-here">
-  ## Commencez ici
-</div>
-
-Choisissez le mode de connexion adapté à l’environnement dans lequel Firecrawl sera exécuté. Les routes hébergées sont des URL sans identifiants : les identifiants doivent être fournis via le flux OAuth ou un en-tête Authorization, jamais dans l’URL elle-même.
+Choisissez le mode d’authentification de la connexion. Se connecter et ajouter une clé API sont deux moyens d’accéder aux mêmes fonctionnalités : dans les deux cas, vous bénéficiez de l’ensemble complet d’outils de l’offre de votre équipe.
 
 <CardGroup cols={3}>
-  <Card title="Connecter un compte" icon="user" href="/fr/mcp-server/connect">
-    Utilisez OAuth dans le navigateur pour un client MCP interactif et l’ensemble complet des outils Firecrawl.
+  <Card title="Essayer immédiatement" icon="bolt" href="/fr/mcp-server/keyless#try-keyless" cta="Démarrer la configuration sans clé" arrow>
+    Aucun compte ni clé requis. Recherche, Scrape et Parse dans les limites quotidiennes.
   </Card>
 
-  <Card title="Exécuter sans surveillance" icon="server" href="/fr/mcp-server/connect#run-unattended">
-    Utilisez `/v2/mcp` avec une clé API Firecrawl dans un en-tête Authorization pour l’intégration continue, les serveurs et les scripts.
+  <Card title="Se connecter" icon="right-to-bracket" href="/fr/mcp-server/oauth" cta="Connecter un compte" arrow>
+    Connexion via Browser depuis Codex, Claude Code ou votre harnais préféré.
   </Card>
 
-  <Card title="Essayer MCP sans clé" icon="sparkles" href="/fr/mcp-server/connect#try-keyless">
-    Démarrez sans clé API avec les fonctionnalités de recherche, Scrape et Parse soumises à des limites de débit.
+  <Card title="Utiliser une clé API" icon="key" href="/fr/mcp-server/keyless#add-an-api-key" cta="Configurer une clé API" arrow>
+    Configurez une clé API dans votre client, sans utiliser de Browser.
   </Card>
 </CardGroup>
 
-<div id="learn-more">
-  ## En savoir plus
+<div id="add-an-api-key">
+  ## Ajouter une clé API
+</div>
+
+[Créez une clé API Firecrawl](https://www.firecrawl.dev/app/api-keys), puis ajoutez-la comme jeton Bearer dans la configuration de votre client :
+
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+Configurez la clé via une variable d’environnement ou le stockage sécurisé de votre client, jamais dans l’URL MCP.
+
+<Note>
+  Il s’agit d’une URL de serveur pour votre client MCP, et non d’une page à ouvrir directement dans un navigateur. Les connexions avec authentification utilisent plutôt `https://mcp.firecrawl.dev/v2/mcp-oauth`, et votre client lance le flux du navigateur.
+</Note>
+
+<div id="client-setup">
+  ## Configuration du client
 </div>
 
 <CardGroup cols={2}>
-  <Card title="Configuration des clients" icon="desktop" href="/fr/mcp-server/clients">
-    Configurez Claude, Cursor, VS Code, Windsurf, n8n et d&#39;autres clients.
+  <Card title="Pour les agents" icon="robot" href="/fr/mcp-server/keyless">
+    Démarrez sans clé ou utilisez une clé API.
   </Card>
 
-  <Card title="Exécuter en local" icon="terminal" href="/fr/mcp-server/local">
-    Installez le serveur MCP open source et configurez un déploiement local ou auto-hébergé.
-  </Card>
-
-  <Card title="Outils et opérations" icon="wrench" href="/fr/mcp-server/tools">
-    Consultez les outils MCP de Firecrawl, les limites de débit, la journalisation et la gestion des erreurs.
-  </Card>
-
-  <Card title="Développer Firecrawl MCP" icon="github" href="/fr/mcp-server/development">
-    Créez, testez et contribuez au serveur open source.
+  <Card title="Pour les humains" icon="user" href="/fr/mcp-server/oauth">
+    Connectez-vous via le navigateur.
   </Card>
 </CardGroup>
 
-<Note>
-  Pour connaître l&#39;allocation keyless actuelle et les limites de débit, consultez [Limites de débit](/fr/rate-limits#keyless-no-api-key). Pour une intégration plus générale des agents, consultez [Créer avec l&#39;IA](/fr/ai-onboarding).
-</Note>
+Ensuite : [choisissez un outil](/fr/mcp-server/tools) ou [exécutez le serveur localement](/fr/mcp-server/local).

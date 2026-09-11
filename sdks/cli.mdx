@@ -1,6 +1,6 @@
 ---
-title: "Skills + CLI"
-description: "Firecrawl skills are an easy way for AI agents such as Claude Code, Antigravity and OpenCode to use Firecrawl through the CLI."
+title: "CLI"
+description: "Firecrawl skills are an easy way for AI agents such as Codex, Claude Code, Cursor, and OpenCode to use Firecrawl through the CLI."
 og:title: "CLI | Firecrawl"
 og:description: "Firecrawl skills are an easy way for AI agents to use Firecrawl through the CLI. AI agents can get web data through a better and more context efficient interface"
 ---
@@ -24,17 +24,17 @@ import AgentBasic from "/snippets/v2/cli/agent/basic.mdx";
 import AgentOptions from "/snippets/v2/cli/agent/options.mdx";
 import InteractCLI from "/snippets/v2/interact/quickstart/cli.mdx";
 
-Search, scrape, interact, crawl, map, and run agent jobs directly from the terminal. The Firecrawl CLI works standalone or with skills that AI coding agents like Claude Code, Antigravity, and OpenCode can discover and use automatically.
+Search, scrape, interact, crawl, map, and run agent jobs directly from the terminal. The Firecrawl CLI works standalone or with skills that AI coding agents like Codex, Claude Code, Cursor, and OpenCode can discover and use automatically.
 
 ## Installation
 
-If you are using an AI agent like Claude Code, you can install the Firecrawl skills below and the agent will set them up for you.
+If you are using an AI agent like Codex, Claude Code, Cursor, or OpenCode, you can install the Firecrawl skills below and the agent will set them up for you.
 
 ```bash
 npx -y firecrawl-cli@latest init --all --browser
 ```
 
-- `--all` installs every Firecrawl skill segment (CLI, build, workflows) to every detected AI coding agent
+- `--all` skips agent selection and initializes every detected agent
 - `--browser` opens the browser for Firecrawl authentication automatically
 
 <Note>
@@ -65,13 +65,21 @@ Before using the CLI, you need to authenticate with your Firecrawl API key.
 
 <AuthLogout />
 
-### Self-Hosted / Local Development
+### Connect the CLI to self-hosted Firecrawl
 
-For self-hosted Firecrawl instances or local development, use the `--api-url` option:
+First, get one scrape working with the [self-hosting guide](/contributing/self-host). Then point the CLI at that API with `--api-url` or `FIRECRAWL_API_URL`:
 
 <AuthSelfHosted />
 
-When using a custom API URL (anything other than `https://api.firecrawl.dev`), API key authentication is automatically skipped, allowing you to use local instances without an API key.
+When you use a custom API URL instead of `https://api.firecrawl.dev`, the CLI skips Firecrawl Cloud API-key authentication. That matches the trusted-network quickstart, where `USE_DB_AUTHENTICATION=false`.
+
+<Warning>
+  Keep an unauthenticated API on a trusted network. If you add an authentication
+  proxy or another access-control layer, verify that the CLI can send the
+  credentials that layer requires before depending on this path.
+</Warning>
+
+The CLI can call only the capabilities enabled in your deployment. Check [self-hosted feature support](/contributing/self-host#self-hosted-feature-support) before using Cloud-only or provider-dependent commands.
 
 ### Check Status
 
@@ -163,7 +171,7 @@ Search the web and optionally scrape the results.
 | ---------------------------- | ------------------------------------------------------------------------------------------- |
 | `--limit <number>`           | Maximum results (default: 5, max: 100)                                                      |
 | `--sources <sources>`        | Sources to search: `web`, `images`, `news` (comma-separated)                                |
-| `--categories <categories>`  | Filter by category: `github`, `research`, `pdf` (comma-separated)                           |
+| `--categories <categories>`  | Filter by category: `research`, `pdf`, `developer` (comma-separated)                           |
 | `--tbs <value>`              | Time filter: `qdr:h` (hour), `qdr:d` (day), `qdr:w` (week), `qdr:m` (month), `qdr:y` (year) |
 | `--location <location>`      | Geo-targeting (e.g., "Berlin,Germany")                                                      |
 | `--country <code>`           | ISO country code (default: US)                                                              |
@@ -175,6 +183,26 @@ Search the web and optionally scrape the results.
 | `--json`                     | Output as JSON                                                                              |
 | `--output <path>`            | Save output to file                                                                         |
 | `--pretty`                   | Pretty print JSON output                                                                    |
+
+---
+
+### Developer
+
+Search the [Developer Index](/features/developer) — issues, merged pull requests, and READMEs from public code repositories, alongside curated documentation sites.
+
+```bash CLI
+firecrawl developer "how do I configure retries" --limit 10
+```
+
+**Available Options:**
+
+| Option              | Description                                    |
+| -------------------- | ----------------------------------------------- |
+| `--limit <number>`  | Number of results to return (default: 10, max: 100) |
+| `--skills-only`     | Search only indexed agent-skill files (default: false) |
+| `--json`            | Output as compact JSON                          |
+| `--output <path>`   | Save output to file                             |
+| `--pretty`          | Pretty print JSON output                        |
 
 ---
 
@@ -328,7 +356,7 @@ Search and gather data from the web using natural language prompts.
 | Option                      | Description                                                                            |
 | --------------------------- | -------------------------------------------------------------------------------------- |
 | `--urls <urls>`             | Optional list of URLs to focus the agent on (comma-separated)                          |
-| `--model <model>`           | Model to use: `spark-1-mini` (default, 60% cheaper) or `spark-1-pro` (higher accuracy) |
+| `--model <model>`           | Model to use. Defaults to `spark-2`, the model every run executes on. Spark 1 models are deprecated and route to `spark-2` |
 | `--schema <json>`           | JSON schema for structured output (inline JSON string)                                 |
 | `--schema-file <path>`      | Path to JSON schema file for structured output                                         |
 | `--max-credits <number>`    | Maximum credits to spend (job fails if limit reached)                                  |
@@ -378,6 +406,8 @@ These options are available for all commands:
 | `--api-url <url>` |       | Use custom API URL (for self-hosted/local development) |
 | `--help`          | `-h`  | Show help for a command                                |
 | `--version`       | `-V`  | Show CLI version                                       |
+
+`init` also accepts `--skip-auth`, `--skip-install`, `--skip-skills`, and `--agent <name>`. See `firecrawl init --help`.
 
 ## Output Handling
 
@@ -459,8 +489,8 @@ jq -r '.data.web[].url' search-results.json
 # Get titles from search results
 jq -r '.data.web[] | "\(.title): \(.url)"' search-results.json
 
-# Extract links and process with jq
-firecrawl https://example.com --format links | jq '.links[].url'
+# Extract links as JSON and print one URL per line
+firecrawl https://example.com --format links --json | jq -r '.links[]'
 
 # Count URLs from map
 firecrawl map https://example.com | wc -l

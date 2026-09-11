@@ -47,7 +47,7 @@ Firecrawl 提供三种从网页提取结构化数据的方式。它们分别适�
 * **自主导航**：代理会自动搜索并深入浏览站点来找到你的数据
 * **深度网页搜索**：自主在多个域名和页面间发现所需信息
 * **并行处理**：同时处理多个数据源以提升返回速度
-* **可用模型**：`spark-1-mini` (默认，成本低 60%) 和 `spark-1-pro` (精度更高) 
+* **模型**：每次运行均使用 `spark-2` (默认值) 。Spark 1 模型已弃用，并会路由至 `spark-2`
 
 <div id="example">
   ### 示例
@@ -83,7 +83,7 @@ Firecrawl 提供三种从网页提取结构化数据的方式。它们分别适�
 
 `/extract` 端点使用基于 LLM 的提取能力，从指定的 URL 或整个域名中收集结构化数据。
 
-<div id="key-characteristics">
+<div id="key-characteristics-2">
   ### 关键特性
 </div>
 
@@ -103,7 +103,7 @@ Firecrawl 提供三种从网页提取结构化数据的方式。它们分别适�
 2. **笨拙的网页搜索**：虽然有 `enableWebSearch`，但它只能从你提供的 URL 开始——对于以发现为主的任务来说，这个流程非常别扭。
 3. **`/agent` 被创建的原因**：`/extract` 很擅长从已知位置抽取数据，但在“先发现数据在哪里”这方面就没那么有效。
 
-<div id="example">
+<div id="example-2">
   ### 示例
 </div>
 
@@ -133,7 +133,7 @@ Firecrawl 提供三种从网页提取结构化数据的方式。它们分别适�
 
 使用 JSON 模式的 `/scrape` 端点是可控性最高的方案——它使用 LLM 将页面内容解析为你指定的 schema，从单个已知 URL 中提取结构化数据。
 
-<div id="key-characteristics">
+<div id="key-characteristics-3">
   ### 关键特性
 </div>
 
@@ -143,7 +143,7 @@ Firecrawl 提供三种从网页提取结构化数据的方式。它们分别适�
 * **同步**：立即返回数据 (无需轮询任务状态) 
 * **额外 formats**：可以在一次请求中同时获取 JSON 抽取结果以及 markdown、HTML、截图等
 
-<div id="example">
+<div id="example-3">
   ### 示例
 </div>
 
@@ -235,14 +235,14 @@ result = app.extract(
 )
 ```
 
-**之后 (使用 Agent) ：**
+**之后 (使用代理) ：**
 
 ```python
 result = app.agent(
     urls=["https://example.com"],  # 可选 - 可完全省略
     prompt="Extract product information from example.com",
     schema=schema,
-    model="spark-1-mini"  # 或使用 "spark-1-pro" 获得更高准确度
+    model="spark-2"  # 默认值；Spark 1 系列模型已弃用，请求会转由 "spark-2" 处理
 )
 ```
 

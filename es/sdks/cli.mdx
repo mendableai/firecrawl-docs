@@ -1,6 +1,6 @@
 ---
-title: "Skills + CLI"
-description: "Las skills de Firecrawl son una forma sencilla de que agentes de IA como Claude Code, Antigravity y OpenCode usen Firecrawl a través de la CLI."
+title: "CLI"
+description: "Las skills de Firecrawl son una forma sencilla de que agentes de IA como Codex, Claude Code, Cursor y OpenCode usen Firecrawl a través de la CLI."
 og:title: "CLI | Firecrawl"
 og:description: "Las skills de Firecrawl son una forma sencilla de que los agentes de IA usen Firecrawl a través de la CLI. Los agentes de IA pueden obtener datos web mediante una interfaz mejor y más eficiente en términos de contexto"
 ---
@@ -24,19 +24,19 @@ import AgentBasic from "/snippets/es/v2/cli/agent/basic.mdx";
 import AgentOptions from "/snippets/es/v2/cli/agent/options.mdx";
 import InteractCLI from "/snippets/es/v2/interact/quickstart/cli.mdx";
 
-Busca, haz scraping, interactúa, rastrea, mapea y ejecuta trabajos de agentes directamente desde la terminal. La CLI de Firecrawl funciona por sí sola o con skills que los agentes de programación con IA, como Claude Code, Antigravity y OpenCode, pueden descubrir y usar automáticamente.
+Busca, haz scraping, interactúa, rastrea, mapea y ejecuta trabajos de agentes directamente desde la terminal. La CLI de Firecrawl funciona por sí sola o con skills que los agentes de codificación con IA, como Codex, Claude Code, Cursor y OpenCode, pueden descubrir y usar automáticamente.
 
 <div id="installation">
   ## Instalación
 </div>
 
-Si estás usando un agente de IA como Claude Code, puedes instalar los Skills de Firecrawl a continuación y el agente los configurará por ti.
+Si estás usando un agente de IA como Codex, Claude Code, Cursor u OpenCode, puedes instalar los Skills de Firecrawl a continuación y el agente los configurará por ti.
 
 ```bash
 npx -y firecrawl-cli@latest init --all --browser
 ```
 
-* `--all` instala todos los segmentos de Skills de Firecrawl (CLI, build, flujos de trabajo) en todos los agentes de codificación con IA detectados
+* `--all` omite la selección de agente e inicializa todos los agentes detectados
 * `--browser` abre el navegador automáticamente para la autenticación de Firecrawl
 
 <Note>
@@ -75,15 +75,23 @@ Antes de usar la CLI, debes autenticarte con tu clave de API de Firecrawl.
 
 <AuthLogout />
 
-<div id="self-hosted-local-development">
-  ### Autohospedado / Desarrollo local
+<div id="connect-the-cli-to-self-hosted-firecrawl">
+  ### Conecta la CLI a Firecrawl autogestionado
 </div>
 
-Para instancias de Firecrawl autohospedadas o desarrollo local, usa la opción `--api-url`:
+Primero, consigue que funcione un scraping con la [guía de autogestión](/es/contributing/self-host). Después, configura la CLI para que use esa API con `--api-url` o `FIRECRAWL_API_URL`:
 
 <AuthSelfHosted />
 
-Cuando uses una URL de la API personalizada (cualquier valor distinto de `https://api.firecrawl.dev`), la autenticación con clave de API se omite automáticamente, lo que te permite usar instancias locales sin una clave de API.
+Al utilizar una URL de API personalizada en lugar de `https://api.firecrawl.dev`, la CLI omite la autenticación mediante clave de API de Firecrawl Cloud. Esto coincide con el inicio rápido para redes de confianza, donde `USE_DB_AUTHENTICATION=false`.
+
+<Warning>
+  Mantén una API sin autenticación en una red de confianza. Si añades un proxy de autenticación
+  u otra capa de control de acceso, verifica que la CLI pueda enviar las
+  credenciales que requiera esa capa antes de depender de esta opción.
+</Warning>
+
+La CLI solo puede invocar las capacidades habilitadas en tu implementación. Consulta la [compatibilidad de funcionalidades autogestionadas](/es/contributing/self-host#self-hosted-feature-support) antes de usar comandos exclusivos de Cloud o que dependan de proveedores.
 
 <div id="check-status">
   ### Comprobar estado
@@ -186,18 +194,40 @@ Busca en la web y, opcionalmente, hace scraping de los resultados.
 | ---------------------------- | ----------------------------------------------------------------------------------------------- |
 | `--limit <number>`           | Número máximo de resultados (predeterminado: 5, máximo: 100)                                    |
 | `--sources <sources>`        | Fuentes de búsqueda: `web`, `images`, `news` (separadas por comas)                              |
-| `--categories <categories>`  | Filtrar por categoría: `github`, `research`, `pdf` (separadas por comas)                        |
+| `--categories <categories>`  | Filtrar por categoría: `research`, `pdf`, `developer` (separadas por comas)                     |
 | `--tbs <value>`              | Filtro de tiempo: `qdr:h` (hora), `qdr:d` (día), `qdr:w` (semana), `qdr:m` (mes), `qdr:y` (año) |
 | `--location <location>`      | Segmentación geográfica (p. ej., &quot;Berlin,Germany&quot;)                                    |
 | `--country <code>`           | Código de país ISO (predeterminado: US)                                                         |
-| `--timeout <ms>`             | Tiempo de espera en milisegundos (predeterminado: 60000)                                        |
+| `--timeout <ms>`             | Tiempo máximo de espera en milisegundos (predeterminado: 60000)                                 |
 | `--ignore-invalid-urls`      | Excluir URLs no válidas para otros endpoints de Firecrawl                                       |
-| `--scrape`                   | Hacer scraping de resultados de búsqueda                                                         |
-| `--scrape-formats <formats>` | formatos para contenido obtenido mediante scraping                                               |
-| `--only-main-content`        | Incluir solo el contenido principal al extraer (predeterminado: true)                           |
+| `--scrape`                   | Hacer scraping de resultados de búsqueda                                                        |
+| `--scrape-formats <formats>` | formatos para contenido obtenido mediante scraping                                              |
+| `--only-main-content`        | Incluir solo el contenido principal al scraping (predeterminado: true)                          |
 | `--json`                     | Salida como JSON                                                                                |
 | `--output <path>`            | Guardar la salida en un archivo                                                                 |
 | `--pretty`                   | Imprimir salida JSON con formato legible                                                        |
+
+***
+
+<div id="developer">
+  ### Desarrollador
+</div>
+
+Busca en el [Índice para desarrolladores](/es/features/developer): issues, pull requests fusionadas y archivos README de repositorios de código públicos, además de sitios de documentación seleccionados.
+
+```bash CLI
+firecrawl developer "how do I configure retries" --limit 10
+```
+
+**Opciones disponibles:**
+
+| Opción             | Descripción                                                                |
+| ------------------ | -------------------------------------------------------------------------- |
+| `--limit <number>` | Número de resultados que se devolverán (predeterminado: 10, máx.: 100)     |
+| `--skills-only`    | Busca solo archivos de skills de agentes indexados (predeterminado: false) |
+| `--json`           | Muestra la salida como JSON compacto                                       |
+| `--output <path>`  | Guarda la salida en un archivo                                             |
+| `--pretty`         | Formatea la salida JSON para facilitar su lectura                          |
 
 ***
 
@@ -366,21 +396,21 @@ Busca y recopila datos de la web usando indicaciones en lenguaje natural.
 
 **Opciones disponibles:**
 
-| Opción                      | Descripción                                                                                          |
-| --------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `--urls <urls>`             | Lista opcional de URL en las que enfocar el agente (separadas por comas)                             |
-| `--model <model>`           | Modelo a utilizar: `spark-1-mini` (predeterminado, 60% más barato) o `spark-1-pro` (mayor precisión) |
-| `--schema <json>`           | Esquema JSON para salida estructurada (cadena JSON en línea)                                         |
-| `--schema-file <path>`      | Ruta al archivo de esquema JSON para salida estructurada                                             |
-| `--max-credits <number>`    | Créditos máximos que se pueden gastar (el trabajo falla si se alcanza el límite)                     |
-| `--webhook <url-or-json>`   | URL o configuración del webhook                                                                      |
-| `--status`                  | Verificar el estado de un trabajo de agente existente                                                |
-| `--cancel`                  | Cancelar un trabajo de agente activo mediante el ID de trabajo                                       |
-| `--wait`                    | Esperar a que el agente termine antes de devolver los resultados                                     |
-| `--poll-interval <seconds>` | Intervalo de sondeo mientras se espera (predeterminado: 5)                                           |
-| `--timeout <seconds>`       | Tiempo máximo de espera (predeterminado: sin límite)                                                 |
-| `--output <path>`           | Guardar la salida en un archivo                                                                      |
-| `--json`                    | Salida en formato JSON                                                                               |
+| Opción                      | Descripción                                                                                                                                                                           |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--urls <urls>`             | Lista opcional de URL en las que enfocar el agente (separadas por comas)                                                                                                              |
+| `--model <model>`           | Modelo que se utilizará. El valor predeterminado es `spark-2`, el modelo con el que se ejecutan todas las ejecuciones. Los modelos Spark 1 están obsoletos y se redirigen a `spark-2` |
+| `--schema <json>`           | Esquema JSON para salida estructurada (cadena JSON en línea)                                                                                                                          |
+| `--schema-file <path>`      | Ruta al archivo de esquema JSON para salida estructurada                                                                                                                              |
+| `--max-credits <number>`    | Créditos máximos que se pueden gastar (el trabajo falla si se alcanza el límite)                                                                                                      |
+| `--webhook <url-or-json>`   | URL o configuración del webhook                                                                                                                                                       |
+| `--status`                  | Consultar el estado de un trabajo de agente existente                                                                                                                                 |
+| `--cancel`                  | Cancelar un trabajo de agente activo mediante el ID de trabajo                                                                                                                        |
+| `--wait`                    | Esperar a que el agente termine antes de devolver los resultados                                                                                                                      |
+| `--poll-interval <seconds>` | Intervalo de sondeo mientras se espera (predeterminado: 5)                                                                                                                            |
+| `--timeout <seconds>`       | Tiempo máximo de espera (predeterminado: sin límite)                                                                                                                                  |
+| `--output <path>`           | Guardar la salida en un archivo                                                                                                                                                       |
+| `--json`                    | Salida en formato JSON                                                                                                                                                                |
 
 ***
 
@@ -418,13 +448,15 @@ firecrawl --version
 
 Estas opciones están disponibles para todos los comandos:
 
-| Opción            | Abrev. | Descripción                                                                    |
-| ----------------- | ------ | ------------------------------------------------------------------------------ |
-| `--status`        |        | Muestra la versión, el estado de autenticación, la concurrencia y los créditos |
-| `--api-key <key>` | `-k`   | Sobrescribe la clave de API almacenada para este comando                       |
+| Opción            | Abrev. | Descripción                                                                       |
+| ----------------- | ------ | --------------------------------------------------------------------------------- |
+| `--status`        |        | Muestra la versión, el estado de autenticación, la concurrencia y los créditos    |
+| `--api-key <key>` | `-k`   | Sobrescribe la clave de API almacenada para este comando                          |
 | `--api-url <url>` |        | Usa una URL de API personalizada (para entornos autogestionados/desarrollo local) |
-| `--help`          | `-h`   | Muestra la ayuda para un comando                                               |
-| `--version`       | `-V`   | Muestra la versión de la CLI                                                   |
+| `--help`          | `-h`   | Muestra la ayuda para un comando                                                  |
+| `--version`       | `-V`   | Muestra la versión de la CLI                                                      |
+
+`init` también acepta `--skip-auth`, `--skip-install`, `--skip-skills` y `--agent <name>`. Consulta `firecrawl init --help`.
 
 <div id="output-handling">
   ## Manejo de la salida
@@ -501,7 +533,7 @@ firecrawl map https://example.com --search "blog" -o blog-urls.txt
 firecrawl search "machine learning best practices 2024" --scrape --scrape-formats markdown --pretty
 ```
 
-<div id="agent">
+<div id="agent-2">
   ### Agente
 </div>
 
@@ -524,8 +556,8 @@ jq -r '.data.web[].url' search-results.json
 # Obtener títulos de resultados de búsqueda
 jq -r '.data.web[] | "\(.title): \(.url)"' search-results.json
 
-# Extract links and process with jq
-firecrawl https://example.com --format links | jq '.links[].url'
+# Extraer enlaces como JSON e imprimir una URL por línea
+firecrawl https://example.com --format links --json | jq -r '.links[]'
 
 # Count URLs from map
 firecrawl map https://example.com | wc -l

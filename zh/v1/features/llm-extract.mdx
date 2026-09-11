@@ -22,7 +22,7 @@ import ExtractNoSchemaOutput from "/snippets/zh/v1/llm-extract/no-schema/output.
 Firecrawl 使用 AI 通过 3 个步骤从网页获取结构化数据：
 
 1. **设置 Schema：**
-   通过定义 JSON schema（采用 OpenAI 的格式）并提供网页 URL，告知我们你需要的数据。
+   通过定义 JSON schema (采用 OpenAI 的格式) 并提供网页 URL，告知我们你需要的数据。
 
 2. **发起请求：**
    将你的 URL 和 schema 发送到我们的 /scrape 端点。查看方法：
@@ -38,17 +38,17 @@ Firecrawl 使用 AI 通过 3 个步骤从网页获取结构化数据：
 </div>
 
 <div id="scrape-with-json-endpoint">
-  ### /scrape（使用 json）端点
+  ### /scrape (使用 json) 端点
 </div>
 
 用于从抓取的页面中提取结构化数据。
 
 <CodeGroup>
+  <ExtractPython />
 
-<ExtractPython />
-<ExtractNode />
-<ExtractCURL />
+  <ExtractNode />
 
+  <ExtractCURL />
 </CodeGroup>
 
 输出：
@@ -56,15 +56,13 @@ Firecrawl 使用 AI 通过 3 个步骤从网页获取结构化数据：
 <ExtractOutput />
 
 <div id="extracting-without-schema-new">
-  ### 无需 schema 的提取（新）
+  ### 无需 schema 的提取 (新) 
 </div>
 
 你现在可以只向端点传入一个 `prompt`，在不提供 schema 的情况下完成提取。LLM 会自行决定数据结构。
 
 <CodeGroup>
-
-<ExtractNoSchemaCURL />
-
+  <ExtractNoSchemaCURL />
 </CodeGroup>
 
 输出：
@@ -77,6 +75,7 @@ Firecrawl 使用 AI 通过 3 个步骤从网页获取结构化数据：
 
 `jsonOptions` 对象可接受以下参数：
 
-- `schema`：用于提取的架构。
-- `systemPrompt`：用于提取的系统提示词。
-- `prompt`：在未提供架构时用于提取的提示词。
+* `schema`：用于提取的 schema。
+* `systemPrompt`：用于提取的系统 prompt。
+* `prompt`：在未提供 schema 时用于提取的 prompt。
+* `checkPromptInjection`：可选布尔值 (默认值为 `false`) 。启用后，会在运行提取前扫描抓取的页面内容，以检测 prompt 注入尝试。如果检测到注入，请求将失败，并返回 403 状态码和错误代码 `SCRAPE_PROMPT_INJECTION_DETECTED`。运行检查时会额外消耗 4 个额度。请参见[prompt 注入检测](/zh/features/llm-extract#prompt-injection-detection)。

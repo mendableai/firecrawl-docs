@@ -5,7 +5,7 @@ const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
 
 const result = await firecrawl.agent({
   prompt: "Extract the main features and benefits of Firecrawl",
-  model: "spark-1-mini"
+  model: "spark-2"
 });
 
 console.log(result.data);

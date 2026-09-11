@@ -132,7 +132,7 @@ POST /partner/v1/api-keys/validate
 * As chaves de API podem ser excluídas manualmente pelos usuários a qualquer momento.
 * As chaves de API excluídas não passam por exclusão lógica. O Firecrawl não consegue distinguir uma chave excluída de uma que nunca existiu.
 
-<div id="request">
+<div id="request-2">
   #### Requisição
 </div>
 
@@ -149,7 +149,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/validate" \
 | -------- | ------ | ----------- | ----------------------------- |
 | `apiKey` | string | Sim         | A chave de API a ser validada |
 
-<div id="response">
+<div id="response-2">
   #### Resposta
 </div>
 
@@ -167,7 +167,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/validate" \
 | `teamName` | string | O nome da equipe associada a esta chave de API                |
 | `email`    | string | O endereço de e-mail do usuário associado a esta chave de API |
 
-<div id="errors">
+<div id="errors-2">
   #### Erros
 </div>
 
@@ -189,7 +189,7 @@ Exclui uma chave de API do Firecrawl existente e cria uma nova para o mesmo usu�
 POST /partner/v1/api-keys/rotate
 ```
 
-<div id="request">
+<div id="request-3">
   #### Requisição
 </div>
 
@@ -206,7 +206,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/rotate" \
 | -------- | ------ | ----------- | ---------------------------------------------- |
 | `apiKey` | string | Sim         | A chave de API que será excluída e substituída |
 
-<div id="response">
+<div id="response-3">
   #### Resposta
 </div>
 
@@ -222,7 +222,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/rotate" \
 | -------- | ------ | --------------------------- |
 | `apiKey` | string | A chave de API recém-criada |
 
-<div id="errors">
+<div id="errors-3">
   #### Erros
 </div>
 

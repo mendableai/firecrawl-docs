@@ -1,117 +1,40 @@
 ---
-title: "ChatGPT での MCP Web 検索とスクレイピング"
-description: "2 分で ChatGPT に Web スクレイピングと検索機能を追加"
+title: "ChatGPT で Firecrawl MCP を使用する"
+description: "ネイティブコネクタで Firecrawl を ChatGPT に追加する"
 ---
 
-<Note>
-  ChatGPT における MCP サポートは現在ベータ版機能です。OpenAI による開発が進むにつれて、インターフェースや提供状況が変更される可能性があります。
-</Note>
+ネイティブの Firecrawl アプリを使って、Firecrawl を ChatGPT に追加できます。カスタム MCP コネクタを作成したり、サーバー URL を貼り付けたりする必要はありません。
 
-<Warning>
-  **提供状況:** MCP コネクタ付きの Developer モードは Free プランでは利用できず、有料の ChatGPT サブスクリプションが必要です。提供状況と機能はプランや地域によって異なります。最新の提供状況とセットアップ手順については、[OpenAI による Developer Mode のドキュメント](https://help.openai.com/en/articles/12584461-developer-mode-apps-and-full-mcp-connectors-in-chatgpt-beta) を参照してください。
-</Warning>
-
-Firecrawl MCP を使って、ChatGPT に Web スクレイピングと検索機能を追加しましょう。
-
-<div id="quick-setup">
-  ## かんたんセットアップ
+<div id="add-to-chatgpt">
+  ## ChatGPTに追加
 </div>
 
-<div id="1-enable-developer-mode">
-  ### 1. 開発者モードを有効にする
+<Card title="ChatGPTに追加" icon="/images/agent-clients/chatgpt.svg" href="https://chatgpt.com/plugins?q=firecrawl" cta="ChatGPTで開く" arrow>
+  ChatGPTでFirecrawlアプリを開いて接続します。
+</Card>
+
+1. [ChatGPTのFirecrawlアプリ](https://chatgpt.com/plugins?q=firecrawl)を開きます。
+2. **Firecrawl** を選択して接続します。ChatGPTがブラウザでFirecrawlを開いたら、サインインし、チームを選択してアクセスを承認します。
+3. チャットで **+** メニューを開き、プロンプトを送信する前に **Firecrawl** を有効にします。コネクタは会話に追加されている必要があります。
+
+Firecrawl APIキーをサーバーURLに入力しないでください。後でアクセスを取り消すには、[MCP設定](https://www.firecrawl.dev/app/settings?tab=mcp)を使用します。
+
+<div id="try">
+  ## 試す
 </div>
 
-画面左下のユーザー名をクリックして ChatGPT の設定を開くか、[chatgpt.com/#settings](https://chatgpt.com/#settings) に直接アクセスします。
+Firecrawl を有効にして、次を試してください:
 
-設定画面で一番下までスクロールし、**Advanced Settings** を選択します。**Developer mode** をオンに切り替えます。
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/enable-developer-mode.gif" alt="ChatGPT の設定画面で Advanced Settings と Developer mode のトグルが表示されている様子" />
-</Frame>
-
-<div id="2-create-the-connector">
-  ### 2. コネクタを作成する
-</div>
-
-Developer mode を有効にした状態で、同じ設定モーダル内の **Apps &amp; Connectors** タブに移動します。
-
-右上の **Create** ボタンをクリックします。
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/apps-connectors-create.png" alt="Create ボタンが強調表示された Apps & Connectors タブ" />
-</Frame>
-
-コネクタの詳細を入力します：
-
-* **Name:** `Firecrawl MCP`
-* **Description:** `Web scraping, crawling, search, and content extraction` (任意)
-* **MCP Server URL:** `https://mcp.firecrawl.dev/v2/mcp-oauth`
-* **Authentication:** `OAuth`
-
-ChatGPT がブラウザで Firecrawl を開いたら、サインインし、使用するチームを選択して、アクセスを承認します。サーバー URL に Firecrawl APIキーを入力しないでください。エンドポイントの仕様とその他の対応モードについては、[Connect an MCP Client to Your Account](/ja/developer-guides/mcp-setup-guides/oauth) を参照してください。
-
-**&quot;I understand and want to continue&quot;** チェックボックスをオンにしてから、**Create** をクリックします。
-
-<div id="3-verify-setup">
-  ### 3. セットアップを確認する
-</div>
-
-ChatGPT のメイン画面に戻ってください。**Developer mode** と表示されていれば、MCP コネクタが有効になっています。
-
-Developer mode が表示されない場合は、ページを再読み込みしてください。それでも表示されない場合は、もう一度設定を開き、Advanced Settings で Developer mode がオンになっていることを確認してください。
-
-<div id="4-access-firecrawl-tools">
-  ### 4. Firecrawl ツールにアクセスする
-</div>
-
-会話で Firecrawl を使用するには、チャット入力欄の **+** ボタンをクリックし、**More** を選択してから **Firecrawl MCP** をクリックします。
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/select-firecrawl-mcp.png" alt="ChatGPT のチャット入力欄で + メニューが展開され、More サブメニューと Firecrawl MCP オプションが表示されている画面" />
-</Frame>
-
-<div id="quick-demo">
-  ## クイックデモ
-</div>
-
-Firecrawl MCP を選択した状態で、次のプロンプトを試してみてください:
-
-**Search:**
-
-```
-Search for the latest React Server Components updates
+```text
+Search the web for the latest Firecrawl release notes and summarize the sources.
 ```
 
-**スクレイピング：**
-
-```
+```text
 Scrape firecrawl.dev and tell me what it does
 ```
 
-**ドキュメントを取得：**
-
-```
-Vercelのエッジ関数のドキュメントをスクレイピングして要約する
-```
-
-<div id="tool-confirmation">
-  ## ツールの確認
+<div id="more">
+  ## その他
 </div>
 
-ChatGPT が Firecrawl MCP ツールを使用する際、承認を求める確認プロンプトが表示されることがあります。一部の ChatGPT Desktop バージョンでは、このダイアログを表示せずにツール呼び出しが自動承認されます。プロンプトが表示されない場合は、レスポンス内の **&quot;Called tool&quot;** セクションを確認するか、[firecrawl.dev/app/usage](https://www.firecrawl.dev/app/usage) で利用状況を確認することで、ツールが呼び出されたことを確認できます。
-
-<Tip>
-  **確認プロンプトが表示されませんか？** 確認ダイアログが表示されないまま ChatGPT が質問に回答する場合、Firecrawl MCP コネクタがその会話に接続されていない可能性が高いです。[ステップ 4](#4-access-firecrawl-tools) に戻り、プロンプトを送信する前に **+** ボタンをクリックし、**More** を選択してから **Firecrawl MCP** を選んでいることを確認してください。コネクタは新しい会話ごとに毎回接続する必要があります。
-</Tip>
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/tool-confirmation.png" alt="Firecrawl MCP リクエストを示す ChatGPT のツール確認ダイアログ" />
-</Frame>
-
-同じチャットセッション中に毎回確認が表示されないようにするには、**&quot;Remember for this conversation&quot;** にチェックを入れます。これは、MCP ツールが意図しないアクションを実行しないようにするために OpenAI によって実装されているセキュリティ対策です。
-
-承認すると、ChatGPT がリクエストを実行し、結果を返します。
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/search-results-example.png" alt="ChatGPT に表示された Firecrawl の検索結果の例" />
-</Frame>
+他のクライアントでのサインイン設定については[For Humans](/ja/mcp-server/oauth)を、キー不要で始めるには[For Agents](/ja/mcp-server/keyless)をご覧ください。

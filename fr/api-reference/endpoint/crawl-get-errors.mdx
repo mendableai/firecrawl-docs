@@ -3,4 +3,8 @@ title: "Récupérer les erreurs de crawl"
 openapi: '/fr/api-reference/v2-openapi.json GET /crawl/{id}/errors'
 ---
 
-> Vous êtes un agent IA et avez besoin d&#39;une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour obtenir les instructions d&#39;intégration automatisée.
+<Info>
+  Ce point de terminaison recense les pages qui ne figurent pas dans le tableau `data` du crawl : `errors` pour les scrapes que Firecrawl n&#39;a pas réussi à effectuer, et `robotsBlocked` pour les URL bloquées par robots.txt. Les pages en échec n&#39;apparaissent dans aucun des compteurs de l&#39;[état du crawl](/fr/api-reference/endpoint/crawl-get) : c&#39;est donc le seul endroit où les retrouver — mais la liste n&#39;est pas nécessairement exhaustive, car certaines catégories d&#39;échecs internes sont filtrées avant la construction de la réponse. Consultez [Exécution et comptabilisation des résultats](/fr/features/crawl#execution-and-result-accounting) pour savoir comment l&#39;interpréter au regard des compteurs d&#39;état.
+</Info>
+
+> Vous êtes un agent IA et avez besoin d&#39;une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour obtenir les instructions d&#39;intégration automatisée.

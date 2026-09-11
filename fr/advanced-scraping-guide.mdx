@@ -5,7 +5,7 @@ og:title: "Guide avancé de scraping | Firecrawl"
 og:description: "Configurez les options de scraping, les actions du navigateur, le crawl, la cartographie et le point de terminaison de l'agent grâce à l’ensemble de la surface de l’API Firecrawl."
 ---
 
-Référence pour toutes les options disponibles sur les points de terminaison de scraping, crawling, mapping et agent de Firecrawl."
+Référence pour toutes les options disponibles sur les points de terminaison de scraping, crawling, mapping et agent de Firecrawl.&quot;
 
 <div id="basic-scraping">
   ## Scraping basique
@@ -78,16 +78,17 @@ Le tableau `formats` contrôle les types de sortie que le scraper renvoie. Valeu
 
 **Formats de type chaîne de caractères** : passez le nom directement (par ex. `"markdown"`).
 
-| Format     | Description                                                                                                                                        |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `markdown` | Contenu de la page converti en Markdown propre.                                                                                                    |
-| `html`     | HTML traité avec les éléments inutiles supprimés.                                                                                                  |
-| `rawHtml`  | HTML original exactement tel que renvoyé par le serveur.                                                                                           |
-| `links`    | Tous les liens trouvés sur la page.                                                                                                                |
-| `images`   | Toutes les images trouvées sur la page.                                                                                                            |
-| `summary`  | Un résumé du contenu de la page généré par un LLM.                                                                                                 |
-| `branding` | Extrait l’identité de marque (couleurs, polices, typographie, espacements, composants d’UI).                                                       |
-| `product`  | Extrait un produit structuré (titre, prix, disponibilité, images, variantes) à partir des pages produit via des données structurées multi-sources. |
+| Format      | Description                                                                                                                                                                     |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `markdown`  | Contenu de la page converti en Markdown propre.                                                                                                                                 |
+| `html`      | HTML traité avec les éléments inutiles supprimés.                                                                                                                               |
+| `rawHtml`   | HTML original exactement tel que renvoyé par le serveur.                                                                                                                        |
+| `rawBase64` | Corps de réponse HTTP original encodé en Base64, sous forme de chaîne Base64 brute. Doit être le seul format de la requête. Le type MIME se trouve dans `metadata.contentType`. |
+| `links`     | Tous les liens trouvés sur la page.                                                                                                                                             |
+| `images`    | Toutes les images trouvées sur la page.                                                                                                                                         |
+| `summary`   | Un résumé du contenu de la page généré par un LLM.                                                                                                                              |
+| `branding`  | Extrait l’identité de marque (couleurs, polices, typographie, espacements, composants d’UI).                                                                                    |
+| `product`   | Extrait un produit structuré (titre, prix, disponibilité, images, variantes) à partir des pages produit via des données structurées multi-sources.                              |
 
 **Formats objet** : passez un objet avec `type` et des options supplémentaires.
 
@@ -208,14 +209,17 @@ Ces paramètres contrôlent quelles parties de la page apparaissent dans le rés
 | `parsers` | `array` | `["pdf"]`         | Contrôle le traitement des PDF. `[]` pour ignorer l&#39;analyse et renvoyer le contenu en base64 (forfait de 1 crédit). |
 
 ```json
-{ "type": "pdf", "mode": "fast" | "auto" | "ocr", "maxPages": 10 }
+{ "type": "pdf", "mode": "fast" | "auto" | "ocr", "maxPages": 10, "pages": true, "blocks": true, "pageMarkers": true }
 ```
 
-| Propriété  | Type                        | Valeur par défaut | Description                                                                                                            |
-| ---------- | --------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `type`     | `"pdf"`                     | *(obligatoire)*   | Type d&#39;analyseur.                                                                                                  |
-| `mode`     | `"fast" \| "auto" \| "ocr"` | `"auto"`          | `fast` : extraction basée uniquement sur le texte. `auto` : rapide avec repli sur l&#39;OCR. `ocr` : forcer l&#39;OCR. |
-| `maxPages` | `integer`                   | —                 | Limiter le nombre de pages à analyser.                                                                                 |
+| Propriété     | Type                        | Valeur par défaut | Description                                                                                                                                                                                                                                                           |
+| ------------- | --------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`        | `"pdf"`                     | *(obligatoire)*   | Type d&#39;analyseur.                                                                                                                                                                                                                                                 |
+| `mode`        | `"fast" \| "auto" \| "ocr"` | `"auto"`          | `fast` : extraction basée uniquement sur le texte. `auto` : rapide avec repli sur l&#39;OCR. `ocr` : forcer l&#39;OCR.                                                                                                                                                |
+| `maxPages`    | `integer`                   | —                 | Limiter le nombre de pages à analyser.                                                                                                                                                                                                                                |
+| `pages`       | `boolean`                   | `false`           | Renvoyer également le markdown physique page par page dans le champ `pages` du document. Aucun coût supplémentaire.                                                                                                                                                   |
+| `blocks`      | `boolean`                   | `false`           | Renvoyer également les blocs de mise en page typés par page (boîtes englobantes normalisées, types de blocs, ordre de lecture, étendues de caractères markdown) dans le champ `blocks` du document. Aucun coût supplémentaire.                                        |
+| `pageMarkers` | `boolean`                   | `false`           | Annoter les sauts de page dans le markdown du document avec des marqueurs `<!-- page N -->` (uniquement entre les pages ; la numérotation peut ignorer les pages fusionnées par un saut — voir [Parse](/fr/features/parse#page-markers-pdf)). Aucun coût supplémentaire. |
 
 <div id="actions">
   ### Actions
@@ -302,11 +306,11 @@ Exécutez des actions de navigateur avant le scraping. C&#39;est utile pour le c
   #### Notes sur l’exécution des actions
 </div>
 
-- **Write** nécessite un `click` préalable pour placer le focus sur l’élément cible.
-- **Scroll** accepte un `selector` optionnel pour faire défiler un élément spécifique plutôt que la page.
-- **Wait** accepte soit `milliseconds` (délai fixe), soit `selector` (attendre jusqu’à ce que l’élément soit visible).
-- Les actions s’exécutent **séquentiellement** : chaque étape se termine avant que la suivante ne commence.
-- Les actions ne sont **pas prises en charge pour les PDF**. Si l’URL renvoie vers un PDF, la requête échouera.
+* **Write** nécessite un `click` préalable pour placer le focus sur l’élément cible.
+* **Scroll** accepte un `selector` optionnel pour faire défiler un élément spécifique plutôt que la page.
+* **Wait** accepte soit `milliseconds` (délai fixe), soit `selector` (attendre jusqu’à ce que l’élément soit visible).
+* Les actions s’exécutent **séquentiellement** : chaque étape se termine avant que la suivante ne commence.
+* Les actions ne sont **pas prises en charge pour les PDF**. Si l’URL renvoie vers un PDF, la requête échouera.
 
 <div id="advanced-action-examples">
   #### Exemples d’actions avancées
@@ -470,10 +474,12 @@ Utilisez l’objet de format JSON dans `formats` pour extraire une donnée struc
 </CodeGroup>
 
 <div id="agent-endpoint">
-  ## Endpoint de l’agent
+  ## Point de terminaison de l’agent
 </div>
 
-Utilisez l’endpoint `/v2/agent` pour effectuer une extraction autonome de données sur plusieurs pages. L’agent fonctionne de manière asynchrone : vous démarrez un job, puis interrogez périodiquement l’API pour récupérer les résultats.
+Utilisez le point de terminaison `/v2/agent` pour effectuer une extraction autonome de données sur plusieurs pages. L’agent fonctionne de manière asynchrone : vous démarrez un job, puis interrogez périodiquement l’API pour récupérer les résultats.
+
+[Agent](/fr/features/agent) est la référence canonique pour ce point de terminaison, y compris les traces d’exécution, les webhooks et la liste complète des paramètres.
 
 <div id="agent-options">
   ### Options de l&#39;agent
@@ -486,7 +492,8 @@ Utilisez l’endpoint `/v2/agent` pour effectuer une extraction autonome de donn
 | `schema`                | `object`  | —                 | Schéma JSON pour structurer les données extraites.                                                                                                                                                                                                                          |
 | `maxCredits`            | `number`  | `2500`            | Nombre maximal de crédits que l&#39;agent peut utiliser. Le tableau de bord prend en charge jusqu&#39;à 2 500 ; pour des limites plus élevées, définissez cette valeur via l&#39;API (les valeurs supérieures à 2 500 sont toujours facturées comme des requêtes payantes). |
 | `strictConstrainToURLs` | `boolean` | `false`           | Lorsque `true`, l&#39;agent ne visite que les URL fournies.                                                                                                                                                                                                                 |
-| `model`                 | `string`  | `"spark-1-mini"`  | Modèle d&#39;IA à utiliser : `"spark-1-mini"` (par défaut, 60 % moins cher) ou `"spark-1-pro"` (meilleure précision).                                                                                                                                                       |
+| `model`                 | `string`  | `"spark-2"`       | Modèle d&#39;IA à utiliser. Les modèles Spark 1 sont obsolètes et redirigent actuellement vers `"spark-2"`.                                                                                                                                                                 |
+| `effort`                | `string`  | *(non défini)*    | Budget de raisonnement : `"low"`, `"medium"` ou `"high"`. Chaque exécution s&#39;effectue sur `"spark-2"`, vous pouvez donc envoyer `effort` avec ou sans `model`.                                                                                                          |
 
 <CodeGroup>
   ```python Python
@@ -501,7 +508,7 @@ Utilisez l’endpoint `/v2/agent` pour effectuer une extraction autonome de donn
       schema={"type": "object", "properties": {"title": {"type": "string"}, "description": {"type": "string"}}, "required": ["title"]}
   )
 
-  # Consulter le statut
+  # Interroger l'état
   status = firecrawl.get_agent_status(started["id"])
   print(status.get("status"), status.get("data"))
   ```
@@ -518,7 +525,7 @@ Utilisez l’endpoint `/v2/agent` pour effectuer une extraction autonome de donn
     schema: { type: 'object', properties: { title: { type: 'string' }, description: { type: 'string' } }, required: ['title'] }
   });
 
-  // Consulter le statut
+  // Interroger l'état
   const status = await firecrawl.getAgentStatus(started.id);
   console.log(status.status, status.data);
   ```
@@ -619,7 +626,7 @@ Lorsque vous utilisez l’endpoint `/v2/crawl`, vous pouvez personnaliser le com
 | `regexOnFullURL` | `boolean` | `false` | Faire correspondre les motifs sur l’URL complète plutôt que seulement sur le pathname. |
 
 <Warning>
-L’URL de départ est également vérifiée par rapport à `includePaths`. Si elle ne correspond à aucun motif, le crawl peut renvoyer 0 page.
+  L’URL de départ est également vérifiée par rapport à `includePaths`. Si elle ne correspond à aucun motif, le crawl peut renvoyer 0 page.
 </Warning>
 
 <div id="crawl-scope">
@@ -703,18 +710,19 @@ Voici la référence de l’API : [Documentation du point de terminaison « Ma
 </div>
 
 <div id="allowing-firecrawl-to-scrape-your-website">
-  ### Autoriser Firecrawl à explorer votre site web
+  ### Autoriser Firecrawl à scraper votre site web
 </div>
 
-- **User Agent** : Autorisez `FirecrawlAgent` dans votre pare-feu ou vos règles de sécurité.
-- **Adresses IP** : Firecrawl n’utilise pas un ensemble fixe d’adresses IP sortantes.
+* **robots.txt** : Firecrawl lit le fichier `robots.txt` avant de crawler un site et applique les règles définies pour le jeton user-agent `FirecrawlAgent` ainsi que celles définies pour `*`. Utilisez `FirecrawlAgent` pour autoriser ou interdire Firecrawl dans `robots.txt`.
+* **User agent** : `FirecrawlAgent` est le jeton que Firecrawl utilise pour appliquer les règles du `robots.txt`. Ne partez pas du principe qu&#39;il correspond aussi à l&#39;en-tête `User-Agent` de la requête elle-même. Autorisez Firecrawl via une directive `robots.txt` plutôt qu&#39;avec une règle de pare-feu ou de WAF fondée sur une chaîne `User-Agent`.
+* **Adresses IP** : Firecrawl n&#39;utilise pas d&#39;ensemble fixe d&#39;adresses IP sortantes.
 
 <div id="allowing-your-application-to-call-the-firecrawl-api">
-  ### Autoriser votre application à appeler l'API Firecrawl
+  ### Autoriser votre application à appeler l&#39;API Firecrawl
 </div>
 
-Si votre pare-feu bloque les requêtes sortantes de votre application vers des services externes, vous devez ajouter l'adresse IP du serveur de l'API Firecrawl à la liste d'autorisation afin que votre application puisse atteindre l'API Firecrawl (`api.firecrawl.dev`) :
+Si votre pare-feu bloque les requêtes sortantes de votre application vers des services externes, vous devez ajouter l&#39;adresse IP du serveur de l&#39;API Firecrawl à la liste d&#39;autorisation afin que votre application puisse atteindre l&#39;API Firecrawl (`api.firecrawl.dev`) :
 
-- **Adresse IP** : `35.245.250.27`
+* **Adresse IP** : `35.245.250.27`
 
-Ajoutez cette adresse IP à la liste d'autorisation des connexions sortantes de votre pare-feu afin que votre backend puisse envoyer à Firecrawl des requêtes de scraping, de crawling, de mapping et des requêtes d'agent.
+Ajoutez cette adresse IP à la liste d&#39;autorisation des connexions sortantes de votre pare-feu afin que votre backend puisse envoyer à Firecrawl des requêtes de scraping, de crawling, de mapping et des requêtes d&#39;agent.

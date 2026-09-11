@@ -49,18 +49,26 @@ import InteractFeedbackCTA from "/snippets/ja/interact-feedback-cta.mdx";
 
 ページをスクレイピングしてクリーンなデータを取得し、その後 `/interact` を呼び出して、そのページ上でアクションを開始します: ボタンのクリック、フォームへの入力、動的コンテンツの抽出、さらに深いページへの移動が可能です。やりたいことを記述するだけでもよく、完全に制御したい場合はコードを書くこともできます。
 
+Interact は次のような場合に使用します:
+
+* **ログインが必要なページをスクレイピング** — 一度サインインすれば、authentication 後にのみ表示されるページを読み取れます。[Persistent Profiles with Scrape + Interact](#persistent-profiles-with-scrape-+-interact) を参照してください。
+* **Pagination をクリックして進む** — ページを送りながら各結果セットを取得し、1つの セッション を使い回します。[Interact via prompting](#interact-via-prompting) と [Session Lifecycle](#session-lifecycle) を参照してください。
+* **フォームの入力と送信** — prompt から、または Playwright のコードから、フィールドに入力して送信します。[Interact via prompting](#interact-via-prompting) と [Running Code](#running-code) を参照してください。
+* **authentication 済みの セッション を再利用** — browser の状態を名前付きプロファイルに保存し、以降のスクレイピングで読み込みます。[Persistent Profiles with Scrape + Interact](#persistent-profiles-with-scrape-+-interact) を参照してください。
+* **スクレイピングを介さずに セッション を開始** — 直接操作できる独立したブラウザを開きます。[Browser Sandbox](/ja/features/browser) を参照してください。
+
 <InteractFeedbackCTA src="docs-interact" />
 
 <div id="choose-the-right-interaction-model">
   ## 適切な操作モデルを選択
 </div>
 
-| 必要なこと                           | 使用するもの                                | 正規ドキュメント                                                                                                                                                                                                                                                                                                 |
-| ------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 最初にスクレイピングせず、独立したブラウザセッションを開始する | Browser Sandbox / 独立した Interact セッション | [Browser Sandbox](/ja/features/browser), [Create Browser Session](/ja/api-reference/endpoint/browser-create), [Execute Browser Code](/ja/api-reference/endpoint/browser-execute), [List Browser Sessions](/ja/api-reference/endpoint/browser-list), [Delete Browser Session](/ja/api-reference/endpoint/browser-delete) |
-| `scrapeId` を使ってスクレイピング結果から続行する  | スクレイピング後に Interact                    | [Execute Interact](/ja/api-reference/endpoint/scrape-execute), [Stop Interact](/ja/api-reference/endpoint/scrape-browser-delete)                                                                                                                                                                               |
+| 必要なこと                           | 使用するもの                                | 正規ドキュメント                                                                                                                                                                                                                                                                                                 | SDK メソッド (Node)                                                      |
+| ------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 最初にスクレイピングせず、独立したブラウザセッションを開始する | Browser Sandbox / 独立した Interact セッション | [Browser Sandbox](/ja/features/browser), [Create Browser Session](/ja/api-reference/endpoint/browser-create), [Execute Browser Code](/ja/api-reference/endpoint/browser-execute), [List Browser Sessions](/ja/api-reference/endpoint/browser-list), [Delete Browser Session](/ja/api-reference/endpoint/browser-delete) | `browser()`, `browserExecute()`, `listBrowsers()`, `deleteBrowser()` |
+| `scrapeId` を使ってスクレイピング結果から続行する  | スクレイピング後に Interact                    | [Execute Interact](/ja/api-reference/endpoint/scrape-execute), [Stop Interact](/ja/api-reference/endpoint/scrape-browser-delete)                                                                                                                                                                               | `interact()`, `stopInteraction()`                                    |
 
-ワークフローが `POST /v2/scrape` で始まり、レスポンスに `data.metadata.scrapeId` が含まれる場合は、スクレイピングに紐づいた Interact を使用します。独自のライフサイクルを持つ独立したセッションが必要な場合は、Browser Sandbox を使用します。
+ワークフローが `POST /v2/scrape` で始まり、レスポンスに `data.metadata.scrapeId` が含まれる場合は、スクレイピングに紐づいた Interact を使用します。独自のライフサイクルを持つ独立したセッションが必要な場合は、Browser Sandbox を使用します。Python SDK では、snake&#95;case の同等メソッド (`browser()`, `browser_execute()`, `list_browsers()`, `delete_browser()`, `interact()`, `stop_interaction()`) を使用します。
 
 <CardGroup cols={3}>
   <Card title="AIプロンプト" icon="wand-magic-sparkles">
@@ -309,10 +317,10 @@ const page = context.pages()[0];
   <StopCLI />
 </CodeGroup>
 
-セッションは、TTL (default: 10分) または非アクティブ timeout (default: 5分) に基づいて自動的に期限切れになります。
+セッションは、TTL (default: 10分) または非アクティブ タイムアウト (default: 5分) に基づいて自動的に期限切れになります。
 
 <Warning>
-  不要な課金を避けるため、使用後は必ずセッションを停止してください。Credits は秒単位で按分されます。
+  不要な課金を避けるため、使用後は必ずセッションを停止してください。Credits は秒単位で按分されます。最低料金はブラウザ1分です。`prompt` を使用するセッションはブラウザ1分あたり7 Credits、prompt を使用しないセッションは2 Credits が課金されます。詳細は[課金](/ja/billing#credit-costs-per-endpoint)を参照してください。
 </Warning>
 
 <div id="persistent-profiles-with-scrape-interact">

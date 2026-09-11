@@ -19,6 +19,8 @@ import ScrapeAndCrawlExamplePython from '/snippets/es/v2/scrape-and-crawl/python
 import CrawlWebSocketPythonBase from '/snippets/es/v2/crawl-websocket/base/python.mdx'
 import PersistentPython from '/snippets/es/v2/browser/persistent/python.mdx'
 import AIOPython from '/snippets/es/v2/async/base/python.mdx'
+import AgentWithSchemaPython from '/snippets/es/v2/agent/with-schema/python.mdx'
+import AgentStatusPython from '/snippets/es/v2/agent/status/python.mdx'
 
 <div id="installation">
   ## Instalación
@@ -127,6 +129,20 @@ Usa `map` para generar una lista de URL de un sitio web. Las opciones te permite
   Para extraer datos estructurados de sitios web, usa el método `extract`. Recibe las URL de las que extraer datos, un prompt y un esquema como argumentos. El esquema es un modelo de Pydantic que define la estructura de los datos extraídos.
 
   <ExtractPythonShort /> */}
+
+<div id="run-an-agent">
+  ### Ejecutar un agente
+</div>
+
+Asigna una tarea de investigación o extracción a un agente con el método `agent`. Acepta un `prompt`, un `schema` opcional para estructurar la salida y `max_credits` para limitar el gasto de la ejecución.
+
+<AgentWithSchemaPython />
+
+Las ejecuciones de agentes son asíncronas. Usa `start_agent` para obtener un ID de trabajo de inmediato y luego consulta su estado con `get_agent_status`.
+
+<AgentStatusPython />
+
+Cada ejecución también registra una traza de ejecución y snapshots de salida, que puedes consultar con `get_agent_trace` y `get_agent_snapshot`. Consulta [Agent](/es/features/agent) para conocer el esquema de eventos y la lista completa de parámetros.
 
 <div id="crawling-a-website-with-websockets">
   ### Rastreo de un sitio web con WebSockets

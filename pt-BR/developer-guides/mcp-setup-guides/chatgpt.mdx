@@ -1,120 +1,40 @@
 ---
-title: "Pesquisa e scraping na Web com MCP no ChatGPT"
-description: "Adicione scraping e busca na web ao ChatGPT em 2 minutos"
+title: "Use o Firecrawl MCP no ChatGPT"
+description: "Adicione o Firecrawl ao ChatGPT com o conector nativo"
 ---
 
-<Note>
-  O suporte a MCP no ChatGPT é atualmente um recurso em beta. A interface e a disponibilidade podem mudar conforme a OpenAI continua o desenvolvimento.
-</Note>
+Adicione o Firecrawl ao ChatGPT usando o app nativo do Firecrawl. Não é necessário criar um conector MCP personalizado nem inserir a URL de um servidor.
 
-<Warning>
-  **Disponibilidade:** O modo Desenvolvedor com conectores MCP não está disponível no plano gratuito (Free) e requer uma assinatura paga do ChatGPT. A disponibilidade e os recursos variam conforme o plano e a região. Consulte a [documentação da OpenAI sobre o Developer Mode](https://help.openai.com/en/articles/12584461-developer-mode-apps-and-full-mcp-connectors-in-chatgpt-beta) para instruções atualizadas de disponibilidade e configuração.
-</Warning>
-
-Adicione recursos de scraping e busca na web ao ChatGPT com o Firecrawl MCP.
-
-<div id="quick-setup">
-  ## Configuração rápida
+<div id="add-to-chatgpt">
+  ## Adicionar ao ChatGPT
 </div>
 
-<div id="1-enable-developer-mode">
-  ### 1. Ative o Modo Desenvolvedor
+<Card title="Adicionar ao ChatGPT" icon="/images/agent-clients/chatgpt.svg" href="https://chatgpt.com/plugins?q=firecrawl" cta="Abrir no ChatGPT" arrow>
+  Abra o app Firecrawl no ChatGPT e conecte-o.
+</Card>
+
+1. Abra o [app Firecrawl no ChatGPT](https://chatgpt.com/plugins?q=firecrawl).
+2. Selecione **Firecrawl** e conecte-o. Quando o ChatGPT abrir o Firecrawl no navegador, faça login, escolha uma equipe e autorize o acesso.
+3. Em uma conversa, abra o menu **+** e ative o **Firecrawl** antes de enviar um prompt. O conector precisa estar vinculado à conversa.
+
+Não inclua uma chave de API do Firecrawl em uma URL de servidor. Para revogar o acesso posteriormente, use as [configurações do MCP](https://www.firecrawl.dev/app/settings?tab=mcp).
+
+<div id="try">
+  ## Experimente
 </div>
 
-Abra as configurações do ChatGPT clicando no seu nome de usuário no canto inferior esquerdo ou acesse diretamente [chatgpt.com/#settings](https://chatgpt.com/#settings).
+Com o Firecrawl ativado, experimente:
 
-Na janela de configurações, role até a parte inferior e selecione **Advanced Settings**. Ative o **Modo Desenvolvedor**.
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/enable-developer-mode.gif" alt="Configurações do ChatGPT mostrando Advanced Settings com a opção Modo Desenvolvedor ativada" />
-</Frame>
-
-<div id="2-create-the-connector">
-  ### 2. Criar o Conector
-</div>
-
-Com o modo Modo Desenvolvedor habilitado, vá até a aba **Apps &amp; Connectors** no mesmo modal de configurações.
-
-Clique no botão **Create** no canto superior direito.
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/apps-connectors-create.png" alt="Aba Apps & Connectors com o botão Create em destaque" />
-</Frame>
-
-Preencha os detalhes do conector:
-
-* **Name:** `Firecrawl MCP`
-* **Description:** `Web scraping, crawling, search, and content extraction` (opcional)
-* **MCP Server URL:** `https://mcp.firecrawl.dev/v2/mcp-oauth`
-* **Authentication:** `OAuth`
-
-Quando o ChatGPT abrir o Firecrawl no seu navegador, faça login, escolha a equipe a ser usada e aprove o acesso. Não insira uma chave de API Firecrawl na URL do servidor. Consulte [Connect an MCP Client to Your Account](/pt-BR/developer-guides/mcp-setup-guides/oauth) para conhecer o contrato do endpoint e outros modos compatíveis.
-
-Marque a caixa de seleção **&quot;I understand and want to continue&quot;** e, em seguida, clique em **Create**.
-
-<div id="3-verify-setup">
-  ### 3. Verificar a configuração
-</div>
-
-Volte para a interface principal do ChatGPT. Você deve ver **Modo Desenvolvedor** exibido, indicando que os conectores MCP estão ativos.
-
-Se você não vir o Modo Desenvolvedor, recarregue a página. Se ainda assim ele não aparecer, abra as configurações novamente e verifique se o Modo Desenvolvedor está ativado em Advanced Settings.
-
-<div id="4-access-firecrawl-tools">
-  ### 4. Acesse as ferramentas do Firecrawl
-</div>
-
-Para usar o Firecrawl em uma conversa, clique no botão **+** no campo de entrada do chat, depois selecione **More** e escolha **Firecrawl MCP**.
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/select-firecrawl-mcp.png" alt="Campo de entrada de chat do ChatGPT mostrando o menu + expandido com o submenu More e a opção Firecrawl MCP" />
-</Frame>
-
-<div id="quick-demo">
-  ## Demonstração rápida
-</div>
-
-Com o Firecrawl MCP selecionado, experimente estes prompts:
-
-**Busca:**
-
-```
-Search for the latest React Server Components updates
+```text
+Faça uma busca na web pelas notas de release mais recentes do Firecrawl e resuma as fontes.
 ```
 
-**Scrape:**
-
-```
+```text
 Scrape firecrawl.dev and tell me what it does
 ```
 
-**Acessar documentação:**
-
-```
-Extraia a documentação da Vercel sobre edge functions e resuma-a
-```
-
-<div id="tool-confirmation">
-  ## Confirmação da ferramenta
+<div id="more">
+  ## Mais
 </div>
 
-Quando o ChatGPT utiliza as ferramentas MCP do Firecrawl, você pode ver um prompt de confirmação pedindo a sua aprovação. Algumas versões do ChatGPT Desktop aprovam automaticamente as chamadas de ferramenta sem mostrar essa janela. Se nenhum prompt aparecer, você pode verificar se a ferramenta foi invocada conferindo se há uma seção &quot;Called tool&quot; na resposta ou revisando seu uso em [firecrawl.dev/app/usage](https://www.firecrawl.dev/app/usage).
-
-<Tip>
-  **Nenhum prompt de confirmação aparecendo?** Se o ChatGPT responder à sua pergunta sem mostrar uma janela de confirmação, é muito provável que o conector Firecrawl MCP não esteja conectado à conversa. Volte para a [Etapa 4](#4-access-firecrawl-tools)
-  e certifique-se de clicar no botão **+**, selecionar **More** e escolher
-  **Firecrawl MCP** antes de enviar seu prompt. O conector precisa ser conectado
-  a cada nova conversa.
-</Tip>
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/tool-confirmation.png" alt="Janela de confirmação de ferramenta do ChatGPT exibindo uma solicitação do Firecrawl MCP" />
-</Frame>
-
-Você pode marcar **&quot;Lembrar desta conversa&quot;** para evitar confirmações repetidas durante a mesma sessão de chat. Essa medida de segurança é implementada pela OpenAI para garantir que as ferramentas MCP não executem ações não intencionais.
-
-Depois de confirmar, o ChatGPT executará a solicitação e retornará os resultados.
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/search-results-example.png" alt="Exemplo de resultados de pesquisa do Firecrawl exibidos no ChatGPT" />
-</Frame>
+Consulte [Para humanos](/pt-BR/mcp-server/oauth) para configurar o login em outros clientes ou [Para agentes](/pt-BR/mcp-server/keyless) para começar a usar sem chave.

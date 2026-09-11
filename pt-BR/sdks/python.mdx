@@ -1,9 +1,9 @@
 ---
 title: 'Python'
-description: 'O Firecrawl Python SDK é um encapsulador da Firecrawl API que ajuda você a transformar sites em Markdown com facilidade.'
+description: 'O Firecrawl SDK Python é um encapsulador da Firecrawl API que ajuda você a transformar sites em Markdown com facilidade.'
 icon: 'python'
 og:title: "SDK Python | Firecrawl"
-og:description: "O Firecrawl Python SDK é um encapsulador da Firecrawl API que ajuda você a transformar sites em Markdown com facilidade."
+og:description: "O Firecrawl SDK Python é um encapsulador da Firecrawl API que ajuda você a transformar sites em Markdown com facilidade."
 ---
 
 import InstallationPython from '/snippets/pt-BR/v2/installation/python.mdx'
@@ -19,6 +19,8 @@ import ScrapeAndCrawlExamplePython from '/snippets/pt-BR/v2/scrape-and-crawl/pyt
 import CrawlWebSocketPythonBase from '/snippets/pt-BR/v2/crawl-websocket/base/python.mdx'
 import PersistentPython from '/snippets/pt-BR/v2/browser/persistent/python.mdx'
 import AIOPython from '/snippets/pt-BR/v2/async/base/python.mdx'
+import AgentWithSchemaPython from '/snippets/pt-BR/v2/agent/with-schema/python.mdx'
+import AgentStatusPython from '/snippets/pt-BR/v2/agent/status/python.mdx'
 
 <div id="installation">
   ## Instalação
@@ -127,6 +129,20 @@ Use `map` para gerar uma lista de URLs de um site. As opções permitem personal
   Para extrair dados estruturados de sites, use o método `extract`. Ele recebe as URLs das quais extrair dados, um prompt e um schema como argumentos. O schema é um modelo Pydantic que define a estrutura dos dados extraídos.
 
   <ExtractPythonShort /> */}
+
+<div id="run-an-agent">
+  ### Executar um agente
+</div>
+
+Envie uma tarefa de pesquisa ou extração a um agente usando o método `agent`. Ele recebe um `prompt`, um `schema` opcional para estruturar o resultado e `max_credits` para limitar o quanto a execução pode gastar.
+
+<AgentWithSchemaPython />
+
+As execuções de agentes são assíncronas. Use `start_agent` para receber imediatamente um ID do job e, em seguida, consulte seu status com `get_agent_status`.
+
+<AgentStatusPython />
+
+Cada execução também registra um rastro de execução e snapshots do resultado, que podem ser acessados com `get_agent_trace` e `get_agent_snapshot`. Consulte [Agent](/pt-BR/features/agent) para ver o schema de eventos e a lista completa de parâmetros.
 
 <div id="crawling-a-website-with-websockets">
   ### Rastreamento de um site com WebSockets

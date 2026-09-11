@@ -1,0 +1,94 @@
+---
+title: "Developer Index を検索"
+openapi: "/ja/api-reference/v2-openapi.json GET /search/developer"
+---
+
+公開コードリポジトリの issue、マージ済みのプルリクエスト、README に加え、厳選されたドキュメントサイトを検索します。結果は関連度順に表示され、一致した本文箇所が Markdown 形式で含まれます。
+
+配列フィルターを JSON として渡す場合は、同じパスで `POST` を使用できます。
+
+繰り返し可能なフィルターは、`GET` でどちらの形式も受け付けます。`types=issue&types=pull_request` のように query パラメータを繰り返す形式、または `types=issue,pull_request` のようにカンマ区切りの 1 つの値を指定する形式です。
+
+<div id="how-repos-and-sources-scope-a-search">
+  ## `repos` と `sources` による検索範囲の制限
+</div>
+
+インデックスは2つの部分に分かれており、これら2つのフィルターはそれぞれ独立して検索範囲を制限します。
+
+* `repos` はリポジトリ側、つまり `issue`、`pull_request`、`readme` タイプの範囲を制限します
+* `sources` はドキュメント側、つまり `doc` タイプの範囲を制限します
+* 両方を指定すると、2つの部分は共通部分ではなく結合されるため、いずれかから一致する結果が返されます
+
+各フィルターは片方の部分にのみ適用されるため、指定されたどのタイプにも一致し得ないフィルターは、何も返さずに処理されるのではなく拒否されます。
+
+* `types` にリポジトリタイプが含まれない状態で `repos` を指定すると、`400` が返され、`repos` が要求されたどのタイプにも一致できないこと、およびリポジトリタイプを追加するか `repos` を外す必要があることが報告されます
+* `types` に `doc` が含まれない状態で `sources` を指定すると、`400` が返され、`sources cannot match any requested type; add doc or drop sources` となります
+
+<div id="how-the-repository-filters-scope-a-search">
+  ## リポジトリフィルターによる検索範囲の制限
+</div>
+
+7 つのリポジトリフィルター (`language` (`Rust` など) 、`topic` (`async` など) 、`license` (`MIT` など) 、`min_stars`、`max_stars`、`archived`、`fork`) は、コードリポジトリの属性を表します。インデックス内のドキュメントページの大半は、リポジトリに紐付かないクロール済み Web サイトから取得されています。そのため、リポジトリの属性でそのようなページを含めたり除外したりすることはできません。
+
+したがって、これらのフィルターのいずれかを指定し、`sources` で範囲を指定しないリクエストでは、`doc` の結果は返されません。インデックスのドキュメント側は実行されないため、レスポンスに含まれるのはリポジトリの根拠のみ、すなわち `issue`、`pull_request`、`readme` タイプです。これは仕様であり、インデックスの不具合ではありません。
+
+ドキュメント結果を取得するには、リポジトリフィルターを削除してください。また、`sources` でドキュメント側の範囲を指定し、レスポンス内の `sources` エコーを確認して ID がインデックス化されていることを確認することもできます。
+
+<CodeGroup>
+  ```bash cURL
+  # 開始時に API キーは不要です。より高いレート制限を利用するには、-H "Authorization: Bearer $FIRECRAWL_API_KEY" を追加してください:
+  curl -s "https://api.firecrawl.dev/v2/search/developer?query=how%20do%20I%20configure%20retries&k=10&language=Rust&license=MIT"
+  ```
+
+  ```bash cURL (POST)
+  curl -X POST https://api.firecrawl.dev/v2/search/developer \
+    -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "query": "how do I configure retries",
+      "k": 10,
+      "types": ["issue", "pull_request"],
+      "language": "Rust",
+      "license": "MIT"
+    }'
+  ```
+</CodeGroup>
+
+<div id="which-values-sources-accepts">
+  ## `sources` に指定できる値
+</div>
+
+`sources` は固定の列挙型ではありません。ドキュメントのソース ID を受け付けます。各 ID は最大 512 文字の空でない文字列で、1 リクエストあたり最大 20 個指定できます。ID はインデックス内のドキュメントサイトを示しており、その一覧は随時追加されます。
+
+ID が解決されることを確認するには、その ID を渡し、レスポンスに追加される `sources` 配列を確認します。この配列は `sources` を送信した場合にのみ含まれ、指定した各 ID と、その ID がインデックス化されているかどうかをリクエスト時のまま返します。
+
+```json
+{
+  "success": true,
+  "results": [],
+  "sources": [
+    { "source": "some-docs-site", "indexed": true },
+    { "source": "unknown-docs-site", "indexed": false }
+  ]
+}
+```
+
+`indexed: true` は、ソースに公開済みの世代があることを示し、そのソースのドキュメントの根拠が表示される場合があります。`indexed: false` は、その ID に一致するものがないことを示します。これにより、インデックスに存在しない ID と、単に何も見つからなかった query を区別できます。
+
+`repos` も同様に返され、`indexed` と `types` 配下のタイプ別内訳を含む `repos` 配列として返されます。
+
+```json
+{
+  "success": true,
+  "results": [],
+  "repos": [
+    {
+      "repo": "firecrawl/firecrawl",
+      "indexed": true,
+      "types": { "issue": true, "pullRequest": true, "readme": true }
+    }
+  ]
+}
+```
+
+ワークフローの概要については、[Developer Index ガイド](/ja/features/developer)を参照してください。

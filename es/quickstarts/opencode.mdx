@@ -4,91 +4,46 @@ description: "Añade la búsqueda y el scraping web de Firecrawl a OpenCode"
 sidebarTitle: "OpenCode"
 ---
 
-Añade a [OpenCode](https://opencode.ai) las herramientas de búsqueda, scraping, rastreo y navegador de Firecrawl mediante MCP.
+Añade a [OpenCode](https://opencode.ai) las herramientas sin clave de Search, Scrape y Parse de Firecrawl mediante el MCP Server alojado.
 
 <div id="quick-setup">
   ## Configuración rápida
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. Obtén tu clave de la API
-</div>
-
-Regístrate en [firecrawl.dev/app](https://www.firecrawl.dev/app) y copia tu clave de la API.
-
-<div id="2-add-firecrawl-to-opencode">
-  ### 2. Añade Firecrawl a OpenCode
-</div>
-
-OpenCode lee la configuración desde `~/.config/opencode/config.json` (global) o desde `./opencode.json` en tu proyecto. Añade:
+Añade esto a `~/.config/opencode/opencode.json` o al archivo `opencode.json` de tu proyecto:
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
     "firecrawl": {
-      "type": "local",
-      "command": ["npx", "-y", "firecrawl-mcp"],
-      "environment": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
+      "type": "remote",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "enabled": true
     }
   }
 }
 ```
 
-Reemplaza `fc-YOUR-API-KEY` por tu clave de la API de Firecrawl.
+Reinicia OpenCode, introduce `/mcp` y confirma que `firecrawl_search`, `firecrawl_scrape` y `firecrawl_parse` estén disponibles.
 
-<div id="3-start-opencode">
-  ### 3. Inicia OpenCode
+El acceso sin clave tiene límites que se comparten entre los usuarios de la misma IP pública. Inicia sesión desde un cliente interactivo con [Para personas](/es/mcp-server/oauth) o [añade una clave de API](/es/mcp-server/keyless#add-an-api-key) para usar sin supervisión.
+
+<div id="try-it">
+  ## Pruébalo
 </div>
 
-```bash
-opencode
+```text
+Search the web for the latest Bun release notes and summarize the sources.
 ```
 
-OpenCode carga los servidores MCP al iniciarse. Confirma que Firecrawl esté conectado:
-
-```
-/mcp
-```
-
-<div id="quick-demo">
-  ## Demo rápida
-</div>
-
-```
-Search the web for "Bun 2.0 changelog" and summarize the top results.
-```
-
-```
+```text
 Scrape https://docs.firecrawl.dev/introduction and list the code examples.
 ```
-
-```
-Crawl https://example.com/blog and save each post as markdown.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## URL alojada remotamente (no requiere Node.js)
-</div>
-
-```json
-{
-  "mcp": {
-    "firecrawl": {
-      "type": "remote",
-      "url": "https://mcp.firecrawl.dev/v2/mcp"
-    }
-  }
-}
-```
-
-Esta configuración usa el conjunto de herramientas sin clave de Firecrawl. Para una configuración vinculada a una cuenta o desatendida, consulta los [modos de conexión MCP alojados](/es/developer-guides/mcp-setup-guides/oauth); guarda las claves de API en una cabecera Authorization o en un almacén seguro de secretos, nunca en una URL.
 
 <div id="troubleshooting">
   ## Solución de problemas
 </div>
 
-* **Servidor no conectado** — ejecuta `opencode doctor` para inspeccionar los errores de carga de MCP.
-* **Permiso denegado con `npx`** — instala Node.js 18+ y asegúrate de que tu shell detecte la instalación (`which npx`).
+* **El servidor no se conecta:** ejecuta `opencode doctor` y confirma la URL remota.
+* **No aparece Crawl u otra herramienta:** sin clave solo ofrece Search, Scrape y Parse. Conéctate con OAuth o una clave de API para acceder a un conjunto más amplio de herramientas.

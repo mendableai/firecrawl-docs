@@ -44,28 +44,28 @@ og:description: "料金プラン別およびAPIリクエストのレート制限
 
       <tr>
         <td style={{ padding: '8px 12px' }}>Standard</td>
+        <td style={{ padding: '8px 12px' }}>25</td>
+        <td style={{ padding: '8px 12px' }}>50,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Growth</td>
         <td style={{ padding: '8px 12px' }}>50</td>
         <td style={{ padding: '8px 12px' }}>100,000</td>
       </tr>
 
       <tr>
-        <td style={{ padding: '8px 12px' }}>Growth</td>
-        <td style={{ padding: '8px 12px' }}>100</td>
-        <td style={{ padding: '8px 12px' }}>200,000</td>
-      </tr>
-
-      <tr>
         <td style={{ padding: '8px 12px' }}>Scale / Enterprise</td>
-        <td style={{ padding: '8px 12px' }}>150+</td>
-        <td style={{ padding: '8px 12px' }}>300,000+</td>
+        <td style={{ padding: '8px 12px' }}>100+</td>
+        <td style={{ padding: '8px 12px' }}>200,000+</td>
       </tr>
     </tbody>
   </table>
 </div>
 
-各チームで、同時実行キューに待機できるジョブ数には上限があります。この上限を超えると、既存のジョブが完了するまで、新しいジョブは `429` ステータスコードで拒否されます。カスタムの同時実行上限が設定された上位プランでは、最大キュー待機ジョブ数は同時実行上限の 2,000 倍で、上限は 2,000,000 です。
+各チームで、同時実行キューに待機できるジョブ数には上限があります。この上限を超えると、既存のジョブが完了するまで、新しいジョブは `429` ステータスコードで拒否されます。カスタムの同時実行数の上限が設定された上位プランでは、最大キュー待機ジョブ数は同時実行数の上限の 2,000 倍で、上限は 2,000,000 です。
 
-より高い同時実行上限が必要な場合は、[Enterprise プランについてお問い合わせください](https://firecrawl.dev/enterprise)。
+より高い同時実行数の上限が必要な場合は、[Enterprise プランについてお問い合わせください](https://firecrawl.dev/enterprise)。
 
 <div id="api-rate-limits">
   ## API のレート制限
@@ -79,7 +79,7 @@ og:description: "料金プラン別およびAPIリクエストのレート制限
 
 ホスト型 Firecrawl MCP のキーレスエンドポイントでは、APIキーなしで **Search、Scrape、Parse** のみを利用できます。その他のホスト型 MCP ツールには、account 接続または APIキーが必要です。
 
-公式の Firecrawl クライアント、CLI、SDKs、REST API では、キーレスアクセスに **Interact** も含まれます。Research endpoints も、research index が有効になっている Firecrawl Cloud では APIキーなしで利用できます。その他のエンドポイント (クロール、extract、map、バッチスクレイプ など) は、キーなしでは利用できません。
+公式の Firecrawl クライアント、CLI、SDKs、REST API では、キーレスアクセスに **Interact** も含まれます。Firecrawl Cloud では、research および 開発者検索エンドポイント も APIキーなしで利用できます。その他のエンドポイント (クロール、extract、map、バッチスクレイプ など) は、キーなしでは利用できません。
 
 キーレス利用は無料ですが、IP アドレスごとに 1 日あたり **2 つの制限** があり、どちらかを超えると `429` が返されます。
 
@@ -88,7 +88,7 @@ og:description: "料金プラン別およびAPIリクエストのレート制限
 
 [無料の APIキーに登録](https://firecrawl.dev) すると、1,000 クレジット と、追加料金なしでより高い レート制限 を利用できます。設定後は、公式クライアントが自動的にそのキーを使用します。
 
-<div id="current-plans">
+<div id="current-plans-2">
   ### 現在のプラン
 </div>
 

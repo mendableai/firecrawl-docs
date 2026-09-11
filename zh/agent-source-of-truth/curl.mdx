@@ -27,7 +27,9 @@ export FIRECRAWL_API_KEY="fc-your-api-key"
   ## Search
 </div>
 
-### 使用场景
+<div id="why-use-it">
+  ### 使用场景
+</div>
 
 使用 search 从查询中发现相关页面，然后选择要抓取或交互的 URL。你可以使用标准的 `site:` 运算符将结果限定在某个站点范围内，例如 `site:docs.firecrawl.dev crawl webhooks`。
 
@@ -101,7 +103,7 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
 </div>
 
 * `query`
-  * 类型：string (必填，最大长度 500) 
+  * 类型：string (必填，最大长度 500)
   * 适用场景：你需要提供搜索查询时。
   * 说明：使用 `site:example.com` 可将结果限定在某个域名内。
 
@@ -117,12 +119,12 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
   * 类型：带类型标记的类别对象数组
   * 适用场景：你想按类别筛选结果时。
   * 已确认的对象结构：
-    * `{ "type": "github" }`
+    * `{ "type": "developer" }`
     * `{ "type": "research" }`
     * `{ "type": "pdf" }`
 
 * `limit`
-  * 类型：integer (最小值 1，最大值 100，默认值 5) 
+  * 类型：integer (最小值 1，最大值 100，默认值 5)
   * 适用场景：你想限制结果数量时。
 
 * `tbs`
@@ -134,19 +136,19 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
   * 适用场景：你想获取本地化结果时。
 
 * `country`
-  * 类型：string (默认值 `"US"`) 
+  * 类型：string (默认值 `"US"`)
   * 适用场景：你想使用 ISO 3166-1 alpha-2 代码进行定向时 (例如 `"US"`) 。
 
 * `ignoreInvalidURLs`
-  * 类型：boolean (默认值 false) 
+  * 类型：boolean (默认值 false)
   * 适用场景：你想丢弃其他端点无法抓取的 URL 时。
 
 * `timeout`
-  * 类型：integer (毫秒，默认值 60000) 
+  * 类型：integer (毫秒，默认值 60000)
   * 适用场景：你需要以毫秒为单位设置请求超时时间时。
 
 * `enterprise`
-  * 类型：字符串数组 (每项为 `"anon"` 或 `"zdr"`) 
+  * 类型：字符串数组 (每项为 `"anon"` 或 `"zdr"`)
   * 适用场景：你需要企业级搜索控制时。
   * 值：
     * `"zdr"`：端到端零数据保留
@@ -160,17 +162,19 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
   ## Scrape
 </div>
 
-### 为什么使用
+<div id="why-use-it-2">
+  ### 为什么使用
+</div>
 
 如果你已经有一个 URL，并希望以一种或多种 formats 获取结构化内容，请使用 scrape。
 
-<div id="endpoint">
+<div id="endpoint-2">
   ### 端点
 </div>
 
 `POST /scrape`
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### 简单示例
 </div>
 
@@ -184,7 +188,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
   }'
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### 复杂示例
 </div>
 
@@ -222,7 +226,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
   }'
 ```
 
-<div id="response">
+<div id="response-2">
   ### 响应
 </div>
 
@@ -234,7 +238,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
 * `warning`：可选的提取或格式化提示
 * `changeTracking`：请求 `changeTracking` 格式时会出现
 
-<div id="parameters">
+<div id="parameters-2">
   ### 参数
 </div>
 
@@ -356,17 +360,19 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
   ## 交互
 </div>
 
-### 为什么使用
+<div id="why-use-it-3">
+  ### 为什么使用
+</div>
 
 当页面在抓取开始后需要执行浏览器 actions 或运行代码时，请使用交互。
 
-<div id="endpoint">
+<div id="endpoint-3">
   ### 端点
 </div>
 
 `POST /scrape/{jobId}/interact`
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### 简单示例
 </div>
 
@@ -379,7 +385,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   }'
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### 复杂示例
 </div>
 
@@ -394,7 +400,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   }'
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### 参数
 </div>
 
@@ -415,13 +421,15 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   * 类型：integer (秒；最小值 1，最大值 300，默认值 30) 
   * 使用时机：你需要设置执行超时时间。
 
-<div id="response">
+<div id="response-3">
   ### 响应
 </div>
 
 成功的响应包含 `success` 以及执行结果字段，例如 `stdout`、`result` (`stdout` 的别名) 、`stderr`、`exitCode`、`killed` 和 `error` (可为 null) 。
 
-### DELETE /scrape/{jobId}/interact
+<div id="delete-scrapeinteract">
+  ### DELETE /scrape/{jobId}/interact
+</div>
 
 <div id="example">
   ### 示例
@@ -438,19 +446,19 @@ curl -X DELETE "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   ## Ask (代理调试)
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-4">
   ### 为什么使用它
 </div>
 
 当 Firecrawl API 调用失败或返回非预期结果时，可使用 ask。AI 支持代理会诊断问题、给出修复参数建议，并可选择通过实时 API 验证修复是否有效。典型延迟：15-30 秒。
 
-<div id="endpoint">
+<div id="endpoint-4">
   ### 端点
 </div>
 
 `POST /support/ask`
 
-<div id="simple-example">
+<div id="simple-example-4">
   ### 简单示例
 </div>
 
@@ -463,7 +471,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
   }'
 ```
 
-<div id="complex-example">
+<div id="complex-example-4">
   ### 复杂示例
 </div>
 
@@ -478,7 +486,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
   }'
 ```
 
-<div id="response">
+<div id="response-4">
   ### 响应
 </div>
 
@@ -491,7 +499,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
 * `validation.result`：`success`、`failure` 或 `skipped`。
 * `feedback`：当代理陷入卡顿时出现；成功时为 null。
 
-<div id="parameters">
+<div id="parameters-4">
   ### 参数
 </div>
 
@@ -511,17 +519,19 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
   ## 文档搜索
 </div>
 
-### 为什么要用它
+<div id="why-use-it-5">
+  ### 为什么要用它
+</div>
 
 使用 docs-search 查找 Firecrawl 文档。
 
-<div id="endpoint">
+<div id="endpoint-5">
   ### 端点
 </div>
 
 `POST /support/docs-search`
 
-<div id="example">
+<div id="example-2">
   ### 示例
 </div>
 
@@ -534,7 +544,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/docs-search" \
   }'
 ```
 
-<div id="parameters">
+<div id="parameters-5">
   ### 参数
 </div>
 

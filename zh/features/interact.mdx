@@ -49,18 +49,26 @@ import InteractFeedbackCTA from "/snippets/zh/interact-feedback-cta.mdx";
 
 抓取页面以获取干净的数据，然后调用 `/interact` 在该页面中开始执行 actions：点击按钮、填写表单、提取动态内容，或进一步深入导航。只需描述你想做什么；如果需要完全控制，也可以编写代码。
 
+在以下场景中使用交互：
+
+* **抓取 登录后的内容** —— 只需登录一次，即可读取仅在身份验证后才出现的页面。请参见 [使用 抓取 + 交互 的持久化配置文件](#persistent-profiles-with-scrape-+-interact)。
+* **点击翻页** —— 逐页前进并抓取每一组结果，全程复用同一个会话。请参见 [通过 prompt 交互](#interact-via-prompting) 和 [会话生命周期](#session-lifecycle)。
+* **填写并提交表单** —— 通过 prompt 或 Playwright 代码在输入框中填写内容并提交。请参见 [通过 prompt 交互](#interact-via-prompting) 和 [运行代码](#running-code)。
+* **复用已通过身份验证的 会话** —— 将浏览器状态保存到具名 profile，并在后续抓取 中加载。请参见 [使用 抓取 + 交互 的持久化配置文件](#persistent-profiles-with-scrape-+-interact)。
+* **无需先 抓取，直接 start 一个 会话** —— 打开一个由你直接操控的独立浏览器。请参见 [浏览器沙箱](/zh/features/browser)。
+
 <InteractFeedbackCTA src="docs-interact" />
 
 <div id="choose-the-right-interaction-model">
   ## 选择合适的交互模型
 </div>
 
-| 需求                       | 使用                               | 权威文档                                                                                                                                                                                                                                                                                                     |
-| ------------------------ | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 无需先抓取，直接启动独立的浏览器会话       | 浏览器沙箱 / 独立 交互 会话 | [Browser Sandbox](/zh/features/browser), [Create Browser Session](/zh/api-reference/endpoint/browser-create), [Execute Browser Code](/zh/api-reference/endpoint/browser-execute), [List Browser Sessions](/zh/api-reference/endpoint/browser-list), [Delete Browser Session](/zh/api-reference/endpoint/browser-delete) |
-| 使用 `scrapeId` 基于抓取结果继续交互 | 抓取后交互                            | [Execute Interact](/zh/api-reference/endpoint/scrape-execute), [Stop Interact](/zh/api-reference/endpoint/scrape-browser-delete)                                                                                                                                                                               |
+| 需求                       | 使用               | 权威文档                                                                                                                                                                                                                                                                                                     | SDK 方法 (Node)                                                        |
+| ------------------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 无需先抓取，直接启动独立的浏览器会话       | 浏览器沙箱 / 独立 交互 会话 | [Browser Sandbox](/zh/features/browser), [Create Browser Session](/zh/api-reference/endpoint/browser-create), [Execute Browser Code](/zh/api-reference/endpoint/browser-execute), [List Browser Sessions](/zh/api-reference/endpoint/browser-list), [Delete Browser Session](/zh/api-reference/endpoint/browser-delete) | `browser()`, `browserExecute()`, `listBrowsers()`, `deleteBrowser()` |
+| 使用 `scrapeId` 基于抓取结果继续交互 | 抓取后交互            | [Execute Interact](/zh/api-reference/endpoint/scrape-execute), [Stop Interact](/zh/api-reference/endpoint/scrape-browser-delete)                                                                                                                                                                               | `interact()`, `stopInteraction()`                                    |
 
-如果工作流以 `POST /v2/scrape` 开始，且响应中包含 `data.metadata.scrapeId`，请使用绑定到抓取的 交互。当你需要具有独立生命周期的独立会话时，请使用 浏览器沙箱。
+如果工作流以 `POST /v2/scrape` 开始，且响应中包含 `data.metadata.scrapeId`，请使用绑定到抓取的 交互。当你需要具有独立生命周期的独立会话时，请使用 浏览器沙箱。Python SDK 使用对应的 snake&#95;case 方法 (`browser()`、`browser_execute()`、`list_browsers()`、`delete_browser()`、`interact()`、`stop_interaction()`) 。
 
 <CardGroup cols={3}>
   <Card title="AI prompts" icon="wand-magic-sparkles">
@@ -309,10 +317,10 @@ const page = context.pages()[0];
   <StopCLI />
 </CodeGroup>
 
-会话也会根据 TTL (默认值：10 分钟) 或无活动 timeout (默认值：5 分钟) 自动过期。
+会话也会根据 TTL (默认值：10 分钟) 或无活动超时时间 (默认值：5 分钟) 自动过期。
 
 <Warning>
-  请务必在使用完毕后停止会话，以避免不必要的计费。额度按秒折算。
+  请务必在使用完毕后停止会话，以避免不必要的计费。额度按秒折算。最低收费为一个浏览器分钟。使用 `prompt` 的会话按每浏览器分钟 7 额度计费；不使用 prompt 的会话按每浏览器分钟 2 额度计费。详情请参见[计费](/zh/billing#credit-costs-per-endpoint)。
 </Warning>
 
 <div id="persistent-profiles-with-scrape-interact">

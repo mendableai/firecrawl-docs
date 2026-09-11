@@ -51,14 +51,20 @@ Ejemplos: `"US"`, `"DE"`, `"FR"`, `"JP"`, `"UK"`, `"CA"`.
 ```
 
 <div id="categories-parameter">
-  ## Parámetro `categories`
+  ## Parámetro Categories
 </div>
 
-Filtra los resultados de búsqueda por categorías específicas usando el parámetro `categories`:
+Filtra los resultados de búsqueda por categorías específicas mediante el parámetro `categories`:
 
-- **`github`**: Busca en repositorios de GitHub, código, issues y documentación
-- **`research`**: Busca en sitios web académicos y de investigación (arXiv, Nature, IEEE, PubMed, etc.)
-- **`pdf`**: Busca archivos PDF
+* **`research`**: Restringe la búsqueda web a sitios académicos y de investigación (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov y similares). A partir del 2026-11-16 buscará en el [Research Index](/es/features/research) y devolverá registros de artículos; consulta la advertencia más abajo
+* **`pdf`**: Busca PDFs
+* **`developer`**: Busca en el [Developer Index](/es/features/developer): issues, pull requests fusionados y archivos README de repositorios de código públicos, además de sitios de documentación seleccionados
+
+<Warning>
+  **La categoría `research` cambia el 2026-11-16.** Buscará en el [Research Index](/es/features/research) (PubMed, bioRxiv, medRxiv, arXiv) en lugar de limitar los resultados web a 14 sitios académicos. Los resultados pasarán de `data.web` a `data.research` y se devolverán como registros de artículos: `paperId`, `primaryId`, `ids`, `title`, `abstract`, `score`. Hasta entonces, cada respuesta que la utilice incluirá una entrada `warnings`.
+
+  Si necesitas registros de artículos, actualiza tu parsing antes de esa fecha o llama hoy mismo a [`GET /search/research/papers`](/es/api-reference/endpoint/research-search-papers). Si necesitas páginas web de sitios académicos, cambia a [`includeDomains`](#domain-filters).
+</Warning>
 
 <div id="example-usage">
   ### Ejemplo de uso
@@ -67,7 +73,7 @@ Filtra los resultados de búsqueda por categorías específicas usando el parám
 ```json
 {
   "query": "aprendizaje automático",
-  "categories": ["github", "investigación"],
+  "categories": ["research", "pdf"],
   "limit": 10
 }
 ```
@@ -116,22 +122,21 @@ Cada resultado incluye un campo `category` que indica su origen:
   "data": {
     "web": [
       {
-        "url": "https://github.com/example/ml-project",
-        "title": "Machine Learning Project",
-        "description": "Implementation of ML algorithms",
-        "category": "github"
-      },
-      {
         "url": "https://arxiv.org/abs/2024.12345",
         "title": "ML Research Paper",
         "description": "Latest advances in machine learning",
         "category": "research"
+      },
+      {
+        "url": "https://example.com/ml-survey.pdf",
+        "title": "ML Survey",
+        "description": "A survey of machine learning methods",
+        "category": "pdf"
       }
     ]
   }
 }
 ```
-
 
 <div id="time-based-search">
   ## Búsqueda por tiempo

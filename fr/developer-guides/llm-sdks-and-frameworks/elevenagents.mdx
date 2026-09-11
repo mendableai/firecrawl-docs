@@ -5,7 +5,7 @@ og:title: "ElevenAgents | Firecrawl"
 og:description: "Donnez aux agents vocaux et conversationnels ElevenLabs un accès au web en temps réel avec Firecrawl"
 ---
 
-Donnez à vos agents vocaux et conversationnels [ElevenAgents](https://elevenlabs.io/agents) la capacité de scraper, de rechercher et de crawl le web en temps réel avec Firecrawl. Ce guide couvre deux approches d&#39;intégration :
+Donnez à vos agents vocaux et conversationnels [ElevenAgents](https://elevenlabs.io/agents) un accès au web en temps réel avec Firecrawl. Ce guide couvre deux approches d&#39;intégration :
 
 1. **serveur MCP** — connectez le serveur MCP Firecrawl hébergé pour une configuration sans code.
 2. **outil webhook côté serveur** — faites pointer un outil personnalisé vers l&#39;API REST de Firecrawl pour un contrôle total sur les requêtes.
@@ -31,14 +31,14 @@ Le moyen le plus rapide de donner à un agent l’accès au web. ElevenAgents pr
 2. Sélectionnez **Custom MCP Server** dans la bibliothèque d’intégrations.
 3. Renseignez les champs suivants :
 
-| Champ           | Valeur                                                                           |
-| --------------- | -------------------------------------------------------------------------------- |
-| **Name**        | Firecrawl                                                                        |
-| **Description** | Recherche, scraping, crawl et extraction de contenu sur n’importe quel site web. |
-| **Server type** | Streamable HTTP                                                                  |
-| **Server URL**  | `https://mcp.firecrawl.dev/v2/mcp`                                               |
+| Champ           | Valeur                                                        |
+| --------------- | ------------------------------------------------------------- |
+| **Name**        | Firecrawl                                                     |
+| **Description** | Recherche, scraping et analyse de contenu web avec Firecrawl. |
+| **Server type** | Streamable HTTP                                               |
+| **Server URL**  | `https://mcp.firecrawl.dev/v2/mcp`                            |
 
-Cette URL lance l’ensemble d’outils Firecrawl sans clé. Pour une configuration connectée à un compte ou sans surveillance, suivez les [modes de connexion MCP hébergés](/fr/developer-guides/mcp-setup-guides/oauth) ; conservez les clés API dans un en-tête Authorization ou un magasin de secrets sécurisé, jamais dans une URL.
+Le MCP sans clé expose exactement recherche, scraping et Parse, avec des limites partagées. [Connectez-vous](/fr/mcp-server/oauth) ou [ajoutez une clé API](/fr/mcp-server/keyless#add-an-api-key) pour accéder à un ensemble d’outils plus étendu. Conservez les clés API dans une variable d’environnement ou un magasin de secrets, jamais dans une URL.
 
 <Note>
   Vous devez sélectionner **Streamable HTTP** comme type de serveur. L’option SSE par défaut ne fonctionne pas avec le point de terminaison MCP de Firecrawl.
@@ -46,12 +46,12 @@ Cette URL lance l’ensemble d’outils Firecrawl sans clé. Pour une configurat
 
 4. Dans **Tool Approval Mode**, choisissez un niveau d’approbation :
    * **No Approval** — l’agent utilise les outils librement. Convient pour le scraping en lecture seule.
-   * **Fine-Grained Tool Approval** — permet de présélectionner les outils qui peuvent s’exécuter automatiquement et ceux qui nécessitent une approbation. Utile pour contrôler les opérations de crawl coûteuses.
+   * **Fine-Grained Tool Approval** — permet de présélectionner les outils qui peuvent s’exécuter automatiquement et ceux qui nécessitent une approbation.
    * **Always Ask** (par défaut) — l’agent demande une autorisation avant chaque appel d’outil.
 
 5. Cochez **I trust this server**, puis cliquez sur **Add Server**.
 
-ElevenLabs se connectera au serveur et affichera la liste des outils disponibles (scrape, recherche, crawl, cartographie, etc.).
+ElevenLabs se connectera au serveur sans clé et affichera recherche, scraping et Parse.
 
 <div id="attach-it-to-an-agent">
   ### L’associer à un agent
@@ -74,7 +74,9 @@ outils Firecrawl pour rechercher sur le web ou scraper la page concernée, puis
 résumez les résultats.
 ```
 
-### Testez-le
+<div id="test-it">
+  ### Testez-le
+</div>
 
 Cliquez sur **Preview** dans la barre de navigation supérieure. Vous pouvez le tester via le champ de chat textuel ou en lançant un appel vocal. Essayez avec une requête comme :
 
@@ -155,7 +157,9 @@ Créez un outil qui effectue une recherche sur le web et renvoie des résultats 
 
 4. Cliquez sur **Add tool**.
 
-### Mettre à jour le prompt système
+<div id="update-the-system-prompt-2">
+  ### Mettre à jour le prompt système
+</div>
 
 Dans l’onglet **Agent**, mettez à jour le **prompt système** :
 
@@ -169,7 +173,7 @@ Vous êtes un assistant compétent ayant accès à des outils web.
 Résumez toujours les informations de manière concise et citez l'URL source.
 ```
 
-<div id="test-it">
+<div id="test-it-2">
   ### Essayez-le
 </div>
 

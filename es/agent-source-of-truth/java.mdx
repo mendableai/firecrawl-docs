@@ -139,10 +139,10 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   * Tipo: Lista de cadenas de categorías o mapas
   * Úsalo cuando: quieras filtrar los resultados por categoría.
   * Valores confirmados:
-    * `"github"`: resultados centrados en GitHub
+    * `"developer"`: resultados del Developer Index
     * `"research"`: resultados de investigación y académicos
     * `"pdf"`: resultados centrados en PDF
-    * `{type: "github" | "research" | "pdf"}`: formato de mapa de categoría tipado
+    * `{type: "developer" | "research" | "pdf"}`: formato de mapa de categoría tipado
 
 * `options.limit`
   * Tipo: Integer
@@ -158,7 +158,7 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
 
 * `options.ignoreInvalidURLs`
   * Tipo: Boolean
-  * Úsalo cuando: quieras omitir las URL que otros endpoints no puedan extraer.
+  * Úsalo cuando: quieras omitir las URL que otros endpoints no puedan someter a scraping.
 
 * `options.timeout`
   * Tipo: Integer
@@ -166,7 +166,7 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
 
 * `options.scrapeOptions`
   * Tipo: `ScrapeOptions`
-  * Úsalo cuando: quieras extraer cada resultado de búsqueda (consulta los parámetros de Scrape para ver los campos).
+  * Úsalo cuando: quieras realizar scraping de cada resultado de búsqueda (consulta los parámetros de Scrape para ver los campos).
 
 * `options.integration`
   * Tipo: String
@@ -176,26 +176,26 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   ## Scraping
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### Por qué usarlo
 </div>
 
 Usa `scrape` si ya tienes una URL y quieres contenido estructurado en uno o más formatos.
 
-<div id="preferred-sdk-methods">
+<div id="preferred-sdk-methods-2">
   ### Métodos recomendados del SDK
 </div>
 
 * `client.scrape(url)`
 * `client.scrape(url, options)`
 
-<div id="return-value">
+<div id="return-value-2">
   ### Valor devuelto
 </div>
 
 `scraping` devuelve `Document`. Los métodos de acceso habituales incluyen `getMarkdown()`, `getHtml()`, `getRawHtml()`, `getJson()`, `getMetadata()`, `getLinks()`, `getAudio()`, `getVideo()` y campos adicionales cuando se solicitan los formatos correspondientes.
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Ejemplo simple
 </div>
 
@@ -206,7 +206,7 @@ Document doc = client.scrape(
 );
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Ejemplo complejo
 </div>
 
@@ -247,7 +247,7 @@ ScrapeOptions options = ScrapeOptions.builder()
 Document doc = client.scrape("https://example.com/pricing", options);
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### Parámetros
 </div>
 
@@ -365,13 +365,13 @@ Document doc = client.scrape("https://example.com/pricing", options);
   ## Interact
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### Por qué usarlo
 </div>
 
 Usa interact cuando una página requiera acciones del navegador o la ejecución de código una vez iniciado el scraping.
 
-<div id="preferred-sdk-methods">
+<div id="preferred-sdk-methods-3">
   ### Métodos recomendados del SDK
 </div>
 
@@ -379,7 +379,7 @@ Usa interact cuando una página requiera acciones del navegador o la ejecución 
 * `client.interact(jobId, code, language, timeout)` — `timeout` está en segundos (1–300), o `null` para omitirlo y usar el valor predeterminado de la API (30 segundos)
 * `client.interact(jobId, code, language, timeout, origin)` — la cadena opcional `origin` se envía solo cuando no es `null` (atribución de la solicitud)
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Ejemplo simple
 </div>
 
@@ -394,7 +394,7 @@ BrowserExecuteResponse result = client.interact(
 );
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Ejemplo complejo
 </div>
 
@@ -439,7 +439,7 @@ BrowserDeleteResponse stopped = client.stopInteractiveBrowser("<scrapeJobId>");
 * `getCreditsBilled()`: Integer (puede ser null)
 * `getError()`: String (puede ser null)
 
-<div id="parameters">
+<div id="parameters-3">
   ### Parámetros
 </div>
 

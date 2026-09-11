@@ -1,0 +1,16 @@
+```js Node
+import { Firecrawl } from 'firecrawl';
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
+
+// 実行のトレース: 時系列順のイベント（tool calls、推論、成果物）
+const trace = await firecrawl.getAgentTrace("JOB_ID");
+
+for (const event of trace.events ?? []) {
+  console.log(event.type);
+}
+
+// 実行中の場合は、現在アクティブなブラウザセッションも含める
+const live = await firecrawl.getAgentTrace("JOB_ID", { liveView: true });
+console.log(live.activeBrowserSessions);
+```

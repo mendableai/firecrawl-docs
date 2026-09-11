@@ -1,0 +1,30 @@
+---
+title: 'Obtener la traza del agente'
+openapi: '/es/api-reference/v2-openapi.json GET /agent/{jobId}/trace'
+noindex: true
+---
+
+Cada ejecución de un agente registra una **traza de ejecución** canónica: una secuencia ordenada de eventos que describe todo lo que hizo la ejecución —las herramientas que llamó y lo que devolvieron, resúmenes de razonamiento, actualizaciones de progreso, sesiones de navegador y cambios en sus artefactos de salida—. Es la misma secuencia de eventos que impulsa la vista de actividad en tiempo real en [Agent Playground](https://www.firecrawl.dev/app/agent).
+
+<div id="what-its-for">
+  ## Para qué sirve
+</div>
+
+* **Depuración de ejecuciones** — consulta las búsquedas, los scrapeos y las extracciones exactos que realizó el agente, la entrada (`tool_call.started`) y el resultado (`tool_call.finished`) de cada herramienta, y dónde falló una ejecución (`error.occurred`, así como el `outcome` y el `error` estructurado del evento final `run.finished`).
+* **Interfaces de usuario de progreso en tiempo real** — consulta periódicamente la traza mientras un trabajo está en `processing` para mostrar lo que hace el agente en tiempo real. Los eventos `progress.reported` incluyen la fase de la ejecución (`planning`, `working`, `finalizing`) con un mensaje legible para las personas, y los eventos `reasoning.summary` describen el razonamiento del agente.
+* **Vista del navegador en tiempo real** — pasa `?liveView=true` mientras una ejecución está en curso para obtener `activeBrowserSessions`: las sesiones activas del navegador de la ejecución, cada una con una `liveViewUrl` que puedes integrar para observar (o mostrar en una demostración) cómo navega el agente.
+* **Seguimiento de costos** — `creditsUsed` informa de los créditos consumidos hasta el momento, con un límite de `maxCredits` para la ejecución si se configuró.
+
+<div id="how-it-works">
+  ## Cómo funciona
+</div>
+
+Los eventos los emiten los agentes de la ejecución —el `orchestrator` y sus `subagent`s—, y cada evento identifica a su emisor en el campo `agent`. El trabajo del navegador se realiza dentro de la propia sesión de navegador del agente y se notifica mediante eventos `browser.session.*`, no a través de agentes de navegador independientes. Ordena los eventos por `producerSequence` (para cada agente emisor). El campo `type` distingue las 13 variantes de eventos; consulta el esquema de respuesta a continuación para ver la lista completa y los campos de cada variante.
+
+Los eventos `artifact.updated` no incluyen el contenido del artefacto; hacen referencia a él mediante `snapshotId`, que puedes recuperar con el [endpoint de instantáneas](/es/api-reference/endpoint/agent-snapshot).
+
+Los eventos pueden seguir llegando durante un breve periodo tras recibir `run.finished`, así que, si consultas periódicamente una ejecución activa, mantén abierta una breve ventana de espera antes de mostrar el estado final.
+
+<Note>Las trazas se registran en las ejecuciones de Spark 2, es decir, en todas las ejecuciones nuevas. Los trabajos iniciados en modelos Spark 1 antes de su retirada no tienen trazas y devuelven `400`.</Note>
+
+> ¿Eres un agente de IA que necesita una clave de API de Firecrawl? Consulta [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para obtener instrucciones de incorporación automatizada.

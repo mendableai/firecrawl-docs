@@ -8,7 +8,7 @@ og:description: "高度なオプションで Firecrawl のスクレイピング�
 このガイドでは、Firecrawl の各エンドポイントと、そのパラメータを最大限に活用する方法を解説します。
 
 <div id="basic-scraping-with-firecrawl-scrape">
-  ## Firecrawlでの基本的なスクレイピング (/scrape)
+  ## Firecrawlでの基本的なスクレイピング (/scrape) 
 </div>
 
 単一ページをスクレイピングしてクリーンなMarkdownコンテンツを取得するには、`/scrape` エンドポイントを使用できます。
@@ -161,7 +161,9 @@ og:description: "高度なオプションで Firecrawl のスクレイピング�
 - **Description**: スクレイピング時の PDF ファイルの処理方法を制御します。`true` の場合、PDF の内容を抽出して Markdown フォーマットに変換し、課金はページ数に基づきます（1ページあたり1クレジット）。`false` の場合、PDF ファイルを base64 エンコードで返し、合計で1クレジットの定額です。
 - **Default**: `true`
 
-### 使用例
+<div id="example-usage">
+  ### 使用例
+</div>
 
 ```bash
 curl -X POST https://api.firecrawl.dev/v1/scrape \
@@ -226,7 +228,9 @@ curl -X POST https://api.firecrawl.dev/v1/scrape \
 - **Description**: LLMが所定の構造でデータを抽出できるよう指示するプロンプト。
 - **Example**: `"製品の特徴を抽出してください"`
 
-### 使い方の例
+<div id="example-usage-2">
+  ### 使い方の例
+</div>
 
 ```bash
 curl -X POST https://api.firecrawl.dev/v1/scrape \
@@ -587,7 +591,7 @@ curl -X GET https://api.firecrawl.dev/v1/crawl/1234-5678-9101 \
 - **Default**: `{ "formats": ["markdown"] }`
 - **See**: [Scrape Options](#setting-the-content-formats-on-response-with-formats)
 
-<div id="example-usage">
+<div id="example-usage-3">
   ### 使い方の例
 </div>
 
@@ -668,7 +672,7 @@ curl -X POST https://api.firecrawl.dev/v1/map \
 - **Description**: 指定したテキストを含むリンクを検索します。
 - **Example**: `"blog"`
 
-<div id="limit">
+<div id="limit-2">
   #### `limit`
 </div>
 

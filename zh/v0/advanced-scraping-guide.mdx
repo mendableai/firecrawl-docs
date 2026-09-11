@@ -3,7 +3,13 @@ title: "高级抓取指南"
 description: "了解如何通过高级选项优化你的 Firecrawl 抓取。"
 og:title: "高级抓取指南 | Firecrawl"
 og:description: "了解如何通过高级选项优化你的 Firecrawl 抓取。"
+canonical: "https://docs.firecrawl.dev/advanced-scraping-guide"
 ---
+
+<Warning>
+  **本页面记录的是 v0 API，已于 2025 年 4 月 1 日弃用。** 保留此页仅供历史参考，并不反映 Firecrawl 当前的工作方式。当前文档：[高级抓取指南](/zh/advanced-scraping-guide)。如需迁移现有的 v0 集成，请参见
+  [从 v0 迁移](/zh/migrating-from-v0)。
+</Warning>
 
 本指南将带你了解 Firecrawl 的各个端点，以及如何结合其所有参数充分使用它们。
 
@@ -52,7 +58,7 @@ og:description: "了解如何通过高级选项优化你的 Firecrawl 抓取。"
 
     content, err := app.ScrapeURL("docs.firecrawl.dev", nil)
     if err != nil {
-      log.Fatalf("Failed)
+      log.Fatalf("Failed to scrape URL: %v", err)
     }
   }
   ```
@@ -102,41 +108,41 @@ og:description: "了解如何通过高级选项优化你的 Firecrawl 抓取。"
   ### 使用 `onlyMainContent` 获取更纯净的内容
 </div>
 
-- **类型**: `boolean`
-- **说明**: 仅返回页面主体内容，不包含页眉、导航、页脚等。
-- **默认**: `false`
+* **类型**: `boolean`
+* **说明**: 仅返回页面主体内容，不包含页眉、导航、页脚等。
+* **默认**: `false`
 
 <div id="getting-the-html-with-includehtml">
   ### 使用 `includeHtml` 获取 HTML
 </div>
 
-- **类型**: `boolean`
-- **描述**: 在响应中包含页面的 HTML 版本内容，这将添加一个 `html` 字段。
-- **默认值**: `false`
+* **类型**: `boolean`
+* **描述**: 在响应中包含页面的 HTML 版本内容，这将添加一个 `html` 字段。
+* **默认值**: `false`
 
 <div id="getting-the-raw-html-with-includerawhtml">
   ### 使用 `includeRawHtml` 获取原始 HTML
 </div>
 
-- **类型**: `boolean`
-- **描述**: 在响应中包含页面的原始 HTML 内容。启用后，响应会新增 `rawHtml` 字段。
-- **默认值**: `false`
+* **类型**: `boolean`
+* **描述**: 在响应中包含页面的原始 HTML 内容。启用后，响应会新增 `rawHtml` 字段。
+* **默认值**: `false`
 
 <div id="getting-a-screenshot-of-the-page-with-screenshot">
   ### 使用 `screenshot` 获取页面截图
 </div>
 
-- **类型**: `boolean`
-- **描述**: 在抓取的页面中包含顶部区域的截图。
-- **默认值**: `false`
+* **类型**: `boolean`
+* **描述**: 在抓取的页面中包含顶部区域的截图。
+* **默认值**: `false`
 
 <div id="waiting-for-the-page-to-load-with-waitfor">
   ### 使用 `waitFor` 等待页面加载
 </div>
 
-- **类型**: `integer`
-- **描述**: 仅在万不得已时使用。在获取内容之前，等待指定的毫秒数以确保页面加载完成。
-- **默认值**: `0`
+* **类型**: `integer`
+* **描述**: 仅在万不得已时使用。在获取内容之前，等待指定的毫秒数以确保页面加载完成。
+* **默认值**: `0`
 
 <div id="example-usage">
   ### 使用示例
@@ -163,7 +169,7 @@ curl -X POST https://api.firecrawl.dev/v0/scrape \
 
 * 仅返回页面的主要内容。
 * 在响应的 `html` 字段中包含原始 HTML 内容。
-* 在获取内容前等待 5000 毫秒（5 秒），以便页面完成加载。
+* 在获取内容前等待 5000 毫秒 (5 秒) ，以便页面完成加载。
 
 对应的 API 参考文档：[Scrape Endpoint Documentation](https://docs.firecrawl.dev/api-reference/endpoint/scrape)
 
@@ -173,26 +179,31 @@ curl -X POST https://api.firecrawl.dev/v0/scrape \
 
 使用 `/scrape` 端点时，你可以通过 `extractorOptions` 参数指定用于从页面内容中**提取结构化信息**的选项。以下是可用选项：
 
-### mode
+<div id="mode">
+  ### mode
+</div>
 
-- **类型**: `string`
-- **枚举**: `["llm-extraction", "llm-extraction-from-raw-html"]`
-- **描述**: 要使用的提取模式。
+* **类型**: `string`
 
-  - `llm-extraction`: 从清理并解析后的内容中提取信息。
-  - `llm-extraction-from-raw-html`: 直接从原始 HTML 提取信息。
+* **枚举**: `["llm-extraction", "llm-extraction-from-raw-html"]`
 
-- **类型**: `string`
-- **描述**: 用于描述应从页面提取哪些信息的提示。
+* **描述**: 要使用的提取模式。
+
+  * `llm-extraction`: 从清理并解析后的内容中提取信息。
+  * `llm-extraction-from-raw-html`: 直接从原始 HTML 提取信息。
+
+* **类型**: `string`
+
+* **描述**: 用于描述应从页面提取哪些信息的提示。
 
 <div id="extractionschema">
   ### extractionSchema
 </div>
 
-- **类型**: `object`
-- **描述**: 提取数据所用的模式（schema），用于定义提取结果的数据结构。
+* **类型**: `object`
+* **描述**: 提取数据所用的模式 (schema) ，用于定义提取结果的数据结构。
 
-<div id="example-usage">
+<div id="example-usage-2">
   ### 使用示例
 </div>
 
@@ -265,7 +276,7 @@ curl -X POST https://api.firecrawl.dev/v0/scrape \
 
 你可以通过 `timeout` 参数以毫秒为单位调整抓取过程的超时时间。
 
-<div id="example-usage">
+<div id="example-usage-3">
   ### 使用示例
 </div>
 
@@ -323,52 +334,52 @@ curl -X GET https://api.firecrawl.dev/v0/crawl/status/1234-5678-9101 \
   #### `includes`
 </div>
 
-- **类型**: `array`
-- **描述**: 爬取时要包含的 URL 模式。仅会爬取与这些模式匹配的 URL。
-- **示例**: `["/blog/*", "/products/*"]`
+* **类型**: `array`
+* **描述**: 爬取时要包含的 URL 模式。仅会爬取与这些模式匹配的 URL。
+* **示例**: `["/blog/*", "/products/*"]`
 
 <div id="excludes">
   #### `excludes`
 </div>
 
-- **类型**: `array`
-- **描述**: 爬取时需排除的 URL 模式。匹配这些模式的 URL 将被跳过。
-- **示例**: `["/admin/*", "/login/*"]`
+* **类型**: `array`
+* **描述**: 爬取时需排除的 URL 模式。匹配这些模式的 URL 将被跳过。
+* **示例**: `["/admin/*", "/login/*"]`
 
 <div id="returnonlyurls">
   #### `returnOnlyUrls`
 </div>
 
-- **类型**: `boolean`
-- **描述**: 如果设为 `true`，响应将只包含 URL 列表，而非完整的文档数据。
-- **默认值**: `false`
+* **类型**: `boolean`
+* **描述**: 如果设为 `true`，响应将只包含 URL 列表，而非完整的文档数据。
+* **默认值**: `false`
 
 <div id="maxdepth">
   #### `maxDepth`
 </div>
 
-- **类型**: `integer`
-- **描述**: 相对于输入 URL 的最大爬取深度。`maxDepth` 为 0 时仅抓取输入的 URL；为 1 时抓取输入的 URL 及所有一层深的页面；为 2 时抓取输入的 URL 及所有至两层深的页面。更高的取值以此类推。
-- **示例**: `2`
+* **类型**: `integer`
+* **描述**: 相对于输入 URL 的最大爬取深度。`maxDepth` 为 0 时仅抓取输入的 URL；为 1 时抓取输入的 URL 及所有一层深的页面；为 2 时抓取输入的 URL 及所有至两层深的页面。更高的取值以此类推。
+* **示例**: `2`
 
-<div id="mode">
+<div id="mode-2">
   #### `mode`
 </div>
 
-- **类型**: `string`
-- **枚举**: `["default", "fast"]`
-- **描述**: 爬取模式。`fast` 模式在网站无 sitemap 时爬取速度可提升 4 倍，但准确性可能较低，且不建议用于高度依赖 JavaScript 渲染的网站。
-- **默认值**: `default`
+* **类型**: `string`
+* **枚举**: `["default", "fast"]`
+* **描述**: 爬取模式。`fast` 模式在网站无 sitemap 时爬取速度可提升 4 倍，但准确性可能较低，且不建议用于高度依赖 JavaScript 渲染的网站。
+* **默认值**: `default`
 
 <div id="limit">
   #### `limit`
 </div>
 
-- **类型**: `integer`
-- **描述**: 爬取的最大页面数。
-- **默认值**: `10000`
+* **类型**: `integer`
+* **描述**: 爬取的最大页面数。
+* **默认值**: `10000`
 
-<div id="example-usage">
+<div id="example-usage-4">
   ### 使用示例
 </div>
 
@@ -404,7 +415,7 @@ curl -X POST https://api.firecrawl.dev/v0/crawl \
 
 你可以结合使用 `pageOptions` 和 `crawlerOptions` 参数，自定义整个爬取行为。
 
-<div id="example-usage">
+<div id="example-usage-5">
   ### 使用示例
 </div>
 

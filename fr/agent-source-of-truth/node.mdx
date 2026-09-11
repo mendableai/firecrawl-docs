@@ -125,10 +125,10 @@ const results = await client.search("site:docs.firecrawl.dev crawl webhooks", {
   * Type : tableau de noms de catégories ou d’objets catégorie typés
   * À utiliser lorsque : vous souhaitez filtrer les résultats par catégorie.
   * Valeurs confirmées :
-    * `"github"`: résultats axés sur GitHub
+    * `"developer"`: résultats de l’index développeur
     * `"research"`: résultats de recherche et universitaires
     * `"pdf"`: résultats axés sur les PDF
-    * `{ type: "github" | "research" | "pdf" }`: forme d’objet catégorie typé
+    * `{ type: "developer" | "research" | "pdf" }`: forme d’objet catégorie typé
 
 * `options.limit`
   * Type : number
@@ -158,17 +158,19 @@ const results = await client.search("site:docs.firecrawl.dev crawl webhooks", {
   ## Scrape
 </div>
 
-### Pourquoi l’utiliser
+<div id="why-use-it-2">
+  ### Pourquoi l’utiliser
+</div>
 
 Utilisez scrape lorsque vous avez déjà une URL et souhaitez un contenu structuré dans un ou plusieurs formats.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### Méthode recommandée du SDK
 </div>
 
 `client.scrape(url, options?)` → `Promise<Document>`
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Exemple simple
 </div>
 
@@ -178,7 +180,7 @@ const doc = await client.scrape("https://docs.firecrawl.dev", {
 });
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Exemple complexe
 </div>
 
@@ -215,7 +217,7 @@ const doc = await client.scrape("https://example.com/pricing", {
 });
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### Paramètres
 </div>
 
@@ -351,17 +353,19 @@ const doc = await client.scrape("https://example.com/pricing", {
   ## Interact
 </div>
 
-### Pourquoi l’utiliser
+<div id="why-use-it-3">
+  ### Pourquoi l’utiliser
+</div>
 
 Utilisez `interact` pour contrôler, par code ou en langage naturel, la session de navigateur associée à une tâche de scraping (via `metadata.scrapeId`). Le SDK exige au moins l’un des deux paramètres `code` ou `prompt`. Pour les flux qui vont au-delà de simples ajustements rapides avant le scraping, privilégiez `interact` aux `actions` exécutées au moment du scraping.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### Méthode recommandée du SDK
 </div>
 
 `client.interact(jobId, args)` → `Promise<ScrapeExecuteResponse>`
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Exemple simple
 </div>
 
@@ -375,7 +379,7 @@ const result = await client.interact(jobId, {
 });
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Exemple complexe
 </div>
 
@@ -387,7 +391,7 @@ const result = await client.interact("<scrapeJobId>", {
 });
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### Paramètres
 </div>
 
@@ -445,17 +449,19 @@ const result = await client.interact("<scrapeJobId>", {
   ## Ask (Débogage par agent)
 </div>
 
-### Pourquoi l’utiliser
+<div id="why-use-it-4">
+  ### Pourquoi l’utiliser
+</div>
 
 Utilisez ask lorsqu’un appel à l’API Firecrawl échoue ou renvoie des résultats inattendus. L’agent d’assistance IA diagnostique le problème, propose des paramètres correctifs et peut, si besoin, valider la correction sur l’API réelle. Latence typique : 15 à 30 secondes.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-4">
   ### Méthode recommandée du SDK
 </div>
 
 Pas encore disponible dans le SDK Node.js. Utilisez `fetch` directement.
 
-<div id="simple-example">
+<div id="simple-example-4">
   ### Exemple simple
 </div>
 
@@ -475,7 +481,7 @@ console.log(result.answer);
 console.log(result.fixParameters);
 ```
 
-<div id="complex-example">
+<div id="complex-example-4">
   ### Exemple complexe
 </div>
 
@@ -533,7 +539,7 @@ if (!doc.markdown || doc.markdown.length < 100) {
 }
 ```
 
-<div id="parameters">
+<div id="parameters-4">
   ### Paramètres
 </div>
 
@@ -553,11 +559,13 @@ if (!doc.markdown || doc.markdown.length < 100) {
   ## Recherche dans la documentation
 </div>
 
-### Pourquoi l’utiliser
+<div id="why-use-it-5">
+  ### Pourquoi l’utiliser
+</div>
 
 Utilisez docs-search pour rechercher dans la documentation de Firecrawl.
 
-<div id="simple-example">
+<div id="simple-example-5">
   ### Exemple simple
 </div>
 
@@ -579,7 +587,7 @@ const result = await response.json();
 console.log(result.answer);
 ```
 
-<div id="parameters">
+<div id="parameters-5">
   ### Paramètres
 </div>
 

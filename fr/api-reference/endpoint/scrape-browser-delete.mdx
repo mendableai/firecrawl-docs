@@ -6,7 +6,7 @@ openapi: '/fr/api-reference/v2-openapi.json DELETE /scrape/{jobId}/interact'
 
 Utilisez ce point de terminaison pour arrêter la session de navigateur interactive d’une tâche de scraping. L’arrêt de la session libère les ressources du navigateur et finalise la facturation.
 
-Les crédits sont facturés en fonction de la durée de la session : **2 crédits par minute de navigateur**, au prorata de la seconde.
+Les crédits sont facturés en fonction de la durée de la session : **7 crédits par minute de navigateur** si la session a utilisé un `prompt`, ou **2 crédits par minute de navigateur** dans le cas contraire. La durée est calculée au prorata de la seconde, avec une facturation minimale d’une minute de navigateur.
 
 <div id="path-parameters">
   ## Paramètres de chemin

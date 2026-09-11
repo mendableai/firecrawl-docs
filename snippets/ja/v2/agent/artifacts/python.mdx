@@ -1,0 +1,25 @@
+```python Python
+import json
+
+from firecrawl import Firecrawl
+
+app = Firecrawl(api_key="fc-YOUR_API_KEY")
+
+trace = app.get_agent_trace("JOB_ID")
+
+for event in trace.events or []:
+    if event.type != "artifact.updated":
+        continue
+
+    kind = event.artifact.kind
+    if kind not in ("markdown", "html", "json"):
+        continue
+
+    snapshot = app.get_agent_snapshot("JOB_ID", event.artifact.snapshot_id)
+
+    # markdown、html、text の snapshot は content そのもの。
+    # json の snapshot は JSON エンコードされているのでデコードする。
+    content = json.loads(snapshot.snapshot) if kind == "json" else snapshot.snapshot
+
+    print(kind, event.artifact.path, content)
+```

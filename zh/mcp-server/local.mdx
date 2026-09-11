@@ -1,8 +1,10 @@
 ---
 title: 在本地运行 Firecrawl MCP
-description: 安装并配置本地 Firecrawl MCP 服务器。
-sidebarTitle: 本地运行
+description: 通过 stdio 或 Streamable HTTP 启动并配置开源 Firecrawl MCP 服务器。
+sidebarTitle: 在本地运行 MCP
 ---
+
+当客户端需要启动本地进程、需要使用本地 HTTP 传输，或 MCP 服务器必须连接自托管 Firecrawl API 时，请在本地运行 Firecrawl MCP。对于托管服务，请从[开始使用](/zh/mcp-server)开始。
 
 <div id="prerequisites">
   ## 前置条件
@@ -18,128 +20,108 @@ sidebarTitle: 本地运行
 node --version
 ```
 
-<div id="run-over-stdio">
-  ## 通过 stdio 运行
+<div id="start-the-server">
+  ## 启动服务器
 </div>
 
-```bash
-env FIRECRAWL_API_KEY=fc-YOUR_API_KEY npx -y firecrawl-mcp@3.23.0
-```
+<Tabs>
+  <Tab title="stdio">
+    当 MCP 客户端以本地进程方式启动 Firecrawl 时，使用 stdio：
 
-这是将 MCP 服务器作为本地进程启动时客户端默认使用的传输方式。
+    ```bash
+    env FIRECRAWL_API_KEY=fc-YOUR-API-KEY \
+      npx -y firecrawl-mcp@3.23.7
+    ```
 
-<div id="run-with-streamable-http">
-  ## 使用 Streamable HTTP 运行
+    将客户端配置为运行 `npx -y firecrawl-mcp@3.23.7`，并通过客户端的受保护环境变量或密钥机制提供 `FIRECRAWL_API_KEY`。
+  </Tab>
+
+  <Tab title="Streamable HTTP">
+    当 n8n 等客户端连接到已运行的服务器时，使用 HTTP：
+
+    ```bash
+    env HTTP_STREAMABLE_SERVER=true \
+      FIRECRAWL_API_KEY=fc-YOUR-API-KEY \
+      npx -y firecrawl-mcp@3.23.7
+    ```
+
+    将客户端连接到：
+
+    ```text
+    http://localhost:3000/mcp
+    ```
+
+    确认服务器已就绪：
+
+    ```bash
+    curl http://localhost:3000/health
+    ```
+
+    健康检查将返回 `ok`。本地路由为 `/mcp`；`/v2/mcp` 属于托管的 Firecrawl 服务。
+  </Tab>
+</Tabs>
+
+<div id="configure-the-firecrawl-api">
+  ## 配置 Firecrawl API
 </div>
 
-对于连接到已运行 MCP 服务器的 n8n 等客户端，请使用 HTTP 传输：
+| 环境变量                     | 用途                                                       |
+| ------------------------ | -------------------------------------------------------- |
+| `FIRECRAWL_API_KEY`      | 用于向 Firecrawl 云端 API 进行身份验证。只有在自托管 API 无需身份验证时，该变量才是可选的。 |
+| `FIRECRAWL_API_URL`      | 将请求发送至自托管 Firecrawl API，而不是云端 API。                       |
+| `HTTP_STREAMABLE_SERVER` | 设为 `true` 可启动本地 Streamable HTTP 传输，而非 stdio。             |
 
-```bash
-env HTTP_STREAMABLE_SERVER=true \
-  FIRECRAWL_API_KEY=fc-YOUR_API_KEY \
-  npx -y firecrawl-mcp@3.23.0
-```
+<CodeGroup>
+  ```bash 云端 API
+  export FIRECRAWL_API_KEY=fc-YOUR-API-KEY
+  npx -y firecrawl-mcp@3.23.7
+  ```
 
-将客户端连接至：
+  ```bash 自托管 API
+  export FIRECRAWL_API_URL=https://firecrawl.your-domain.com
+  export FIRECRAWL_API_KEY=your-api-key # 如果实例无需身份验证，可省略
+  npx -y firecrawl-mcp@3.23.7
+  ```
+</CodeGroup>
 
-```text
-http://localhost:3000/mcp
-```
-
-确认服务器已准备就绪：
-
-```bash
-curl http://localhost:3000/health
-```
-
-健康检查会返回 `ok`。本地路由为 `/mcp`，托管版 Firecrawl 的路由为 `/v2/mcp`。
+<Note>
+  使用 `firecrawl_parse` 直接解析本地文件时，`FIRECRAWL_API_URL` 必须指向自托管 Firecrawl API。仅连接云端 API 的本地 MCP 服务器无法通过该工具上传本地文件；[托管服务器则使用签名上传交接](/zh/mcp-server/tools#important-behavior)。
+</Note>
 
 <div id="install-globally">
   ## 全局安装
 </div>
 
+使用 `npx` 可快速完成设置。如需全局安装同一经过审核的版本：
+
 ```bash
-npm install -g firecrawl-mcp@3.23.0
+npm install -g firecrawl-mcp@3.23.7
 ```
 
 然后运行：
 
 ```bash
-env FIRECRAWL_API_KEY=fc-YOUR_API_KEY firecrawl-mcp
+env FIRECRAWL_API_KEY=fc-YOUR-API-KEY firecrawl-mcp
 ```
 
-<div id="configuration">
-  ## 配置
+<div id="troubleshooting">
+  ## 故障排除
 </div>
 
-<div id="environment-variables">
-  ### 环境变量
-</div>
+<AccordionGroup>
+  <Accordion title="客户端报错 spawn npx ENOENT">
+    安装 Node.js 22 或更高版本，确认客户端的 `PATH` 中包含 `npx`，然后彻底重启客户端。在 Windows 上，请在命令提示符中运行 `where npx`，并将客户端配置为使用返回的 `npx.cmd` 路径。
+  </Accordion>
 
-<div id="cloud-and-self-hosted-api">
-  #### 云端和自托管 API
-</div>
+  <Accordion title="HTTP 客户端无法连接">
+    确认已设置 `HTTP_STREAMABLE_SERVER=true`，然后访问 `http://localhost:3000/health`。客户端端点应使用 `http://localhost:3000/mcp`，而非托管的 `/v2/mcp` 路径。
+  </Accordion>
 
-* `FIRECRAWL_API_KEY`：你的 Firecrawl API 密钥
-  * 使用云端 API (默认) 时必填
-  * 使用带有 `FIRECRAWL_API_URL` 的自托管实例时可选
-* `FIRECRAWL_API_URL` (可选) ：用于自托管实例的自定义 API 端点
-  * 示例：`https://firecrawl.your-domain.com`
-  * 若未提供，将使用云端 API (需要 API 密钥)
+  <Accordion title="工具不可用">
+    工具是否可用取决于目标部署中启用的 Firecrawl 服务。请对照[工具](/zh/mcp-server/tools)检查连接，并查看本地进程输出中是否有注册或身份验证错误。
+  </Accordion>
 
-<div id="configuration-examples">
-  ### 配置示例
-</div>
-
-使用云端 API 时：
-
-```bash
-export FIRECRAWL_API_KEY=your-api-key
-```
-
-对于自托管的实例：
-
-```bash
-export FIRECRAWL_API_URL=https://firecrawl.your-domain.com
-export FIRECRAWL_API_KEY=your-api-key  # 如果你的实例需要鉴权
-```
-
-<div id="custom-configuration-with-claude-desktop">
-  ### 在 Claude Desktop 中进行自定义配置
-</div>
-
-将以下内容添加到你的 `claude_desktop_config.json`：
-
-```json
-{
-  "mcpServers": {
-    "mcp-server-firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "YOUR_API_KEY_HERE"
-      }
-    }
-  }
-}
-```
-
-<div id="hosted-mcp-vs-local-mcp">
-  ### 远程托管的 MCP 与本地 MCP
-</div>
-
-远程托管的 MCP 服务器针对安全的远程使用进行了优化。本地运行 MCP 服务器时可用的某些选项，在远程环境中会受到限制或不可用：
-
-* 远程托管的免密钥模式仅开放 Search、Scrape 和解析，并按 IP 限流。
-* 仅限本地的文件读取功能仅在本地运行 MCP 服务器时可用。
-* 当代理需要访问本地资源时，应通过本地或自托管的 MCP 服务器配置 Webhook 和本地文件路径。
-
-<Note>
-  使用 `firecrawl_parse` 直接解析本地文件时，需要将 `FIRECRAWL_API_URL` 指向自托管的 Firecrawl API。仅配置云端 API 密钥的本地 MCP 服务器无法通过该工具上传本地文件。
-</Note>
-
-<div id="rate-limiting">
-  ### 限流
-</div>
-
-Firecrawl 会实施限流。使用 API 密钥可提高限额，并访问完整工具集。
+  <Accordion title="服务器已被限流">
+    限流由所连接的 Firecrawl API 执行。请查看当前的[限流](/zh/rate-limits)以及自托管部署配置的限制。
+  </Accordion>
+</AccordionGroup>

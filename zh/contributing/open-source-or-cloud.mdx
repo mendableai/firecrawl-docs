@@ -1,45 +1,64 @@
 ---
-title: "开源 vs 云端"
-description: "了解 Firecrawl 开源版与云端服务的差异"
-og:title: "开源 vs 云端 | Firecrawl"
-og:description: "对比 Firecrawl 的开源版本与我们功能丰富的云端方案"
+title: "开源版还是 Firecrawl Cloud"
+sidebarTitle: "开源版与 Cloud"
+description: "在自行托管 Firecrawl 以掌控基础设施，或使用 Firecrawl Cloud 以最快方式投入生产之间做出选择。"
+og:title: "开源版还是 Firecrawl Cloud | Firecrawl"
+og:description: "在自行托管 Firecrawl 以掌控基础设施，或使用 Firecrawl Cloud 以最快方式投入生产之间做出选择。"
 ---
 
-Firecrawl 以开源形式提供，并遵循 [AGPL-3.0 许可证](https://github.com/firecrawl/firecrawl/blob/main/LICENSE)。为提供尽可能优秀的产品，我们还在 [firecrawl.dev](https://firecrawl.dev) 上提供托管云端版本，具备更多功能，并由我们负责基础设施管理。
+当您需要掌控源代码或基础设施时，请选择开源版。当您想在无需运维整套技术栈的情况下开始抓取时，请选择 Firecrawl Cloud。两种方式都提供 Firecrawl 的核心 API；区别在于由谁配置、保护和运行配套服务。
 
-<div id="feature-comparison">
-  ## 功能对比
+<Note>
+  为产品开发运行 Firecrawl 与运维自行托管部署是两项不同的
+  任务。修改 Firecrawl 代码时，请使用[贡献者环境搭建](/zh/contributing/guide)。
+  如果您想在自己掌控的基础设施上运行 API，请使用[自行托管
+  指南](/zh/contributing/self-host)。
+</Note>
+
+<div id="choose-your-firecrawl-deployment">
+  ## 选择 Firecrawl 部署方式
 </div>
 
-开源版本包含核心抓取和爬取引擎。Firecrawl Cloud 在此基础上，提供基础设施级能力、管理仪表盘和企业级功能。
-
-![Firecrawl Cloud 与开源版对比](/images/open-source-cloud.png)
-
-| 功能 | 开源版 | 云版 |
-|---------|:----------:|:-----:|
-| Scrape | ✔ | ✔ |
-| Crawl | ✔ | ✔ |
-| Map | ✔ | ✔ |
-| Search | ✔ | ✔ |
-| Batch scrape | ✔ | ✔ |
-| Extract | ✔ | ✔ |
-| JSON 模式 | ✔ | ✔ |
-| LLM 就绪 formats | ✔ | ✔ |
-| 变更跟踪 | ✔ | ✔ |
-| SDKs | ✔ | ✔ |
-| Agent | ✘ | ✔ |
-| 浏览器沙盒 | ✘ | ✔ |
-| actions | ✘ | ✔ |
-| 增强型代理 | ✘ | ✔ |
-| 代理轮换 | ✘ | ✔ |
-| 仪表盘 | ✘ | ✔ |
-| 企业级功能 | ✘ | ✔ |
-
-<div id="why-both">
-  ## 为什么要同时提供两者？
+<div id="use-open-source-when">
+  ### 适合使用开源版的情况
 </div>
 
-云端方案使我们能够持续创新，并为所有用户维护高质量、可持续的服务。来自 Firecrawl Cloud 的收入为开源项目的持续开发提供资金支持。
+* **您需要掌控源代码或基础设施。** 您可以查看代码、选择技术栈的部署位置，并接入自己的服务提供商。
+* **您已准备好自行运维。** 您的团队需要负责身份验证、TLS、持久化、监控、容量规划、升级和恢复。
+* **您可以有针对性地扩展功能。** 默认技术栈支持核心抓取；基于 LLM 的 formats、高级抓取服务和专用提取流程则需要额外配置。
 
-* **开源** — 在你自己的基础设施上运行 Firecrawl，完全掌控核心抓取引擎。参见 [本地运行](/zh/contributing/guide) 和 [自托管](/zh/contributing/self-host)。
-* **云端** — 使用托管服务即可立即开始，包含增强型代理、用量仪表盘以及企业级功能。前往 [firecrawl.dev](https://firecrawl.dev) 注册。
+<div id="use-firecrawl-cloud-when">
+  ### 以下情况适合使用 Firecrawl Cloud
+</div>
+
+* **您希望以最快、受支持的方式投入生产。** Firecrawl 负责运行基础设施和托管服务。
+* **您需要仅 Cloud 提供的产品工具集。** 代理、浏览器、托管 Dashboard、增强型代理路径和企业级控制功能均通过 Cloud 提供。
+* **您希望通过一个账户管理使用方式和获取支持。** API 密钥、额度、限制和运营支持均由托管服务统一提供。
+
+**我们的建议：**除非源代码访问权限或基础设施控制权值得额外的运维投入，否则建议从 Firecrawl Cloud 开始。如果选择自行托管，请先验证一次抓取，并仅在用例需要时添加服务。
+
+<div id="compare-the-operating-model">
+  ## 对比运营模式
+</div>
+
+| 决策项                              | 开源版                      | Firecrawl Cloud   |
+| -------------------------------- | ----------------------- | ----------------- |
+| 核心 抓取、crawl、map 和 search API | 已包含                     | 已包含并由平台管理         |
+| Fetch 和 Playwright 处理            | 包含在默认技术栈中               | 由平台管理             |
+| 基于 LLM 的提取和 formats              | 连接 OpenAI 兼容提供商或 Ollama | 提供托管的服务商接入路径      |
+| 高级反爬或专用提取服务                      | 单独运行并配置所需服务             | Cloud 产品支持时由平台管理  |
+| 代理、浏览器、交互、Dashboard 和企业级控制功能     | 默认技术栈不包含                | 是否包含取决于产品和套餐      |
+| 安全性、持久化、可用性和升级                   | 由您负责                    | 由 Firecrawl 负责    |
+| 使用方式、限制和计费                       | 您的基础设施和服务商成本            | Firecrawl 套餐和额度模型 |
+
+![Firecrawl Cloud 与开源版](/images/open-source-cloud.png)
+
+<div id="start-with-the-path-you-chose">
+  ## 从你选择的方式开始
+</div>
+
+* **自行托管 Firecrawl：**按照 [Docker Compose 自行托管指南](/zh/contributing/self-host)，从固定版本部署到完成一次已验证的抓取。
+* **修改 Firecrawl 代码：**使用[贡献者环境搭建](/zh/contributing/guide)搭建开发环境。
+* **使用 Firecrawl Cloud：**[创建账户](https://firecrawl.dev)，然后按照[快速入门](/zh/quickstart)操作。
+
+开源版让核心引擎可供审查和定制。Firecrawl Cloud 为这项工作提供资金支持，同时为构建者提供托管方案，以及更多产品和基础设施功能。

@@ -4,92 +4,43 @@ description: "Google Gemini CLI に Firecrawl の Web スクレイピングと�
 sidebarTitle: "Gemini CLI"
 ---
 
-MCP 経由で、Firecrawl の検索、スクレイピング、クロール、ブラウザツールを [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) に追加します。
+ホスト型 MCP サーバーを通じて、Firecrawl のキーレス Search、スクレイピング、Parse ツールを [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) に追加します。
 
 <div id="quick-setup">
   ## クイックセットアップ
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. APIキーを取得する
-</div>
-
-[firecrawl.dev/app](https://www.firecrawl.dev/app) でサインアップし、APIキーをコピーします。
-
-<div id="2-add-firecrawl-to-gemini-cli">
-  ### 2. Gemini CLI に Firecrawl を追加
-</div>
-
-Gemini CLI は、`~/.gemini/settings.json` (グローバル) またはプロジェクト内の `.gemini/settings.json` から MCP 設定を読み込みます。次を追加します:
+以下を `~/.gemini/settings.json` またはプロジェクトの `.gemini/settings.json` に追加します。
 
 ```json
 {
   "mcpServers": {
     "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
+      "httpUrl": "https://mcp.firecrawl.dev/v2/mcp"
     }
   }
 }
 ```
 
-`fc-YOUR-API-KEY` をお使いのFirecrawl APIキーに置き換えてください。
+Gemini CLI を再起動し、`/mcp list` を実行して、`firecrawl_search`、`firecrawl_scrape`、`firecrawl_parse` が利用可能であることを確認します。
 
-<div id="3-launch-gemini-cli">
-  ### 3. Gemini CLI を起動する
+キーレスアクセスには、同じパブリック IP を共有するユーザー間で共通の制限が適用されます。対話型クライアントから [人間向け](/ja/mcp-server/oauth) でサインインするか、ユーザー操作なしで利用する場合は [API キーを追加](/ja/mcp-server/keyless#add-an-api-key) してください。
+
+<div id="try-it">
+  ## 試してみる
 </div>
 
-```bash
-gemini
+```text
+Use Firecrawl to search the web for "Gemini context window" and summarize the sources.
 ```
 
-サーバーが起動していることを確認します：
-
-```
-/mcp list
-```
-
-`firecrawl` とそのツールが表示されるはずです。
-
-<div id="quick-demo">
-  ## クイックデモ
-</div>
-
-```
-Use firecrawl to search the web for "Gemini 2.5 context window" and summarize the top 5 results.
-```
-
-```
+```text
 Scrape https://ai.google.dev/gemini-api/docs and outline the sections.
 ```
-
-```
-Crawl https://example.com and extract the product names from /products.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## リモートホストのURL (Node.jsは不要)
-</div>
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "url": "https://mcp.firecrawl.dev/v2/mcp"
-    }
-  }
-}
-```
-
-この構成では、キーなしで利用できるFirecrawlツールセットを使用します。アカウント接続型または無人セットアップの場合は、[ホスト型MCP接続モード](/ja/developer-guides/mcp-setup-guides/oauth)に従ってください。APIキーはURLには絶対に含めず、Authorizationヘッダーまたは安全なシークレットストアに保管してください。
 
 <div id="troubleshooting">
   ## トラブルシューティング
 </div>
 
-* **ツールが表示されない** — `settings.json` を編集したら Gemini CLI を再起動してください。MCP サーバーは起動時に読み込まれます。
-* **`spawn npx ENOENT`** — Node.js 18 以降をインストールするか、リモートホストのURLを使用してください。
-* **レート制限がかかる** — [firecrawl.dev/pricing](https://www.firecrawl.dev/pricing) で Firecrawl のプランをアップグレードしてください。
+* **ツールが表示されない:** `settings.json` を編集したら Gemini CLI を再起動してください。MCP サーバーは起動時に読み込まれます。
+* **Crawl または別のツールがない:** キーレスで利用できるのは Search、スクレイピング、Parse のみです。より広範なツール群を利用するには、OAuth または API キーで接続してください。

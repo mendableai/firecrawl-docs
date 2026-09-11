@@ -26,17 +26,39 @@ import {
 } from "/snippets/shared/agent-first-onboarding.jsx";
 import GeneralFeedbackCTA from "/snippets/pt-BR/general-feedback-cta.mdx";
 
-<Note>
-  **Para agentes de IA:** Use [llms.txt](/pt-BR/llms.txt) para acessar um índice completo de toda a documentação.
-</Note>
-
-<GeneralFeedbackCTA src="docs-introduction" />
-
 <div id="get-started">
   ## Primeiros passos
 </div>
 
-<McpClientSelector />
+<Visibility for="humans">
+  <McpClientSelector variant="human" />
+</Visibility>
+
+<Visibility for="agents">
+  Conecte-se por Streamable HTTP. A URL do servidor sem chave (Busca, Scraping e Parse; sem necessidade de credenciais) é `https://mcp.firecrawl.dev/v2/mcp`.
+
+  * Codex: `codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp`
+  * Claude Code: `claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp`
+  * Cursor ou qualquer cliente com configuração JSON: `{"mcpServers": {"firecrawl": {"url": "https://mcp.firecrawl.dev/v2/mcp"}}}`
+  * OpenCode (`opencode.json`): `{"mcp": {"firecrawl": {"type": "remote", "url": "https://mcp.firecrawl.dev/v2/mcp", "enabled": true}}}`
+  * ChatGPT ou Claude.ai: use o conector nativo do Firecrawl — [ChatGPT](https://chatgpt.com/plugins?q=firecrawl) ou [Claude](https://claude.ai/directory/connectors/firecrawl).
+
+  Ambos os modos de configuração e a configuração com chave de API: [Primeiros passos do MCP](/pt-BR/mcp-server.md), [Para agentes](/pt-BR/mcp-server/keyless.md) e [Para humanos](/pt-BR/mcp-server/oauth.md).
+</Visibility>
+
+<div id="build-directly-with-the-api">
+  ### Desenvolva diretamente com a API
+</div>
+
+Faça o scraping da sua primeira página agora. Não é necessário ter uma conta nem uma chave de API para esta solicitação.
+
+<ScrapeCURL />
+
+Adicione uma [chave de API](https://www.firecrawl.dev/app/api-keys) quando precisar de limites maiores. Consulte o [SDK Python](/pt-BR/sdks/python), o [SDK de Node](/pt-BR/sdks/node) ou a [referência da API](/pt-BR/api-reference/endpoint/scrape) para integrá-la ao seu aplicativo.
+
+<div id="other-ways-to-get-started">
+  ## Outras formas de começar
+</div>
 
 <div id="install-the-firecrawl-cli">
   ### Instale a CLI do Firecrawl
@@ -50,16 +72,20 @@ npx -y firecrawl-cli@latest init --all --browser
 
 <Note>
   Reinicie o seu agente de programação após a configuração para que ele possa descobrir as novas skills. Consulte
-  [Skills + CLI](/pt-BR/sdks/cli) para o guia completo de configuração.
+  [CLI](/pt-BR/sdks/cli) para o guia completo de configuração.
 </Note>
 
 <div id="set-up-with-an-agent">
   ### Configure usando um agente
 </div>
 
-Forneça ao seu agente este prompt de configuração do Firecrawl.
+Forneça ao seu agente este prompt de configuração do Firecrawl ou veja [todas as opções de configuração do MCP](/pt-BR/mcp-server).
 
 <AgentSetupButton />
+
+<Note>
+  **Para agentes de IA:** Use [llms.txt](https://docs.firecrawl.dev/llms.txt) para obter um índice da documentação ou [llms-full.txt](https://docs.firecrawl.dev/llms-full.txt) para acessar o texto completo.
+</Note>
 
 <div id="build-and-test-directly">
   ### Crie e teste diretamente
@@ -104,6 +130,8 @@ Forneça ao seu agente este prompt de configuração do Firecrawl.
 * **Confiável**: Projetado para produção, com alta disponibilidade e resultados consistentes.
 * **Rápido**: Resultados em segundos, otimizado para alto throughput.
 * **MCP Server**: Conecte o Firecrawl a qualquer ferramenta de IA via [Model Context Protocol](/pt-BR/mcp-server).
+
+<GeneralFeedbackCTA src="docs-introduction" />
 
 ***
 
@@ -178,7 +206,7 @@ Faça o scraping de uma página e depois continue trabalhando com ela: clique em
 </div>
 
 <CardGroup cols={2}>
-  <Card title="Agent" icon="robot" href="/pt-BR/features/agent">
+  <Card title="Agente" icon="robot" href="/pt-BR/features/agent">
     Coleta autônoma de dados da web com IA
   </Card>
 
@@ -192,6 +220,10 @@ Faça o scraping de uma página e depois continue trabalhando com ela: clique em
 
   <Card title="Browser Sandbox" icon="browser" href="/pt-BR/features/browser">
     Sessões de navegador gerenciadas para fluxos de trabalho interativos
+  </Card>
+
+  <Card title="Parse" icon="file-magnifying-glass" href="/pt-BR/features/parse">
+    Transforme PDFs, DOCX, XLSX, HTML e muito mais locais em Markdown ou JSON estruturado
   </Card>
 
   <Card title="Map" icon="map" href="/pt-BR/features/map">

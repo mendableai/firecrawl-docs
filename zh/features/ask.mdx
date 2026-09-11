@@ -1,9 +1,9 @@
 ---
-title: "使用 Ask 调试 Firecrawl"
-description: "为你的 Firecrawl 集成提供面向代理的调试支持"
-og:title: "Ask | Firecrawl"
-og:description: "调试抓取问题，并通过一次 API 调用获取经过验证的修复方案。"
-sidebarTitle: "使用 Ask 调试"
+title: "使用 提问 调试 Firecrawl"
+description: "通过面向代理的支持 API 调试失败任务或任何 Firecrawl 集成问题"
+og:title: "提问 | Firecrawl"
+og:description: "调试失败的任务和抓取问题，并通过一次 API 调用获取经过验证的修复方案。"
+sidebarTitle: "使用 提问 调试"
 icon: "messages-question"
 ---
 
@@ -12,7 +12,7 @@ Firecrawl `/support/ask` 是一个以 API 形式提供的 AI 支持代理。描�
 **你可以把 `/support/ask` 看作一位随时待命的 Firecrawl 高级工程师，专门为你的代理排障。**
 
 <Info>
-  Ask API 主要面向 **AI 代理调用方** 设计。如果你正在构建使用 Firecrawl 进行抓取、爬取或数据提取的代理，建议将 `/support/ask` 接入你的错误处理流程，以便自主解决问题。
+  提问 API 主要面向 **AI 代理调用方** 设计。如果你正在构建使用 Firecrawl 进行抓取、爬取或数据提取的代理，建议将 `/support/ask` 接入你的错误处理流程，以便自主解决问题。
 </Info>
 
 <div id="two-endpoints">
@@ -53,6 +53,73 @@ curl -X POST https://api.firecrawl.dev/v2/support/docs-search \
     "question": "how do I set up webhook signature verification?"
   }'
 ```
+
+<div id="debug-a-failed-job">
+  ## 调试失败的任务
+</div>
+
+任何 Firecrawl 任务——抓取、爬取、批量抓取、搜索、映射或提取——都可以通过 `/support/ask` 进行调试。请用自然语言描述故障，并在有任务 ID 时提供该 ID；代理会在回答前获取该任务的日志和您的账户状态。
+
+```bash
+curl -X POST https://api.firecrawl.dev/v2/support/ask \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "debug failed job 0f8c9a1b-4e2d-47a1-9c3f-1b2d3e4f5a6b — crawl of https://example.com failed after 12 pages",
+    "rationale": "user needs the full docs site indexed before their demo"
+  }'
+```
+
+请尽可能提供以下信息——每一项都有助于缩小诊断范围：
+
+| 详细信息        | 用途                                      |
+| ----------- | --------------------------------------- |
+| 任务 ID       | 让代理直接读取该任务的日志、状态和各页面结果                  |
+| 目标 URL      | 有助于发现网站特有的阻碍因素，例如机器人防护、JS 渲染或 robots 规则 |
+| 错误消息或状态码    | 可区分限流和额度耗尽与抓取层面的失败                      |
+| 您预期的结果      | 可区分彻底失败与“成功”但缺少内容的任务                    |
+| `rationale` | 告诉代理最终用户想要达成什么，以便优先处理相关证据               |
+
+<div id="what-ask-checks-for-common-failures">
+  ### 提问会排查哪些常见故障
+</div>
+
+| 症状                       | 代理会排查的内容                                                                     |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| 任务状态为 `failed`           | 任务日志、上游 HTTP 状态、代理和重试记录                                                      |
+| 爬取 返回的页面数少于预期         | `limit`、`maxDiscoveryDepth`、`includePaths`/`excludePaths`、站点地图覆盖情况、robots 规则 |
+| markdown 为空或被截断          | 客户端渲染、`waitFor` 时机、必需的 `actions`、`onlyMainContent` 裁剪                        |
+| `401` / `402` / `429` 响应 | API 密钥的有效性和限制、剩余额度、套餐限流                                                      |
+| 任务卡住或超时                  | 队列状态、页面级超时、您当前套餐的任务并发数                                                       |
+| Webhook 从未触发             | 交付尝试、端点响应、签名验证失败                                                             |
+
+没有任务 ID？在[活动日志](https://www.firecrawl.dev/app/logs)中将鼠标悬停在某行的 URL 上，然后点击 **复制 ID**，或使用启动任务时返回的 `id`。
+
+<div id="debug-from-activity-logs">
+  ### 通过活动日志调试
+</div>
+
+如果您不想自行编写调用，Dashboard 可以为您运行同一个代理。打开[活动日志](https://www.firecrawl.dev/app/logs)，在失败行的 **Actions** 列中找到闪光按钮——其工具提示为 **调试问题**。该按钮仅会显示在失败的任务，或子请求出错但任务已完成的任务上；成功或进行中的任务不会显示该按钮。
+
+点击后会立即开始诊断，无需编写 prompt。Firecrawl 会将该任务的 URL、端点、status、错误消息和抓取 参数发送给 `/support/ask` 背后的同一个代理，然后由该代理读取任务日志和您的账户状态。绝不会包含已抓取页面的内容。
+
+打开的面板会显示：
+
+| 元素         | 说明                                      |
+| ---------- | --------------------------------------- |
+| 诊断         | 代理对问题原因及应如何修改的说明                        |
+| 置信度徽章      | 高、中或低——表示代理对答案的把握程度                     |
+| **已验证** 徽章 | 代理测试了其建议的修复方案且测试通过时显示                   |
+| 建议的修复方案    | 以 JSON 形式提供修正后的参数，并附带复制按钮——可将其粘贴到下一次调用中 |
+| 来源         | 答案引用的文档页面链接                             |
+
+如果诊断未能解决问题，点击面板底部的 **打开支持工单** 即可创建工单，并自动附上代理的分析结果，无需您再次说明失败情况。
+
+<Info>
+  Dashboard 调试限制为每个团队每小时最多运行 30 次，且您的团队至少需要一个 API 密钥——该代理使用您自己的密钥运行，因此只会访问您的任务。
+</Info>
+
+获得诊断结果后，应用返回的 `fixParameters` 并重试——请参见下方的[代理重试模式](#agent-retry-pattern)。
 
 <div id="how-it-works">
   ## 工作原理

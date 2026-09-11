@@ -1,19 +1,12 @@
 ```bash cURL
-# Using Spark 1 Mini (default)
+# Spark 2 est la valeur par défaut — toutes les exécutions passent par ce modèle
 curl -X POST "https://api.firecrawl.dev/v2/agent" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "Find the pricing of Firecrawl",
-    "model": "spark-1-mini"
+    "model": "spark-2"
   }'
 
-# Using Spark 1 Pro for complex tasks
-curl -X POST "https://api.firecrawl.dev/v2/agent" \
-  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "Comparer toutes les fonctionnalités entreprise et les tarifs de Firecrawl, Apify et ScrapingBee",
-    "model": "spark-1-pro"
-  }'
+# Obsolète : les noms de modèle Spark 1 sont toujours acceptés, mais redirigent vers "spark-2".
 ```

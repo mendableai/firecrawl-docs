@@ -3,4 +3,8 @@ title: 'Get Crawl Errors'
 openapi: '/api-reference/v2-openapi.json GET /crawl/{id}/errors'
 ---
 
+<Info>
+  This endpoint records pages that did not make it into the crawl's `data` array: `errors` for scrapes Firecrawl failed, and `robotsBlocked` for URLs blocked by robots.txt. Failed pages appear nowhere in the [crawl status](/api-reference/endpoint/crawl-get) counters, so this is the only place to find them — but the list is not guaranteed complete, because some internal failure classes are filtered out before the response is built. See [Execution and result accounting](/features/crawl#execution-and-result-accounting) for how to read it alongside the status counters.
+</Info>
+
 > Are you an AI agent that needs a Firecrawl API key? See [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) for automated onboarding instructions.

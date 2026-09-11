@@ -3,62 +3,62 @@ title: "Pesquisa e scraping na web com MCP no Claude Code"
 description: "Adicione scraping e busca na web ao Claude Code em 2 minutos"
 ---
 
-Adicione recursos de scraping e busca na web ao Claude Code com o Firecrawl MCP.
+Conecte o Claude Code ao Firecrawl pelo servidor MCP hospedado. OAuth é a configuração interativa recomendada porque a chave nunca é inserida na linha de comando, nos arquivos do projeto ou na conversa.
 
 <div id="quick-setup">
   ## Configuração rápida
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. Obtenha sua chave de API
+<div id="1-add-firecrawl">
+  ### 1. Adicione o Firecrawl
 </div>
 
-Inscreva-se em [firecrawl.dev/app](https://firecrawl.dev/app) e copie sua chave de API.
-
-<div id="2-add-firecrawl-mcp-server">
-  ### 2. Adicione o Firecrawl MCP Server
-</div>
-
-**Opção A: URL hospedada remotamente (recomendada)**
+Execute:
 
 ```bash
 claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp-oauth
 ```
 
-Depois de adicionar o servidor, use `/mcp` no Claude Code para concluir o fluxo de login do Firecrawl.
+`https://mcp.firecrawl.dev/v2/mcp-oauth` é um valor de configuração do cliente, não uma página para ser aberta diretamente no navegador.
 
-**Opção B: Local (npx)**
-
-```bash
-claude mcp add firecrawl -e FIRECRAWL_API_KEY=your-api-key -- npx -y firecrawl-mcp@3.23.0
-```
-
-Substitua `your-api-key` pela sua chave de API real do Firecrawl.
-
-Pronto! Agora você pode fazer busca e scraping na web pelo Claude Code.
-
-<div id="quick-demo">
-  ## Demonstração rápida
+<div id="2-sign-in-and-verify">
+  ### 2. Faça login e verifique
 </div>
 
-Experimente isto no Claude Code:
+Digite `/mcp` no Claude Code, escolha `firecrawl` e conclua o login no navegador. Inicie uma nova sessão do Claude Code se tiver alterado uma conexão existente do Firecrawl.
 
-**Faça uma busca na web:**
+Confirme que há apenas um servidor `firecrawl` ativo e tente:
 
-```
-Search for the latest Next.js 15 features
-```
-
-**Faça o scraping de uma página:**
-
-```
-Scrape firecrawl.dev and tell me what it does
+```text
+Busque as notas da versão mais recente do Next.js e resuma as fontes.
 ```
 
-**Obtenha a documentação:**
-
-```
-Find and scrape the Stripe API docs for payment intents
+```text
+Faça o scraping de https://firecrawl.dev e explique o que ele faz.
 ```
 
-Claude usará automaticamente as ferramentas de busca e scraping do Firecrawl para obter as informações.
+<div id="other-connection-modes">
+  ## Outros modos de conexão
+</div>
+
+* [Experimente o MCP sem chave](/pt-BR/mcp-server/keyless#try-keyless) para busca, scraping e parse sem conta ou chave.
+* [Configure uma chave de API](/pt-BR/mcp-server/keyless#add-an-api-key) para uso não assistido. Mantenha o segredo fora do chat do agente e use uma referência a variável de ambiente.
+* [Execute o MCP localmente](/pt-BR/mcp-server/local) somente se precisar de um processo local ou de uma API do Firecrawl auto-hospedada. O pacote local requer o Node.js 22 ou versão posterior.
+
+<div id="optional-literature-research">
+  ## Opcional: pesquisa bibliográfica
+</div>
+
+Para trabalhos com artigos científicos e literatura, a skill research-index direciona essas queries para as ferramentas `firecrawl_research_*` e o [Research Index](/pt-BR/features/research), em vez da busca geral na web:
+
+```bash
+npx skills add firecrawl/skills@firecrawl-research-index
+```
+
+<div id="troubleshooting">
+  ## Solução de problemas
+</div>
+
+* **Já existe um servidor Firecrawl:** execute `claude mcp remove firecrawl`, adicione a conexão desejada uma única vez e inicie uma nova sessão.
+* **O navegador não abre:** digite `/mcp`, selecione `firecrawl` e inicie a autenticação no cliente.
+* **O servidor exibe `401`:** faça login novamente por meio de `/mcp`; não cole uma chave de API na conversa nem na URL de OAuth.

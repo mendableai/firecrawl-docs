@@ -34,16 +34,18 @@ Firecrawl fournit un serveur MCP qui s’intègre de façon transparente à l’
 
 <CodeGroup>
   ```python Remote MCP Server
+  import os
+
   from google.adk.agents.llm_agent import Agent
   from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
   from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
 
-  FIRECRAWL_API_KEY = "YOUR-API-KEY"
+  FIRECRAWL_API_KEY = os.environ["FIRECRAWL_API_KEY"]
 
   root_agent = Agent(
       model="gemini-2.5-pro",
       name="firecrawl_agent",
-      description='Un assistant pratique pour l’extraction de sites web avec Firecrawl',
+      description='Un assistant pratique pour le scraping de sites web avec Firecrawl',
       instruction='Aidez l’utilisateur à rechercher du contenu sur des sites web',
       tools=[
           MCPToolset(
@@ -57,6 +59,8 @@ Firecrawl fournit un serveur MCP qui s’intègre de façon transparente à l’
   ```
 
   ```python Local MCP Server
+  import os
+
   from google.adk.agents.llm_agent import Agent
   from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
   from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
@@ -65,7 +69,7 @@ Firecrawl fournit un serveur MCP qui s’intègre de façon transparente à l’
   root_agent = Agent(
       model='gemini-2.5-pro',
       name='firecrawl_agent',
-      description='Un assistant pratique pour l’extraction de sites web avec Firecrawl',
+      description='Un assistant pratique pour le scraping de sites web avec Firecrawl',
       instruction='Aidez l’utilisateur à rechercher du contenu sur des sites web',
       tools=[
           MCPToolset(
@@ -74,10 +78,10 @@ Firecrawl fournit un serveur MCP qui s’intègre de façon transparente à l’
                       command='npx',
                       args=[
                           "-y",
-                          "firecrawl-mcp",
+                          "firecrawl-mcp@3.23.7",
                       ],
                       env={
-                          "FIRECRAWL_API_KEY": "YOUR-API-KEY",
+                          "FIRECRAWL_API_KEY": os.environ["FIRECRAWL_API_KEY"],
                       }
                   ),
                   timeout=30,
@@ -87,6 +91,8 @@ Firecrawl fournit un serveur MCP qui s’intègre de façon transparente à l’
   )
   ```
 </CodeGroup>
+
+Définissez `FIRECRAWL_API_KEY` dans l’environnement qui lance ADK. Ne placez pas sa valeur dans les prompts de l’agent, le dépôt de code source ou l’URL MCP. Le package MCP local nécessite Node.js 22 ou une version ultérieure.
 
 <div id="available-tools">
   ## Outils disponibles
@@ -99,9 +105,8 @@ Firecrawl fournit un serveur MCP qui s’intègre de façon transparente à l’
 | Outil de recherche       | `firecrawl_search`             | Rechercher sur le web et, en option, extraire le contenu des résultats de recherche |
 | Outil de crawl           | `firecrawl_crawl`              | Démarrer un crawl asynchrone avec des options avancées                              |
 | Vérifier l’état du crawl | `firecrawl_check_crawl_status` | Vérifier l’état d’une tâche de crawl                                                |
-| Outil d’extraction       | `firecrawl_extract`            | Extraire des informations structurées à partir de pages web à l’aide de modèles LLM |
 
-<div id="setup">
+<div id="configuration">
   ## Configuration
 </div>
 

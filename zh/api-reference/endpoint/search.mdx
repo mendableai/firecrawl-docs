@@ -5,7 +5,7 @@ openapi: '/zh/api-reference/v2-openapi.json POST /search'
 
 `search` 端点将网页搜索与 Firecrawl 的抓取能力相结合，为任意查询返回完整页面内容。
 
-在请求中包含 `scrapeOptions`，并设置 `formats: [{"type": "markdown"}]`，即可为每条搜索结果获取完整的 markdown 内容；否则默认只返回结果（url、title、description）。你也可以使用其他 formats，例如 `{"type": "summary"}` 来获取精简内容。
+在请求中包含 `scrapeOptions`，并设置 `formats: [{"type": "markdown"}]`，即可为每条搜索结果获取完整的 markdown 内容；否则默认只返回结果 (url、title、description) 。你也可以使用其他 formats，例如 `{"type": "summary"}` 来获取精简内容。
 
 <div id="supported-query-operators">
   ## 支持的查询运算符
@@ -15,7 +15,7 @@ openapi: '/zh/api-reference/v2-openapi.json POST /search'
 
 | 运算符 | 功能 | 示例 |
 ---|-|-|
-| `""` | 精确（非模糊）匹配一段文本 | `"Firecrawl"`
+| `""` | 精确 (非模糊) 匹配一段文本 | `"Firecrawl"`
 | `-` | 排除特定关键词或对其他运算符取反 | `-bad`, `-site:firecrawl.dev`
 | `site:` | 仅返回来自指定网站的结果 | `site:firecrawl.dev`
 | `filetype:` | 仅返回具有特定文件扩展名的结果 | `filetype:pdf`, `-filetype:pdf`
@@ -31,7 +31,7 @@ openapi: '/zh/api-reference/v2-openapi.json POST /search'
   ## location 参数
 </div>
 
-使用 `location` 参数获取按地理位置定向的搜索结果。格式："string"。示例："Germany"、"San Francisco,California,United States"。
+使用 `location` 参数获取按地理位置定向的搜索结果。格式：&quot;string&quot;。示例：&quot;Germany&quot;、&quot;San Francisco,California,United States&quot;。
 
 查看[支持的位置完整列表](https://firecrawl.dev/search_locations.json)，了解所有可用的国家和语言。
 
@@ -51,14 +51,20 @@ openapi: '/zh/api-reference/v2-openapi.json POST /search'
 ```
 
 <div id="categories-parameter">
-  ## `categories` 参数
+  ## Categories 参数
 </div>
 
-使用 `categories` 参数按特定类别过滤搜索结果：
+使用 `categories` 参数按特定分类筛选搜索结果：
 
-- **`github`**: 在 GitHub 仓库、代码、问题和文档中搜索
-- **`research`**: 搜索学术和研究类网站（arXiv、Nature、IEEE、PubMed 等）
-- **`pdf`**: 搜索 PDF
+* **`research`**：将网页搜索限定在学术与科研类网站 (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov 等) 。自 2026-11-16 起将改为搜索[研究索引](/zh/features/research)并返回论文记录，请参见下方警告
+* **`pdf`**：搜索 PDF
+* **`developer`**：搜索[开发者索引](/zh/features/developer)——公开代码仓库中的 issue、已合并的 pull request 和 README，以及经过精选的文档站点
+
+<Warning>
+  **`research` 分类将自 2026-11-16 起变更。** 它将搜索[研究索引](/zh/features/research) (PubMed、bioRxiv、medRxiv、arXiv) ，而不再把网页结果限定在 14 个学术网站。结果将从 `data.web` 移至 `data.research`，并以论文记录的形式返回：`paperId`、`primaryId`、`ids`、`title`、`abstract`、`score`。在此之前，凡使用该分类的响应都会附带一个 `warnings` 条目。
+
+  如果你需要论文记录，请在该日期前更新解析逻辑，或现在就改用 [`GET /search/research/papers`](/zh/api-reference/endpoint/research-search-papers)。如果你需要来自学术网站的网页，请改用 [`includeDomains`](#domain-filters)。
+</Warning>
 
 <div id="example-usage">
   ### 使用示例
@@ -67,7 +73,7 @@ openapi: '/zh/api-reference/v2-openapi.json POST /search'
 ```json
 {
   "query": "机器学习",
-  "categories": ["github", "research"],
+  "categories": ["research", "pdf"],
   "limit": 10
 }
 ```
@@ -116,22 +122,21 @@ openapi: '/zh/api-reference/v2-openapi.json POST /search'
   "data": {
     "web": [
       {
-        "url": "https://github.com/example/ml-project",
-        "title": "Machine Learning Project",
-        "description": "Implementation of ML algorithms",
-        "category": "github"
-      },
-      {
         "url": "https://arxiv.org/abs/2024.12345",
         "title": "ML Research Paper",
         "description": "Latest advances in machine learning",
         "category": "research"
+      },
+      {
+        "url": "https://example.com/ml-survey.pdf",
+        "title": "ML Survey",
+        "description": "A survey of machine learning methods",
+        "category": "pdf"
       }
     ]
   }
 }
 ```
-
 
 <div id="time-based-search">
   ## 基于时间的搜索

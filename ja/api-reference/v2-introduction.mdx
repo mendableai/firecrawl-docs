@@ -14,15 +14,27 @@ Firecrawl API を使用すると、プログラムから Web データにアク�
 </div>
 
 <CardGroup cols={3}>
+  <Card title="Search" icon="magnifying-glass" href="/ja/api-reference/endpoint/search" color="FF713C">
+    ウェブを検索し、任意のフォーマットでページ全体のコンテンツを取得します。
+  </Card>
+
   <Card title="Scrape" icon="markdown" href="/ja/api-reference/endpoint/scrape" color="FF713C">
     任意のウェブページから、markdown または json のフォーマットでコンテンツを抽出します。
   </Card>
 
-  <Card title="Parse" icon="markdown" href="/ja/api-reference/endpoint/parse" color="FF713C">
+  <Card title="Interact" icon="hand-pointer" href="/ja/api-reference/endpoint/browser-create" color="FF713C">
+    Interact セッションを作成し、クリック、フォーム入力、ページ移動を行います。
+  </Card>
+
+  <Card title="解析" icon="markdown" href="/ja/api-reference/endpoint/parse" color="FF713C">
     ファイルをアップロードし、markdown またはその他のフォーマットに変換します。
   </Card>
 
-  <Card title="Crawl" icon="spider" href="/ja/api-reference/endpoint/crawl-post" color="FF713C">
+  <Card title="Monitor" icon="radar" href="/ja/api-reference/endpoint/monitor-create" color="FF713C">
+    定期チェックを設定し、コンテンツの変更時に通知を受け取ります。
+  </Card>
+
+  <Card title="クロール" icon="spider" href="/ja/api-reference/endpoint/crawl-post" color="FF713C">
     ウェブサイト全体をクロールし、すべてのページのコンテンツを取得します。
   </Card>
 
@@ -30,22 +42,8 @@ Firecrawl API を使用すると、プログラムから Web データにアク�
     任意のウェブサイトから URL の一覧を迅速かつ高い信頼性で取得します。
   </Card>
 
-  <Card title="Search" icon="magnifying-glass" href="/ja/api-reference/endpoint/search" color="FF713C">
-    ウェブを検索し、任意のフォーマットでページ全体のコンテンツを取得します。
-  </Card>
-</CardGroup>
-
-<div id="agentic-features">
-  ## エージェント機能
-</div>
-
-<CardGroup cols={3}>
   <Card title="Agent" icon="robot" href="/ja/api-reference/endpoint/agent" color="FF713C">
-    AI による自律的な Web データ収集。
-  </Card>
-
-  <Card title="Browser" icon="browser" href="/ja/api-reference/endpoint/browser-create" color="FF713C">
-    インタラクティブな Web タスク向けにブラウザセッションを作成・制御します。
+    AI を活用した自律型ウェブデータ収集。
   </Card>
 </CardGroup>
 

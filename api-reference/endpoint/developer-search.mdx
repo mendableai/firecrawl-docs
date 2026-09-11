@@ -1,0 +1,91 @@
+---
+title: "Search the Developer Index"
+openapi: "/api-reference/v2-openapi.json GET /search/developer"
+---
+
+Search issues, merged pull requests, and READMEs from public code repositories, alongside curated documentation sites. Results are ranked and carry the matched passages in markdown.
+
+`POST` is available on the same path when you want to pass array filters as JSON.
+
+Repeatable filters accept either form on `GET`: a repeated query parameter such as `types=issue&types=pull_request`, or one comma separated value such as `types=issue,pull_request`.
+
+## How `repos` and `sources` scope a search
+
+The index has two halves, and these two filters scope them independently:
+
+- `repos` scopes the repository half, meaning the `issue`, `pull_request`, and `readme` types
+- `sources` scopes the documentation half, meaning the `doc` type
+- Passing both combines the two halves rather than intersecting them, so you get matching results from either
+
+Because each filter only applies to one half, a filter that cannot match any requested type is rejected rather than silently returning nothing:
+
+- `repos` with no repository type in `types` returns `400`, reporting that `repos` cannot match any requested type and that you should add repository types or drop `repos`
+- `sources` with no `doc` in `types` returns `400` with `sources cannot match any requested type; add doc or drop sources`
+
+## How the repository filters scope a search
+
+The seven repository filters — `language` (such as `Rust`), `topic` (such as `async`), `license` (such as `MIT`), `min_stars`, `max_stars`, `archived`, and `fork` — describe a code repository. Most documentation pages in the index come from a crawled website with no repository behind it, and no repository fact can admit or exclude such a page.
+
+A request that sends one of these filters and no `sources` scope therefore gets no `doc` results. Its response holds repository evidence only: the `issue`, `pull_request`, and `readme` types, because the documentation half of the index never ran. This is the design, not an index fault.
+
+To keep documentation results, drop the repository filters. You can also scope the documentation half with `sources`, then read the `sources` echo in the response to confirm the id is indexed.
+
+<CodeGroup>
+
+```bash cURL
+# No API key needed to get started; add -H "Authorization: Bearer $FIRECRAWL_API_KEY" for higher rate limits:
+curl -s "https://api.firecrawl.dev/v2/search/developer?query=how%20do%20I%20configure%20retries&k=10&language=Rust&license=MIT"
+```
+
+```bash cURL (POST)
+curl -X POST https://api.firecrawl.dev/v2/search/developer \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "how do I configure retries",
+    "k": 10,
+    "types": ["issue", "pull_request"],
+    "language": "Rust",
+    "license": "MIT"
+  }'
+```
+
+</CodeGroup>
+
+## Which values `sources` accepts
+
+`sources` is not a fixed enum. It takes documentation source ids, each a nonempty string of at most 512 characters, and at most 20 per request. The ids reflect the documentation sites in the index, and the set grows over time.
+
+To confirm an id resolves, pass it and read the `sources` array the response adds. It appears only when you sent `sources`, and reports each id exactly as you requested it along with whether it is indexed:
+
+```json
+{
+  "success": true,
+  "results": [],
+  "sources": [
+    { "source": "some-docs-site", "indexed": true },
+    { "source": "unknown-docs-site", "indexed": false }
+  ]
+}
+```
+
+`indexed: true` means the source has a published generation, so documentation evidence from it may appear. `indexed: false` means nothing from that id can match, which distinguishes an id that is not in the index from a query that simply found nothing.
+
+`repos` echoes back the same way, as a `repos` array reporting `indexed` plus a per type breakdown under `types`:
+
+```json
+{
+  "success": true,
+  "results": [],
+  "repos": [
+    {
+      "repo": "firecrawl/firecrawl",
+      "indexed": true,
+      "types": { "issue": true, "pullRequest": true, "readme": true }
+    }
+  ]
+}
+```
+
+
+For a workflow overview, see the [Developer Index guide](/features/developer).

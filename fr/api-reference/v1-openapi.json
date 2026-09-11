@@ -272,6 +272,11 @@
           "jsonOptions": {
             "description": "Objet JSON d’options",
             "properties": {
+              "checkPromptInjection": {
+                "default": false,
+                "description": "Lorsqu’elle est activée, cette option analyse le contenu de la page récupérée afin de détecter les tentatives d’injection de prompt avant d’exécuter l’extraction. Si une injection est détectée, la requête échoue avec le statut 403 et le code d’erreur SCRAPE_PROMPT_INJECTION_DETECTED. Ajoute 4 crédits lorsque la vérification est effectuée. La valeur par défaut est false.",
+                "type": "boolean"
+              },
               "prompt": {
                 "description": "Le prompt à utiliser pour l’extraction sans schéma (optionnel)",
                 "type": "string"
@@ -328,7 +333,7 @@
             "type": "boolean"
           },
           "proxy": {
-            "description": "Spécifie le type de proxy à utiliser.\n\n - **basic**\u0000a0: Proxys pour le scraping de sites sans protection anti-bot ou avec des protections basiques. Rapide et généralement fiable.\n - **enhanced**\u0000a0: Proxys avancés pour le scraping de sites avec des solutions anti-bot sophistiquées. Plus lents, mais plus fiables sur certains sites. Coût pouvant aller jusqu’à 5 crédits par requête.\n - **auto**\u0000a0: Firecrawl réessaie automatiquement le scraping avec des proxys enhanced si le proxy basic échoue. Si le nouvel essai avec enhanced réussit, 5 crédits seront facturés pour l’opération de scraping. Si la première tentative avec basic réussit, seul le coût normal sera facturé.\n\nSi vous ne spécifiez pas de proxy, Firecrawl utilisera basic par défaut.",
+            "description": "Spécifie le type de proxy à utiliser.\n\n - **basic** : Proxys pour le scraping de sites sans protection anti-bot ou avec des protections basiques. Rapide et généralement fiable.\n - **enhanced** : Proxys avancés pour le scraping de sites avec des solutions anti-bot sophistiquées. Plus lents, mais plus fiables sur certains sites. Le coût en crédits est le même que pour basic.\n - **auto** : Firecrawl réessaie automatiquement le scraping avec des proxys enhanced si le proxy basic échoue. Les proxys avancés n’entraînent aucun supplément de crédits, donc seul le coût normal sera facturé dans les deux cas.\n\nSi vous ne spécifiez pas de proxy, Firecrawl utilisera basic par défaut.",
             "enum": [
               "basic",
               "enhanced",
@@ -3330,7 +3335,7 @@
                           "type": "string"
                         },
                         "plan_credits": {
-                          "description": "Nombre de crédits inclus dans la formule. N’inclut pas les crédits issus de coupons, les packs de crédits ni les crédits de rechargement automatique.",
+                          "description": "Nombre de crédits inclus dans la formule. N’inclut pas les crédits issus de coupons ni les crédits ajoutés selon le principe du paiement à l’utilisation.",
                           "example": 500000,
                           "type": "number"
                         },

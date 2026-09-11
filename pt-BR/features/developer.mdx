@@ -1,41 +1,98 @@
 ---
-title: "Índice para desenvolvedores (Beta)"
-description: "Pesquise issues do GitHub, pull requests mesclados, READMEs de repositórios e sites de documentação selecionados. Beta privado."
+title: "Índice para desenvolvedores"
+description: "Pesquise issues, pull requests mesclados, READMEs de repositórios e sites de documentação selecionados"
+og:title: "Índice para desenvolvedores | Firecrawl"
+og:description: "Use o índice para desenvolvedores do Firecrawl para responder a perguntas de programação com base em issues, pull requests mesclados, READMEs e documentação."
+icon: "code"
 ---
 
-<Note>
-  **Beta privado.** O índice para desenvolvedores está em fase beta. Esta página não está listada (não é vinculada pela navegação, pela página do recurso de busca nem pela página de ferramentas MCP) para poder ser compartilhada como referência enquanto o recurso está em beta. Os tipos de resultado, os sinais de classificação e os filtros ainda podem mudar.
-</Note>
-
-O Firecrawl Developer é um índice criado para agentes de programação. Ele abrange issues do GitHub, pull requests mesclados, READMEs de repositórios e sites de documentação selecionados, permitindo que um agente responda a perguntas sobre o comportamento de código, uma biblioteca ou framework, um contrato de API, uma mensagem de erro ou um bug conhecido com base em fontes primárias, em vez de páginas web genéricas.
+O Firecrawl Developer é um índice criado para agentes de programação. Ele abrange issues, pull requests mesclados e READMEs de repositórios públicos de código, além de sites de documentação selecionados, para que um agente possa responder a perguntas sobre o comportamento de código, uma biblioteca ou framework, um contrato de API, uma mensagem de erro ou um bug conhecido com base em fontes primárias, em vez de páginas web genéricas.
 
 * Encontre a issue ou o pull request em que um bug foi relatado e corrigido
-* Leia os trechos de um README ou de uma página de documentação que respondem a uma pergunta específica
+* Leia as passagens de um README ou de uma página de documentação que respondem a uma pergunta específica
 * Rastreie um contrato de API até o pull request que o alterou
 * Recupere a discussão por trás de uma mensagem de erro
 
-<div id="two-ways-in">
-  ## Duas formas de acesso
+<Note>
+  Para dar ao seu agente acesso ao Índice para desenvolvedores, recomendamos fortemente usar nossa [CLI](/pt-BR/sdks/cli) ou o [MCP](/pt-BR/mcp-server), juntamente com nossa [**skill dedicada para desenvolvedores**](https://github.com/firecrawl/cli/tree/main/skills/firecrawl-developer-index), que você pode instalar com:
+
+  ```bash
+  npx -y firecrawl-cli@latest setup developer-index
+  ```
+</Note>
+
+<div id="endpoints">
+  ## Endpoints
 </div>
 
-| Interface                                                | Use quando                                                                                                        |
-| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| A categoria `developer` em [`/search`](/pt-BR/features/search) | Você quiser resultados para desenvolvedores junto com resultados comuns da web em uma única chamada               |
-| O endpoint de busca para desenvolvedores                 | Você quiser apenas resultados ranqueados para desenvolvedores, com trechos correspondentes e os filtros de índice |
+| Tarefa                                                       | Endpoint                                                                         |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| Pesquisar no índice para desenvolvedores                     | [`GET` ou `POST /search/developer`](/pt-BR/api-reference/endpoint/developer-search)    |
+| Adicionar resultados para desenvolvedor a uma busca na web | [`POST /search`](/pt-BR/api-reference/endpoint/search) com `categories: ["developer"]` |
 
-Nesta página, `categories` é o parâmetro da solicitação e sempre recebe um array. Um único valor nele, como `developer`, é uma categoria.
-
-<div id="developer-category-on-search">
-  ## Categoria Developer em `/search`
+<div id="search-the-developer-index">
+  ## Pesquise no índice para desenvolvedores
 </div>
 
-Informe `developer` no array `categories` de `/search`. A API retorna resultados para desenvolvedores em um grupo `developer` ao lado de `web`, e ambos os SDKs expõem esse grupo como `.developer`.
+Envie uma pergunta em linguagem natural e receba resultados para desenvolvedor ranqueados, com as passagens correspondentes. Use este endpoint quando quiser apenas fontes para desenvolvedores, com filtros para tipo de resultado, repositório e fonte de documentação.
 
-`/search` aceita solicitações sem chave, portanto os exemplos abaixo são executados sem uma chave de API. Adicione uma para obter limites de taxa mais altos. Consulte [Limites de taxa](/pt-BR/rate-limits#keyless-no-api-key) para saber a cota atual sem chave.
+Uma busca para desenvolvedores custa 2 créditos por 10 resultados, arredondado para cima (1–10 resultados = 2 créditos, 11–20 = 4 créditos e assim por diante). Não é necessária uma chave de API para começar; adicione uma para obter limites de taxa mais altos.
 
 <CodeGroup>
   ```bash cURL
   # Não é necessária uma chave de API para começar; adicione -H "Authorization: Bearer $FIRECRAWL_API_KEY" para obter limites de taxa mais altos:
+  curl -s "https://api.firecrawl.dev/v2/search/developer?query=how%20do%20I%20configure%20retries&k=10"
+  ```
+
+  ```bash CLI
+  firecrawl developer "how do I configure retries" --limit 10
+  ```
+</CodeGroup>
+
+`POST` está disponível no mesmo endpoint e é a forma mais simples quando você quiser enviar filtros de array como JSON:
+
+```bash cURL
+# Não é necessária uma chave de API para começar; adicione -H "Authorization: Bearer $FIRECRAWL_API_KEY" para obter limites de taxa mais altos:
+curl -X POST https://api.firecrawl.dev/v2/search/developer \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "how do I configure retries",
+    "k": 10,
+    "types": ["issue", "pull_request"]
+  }'
+```
+
+Cada resultado contém um `id` estável, como `issue:owner/repo#123`, uma `url` e os `passages` correspondentes em markdown, preservando tabelas e blocos de código. O tipo de artefato é codificado no prefixo de `id`: `doc:`, `issue:`, `pull_request:` ou `readme:`. Muitas vezes, `title` está ausente em resultados `doc`, quando a página de origem não tem um título utilizável. Nesses casos, use a `url` em vez de presumir que o campo está presente.
+
+Quando você restringe uma busca com `sources` ou `repos`, a resposta os retorna com uma flag `indexed` para cada entrada, para que você possa diferenciar um id que não está no índice de uma consulta que simplesmente não encontrou nada. Consulte a [referência da busca para desenvolvedores](/pt-BR/api-reference/endpoint/developer-search) para ver o formato do retorno.
+
+Filtros opcionais restringem a busca:
+
+* `k` define quantos resultados são retornados, com padrão de 10, e `passages` define quantas passagens correspondentes cada resultado inclui
+* `types` seleciona quais entre `doc`, `issue`, `pull_request` e `readme` devem ser pesquisados
+* `repos` restringe a parte do índice referente ao repositório, e `sources` restringe a parte da documentação
+* `skills` definido como `only` limita a busca a arquivos de skills de agentes indexados
+* `language`, `topic`, `license`, `min_stars`, `max_stars`, `archived` e `fork` filtram atributos do repositório, como `language=Rust`, `topic=async` ou `license=MIT`
+
+Esses sete filtros descrevem um repositório de código. Portanto, enviar um deles sem restringir `sources` não retorna resultados `doc`. Leia [como os filtros de repositório restringem uma busca](/pt-BR/api-reference/endpoint/developer-search#how-the-repository-filters-scope-a-search) antes de usar um deles.
+
+Consulte a [referência da busca para desenvolvedores](/pt-BR/api-reference/endpoint/developer-search) para ver o tipo e os limites de cada filtro, como `repos` e `sources` restringem uma busca e o esquema completo da resposta.
+
+<Note>
+  Os SDKs de Python e Node acessam o índice para desenvolvedores pela categoria `developer` mostrada abaixo. Eles não expõem um método dedicado para este endpoint; portanto, chame-o por HTTP, pela [CLI](/pt-BR/sdks/cli) ou pelo [MCP](/pt-BR/mcp-server).
+</Note>
+
+<div id="add-developer-results-to-a-web-search">
+  ## Adicione resultados para desenvolvedores a uma busca na web
+</div>
+
+Passe `developer` como a única entrada no array `categories` de `/search`. A resposta retorna resultados para desenvolvedores no grupo padrão `web`, cada um marcado com `category: "developer"`. A categoria `developer` não pode ser combinada com outras categorias.
+
+Nenhuma chave de API é necessária para começar — `/search` aceita solicitações sem chave, e a categoria `developer` vem incluída, sujeita à [cota sem chave](/pt-BR/rate-limits#keyless-no-api-key). Envie uma chave para limites de taxa mais altos.
+
+<CodeGroup>
+  ```bash cURL
+  # Nenhuma chave de API é necessária para começar; adicione -H "Authorization: Bearer $FIRECRAWL_API_KEY" para limites de taxa mais altos:
   curl -X POST https://api.firecrawl.dev/v2/search \
     -H "Content-Type: application/json" \
     -d '{
@@ -45,20 +102,21 @@ Informe `developer` no array `categories` de `/search`. A API retorna resultados
     }'
   ```
 
+  ```bash CLI
+  firecrawl search "how do I configure retries" --categories developer --limit 10
+  ```
+
   ```python Python
   from firecrawl import Firecrawl
 
-  firecrawl = Firecrawl(
-    # Não é necessária uma chave de API para começar; adicione uma para obter limites de taxa mais altos:
-    # api_key="fc-YOUR-API-KEY",
-  )
+  firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
 
   result = firecrawl.search(
       "how do I configure retries",
       categories=["developer"],
       limit=10,
   )
-  for item in result.developer or []:
+  for item in result.web or []:
       print(item.url, item.title)
   ```
 
@@ -66,7 +124,7 @@ Informe `developer` no array `categories` de `/search`. A API retorna resultados
   import { Firecrawl } from "firecrawl";
 
   const firecrawl = new Firecrawl({
-    // Não é necessária uma chave de API para começar; adicione uma para obter limites de taxa mais altos:
+    // Nenhuma chave de API é necessária para começar; adicione uma para limites de taxa mais altos:
     // apiKey: "fc-YOUR-API-KEY",
   });
 
@@ -74,190 +132,16 @@ Informe `developer` no array `categories` de `/search`. A API retorna resultados
     categories: ["developer"],
     limit: 10,
   });
-  for (const item of result.developer ?? []) {
+  for (const item of result.web ?? []) {
     console.log(item.url, item.title);
   }
   ```
 </CodeGroup>
 
-Os resultados para desenvolvedores nesse grupo incluem `url`, `title` e `description`, com a mesma estrutura de um resultado da web.
+Os resultados para desenvolvedor contêm `url`, `title`, `description` e `position`, com a mesma estrutura de um resultado web, além de `category: "developer"`. Os usuários dos SDKs os acessam em `result.web`.
 
-```json
-{
-  "success": true,
-  "data": {
-    "web": [
-      {
-        "url": "https://example.com/blog/retry-strategies",
-        "title": "Retry strategies for HTTP clients",
-        "description": "An overview of backoff and retry patterns"
-      }
-    ],
-    "developer": [
-      {
-        "url": "https://github.com/firecrawl/firecrawl/issues/1234",
-        "title": "Retries are not applied to 429 responses",
-        "description": "Reported behavior and the fix that landed"
-      }
-    ]
-  }
-}
-```
+Esta interface retorna a estrutura de resultado web, não a estrutura de resultado para desenvolvedor ranqueado. Para as passagens correspondentes e os filtros de índice, use o [endpoint de busca para desenvolvedores](#search-the-developer-index).
 
 <Note>
-  **Usuários do SDK:** os resultados de desenvolvedores ficam em seu próprio grupo, não em `.web`. Acesse-os com `result.developer`.
+  O [servidor MCP](/pt-BR/mcp-server) hospedado expõe ambas as interfaces, e nenhuma delas grava nada. Consulte as [ferramentas MCP](/pt-BR/mcp-server/tools) para saber mais sobre `firecrawl_developer_search`, sobre resultados para desenvolvedor por meio de `firecrawl_search` e sobre qual das duas o conjunto de ferramentas sem chave inclui.
 </Note>
-
-<div id="developer-search-endpoint">
-  ## Endpoint de busca para desenvolvedores
-</div>
-
-| Tarefa                                 | Endpoint                                    |
-| -------------------------------------- | ------------------------------------------- |
-| Pesquisar no índice para desenvolvedores | `GET` ou `POST /v2/search/developer/search` |
-
-O caminho canônico é `/v2/search/developer/search` e aceita solicitações sem uma chave de API, permitindo testá-lo antes de se cadastrar. `/v2/developer/search` oferece a mesma busca e sempre exige uma chave. Uma busca para desenvolvedores é cobrada como uma busca.
-
-<CodeGroup>
-  ```bash cURL
-  # Não é necessário ter uma chave de API para começar; adicione -H "Authorization: Bearer $FIRECRAWL_API_KEY" para limites de taxa mais altos:
-  curl -s "https://api.firecrawl.dev/v2/search/developer/search?query=how%20do%20I%20configure%20retries&k=10"
-  ```
-
-  ```bash cURL (POST)
-  # Não é necessário ter uma chave de API para começar; adicione -H "Authorization: Bearer $FIRECRAWL_API_KEY" para limites de taxa mais altos:
-  curl -X POST https://api.firecrawl.dev/v2/search/developer/search \
-    -H "Content-Type: application/json" \
-    -d '{
-      "query": "how do I configure retries",
-      "k": 10,
-      "types": ["issue", "pull_request"]
-    }'
-  ```
-</CodeGroup>
-
-<Note>
-  Os SDKs de Python e Node acessam o índice para desenvolvedores pela categoria `developer` mostrada acima. Eles ainda não oferecem um método dedicado para esse endpoint, então, por enquanto, faça a chamada via HTTP.
-</Note>
-
-<div id="filters">
-  ### Filtros
-</div>
-
-Todos os filtros são opcionais.
-
-| Filtro      | Significado                                                                                        |
-| ----------- | -------------------------------------------------------------------------------------------------- |
-| `k`         | Número de resultados ranqueados a retornar. O padrão é 20, com máximo de 100                       |
-| `types`     | Tipos de resultado a buscar: `doc`, `issue`, `pull_request` ou `readme`. O padrão inclui os quatro |
-| `repos`     | Slugs dos repositórios aos quais restringir a busca, como `firecrawl/firecrawl`                    |
-| `sources`   | IDs das fontes de documentação às quais restringir a busca, no máximo 20. Veja abaixo              |
-| `passages`  | Trechos correspondentes a retornar por resultado. O padrão é 1, com máximo de 5                    |
-| `language`  | Linguagem do repositório                                                                           |
-| `topic`     | Tópico do repositório                                                                              |
-| `license`   | Licença do repositório                                                                             |
-| `min_stars` | Limite inferior de estrelas do repositório                                                         |
-| `max_stars` | Limite superior de estrelas do repositório                                                         |
-| `archived`  | Incluir ou excluir repositórios arquivados                                                         |
-| `fork`      | Incluir ou excluir forks                                                                           |
-
-Filtros repetíveis aceitam qualquer uma das formas em `GET`: um parâmetro de query repetido, como `types=issue&types=pull_request`, ou um único valor separado por vírgulas, como `types=issue,pull_request`. Em `POST`, passe um array no corpo JSON.
-
-<div id="how-repos-and-sources-scope-a-search">
-  ### Como `repos` e `sources` restringem uma busca
-</div>
-
-O índice tem duas partes, e esses dois filtros restringem cada uma delas de forma independente:
-
-* `repos` restringe a parte do GitHub, ou seja, os tipos `issue`, `pull_request` e `readme`
-* `sources` restringe a parte da documentação, ou seja, o tipo `doc`
-* Informar ambos combina as duas partes, em vez de cruzá-las, para que você receba resultados correspondentes de qualquer uma delas
-
-Como cada filtro se aplica apenas a uma das partes, um filtro que não pode corresponder a nenhum tipo solicitado é rejeitado, em vez de não retornar nada silenciosamente:
-
-* `repos` sem nenhum tipo do GitHub em `types` retorna `400` com `repos cannot match any requested type; add github types or drop repos`
-* `sources` sem `doc` em `types` retorna `400` com `sources cannot match any requested type; add doc or drop sources`
-
-<div id="which-values-sources-accepts">
-  ### Quais valores `sources` aceita
-</div>
-
-`sources` não é uma enumeração fixa. Aceita IDs de fontes de documentação, cada um uma string não vazia de no máximo 512 bytes, com no máximo 20 por solicitação. Os IDs disponíveis dependem de quais sites de documentação estão atualmente incluídos no índice, portanto o conjunto muda à medida que novos sites são adicionados.
-
-Para confirmar que um ID é reconhecido, informe-o e consulte o array `sources` adicionado à resposta. Ele só aparece quando você envia `sources` e informa cada ID exatamente como foi solicitado, além de indicar se está indexado:
-
-```json
-{
-  "success": true,
-  "results": [],
-  "sources": [
-    { "source": "some-docs-site", "indexed": true },
-    { "source": "not-enrolled", "indexed": false }
-  ]
-}
-```
-
-`indexed: true` significa que a fonte tem uma geração publicada; portanto, evidências dessa documentação podem aparecer. `indexed: false` significa que nada desse id pode corresponder, o que diferencia uma fonte não cadastrada de uma query que simplesmente não encontrou nada.
-
-`repos` é retornado da mesma forma, como um array `repos` que informa `indexed` e uma divisão por tipo entre `issue`, `pullRequest` e `readme`.
-
-<div id="response">
-  ### Resposta
-</div>
-
-```json
-{
-  "success": true,
-  "results": [
-    {
-      "id": "issue:firecrawl/firecrawl#1234",
-      "type": "issue",
-      "url": "https://github.com/firecrawl/firecrawl/issues/1234",
-      "title": "Retries are not applied to 429 responses",
-      "passages": [
-        {
-          "text": "The client treats 429 as a terminal status, so the backoff never runs."
-        }
-      ]
-    }
-  ],
-  "coverage": {
-    "doc": "ok",
-    "issue": "ok",
-    "pull_request": "ok",
-    "readme": "ok"
-  },
-  "reranked": true
-}
-```
-
-* `id` é um ID de resultado estável, como `issue:owner/repo#123`
-* `type` pode ser `doc`, `issue`, `pull_request` ou `readme`
-* `passages` contém os trechos correspondentes em markdown, preservando tabelas e blocos de código
-* `coverage` informa a integridade do índice para cada tipo de resultado: `ok`, `degraded`, `unavailable` ou `skipped`
-* `reranked` informa se a lista ranqueada passou pela etapa de reranqueamento
-
-Verifique `coverage` quando um tipo de resultado esperado estiver ausente. Um status `degraded` ou `unavailable` indica que a lacuna se deve ao índice, e não à query.
-
-<div id="use-it-from-mcp">
-  ## Use pelo MCP
-</div>
-
-O [servidor MCP](/pt-BR/mcp-server) expõe ambas as interfaces. Nenhuma delas realiza gravações.
-
-| Ferramenta                                         | Finalidade                                                             |
-| -------------------------------------------------- | ---------------------------------------------------------------------- |
-| `firecrawl_search` com `categories: ["developer"]` | Resultados para desenvolvedores junto com resultados da web            |
-| `firecrawl_developer_search`                       | Resultados para desenvolvedores ranqueados com trechos correspondentes |
-
-```json
-{
-  "name": "firecrawl_developer_search",
-  "arguments": {
-    "query": "how do I configure retries",
-    "k": 10
-  }
-}
-```
-
-`firecrawl_developer_search` aceita apenas `query` e um `k` opcional e retorna cada resultado como um bloco Markdown com seu ID, tipo, URL, título e trechos correspondentes. Use o endpoint diretamente quando precisar filtrar por repositório e tipo de resultado.

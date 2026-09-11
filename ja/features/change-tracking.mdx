@@ -14,6 +14,8 @@ Change Tracking (変更追跡) は、ページの現在のコンテンツを最�
 * 2 つの diff モード: 行単位の変更用 `git-diff`、フィールド単位の比較用 `json`
 * チームごとにスコープされ、必要に応じて渡したタグごとにもスコープ可能
 
+変更追跡は、スクレイピングごとの差分を扱うプリミティブです。Firecrawl にスケジュールでチェックを実行させ、変更があったときに webhook、メール、Slack で通知してほしい場合は、自分でタイマーを組んで `/scrape` を呼び出すのではなく、[モニタリング](/ja/features/monitoring) を使ってください。
+
 <div id="how-it-works">
   ## 仕組み
 </div>
@@ -166,7 +168,7 @@ Change Tracking (変更追跡) は、ページの現在のコンテンツを最�
   ```
 </CodeGroup>
 
-<div id="response">
+<div id="response-2">
   ### レスポンス
 </div>
 
@@ -201,7 +203,7 @@ Change Tracking (変更追跡) は、ページの現在のコンテンツを最�
 
 構造化された `diff.json` オブジェクトには次の要素が含まれます:
 
-* `files`: 変更されたファイルの配列 (通常はウェブページごとに1つ) 
+* `files`: 変更されたファイルの配列 (通常はウェブページごとに1つ)
 * `chunks`: ファイル内の変更箇所を表すセクション
 * `changes`: 個々の行ごとの変更。`type` (`"add"`、`"del"`、または `"normal"`) 、行番号 (`ln`) 、および `content` を含む
 
@@ -286,7 +288,7 @@ Change Tracking (変更追跡) は、ページの現在のコンテンツを最�
   ```
 </CodeGroup>
 
-<div id="response">
+<div id="response-3">
   ### レスポンス
 </div>
 
@@ -478,7 +480,7 @@ Change Tracking (変更追跡) は、ページの現在のコンテンツを最�
   ## 変更追跡のスケジュール設定
 </div>
 
-変更追跡は、定期的にスクレイピングを行う場合に最も効果を発揮します。cron、クラウドスケジューラ、ワークフローツールなどで自動化できます。
+変更追跡は、定期的にスクレイピングを行う場合に最も効果を発揮します。[Monitoring](/ja/features/monitoring) を使えば、最短5分間隔でスケジュール実行を代行し、webhook、メール、Slack への通知を送信します。cron、クラウドスケジューラ、ワークフローツールなどで自分でスケジュールを管理したい場合は、以下のオプションをご利用ください。
 
 <div id="cron-job">
   ### Cronジョブ
@@ -543,7 +545,7 @@ fi
   ### ワークフロー自動化
 </div>
 
-**n8n**、**Zapier**、**Make** のようなノーコードプラットフォームから、スケジュール実行で Firecrawl API を呼び出し、結果を Slack、メール、データベースなどに送信できます。[ワークフロー自動化ガイド](/ja/developer-guides/workflow-automation/n8n)も参照してください。
+**n8n**、**Zapier**、**Make** のようなノーコードプラットフォームから、スケジュール実行で Firecrawl API を呼び出し、結果を Slack、メール、データベースなどに送信できます。[ワークフロー自動化ガイド](/ja/integrations/n8n)も参照してください。
 
 <div id="webhooks">
   ## Webhooks

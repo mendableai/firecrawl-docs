@@ -131,7 +131,7 @@ let results = client
 * `options.categories`
   * Tipo: `Vec<SearchCategory>`
   * Úsalo cuando: quieras filtrar los resultados por categoría.
-  * Valores confirmados: `Github`, `Research`, `Pdf`
+  * Valores confirmados: `Research`, `Pdf`
 
 * `options.limit`
   * Tipo: u32
@@ -166,19 +166,19 @@ let results = client
   ## Scraping
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### Por qué usarlo
 </div>
 
 Usa scraping si ya tienes una URL y quieres contenido estructurado en uno o varios formatos.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### Método recomendado del SDK
 </div>
 
 `client.scrape(url, options)` → `Result<Document, FirecrawlError>` (el campo `data` de la respuesta HTTP se extrae en el SDK).
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Ejemplo simple
 </div>
 
@@ -193,7 +193,7 @@ let doc = client
     .await?;
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Ejemplo complejo
 </div>
 
@@ -246,7 +246,7 @@ let doc = client
     .await?;
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### Parámetros
 </div>
 
@@ -380,13 +380,13 @@ let doc = client
   ## Interact
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### Por qué usarlo
 </div>
 
 Usa interact cuando una página requiere acciones del navegador o la ejecución de código después de iniciar un scraping.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### Método recomendado del SDK
 </div>
 
@@ -394,7 +394,7 @@ Usa interact cuando una página requiere acciones del navegador o la ejecución 
 
 Para cerrar la sesión del navegador, usa `client.stop_interaction(job_id)` (HTTP `DELETE` en `/v2/scrape/{jobId}/interact`).
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Ejemplo simple
 </div>
 
@@ -412,7 +412,7 @@ let result = client
     .await?;
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Ejemplo complejo
 </div>
 
@@ -441,7 +441,7 @@ let stopped = client.stop_interaction("<scrapeJobId>").await?;
 // stopped: ScrapeBrowserDeleteResponse { success, session_duration_ms, credits_billed, error, ... }
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### Parámetros
 </div>
 

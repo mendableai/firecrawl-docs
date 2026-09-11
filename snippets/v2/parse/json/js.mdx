@@ -1,0 +1,19 @@
+```js Node
+import { Firecrawl } from "firecrawl";
+import fs from "node:fs";
+import { z } from "zod";
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR-API-KEY" });
+
+const schema = z.object({
+  vendor: z.string(),
+  total: z.number(),
+});
+
+const doc = await firecrawl.parse(
+  { data: fs.readFileSync("./invoice.pdf"), filename: "invoice.pdf" },
+  { formats: [{ type: "json", schema }] },
+);
+
+console.log(doc.json);
+```

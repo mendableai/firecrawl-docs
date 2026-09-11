@@ -1,8 +1,8 @@
 ---
 title: "Debug Firecrawl with Ask"
-description: "Agentic debugging for your Firecrawl integration"
+description: "Debug a failed job or any Firecrawl integration issue with an agentic support API"
 og:title: "Ask | Firecrawl"
-og:description: "Debug scraping issues and get verified fixes — all through a single API call."
+og:description: "Debug failed jobs and scraping issues and get verified fixes — all through a single API call."
 sidebarTitle: "Debug with Ask"
 icon: "messages-question"
 ---
@@ -45,6 +45,67 @@ curl -X POST https://api.firecrawl.dev/v2/support/docs-search \
     "question": "how do I set up webhook signature verification?"
   }'
 ```
+
+## Debug a failed job
+
+Every Firecrawl job — scrape, crawl, batch scrape, search, map, or extract — can be debugged with `/support/ask`. Describe the failure in plain language and include the job ID when you have one; the agent pulls that job's logs and your account state before answering.
+
+```bash
+curl -X POST https://api.firecrawl.dev/v2/support/ask \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "debug failed job 0f8c9a1b-4e2d-47a1-9c3f-1b2d3e4f5a6b — crawl of https://example.com failed after 12 pages",
+    "rationale": "user needs the full docs site indexed before their demo"
+  }'
+```
+
+Include as much of this as you have — each piece narrows the diagnosis:
+
+| Detail | Why it helps |
+|--------|--------------|
+| Job ID | Lets the agent read that job's logs, status, and per-page results directly |
+| Target URL | Surfaces site-specific blockers like bot protection, JS rendering, or robots rules |
+| Error message or status code | Separates rate limits and credit exhaustion from scrape-level failures |
+| What you expected | Distinguishes a hard failure from a job that "succeeded" with missing content |
+| `rationale` | Tells the agent what the end user is after so it prioritizes the right evidence |
+
+### What Ask checks for common failures
+
+| Symptom | What the agent investigates |
+|---------|-----------------------------|
+| Job status `failed` | Job logs, upstream HTTP status, proxy and retry history |
+| Crawl returned fewer pages than expected | `limit`, `maxDiscoveryDepth`, `includePaths`/`excludePaths`, sitemap coverage, robots rules |
+| Empty or truncated markdown | Client-side rendering, `waitFor` timing, required `actions`, `onlyMainContent` trimming |
+| `401` / `402` / `429` responses | API key validity and restrictions, remaining credits, plan rate limits |
+| Job stuck or timing out | Queue state, page-level timeouts, job concurrency for your plan |
+| Webhook never fired | Delivery attempts, endpoint responses, signature verification failures |
+
+Don't have a job ID? Hover a row's URL in [Activity Logs](https://www.firecrawl.dev/app/logs) and click **Copy ID**, or use the `id` returned when you started the job.
+
+### Debug from Activity Logs
+
+If you'd rather not write the call yourself, the dashboard runs the same agent for you. Open [Activity Logs](https://www.firecrawl.dev/app/logs) and look for the sparkles button in the **Actions** column of a failed row — its tooltip reads **Debug issue**. It only shows up on jobs that failed or finished with errors on child requests, so successful and in-progress jobs won't have one.
+
+Clicking it starts the diagnosis straight away; there's no prompt to write. Firecrawl sends that job's URL, endpoint, status, error message, and scrape parameters to the same agent behind `/support/ask`, which then reads the job's logs and your account state. Scraped page content is never included.
+
+The panel that opens gives you:
+
+| Element | What it is |
+|---------|------------|
+| Diagnosis | The agent's explanation of what went wrong and what to change |
+| Confidence badge | High, medium, or low — how sure the agent is in the answer |
+| **Validated** badge | Shown when the agent tested its own suggested fix and the test passed |
+| Suggested fix | The corrected parameters as JSON, with a copy button — paste them into your next call |
+| Sources | Links to the docs pages the answer draws on |
+
+If the diagnosis doesn't resolve it, **Open support ticket** at the bottom of the panel files a ticket with the agent's analysis already attached, so you don't have to re-explain the failure.
+
+<Info>
+  Dashboard debugging is capped at 30 runs per hour per team, and your team needs at least one API key — the agent runs under your own key, so it only ever sees your jobs.
+</Info>
+
+Once you have a diagnosis, apply the returned `fixParameters` and retry — see the [agent retry pattern](#agent-retry-pattern) below.
 
 ## How it works
 

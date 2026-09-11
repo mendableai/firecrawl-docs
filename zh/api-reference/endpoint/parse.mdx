@@ -5,7 +5,7 @@ openapi: '/zh/api-reference/v2-openapi.json POST /parse'
 
 上传本地或非公开文档，并将其转换为整洁、可供 LLM 使用的数据。`/parse` 通过 `multipart/form-data` 接收文件二进制内容，并返回 Markdown、JSON、HTML、链接、图像或摘要——同时保留阅读顺序和表格。
 
-* 将 PDF、DOCX、XLSX、HTML 等转换为 Markdown 或结构化 JSON
+* 将 PDF、Word、Excel、PowerPoint、OpenDocument、EPUB、CSV、HTML 等转换为 Markdown 或结构化 JSON
 * 借助基于 Rust 的引擎，解析速度最高可提升 **5 倍**
 * 单次请求最多支持 **50 MB** 的文件
 * 支持零数据保留

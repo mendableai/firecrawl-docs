@@ -28,17 +28,19 @@ O Firecrawl oferece um servidor MCP que se integra perfeitamente ao ADK do Googl
 - Obtenha uma chave de API do Firecrawl em [firecrawl.dev](https://firecrawl.dev)
 - Instale o Google SDK
 
-<div id="configuration">
+<div id="setup">
   ## Configuração
 </div>
 
 <CodeGroup>
-  ```python Remote MCP Server
+  ```python Remote servidor MCP
+  import os
+
   from google.adk.agents.llm_agent import Agent
   from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
   from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
 
-  FIRECRAWL_API_KEY = "YOUR-API-KEY"
+  FIRECRAWL_API_KEY = os.environ["FIRECRAWL_API_KEY"]
 
   root_agent = Agent(
       model="gemini-2.5-pro",
@@ -56,7 +58,9 @@ O Firecrawl oferece um servidor MCP que se integra perfeitamente ao ADK do Googl
   )
   ```
 
-  ```python Local MCP Server
+  ```python Local servidor MCP
+  import os
+
   from google.adk.agents.llm_agent import Agent
   from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
   from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
@@ -74,10 +78,10 @@ O Firecrawl oferece um servidor MCP que se integra perfeitamente ao ADK do Googl
                       command='npx',
                       args=[
                           "-y",
-                          "firecrawl-mcp",
+                          "firecrawl-mcp@3.23.7",
                       ],
                       env={
-                          "FIRECRAWL_API_KEY": "YOUR-API-KEY",
+                          "FIRECRAWL_API_KEY": os.environ["FIRECRAWL_API_KEY"],
                       }
                   ),
                   timeout=30,
@@ -88,6 +92,8 @@ O Firecrawl oferece um servidor MCP que se integra perfeitamente ao ADK do Googl
   ```
 </CodeGroup>
 
+Defina `FIRECRAWL_API_KEY` no ambiente que inicia o ADK. Não inclua seu valor em prompts de agentes, no controle de versão nem na URL do MCP. O pacote MCP local exige Node.js 22 ou mais recente.
+
 <div id="available-tools">
   ## Ferramentas disponíveis
 </div>
@@ -97,11 +103,10 @@ O Firecrawl oferece um servidor MCP que se integra perfeitamente ao ADK do Googl
 | Scrape Tool        | `firecrawl_scrape`             | Extrair conteúdo de uma única URL com opções avançadas                         |
 | Map Tool           | `firecrawl_map`                | Mapear um site para descobrir todas as URLs indexadas                          |
 | Search Tool        | `firecrawl_search`             | Pesquisar na web e, opcionalmente, extrair conteúdo dos resultados de pesquisa |
-| Crawl Tool         | `firecrawl_crawl`              | Iniciar um rastreamento assíncrono com opções avançadas                        |
-| Check Crawl Status | `firecrawl_check_crawl_status` | Verificar o status de um trabalho de rastreamento                              |
-| Extract Tool       | `firecrawl_extract`            | Extrair informações estruturadas de páginas da web usando recursos de LLM      |
+| Ferramenta de rastreamento | `firecrawl_crawl`              | Iniciar um rastreamento assíncrono com opções avançadas                        |
+| Verificar o status do rastreamento | `firecrawl_check_crawl_status` | Verificar o status de um trabalho de rastreamento                              |
 
-<div id="setup">
+<div id="configuration">
   ## Configuração
 </div>
 

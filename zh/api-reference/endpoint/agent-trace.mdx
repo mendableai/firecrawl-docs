@@ -1,0 +1,30 @@
+---
+title: '获取代理执行追踪'
+openapi: '/zh/api-reference/v2-openapi.json GET /agent/{jobId}/trace'
+noindex: true
+---
+
+每次代理运行都会记录一份规范的**执行追踪**：按顺序记录本次运行所执行的所有操作，包括调用的工具及其返回结果、推理摘要、进度更新、浏览器会话，以及输出产物的变更。这与 [Agent playground](https://www.firecrawl.dev/app/agent) 中实时活动视图使用的是同一事件流。
+
+<div id="what-its-for">
+  ## 用途
+</div>
+
+* **调试运行** — 查看代理执行的具体搜索、抓取和提取操作、各工具的输入 (`tool_call.started`) 和结果 (`tool_call.finished`) ，以及运行在哪一步出错 (`error.occurred`，还有最终 `run.finished` 事件的 `outcome` 和结构化 `error`) 。
+* **实时进度 UI** — 在任务处于 `processing` 状态时轮询执行追踪，实时展示代理正在执行的操作。`progress.reported` 事件包含运行阶段 (`planning`、`working`、`finalizing`) 及易于理解的消息，`reasoning.summary` 事件则会呈现代理的思考过程。
+* **实时浏览器视图** — 运行期间传入 `?liveView=true`，即可获取 `activeBrowserSessions`：该运行的活跃浏览器会话。每个会话都提供可嵌入的 `liveViewUrl`，可用于观看 (或演示) 代理浏览网页的过程。
+* **成本跟踪** — `creditsUsed` 会报告截至目前已消耗的额度；如果设置了运行的 `maxCredits`，消耗额度不会超过该上限。
+
+<div id="how-it-works">
+  ## 工作原理
+</div>
+
+事件由运行中的代理 (`orchestrator` 及其 `subagent`) 发出，每个事件都会在 `agent` 字段中标识发出者。浏览器操作在代理自己的浏览器会话中进行，并通过 `browser.session.*` 事件上报，而非由独立的浏览器代理执行。请按 `producerSequence` (每个事件发出代理各自的序列) 对事件排序。`type` 字段用于区分 13 种事件变体；完整列表及各变体的字段请参见下方的响应 schema。
+
+`artifact.updated` 事件本身不包含输出产物内容，而是通过 `snapshotId` 引用该内容；您可通过 [snapshot endpoint](/zh/api-reference/endpoint/agent-snapshot) 获取。
+
+在收到 `run.finished` 后，事件可能还会继续到达一小段时间。因此，如果您正在轮询实时运行，请在渲染最终状态前保留一个短暂的收尾窗口。
+
+<Note>Spark 2 运行会记录执行追踪，也就是所有新的运行。Spark 1 模型退役前启动的任务不含执行追踪，并会返回 `400`。</Note>
+
+> 您是需要 Firecrawl API 密钥的 AI 代理吗？请参见 [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) 了解自动化接入说明。

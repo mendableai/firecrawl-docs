@@ -50,12 +50,10 @@ Firecrawl 会根据你指定或检测到的位置自动选择最合适的代理�
   ## 代理类型
 </div>
 
-Firecrawl 支持三种代理类型：
+<Warning>
+  `proxy` 参数已弃用。建议使用 `auto`，由 Firecrawl 为您选择代理。
+</Warning>
 
-* **basic**：适用于抓取大多数网站的代理。速度快，通常可用。
-* **enhanced**：用于在保持隐私的前提下抓取复杂网站的增强型代理。速度较慢，但在特定网站上更可靠。[了解 Enhanced 模式 →](/zh/features/enhanced-mode)
-* **auto**：若 basic 代理失败，Firecrawl 会自动切换为增强型代理重试。若增强型重试成功，本次抓取计费 5 个积分；若首次使用 basic 即成功，则仅按常规费用计费。
-
-***
-
-> **注意：** 有关增强型代理的使用详情 (包括积分费用与重试策略) ，请参阅 [Enhanced 模式文档](/zh/features/enhanced-mode)。
+* **basic**：适用于抓取大多数网站的代理。
+* **enhanced**：用于在保持隐私的前提下抓取复杂网站的增强型代理。[了解 Enhanced 模式 →](/zh/features/enhanced-mode)
+* **auto**：推荐使用。若 basic 代理失败，Firecrawl 会自动切换为增强型代理重试。

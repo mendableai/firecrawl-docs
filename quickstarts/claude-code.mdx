@@ -3,50 +3,50 @@ title: "MCP Web Search & Scrape in Claude Code"
 description: "Add web scraping and search to Claude Code in 2 minutes"
 ---
 
-Add web scraping and search capabilities to Claude Code with Firecrawl MCP.
+Connect Claude Code to Firecrawl through the hosted MCP server. OAuth is the recommended interactive setup because the key never enters the command line, project files, or conversation.
 
-## Quick Setup
+## Quick setup
 
-### 1. Get Your API Key
-Sign up at [firecrawl.dev/app](https://firecrawl.dev/app) and copy your API key.
+### 1. Add Firecrawl
 
-### 2. Add Firecrawl MCP Server
-
-**Option A: Remote hosted URL (recommended)**
+Run:
 
 ```bash
 claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp-oauth
 ```
 
-After adding the server, use `/mcp` in Claude Code to complete the Firecrawl sign-in flow.
+`https://mcp.firecrawl.dev/v2/mcp-oauth` is a client configuration value, not a page to open directly in a browser.
 
-**Option B: Local (npx)**
+### 2. Sign in and verify
+
+Enter `/mcp` in Claude Code, choose `firecrawl`, and complete the browser sign-in. Start a new Claude Code session if you changed an existing Firecrawl connection.
+
+Confirm that only one `firecrawl` server is active, then try:
+
+```text
+Search for the latest Next.js release notes and summarize the sources.
+```
+
+```text
+Scrape https://firecrawl.dev and explain what it does.
+```
+
+## Other connection modes
+
+- [Try keyless MCP](/mcp-server/keyless#try-keyless) for Search, Scrape, and Parse without an account or key.
+- [Configure an API key](/mcp-server/keyless#add-an-api-key) for unattended use. Keep the secret outside agent chat and use an environment-variable reference.
+- [Run MCP locally](/mcp-server/local) only when you need a local process or a self-hosted Firecrawl API. The local package requires Node.js 22 or newer.
+
+## Optional: literature research
+
+For paper and literature work, the research-index skill routes those queries to the `firecrawl_research_*` tools and the [Research Index](/features/research) instead of general web search:
 
 ```bash
-claude mcp add firecrawl -e FIRECRAWL_API_KEY=your-api-key -- npx -y firecrawl-mcp@3.23.0
+npx skills add firecrawl/skills@firecrawl-research-index
 ```
 
-Replace `your-api-key` with your actual Firecrawl API key.
+## Troubleshooting
 
-Done! You can now search and scrape the web from Claude Code.
-
-## Quick Demo
-
-Try these in Claude Code:
-
-**Search the web:**
-```
-Search for the latest Next.js 15 features
-```
-
-**Scrape a page:**
-```
-Scrape firecrawl.dev and tell me what it does
-```
-
-**Get documentation:**
-```
-Find and scrape the Stripe API docs for payment intents
-```
-
-Claude will automatically use Firecrawl's search and scrape tools to get the information.
+- **A Firecrawl server already exists:** run `claude mcp remove firecrawl`, add the intended connection once, then start a new session.
+- **The browser does not open:** enter `/mcp`, select `firecrawl`, and start authentication from the client.
+- **The server shows `401`:** sign in again through `/mcp`; do not paste an API key into the conversation or OAuth URL.

@@ -1,57 +1,45 @@
 ---
 title: '解析'
-description: 'ローカルまたは非公開のドキュメントをアップロードし、クリーンで LLM 向けのデータに変換します'
+description: 'PDF、Word、Excel、PowerPoint などのドキュメントを、クリーンな Markdown、ページ単位のコンテンツ、レイアウトブロック、構造化 JSON に変換'
 og:title: "解析 | Firecrawl"
-og:description: "ローカルの PDF、DOCX、XLSX、HTML などを Markdown または構造化 JSON に変換"
+og:description: "PDF、DOCX、XLSX、HTML などを Markdown、バウンディングボックス付きのレイアウトブロック、または構造化 JSON に変換"
 icon: "file-magnifying-glass"
 version: "v2"
 sidebarTitle: "解析"
 ---
 
-`/parse` エンドポイントは、ローカルまたは非公開のドキュメントを、クリーンで LLM 向けのデータに変換します。`multipart/form-data` でファイルのバイト列をアップロードすると、読み順や表の構造を保持したまま、Markdown、JSON、HTML、リンク、画像、または要約を取得できます。
+import ParsePagesPython from "/snippets/ja/v2/parse/pages/python.mdx";
+import ParsePagesNode from "/snippets/ja/v2/parse/pages/js.mdx";
+import ParsePagesCURL from "/snippets/ja/v2/parse/pages/curl.mdx";
+import ParsePageMarkersPython from "/snippets/ja/v2/parse/page-markers/python.mdx";
+import ParsePageMarkersNode from "/snippets/ja/v2/parse/page-markers/js.mdx";
+import ParsePageMarkersCURL from "/snippets/ja/v2/parse/page-markers/curl.mdx";
+import ParseBlocksPython from "/snippets/ja/v2/parse/blocks/python.mdx";
+import ParseBlocksNode from "/snippets/ja/v2/parse/blocks/js.mdx";
+import ParseBlocksCURL from "/snippets/ja/v2/parse/blocks/curl.mdx";
+import ParseJsonPython from "/snippets/ja/v2/parse/json/python.mdx";
+import ParseJsonNode from "/snippets/ja/v2/parse/json/js.mdx";
+import ParseJsonCURL from "/snippets/ja/v2/parse/json/curl.mdx";
+import ParseGroundingPython from "/snippets/ja/v2/parse/grounding/python.mdx";
+import ParseGroundingNode from "/snippets/ja/v2/parse/grounding/js.mdx";
+import VideoParseVsScrape from "/snippets/ja/shared/video-parse-vs-scrape.mdx";
 
-* PDF、DOCX、XLSX、HTML などを Markdown または構造化 JSON に変換
-* Rust ベースのエンジンにより、解析を**最大 5 倍高速化**
-* 1 リクエストあたり **50 MB** までのファイルに対応
-* ゼロデータ保持をサポート
+解析はドキュメントをクリーンで LLM 対応のデータに変換します。ファイルを
+[`/parse`](/ja/api-reference/endpoint/parse) にアップロードするか、公開ドキュメントの URL を [`/scrape`](/ja/features/scrape)
+に指定すると、Markdown、ページ単位のコンテンツ、型付きレイアウトブロック、または構造化 JSON が返されます。
 
-<div id="when-to-use-parse">
-  ## `/parse` を使うタイミング
-</div>
+* **レイアウトを考慮**: 見出し、段落、表、数式を読み取り順序に配置
+* **スキャンにも対応**: ネイティブテキストを抽出し、画像のみのページでは OCR にフォールバック
+* **根拠に基づく構造**: バウンディングボックスと Markdown 内の文字範囲へのリンクを持つ型付きレイアウトブロック (PDF)
+* **主要な形式に対応**: PDF、Word、Excel、PowerPoint、OpenDocument、EPUB、CSV、HTML
+* **ゼロデータ保持**をサポート
 
-元のドキュメントが**ローカルファイル**である場合、または**URL では公開アクセスできない**場合は、`/parse` を使用します。ドキュメントを指す公開 URL がある場合は、[`/scrape`](/ja/features/scrape) を優先してください。拡張子または Content-Type からファイル形式を自動判別し、`/parse` と同じように解析します。
+解析と [Scrape](/ja/features/scrape) のどちらを使うべきか迷っていますか？以下でその違いを説明します:
 
-| ソース                                                   | エンドポイント                                          |
-| ----------------------------------------------------- | ------------------------------------------------ |
-| ドキュメントを指す公開 URL (例: `https://example.com/report.pdf`) | [`POST /scrape`](/ja/api-reference/endpoint/scrape) |
-| ローカルファイルまたは非公開のバイト列 (PDF、DOCX、XLSX、HTML、...)          | [`POST /parse`](/ja/api-reference/endpoint/parse)   |
+<VideoParseVsScrape />
 
-<Tip>
-  **MCP 経由で Firecrawl を使っていますか？** ローカルファイルには `firecrawl_parse` を使用してください。`FIRECRAWL_API_URL` を設定したローカル MCP は、ファイルを直接読み取れます。リモートでホストされた MCP は、最初に有効期限の短いアップロードコマンドを返し、その後、返された `uploadRef` を解析します。公開ドキュメントの URL では引き続き `/scrape` を使用してください。
-</Tip>
-
-<Tip>
-  **公開された PDF の URL がありますか？** その場合は `/scrape` を使ってください。ドキュメントタイプを自動判別し、きれいな markdown を返します。PDF 用のライブラリを別途用意する必要はありません。
-
-  ```python Python
-  doc = firecrawl.scrape("https://example.com/report.pdf", formats=["markdown"])
-  ```
-</Tip>
-
-<div id="parsing">
-  ## パース
-</div>
-
-<div id="parse-endpoint">
-  ### /parse エンドポイント
-</div>
-
-ファイルをアップロードし、解析済みのコンテンツを受け取るために使用します。リクエストは `multipart/form-data` 形式で、必須の `file` パートと、任意の `options` JSON パートを含みます。
-
-**対応している拡張子:** `.html`, `.htm`, `.pdf`, `.docx`, `.doc`, `.odt`, `.rtf`, `.xlsx`, `.xls`.
-
-<div id="usage">
-  ### 使用例
+<div id="quickstart">
+  ## クイックスタート
 </div>
 
 <CodeGroup>
@@ -87,8 +75,14 @@ sidebarTitle: "解析"
   ```
 </CodeGroup>
 
+<Note>
+  ファイルの代わりに**公開ドキュメントURL**をお持ちですか？[`/scrape`](/ja/features/scrape)
+  はファイル形式を検出し、同じオプションと出力で同様に解析します：
+  `firecrawl.scrape("https://example.com/report.pdf")`。
+</Note>
+
 <div id="response">
-  ### レスポンス
+  ## レスポンス
 </div>
 
 SDK ではドキュメントオブジェクトが直接返されます。cURL では JSON ペイロードが返されます。
@@ -116,57 +110,243 @@ SDK ではドキュメントオブジェクトが直接返されます。cURL �
   `totalPages` は省略されます。
 </Note>
 
-<div id="options">
-  ## オプション
+ドキュメントの Markdown に加え、単一の Markdown string では不十分なケースに対応する 3 つの出力があります。PDF ドキュメント向けの
+[ページごとの Markdown](#per-page-markdown-pdf) と
+[レイアウトブロック](#layout-blocks-pdf)、およびすべての形式向けの
+[構造化 JSON](#structured-json-output) です。Markdown 自体の*内部*でページの帰属情報だけが
+必要な場合は、[ページマーカー](#page-markers-pdf)がページ区切りをその場で注釈付けします。
+
+<div id="per-page-markdown-pdf">
+  ## ページごとのMarkdown (PDF)
 </div>
 
-`/parse` は、`options` フィールドでスクレイピングのオプションの一部を受け付けます。一般的な設定は次のとおりです。
+[PDFパーサー](#pdf-options)で`pages: true`を設定すると、ドキュメントには各物理ページのMarkdownを含む`pages`配列も含まれます。コンテンツの出所ページを確認したり、ページを個別に処理したりする場合に便利です。
+追加コストはかかりません。
+
+<CodeGroup>
+  <ParsePagesPython />
+
+  <ParsePagesNode />
+
+  <ParsePagesCURL />
+</CodeGroup>
+
+```json
+"pages": [
+  { "pageNumber": 1, "markdown": "# Annual Report\n\n..." },
+  { "pageNumber": 2, "markdown": "..." }
+]
+```
+
+<div id="page-markers-pdf">
+  ## ページマーカー (PDF)
+</div>
+
+[PDF パーサー](#pdf-options)で `pageMarkers: true` を設定すると、ドキュメントの
+`markdown` 内の各ページが、後続する物理ページを示す HTML コメントマーカーで連結されます。
+
+```markdown
+...1ページ目の終わり
+
+---
+
+<!-- page 2 -->
+
+2ページ目の始まり...
+```
+
+新しいレスポンスフィールドはありません。マーカーは markdown 内に含まれるため、
+markdown の string のみを処理する下流のパイプラインでも、ページごとの
+帰属情報を保持できます。markdown をレンダリングするとコメントは非表示になり、
+(`<!-- page N -->`、1始まり) で簡単に分割できます。追加コストはかかりません。
+
+<CodeGroup>
+  <ParsePageMarkersPython />
+
+  <ParsePageMarkersNode />
+
+  <ParsePageMarkersCURL />
+</CodeGroup>
+
+<Note>
+  マーカーはページの**間**にのみ表示され、ページ 1 の先頭にはありません。
+  パーサーが改ページをまたぐ content を結合すると、ページ番号が飛ぶことがあります
+  (次のページにまたがる表や文には、マークする境界がありません) 。
+  物理ページごとに分ける必要がある場合は、[`pages: true`](#per-page-markdown-pdf) を使用してください。
+  2 つのオプションは併用できます。
+</Note>
+
+<div id="layout-blocks-pdf">
+  ## レイアウトブロック (PDF)
+</div>
+
+[PDF パーサー](#pdf-options)で `blocks: true` を設定すると、ドキュメントには
+`blocks` 配列も含まれます。各ページで解析エンジンが検出した、型付きレイアウトブロックの
+ジオメトリ情報と出所情報を格納しています。これは markdown に対応する構造化データであり、引用の根拠付け、
+ハイライトのオーバーレイ、ドキュメントの内容の監査に使用できます。追加コストはかかりません。
+
+<Frame caption="エンジンが検出したすべてのブロックを、型と位置情報付きで表示します。markdown になる領域と同じです。">
+  <img src="/images/pdf-blocks-overlay.png" alt="解析済み PDF ページ。検出された各レイアウトブロック（タイトル、テキスト、セクションヘッダー、表、図、キャプション、ページフッター、ページ番号）に色付きのバウンディングボックスが重ねて表示されています" />
+</Frame>
+
+<CodeGroup>
+  <ParseBlocksPython />
+
+  <ParseBlocksNode />
+
+  <ParseBlocksCURL />
+</CodeGroup>
+
+```json
+"blocks": [
+  {
+    "pageNumber": 1,
+    "width": 1700,
+    "height": 2200,
+    "status": "ok",
+    "items": [
+      {
+        "id": "p1.b0",
+        "type": "title",
+        "label": "doc_title",
+        "bbox": [0.118, 0.054, 0.882, 0.092],
+        "content": "# Annual Report",
+        "markdownSpan": [0, 15],
+        "readingOrder": 0,
+        "source": "native_text",
+        "confidence": { "layout": 0.97, "ocr": null }
+      }
+    ]
+  }
+]
+```
+
+<div id="block-fields">
+  ### ブロックフィールド
+</div>
+
+| フィールド          | 説明                                                                                                                                              |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`           | レスポンス内で一意かつ安定した ID: `p<page>.b<index in reading order>`。                                                                                        |
+| `type`         | ブロックタイプ: `title`、`section_header`、`text`、`table`、`formula`、`figure`、`caption`、`page_number`、`page_header`、`page_footer`。今後、新しいタイプが追加される場合があります。 |
+| `label`        | 生のレイアウトモデルラベル。将来の互換性のためにそのまま渡されます。                                                                                                              |
+| `bbox`         | ページを基準として 0～1 に正規化された `[x0, y0, x1, y1]`。ピクセル座標を得るには `width`/`height` を乗算します。ページの寸法が不明な場合は `null`。                                              |
+| `content`      | このブロックが生成した Markdown フラグメント。                                                                                                                    |
+| `markdownSpan` | このブロックのフラグメントを含む、ドキュメントの `markdown` 内の `[start, end)` 文字オフセット。後処理でフラグメントが書き換えられた場合は `null`。                                                     |
+| `readingOrder` | 検出された読み取り順序内での位置。                                                                                                                               |
+| `source`       | ブロックを生成したパイプラインパス (例: `native_text`、`layout_ocr`、`tsr`、`formula_model`) 。                                                                       |
+| `confidence`   | `layout` の検出スコア (0～1) と、ソースで提供される場合の `ocr` テキスト信頼度。その他の場合は `null`。独自に算出した集約値は使用しません。                                                            |
+
+<div id="grounding-from-an-answer-back-to-the-page">
+  ### 根拠付け: 回答からページへ
+</div>
+
+`markdownSpan` は、各ブロックを、そのブロックが生成した markdown 内の正確な部分文字列に紐付けます。
+これにより、引用の根拠付けは推論ではなく検索で行えます。markdown 内で引用テキストを探し、
+そのオフセットをカバーする span を持つブロックを見つければ、
+言語モデルに座標を問い合わせることなく、ページ番号とバウンディングボックスを取得できます。
+
+<CodeGroup>
+  <ParseGroundingPython />
+
+  <ParseGroundingNode />
+</CodeGroup>
+
+<div id="structured-json-output">
+  ## 構造化JSON出力
+</div>
+
+ドキュメントから構造化データを直接抽出するには、JSONスキーマまたはプロンプトを指定します。
+
+<CodeGroup>
+  <ParseJsonPython />
+
+  <ParseJsonNode />
+
+  <ParseJsonCURL />
+</CodeGroup>
+
+<div id="pdf-options">
+  ## PDF オプション
+</div>
+
+PDF のすべての動作は、`/parse` と
+`/scrape` の両方で `parsers` オプションにより制御されます。
+
+```json
+{
+  "parsers": [
+    {
+      "type": "pdf",
+      "mode": "auto",
+      "maxPages": 100,
+      "pages": true,
+      "blocks": true,
+      "pageMarkers": true
+    }
+  ]
+}
+```
+
+| プロパティ         | 型                           | デフォルト    | 説明                                                                                     |
+| ------------- | --------------------------- | -------- | -------------------------------------------------------------------------------------- |
+| `type`        | `"pdf"`                     | *(必須)*   | パーサーの種類。                                                                               |
+| `mode`        | `"fast" \| "auto" \| "ocr"` | `"auto"` | 解析方法。詳細は以下を参照。                                                                         |
+| `maxPages`    | `integer`                   | —        | 解析するページ数の上限。                                                                           |
+| `pages`       | `boolean`                   | `false`  | [ページごとのMarkdown](#per-page-markdown-pdf)も返します。追加コストはかかりません。                            |
+| `blocks`      | `boolean`                   | `false`  | バウンディングボックス付きの[レイアウトブロック](#layout-blocks-pdf)も返します。追加コストはかかりません。                       |
+| `pageMarkers` | `boolean`                   | `false`  | ドキュメントのMarkdown内の改ページに、[`<!-- page N -->` マーカー](#page-markers-pdf)を付加します。追加コストはかかりません。 |
+
+`parsers: []` を渡すと解析を完全にスキップし、PDFをbase64形式で返します
+(固定1クレジット) 。
+
+<div id="parsing-modes">
+  ### 解析モード
+</div>
+
+| モード    | 説明                                                                                 |
+| ------ | ---------------------------------------------------------------------------------- |
+| `auto` | まず高速なテキストベースの抽出を試み、必要なページではOCRにフォールバックします。デフォルト設定です。                               |
+| `fast` | テキストベースの抽出のみ (埋め込みテキスト) 。最速のオプションですが、スキャンされたページや画像のみのページでは、何も返さずに終わるのではなくエラーになります。 |
+| `ocr`  | すべてのページでOCRを強制します。スキャンされたドキュメントや、`auto`がページを誤分類する場合に使用します。                         |
+
+<div id="supported-formats">
+  ## 対応フォーマット
+</div>
+
+**拡張子:** `.html`, `.htm`, `.xhtml`, `.pdf`, `.docx`, `.doc`, `.docm`, `.odt`, `.ods`, `.odp`, `.rtf`, `.xlsx`, `.xls`, `.xlsm`, `.xlsb`, `.pptx`, `.ppt`, `.pptm`, `.epub`, `.csv`.
+
+各フォーマットの変換方法については、[Document Parsing](/ja/features/document-parsing)を参照してください。
+
+<div id="request-reference">
+  ## リクエストリファレンス
+</div>
+
+リクエストは `multipart/form-data` で、必須の `file` パートと
+任意の `options` JSON パートで構成されます。`options` はスクレイピングのオプションの一部を受け付けます。
 
 * `formats`: 出力フォーマットの配列。デフォルトは `["markdown"]`。対応フォーマット: `markdown`、`html`、`rawHtml`、`links`、`images`、`summary`、`json` (スキーマまたはプロンプト付き) 。
 * `onlyMainContent`: ドキュメントのメインコンテンツのみを返します。デフォルトは `true`。
 * `includeTags` / `excludeTags`: タグ単位での含める/除外の指定 (HTML 入力) 。
 * `redactPII`: 返される markdown から個人を特定できる情報をマスキングします。
 * `timeout`: リクエストのタイムアウト (ミリ秒) 。デフォルトは `30000`、最大 `300000`。
-* `parsers`: ファイルパーサーの制御。PDF の場合は、`{ "type": "pdf", "mode": "fast" | "auto" | "ocr", "maxPages": <int> }` を設定します。
+* `parsers`: ファイルパーサーの制御 — [PDF オプション](#pdf-options) を参照してください。
 
 <Note>
   `/parse` は、`actions`、`waitFor`、`location`、`mobile`、change tracking などのブラウザ専用オプションには対応していません。
 </Note>
 
-<div id="pdf-parser-modes">
-  ### PDFパーサーのモード
-</div>
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v2/parse \
-  -H 'Authorization: Bearer YOUR_API_KEY' \
-  -F 'file=@./scan.pdf' \
-  -F 'options={"parsers":[{"type":"pdf","mode":"ocr","maxPages":50}]};type=application/json'
-```
-
-* `fast`: テキストのみを提取する最速の方法です。
-* `auto` (デフォルト) : テキスト優先で処理し、画像のみのページでは OCR にフォールバックします。
-* `ocr`: すべてのページで OCR を実行します — スキャン文書に使用してください。
-
-<div id="structured-json-output">
-  ### 構造化JSON出力
-</div>
-
-ドキュメントから構造化データを直接抽出するには、JSONスキーマまたはプロンプトを指定します。
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v2/parse \
-  -H 'Authorization: Bearer YOUR_API_KEY' \
-  -F 'file=@./invoice.pdf' \
-  -F 'options={"formats":[{"type":"json","schema":{"type":"object","properties":{"total":{"type":"number"},"vendor":{"type":"string"}}}}]};type=application/json'
-```
+<Tip>
+  **MCP 経由で Firecrawl を使用していますか？** ローカルファイルには `firecrawl_parse` を使用してください。`FIRECRAWL_API_URL` を設定すると、ローカル MCP はファイルを直接読み取れます。リモートホスト型 MCP は、最初に短期間有効なアップロードコマンドを返し、その後、返された `uploadRef` を解析します。公開ドキュメントの URL には引き続き `/scrape` を使用してください。
+</Tip>
 
 <div id="considerations">
   ## 考慮事項
 </div>
 
 * 1 リクエストあたりの最大ファイルサイズは **50 MB** です。
-* `ocr` モードで非常に大きい PDF やスキャンされた PDF をパースする場合、時間がかかることがあります。`timeout` を長めに設定するか、`maxPages` を使って処理範囲を制限してください。
+* PDF の解析は **1 ページあたり 1 クレジット** です。`pages`、`blocks`、`pageMarkers` のオプションに追加コストはかかりません。
+* `ocr` モードで非常に大きい PDF やスキャンされた PDF を解析する場合、時間がかかることがあります。`timeout` を長めに設定するか、`maxPages` を使って処理範囲を制限してください。
 * 複数ファイルを扱う場合は、各ファイルに対して `/parse` を並列に呼び出してください。バッチアップロード用のバリアントはありません。
 
 > Firecrawl APIキー が必要な AIエージェントですか？自動オンボーディング手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) を参照してください。

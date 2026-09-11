@@ -328,7 +328,7 @@
             "type": "boolean"
           },
           "proxy": {
-            "description": "Spécifie le type de proxy à utiliser.\n\n - **basic** : proxy pour le scraping de sites avec peu ou pas de protections anti‑bots. Rapide et généralement suffisant.\n - **enhanced** : proxy avancé pour le scraping de sites avec des solutions anti‑bots sophistiquées. Plus lent, mais plus fiable sur certains sites. Peut coûter jusqu’à 5 crédits par requête.\n - **auto** : Firecrawl réessaiera automatiquement le scraping avec un proxy **enhanced** si le proxy **basic** échoue. Si le nouvel essai avec **enhanced** réussit, 5 crédits seront facturés pour l’opération de scraping. Si la première tentative avec **basic** réussit, seul le coût standard sera facturé.\n\nSi vous ne spécifiez pas de proxy, Firecrawl utilisera **basic** par défaut.",
+            "description": "Spécifie le type de proxy à utiliser.\n\n - **basic** : proxy pour le scraping de sites avec peu ou pas de protections anti‑bots. Rapide et généralement suffisant.\n - **enhanced** : proxy avancé pour le scraping de sites avec des solutions anti‑bots sophistiquées. Plus lent, mais plus fiable sur certains sites. Facturé au même coût en crédits que **basic**.\n - **auto** : Firecrawl réessaiera automatiquement le scraping avec un proxy **enhanced** si le proxy **basic** échoue. Les proxys avancés n’entraînent aucun surcoût en crédits. Dans tous les cas, seul le coût standard sera facturé.\n\nSi vous ne spécifiez pas de proxy, Firecrawl utilisera **basic** par défaut.",
             "enum": [
               "basic",
               "enhanced",
@@ -3009,7 +3009,7 @@
                           "type": "string"
                         },
                         "plan_credits": {
-                          "description": "Nombre de crédits inclus dans l’offre. Cela n’inclut pas les crédits issus de coupons, les packs de crédits ni les crédits provenant des recharges automatiques.",
+                          "description": "Nombre de crédits inclus dans l’offre. Cela n’inclut pas les crédits issus de coupons ni les crédits ajoutés via le paiement à l’utilisation.",
                           "example": 500000,
                           "type": "number"
                         },

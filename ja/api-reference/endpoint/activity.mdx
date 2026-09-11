@@ -11,3 +11,14 @@ openapi: '/ja/api-reference/v2-openapi.json GET /team/activity'
 | `crawl`        | `GET /v2/crawl/{id}`        |
 | `batch_scrape` | `GET /v2/batch/scrape/{id}` |
 | `agent`        | `GET /v2/agent/{jobId}`     |
+
+<div id="team-management-endpoints">
+  ## チーム管理エンドポイント
+</div>
+
+| オペレーション        | API パス                                 | ドキュメントページ                                                                    |
+| -------------- | -------------------------------------- | ---------------------------------------------------------------------------- |
+| チームのアクティビティ    | `GET /v2/team/activity`                | [`activity`](/ja/api-reference/endpoint/activity)                               |
+| クレジット使用量       | `GET /v2/team/credit-usage`            | [`credit-usage`](/ja/api-reference/endpoint/credit-usage)                       |
+| クレジット使用量 (履歴)  | `GET /v2/team/credit-usage/historical` | [`credit-usage-historical`](/ja/api-reference/endpoint/credit-usage-historical) |
+| キューのステータス      | `GET /v2/team/queue-status`            | [`queue-status`](/ja/api-reference/endpoint/queue-status)                       |

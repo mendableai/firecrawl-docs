@@ -44,11 +44,11 @@ Así, obtener datos web en el formato que necesitas es rápido y sencillo.
 Se usa para extraer datos estructurados de páginas rastreadas.
 
 <CodeGroup>
+  <ExtractPython />
 
-<ExtractPython />
-<ExtractNode />
-<ExtractCURL />
+  <ExtractNode />
 
+  <ExtractCURL />
 </CodeGroup>
 
 Salida:
@@ -62,9 +62,7 @@ Salida:
 Ahora puedes extraer sin usar un esquema con solo pasar un `prompt` al punto de conexión. El LLM determina la estructura de los datos.
 
 <CodeGroup>
-
-<ExtractNoSchemaCURL />
-
+  <ExtractNoSchemaCURL />
 </CodeGroup>
 
 Salida:
@@ -77,6 +75,7 @@ Salida:
 
 El objeto `jsonOptions` admite los siguientes parámetros:
 
-- `schema`: El esquema que se utilizará para la extracción.
-- `systemPrompt`: La indicación del sistema que se utilizará para la extracción.
-- `prompt`: La indicación que se utilizará para la extracción sin esquema.
+* `schema`: El esquema que se utilizará para la extracción.
+* `systemPrompt`: La indicación del sistema que se utilizará para la extracción.
+* `prompt`: La indicación que se utilizará para la extracción sin esquema.
+* `checkPromptInjection`: Booleano opcional (predeterminado: `false`). Cuando está habilitado, analiza el contenido extraído de la página para detectar intentos de inyección de indicaciones antes de ejecutar la extracción. Si se detecta una inyección, la solicitud falla con un 403 y el código de error `SCRAPE_PROMPT_INJECTION_DETECTED`. Añade 4 créditos cuando se ejecuta la comprobación. Consulta la [detección de inyección de indicaciones](/es/features/llm-extract#prompt-injection-detection).

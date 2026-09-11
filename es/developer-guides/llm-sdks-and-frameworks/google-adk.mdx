@@ -28,17 +28,19 @@ Firecrawl ofrece un servidor MCP que se integra sin fricciones con el ADK de Goo
 - Obtén una clave de API para Firecrawl en [firecrawl.dev](https://firecrawl.dev)
 - Instala el Google SDK
 
-<div id="configuration">
+<div id="setup">
   ## Configuración
 </div>
 
 <CodeGroup>
   ```python Remote MCP Server
+  import os
+
   from google.adk.agents.llm_agent import Agent
   from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
   from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
 
-  FIRECRAWL_API_KEY = "YOUR-API-KEY"
+  FIRECRAWL_API_KEY = os.environ["FIRECRAWL_API_KEY"]
 
   root_agent = Agent(
       model="gemini-2.5-pro",
@@ -57,6 +59,8 @@ Firecrawl ofrece un servidor MCP que se integra sin fricciones con el ADK de Goo
   ```
 
   ```python Local MCP Server
+  import os
+
   from google.adk.agents.llm_agent import Agent
   from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
   from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
@@ -74,10 +78,10 @@ Firecrawl ofrece un servidor MCP que se integra sin fricciones con el ADK de Goo
                       command='npx',
                       args=[
                           "-y",
-                          "firecrawl-mcp",
+                          "firecrawl-mcp@3.23.7",
                       ],
                       env={
-                          "FIRECRAWL_API_KEY": "YOUR-API-KEY",
+                          "FIRECRAWL_API_KEY": os.environ["FIRECRAWL_API_KEY"],
                       }
                   ),
                   timeout=30,
@@ -88,20 +92,21 @@ Firecrawl ofrece un servidor MCP que se integra sin fricciones con el ADK de Goo
   ```
 </CodeGroup>
 
+Configura `FIRECRAWL_API_KEY` en el entorno desde el que se inicia ADK. No incluyas su valor en los prompts del agente, el control de código fuente ni la URL del MCP. El paquete MCP local requiere Node.js 22 o una versión posterior.
+
 <div id="available-tools">
   ## Herramientas disponibles
 </div>
 
-| Herramienta                  | Nombre                         | Descripción                                                              |
-| ---------------------------- | ------------------------------ | ------------------------------------------------------------------------ |
-| Herramienta de scraping      | `firecrawl_scrape`             | Extrae contenido de una única URL con opciones avanzadas                 |
-| Herramienta de mapeo         | `firecrawl_map`                | Genera el mapa de un sitio para descubrir todas las URL indexadas        |
-| Herramienta de búsqueda      | `firecrawl_search`             | Busca en la web y, opcionalmente, extrae contenido de los resultados     |
-| Herramienta de rastreo       | `firecrawl_crawl`              | Inicia un rastreo asíncrono con opciones avanzadas                       |
-| Consultar estado del rastreo | `firecrawl_check_crawl_status` | Consulta el estado de un trabajo de rastreo                              |
-| Herramienta de extracción    | `firecrawl_extract`            | Extrae información estructurada de páginas web usando capacidades de LLM |
+| Herramienta                  | Nombre                         | Descripción                                                          |
+| ---------------------------- | ------------------------------ | -------------------------------------------------------------------- |
+| Herramienta de scraping      | `firecrawl_scrape`             | Extrae contenido de una única URL con opciones avanzadas             |
+| Herramienta de mapeo         | `firecrawl_map`                | Genera el mapa de un sitio para descubrir todas las URL indexadas    |
+| Herramienta de búsqueda      | `firecrawl_search`             | Busca en la web y, opcionalmente, extrae contenido de los resultados |
+| Herramienta de rastreo       | `firecrawl_crawl`              | Inicia un rastreo asíncrono con opciones avanzadas                   |
+| Consultar estado del rastreo | `firecrawl_check_crawl_status` | Consulta el estado de un trabajo de rastreo                          |
 
-<div id="setup">
+<div id="configuration">
   ## Configuración
 </div>
 

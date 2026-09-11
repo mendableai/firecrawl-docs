@@ -16,43 +16,33 @@ Firecrawl ofrece potentes capacidades de análisis de documentos que te permiten
 
 Firecrawl actualmente admite los siguientes formatos de documentos:
 
-* **Hojas de cálculo de Excel** (`.xlsx`, `.xls`)
-  * Cada hoja de cálculo se convierte en una tabla HTML
+* **Hojas de cálculo de Excel** (`.xlsx`, `.xls`, `.xlsm`, `.xlsb`, `.ods`)
+  * Cada hoja de cálculo se convierte en una tabla
   * Las hojas se separan con encabezados H2 con el nombre de la hoja
   * Conserva el formato de las celdas y los tipos de datos
 
-* **Documentos de Word** (`.docx`, `.doc`, `.odt`, `.rtf`)
+* **Documentos de Word** (`.docx`, `.doc`, `.docm`, `.odt`, `.rtf`)
   * Extrae el contenido de texto preservando la estructura del documento
   * Mantiene encabezados, párrafos, listas y tablas
   * Conserva el formato y el estilo básicos
+
+* **Presentaciones de PowerPoint** (`.pptx`, `.ppt`, `.pptm`, `.odp`)
+  * Extrae el contenido de las diapositivas en orden de lectura
+  * Incluye notas del presentador
+
+* **Libros electrónicos EPUB** (`.epub`)
+  * Extrae el contenido de los capítulos preservando la estructura del documento
+
+* **Archivos CSV** (`.csv`)
+  * Se convierte en una tabla
 
 * **Documentos PDF** (`.pdf`)
   * Extrae el contenido de texto con información de diseño
   * Conserva la estructura del documento, incluidas secciones y párrafos
   * Procesa tanto PDFs basados en texto como escaneados (con OCR)
-  * Admite la opción `mode` para controlar la estrategia de análisis: `fast` (solo texto), `auto` (texto con fallback a OCR, por defecto) o `ocr` (forzar OCR)
+  * Markdown opcional por página y bloques de diseño tipados con cuadros delimitadores
   * Precio de 1 crédito por página. Consulta la [tarifa](https://firecrawl.dev/pricing) para más detalles.
-
-<div id="pdf-parsing-modes">
-  ### Modos de análisis de PDF
-</div>
-
-Usa la opción `parsers` para controlar cómo se procesan los PDF:
-
-| Modo   | Descripción                                                                                                                                    |
-| ------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `auto` | Intenta primero una extracción rápida basada en texto y recurre a OCR si es necesario. Este es el valor predeterminado.                        |
-| `fast` | Análisis solo basado en texto (texto incrustado). Es la opción más rápida, pero no extraerá texto de páginas escaneadas o con muchas imágenes. |
-| `ocr`  | Fuerza el análisis por OCR en cada página. Úsalo para documentos escaneados o cuando `auto` clasifique incorrectamente una página.             |
-
-```js
-// Sintaxis de objeto con modo
-parsers: [{ type: "pdf", mode: "ocr", maxPages: 20 }]
-
-// Predeterminado (modo auto)
-parsers: [{ type: "pdf" }]
-```
-
+  * Consulta las [opciones de PDF](/es/features/parse#pdf-options) para obtener la referencia completa: modos de procesamiento, límites de páginas, markdown por página y bloques de diseño.
 
 <div id="how-to-use-document-parsing">
   ## Cómo usar Análisis de documentos

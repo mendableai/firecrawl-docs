@@ -192,6 +192,14 @@ nav ul li:has(a[href="https://github.com/firecrawl/firecrawl"])
     flex-wrap: wrap;
 }
 
+/* footer.socials has no chat key, so the community link uses `website` and
+   ships a globe. Footer social glyphs are mask-image only, so re-masking
+   swaps in the same comment-dots icon the sidebar Community entry uses. */
+#footer a[href*="community.firecrawl.dev"] > svg {
+    -webkit-mask-image: url("https://d3gk2c5xim1je2.cloudfront.net/fontawesome/v7.2.0/solid/comment-dots.svg") !important;
+    mask-image: url("https://d3gk2c5xim1je2.cloudfront.net/fontawesome/v7.2.0/solid/comment-dots.svg") !important;
+}
+
 /* Agent-first introduction components. Tokens mirror firecrawl-web. */
 .fc-agent-first,
 .fc-agent-prompt {
@@ -274,7 +282,9 @@ nav ul li:has(a[href="https://github.com/firecrawl/firecrawl"])
 
 .fc-client-tabs {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    /* One row regardless of client count; equal-width columns. */
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
     overflow-x: auto;
     border-top: 1px solid var(--fc-border);
     border-bottom: 1px solid var(--fc-border);
@@ -285,16 +295,17 @@ nav ul li:has(a[href="https://github.com/firecrawl/firecrawl"])
     position: relative;
     display: flex;
     min-width: 0;
+    overflow: hidden;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 16px 14px;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 10px;
     border: 0;
     border-right: 1px solid var(--fc-border);
     background: transparent;
     color: var(--fc-text);
     cursor: pointer;
-    text-align: left;
+    text-align: center;
     transition: background-color 160ms ease;
 }
 
@@ -325,18 +336,22 @@ nav ul li:has(a[href="https://github.com/firecrawl/firecrawl"])
     width: 26px;
     height: 26px;
     flex: none;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
+    object-fit: contain;
 }
 
 .dark .fc-client-icon-mono {
     filter: invert(1) brightness(1.6);
 }
 
+/* ChatGPT mark is near-black; invert it in dark mode when used as a Card icon. */
+.dark img[src*="agent-clients/chatgpt.svg"] {
+    filter: invert(1) brightness(1.6);
+}
+
 .fc-client-tab-copy {
     display: flex;
     min-width: 0;
+    max-width: 100%;
     flex-direction: column;
     gap: 2px;
 }
@@ -588,6 +603,22 @@ nav ul li:has(a[href="https://github.com/firecrawl/firecrawl"])
     background: var(--fc-subtle);
 }
 
+/* Pin Card cta rows to the card bottom so CTAs align across a CardGroup.
+   The card body wrapper is position: relative, so the cta anchors to it
+   absolutely, with bottom padding reserving its space in the flow. */
+div:has(> a > div.w-full > div.mt-8) {
+    height: 100%;
+    padding-bottom: 60px;
+}
+
+a > div.w-full > div.mt-8 {
+    position: absolute;
+    right: 24px;
+    bottom: 20px;
+    left: 24px;
+    margin-top: 0;
+}
+
 .fc-footer-lead,
 .fc-footer-lead[data-as="p"] {
     display: block;
@@ -636,6 +667,7 @@ nav ul li:has(a[href="https://github.com/firecrawl/firecrawl"])
     }
 
     .fc-client-tabs {
+        grid-auto-flow: row;
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -643,8 +675,13 @@ nav ul li:has(a[href="https://github.com/firecrawl/firecrawl"])
         border-right: 0;
     }
 
-    .fc-client-tab:nth-child(-n + 2) {
+    .fc-client-tab {
         border-bottom: 1px solid var(--fc-border);
+    }
+
+    .fc-client-tab:nth-last-child(-n + 2):nth-child(odd),
+    .fc-client-tab:last-child {
+        border-bottom: 0;
     }
 
     .fc-client-panel {

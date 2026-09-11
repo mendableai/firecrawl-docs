@@ -1,116 +1,476 @@
 ---
-title: Integrations
-description: "Firecrawl は、ウェブサイト全体を LLM 向けの Markdown に変換できます"
-og:title: "Integrations | Firecrawl"
-og:description: "Firecrawl は、ウェブサイト全体を LLM 向けの Markdown に変換できます"
+title: 連携
+description: "普段使っているコーディングエージェント、アプリビルダー、フレームワーク、自動化プラットフォームに、FirecrawlのWeb検索、スクレイピング、操作機能を追加"
+og:title: "連携 | Firecrawl"
+og:description: "普段使っているコーディングエージェント、アプリビルダー、フレームワーク、自動化プラットフォームに、FirecrawlのWeb検索、スクレイピング、操作機能を追加"
 ---
 
+Firecrawlは、普段使用している開発ツールと連携できます。以下からプラットフォームを選択するか、[API](/ja/api-reference/v2-introduction)を直接呼び出してください。
+
+<div id="coding-agents-and-assistants">
+  ## コーディングエージェントとアシスタント
+</div>
+
+MCP または [Firecrawl CLI](/ja/sdks/cli) を通じて、エージェントにリアルタイムのWeb検索、スクレイピング、ブラウザ操作機能を提供します。
+
 <CardGroup cols={2}>
-  <Card title="Vercel Marketplace" icon="bolt" href="ja/quickstarts/vercel-marketplace">
-    API キーの自動設定で Firecrawl を Vercel プロジェクトに追加
+  <Card
+    title="Claude Code"
+    icon={
+  <img
+    src="/images/integrations/claude-code.png"
+    alt="Claude Code"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/quickstarts/claude-code"
+  >
+    Claude Code で Firecrawl MCP を設定
   </Card>
 
   <Card
-    title="Langchain"
+    title="Codex"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/langchain.png"
-    alt="Firecrawl Document Loader"
+    src="/images/agent-clients/codex.svg"
+    alt="Codex"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="ja/integrations/langchain"
+    href="/ja/quickstarts/codex-cli"
   >
-    Firecrawl Document Loader をチェック
+    OpenAI Codex で Firecrawl MCP を使用
+  </Card>
+
+  <Card
+    title="Cursor"
+    icon={
+  <img
+    src="/images/integrations/cursor.png"
+    alt="Cursor"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/quickstarts/cursor"
+  >
+    Cursor に Firecrawl MCP をワンクリックでインストール
+  </Card>
+
+  <Card
+    title="Hermes Agent"
+    icon={
+  <img
+    src="/images/integrations/hermes.png"
+    alt="Hermes Agent"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/hermes"
+  >
+    Hermes Agent のデフォルトのWeb検索・抽出バックエンド
+  </Card>
+
+  <Card
+    title="OpenClaw"
+    icon={
+  <img
+    src="/images/integrations/openclaw.png"
+    alt="OpenClaw"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/quickstarts/openclaw"
+  >
+    OpenClaw エージェントからスクレイピング、検索、ブラウジング
+  </Card>
+
+  <Card
+    title="OpenCode"
+    icon={
+  <img
+    src="/images/integrations/opencode.png"
+    alt="OpenCode"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/quickstarts/opencode"
+  >
+    Firecrawl MCP を OpenCode に組み込む
+  </Card>
+
+  <Card
+    title="Amp"
+    icon={
+  <img
+    src="/images/integrations/amp.png"
+    alt="Amp"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/quickstarts/amp"
+  >
+    Firecrawl MCP を Sourcegraph Amp に組み込む
+  </Card>
+
+  <Card
+    title="Windsurf"
+    icon={
+  <img
+    src="/images/integrations/windsurf.svg"
+    alt="Windsurf"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/quickstarts/windsurf"
+  >
+    Windsurf で Firecrawl MCP を設定
+  </Card>
+
+  <Card
+    title="Antigravity"
+    icon={
+  <img
+    src="/images/integrations/antigravity.png"
+    alt="Google Antigravity"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/quickstarts/antigravity"
+  >
+    Google のエージェント型 IDE に Firecrawl MCP を追加
+  </Card>
+</CardGroup>
+
+<div id="app-builders-and-platforms">
+  ## アプリビルダーとプラットフォーム
+</div>
+
+Firecrawl を一度接続すれば、デプロイ先のプラットフォームでリアルタイムの ウェブデータを活用してアプリを構築できます。
+
+<CardGroup cols={2}>
+  <Card
+    title="Replit"
+    icon={
+  <img
+    src="/images/integrations/replit.png"
+    alt="Replit"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/replit"
+  >
+    Replit Agent アプリで検索、スクレイピング、操作
+  </Card>
+
+  <Card
+    title="Lovable"
+    icon={
+  <img
+    src="/images/integrations/lovable.png"
+    alt="Lovable"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/lovable"
+  >
+    Lovable アプリを Firecrawl に接続
+  </Card>
+
+  <Card
+    title="Vercel Marketplace"
+    icon={
+  <img
+    src="/images/integrations/vercel.png"
+    alt="Vercel"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/quickstarts/vercel-marketplace"
+  >
+    API キーを自動設定して、Firecrawl を Vercel プロジェクトに追加
+  </Card>
+</CardGroup>
+
+<div id="agent-frameworks">
+  ## エージェントフレームワーク
+</div>
+
+エージェントコード内で、Firecrawlをローダー、リーダー、またはツールとして使用できます。
+
+<CardGroup cols={2}>
+  <Card
+    title="LangChain"
+    icon={
+  <img
+    src="/images/integrations/langchain.png"
+    alt="LangChain"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/langchain"
+  >
+    Firecrawl Document Loaderの詳細を見る
   </Card>
 
   <Card
     title="LlamaIndex"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/llamaindex.jpeg"
-    alt="Firecrawl Reader"
+    src="/images/integrations/llamaindex.jpeg"
+    alt="LlamaIndex"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="ja/integrations/llamaindex"
+    href="/ja/integrations/llamaindex"
   >
-    Firecrawl Reader をチェック
-  </Card>
-
-  <Card
-    title="Dify"
-    icon={
-  <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/dify.jpeg"
-    alt="Dify"
-  />
-}
-    href="ja/integrations/dify"
-  >
-    ウェブページから構造化データを抽出
-  </Card>
-
-  <Card
-    title="Flowise"
-    icon={
-  <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/flowise.png"
-    alt="Flowise"
-  />
-}
-    href="ja/integrations/flowise"
-  >
-    ウェブサイトからデータを直接同期
+    Firecrawl Readerの詳細を見る
   </Card>
 
   <Card
     title="CrewAI"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/crewai.png"
-    alt="Crew AI"
+    src="/images/integrations/crewai.png"
+    alt="CrewAI"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="ja/integrations/crewai"
+    href="/ja/integrations/crewai"
   >
-    ウェブスクレイピング作業を AI エージェントで協調
+    協調して動作する自律型AIエージェントをオーケストレーション
+  </Card>
+
+  <Card
+    title="CAMEL-AI"
+    icon={
+  <img
+    src="/images/integrations/camel-ai.png"
+    alt="CAMEL-AI"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/camelai"
+  >
+    FirecrawlをCamel AIと連携
+  </Card>
+
+  <Card
+    title="Praison AI"
+    icon={
+  <img
+    src="/images/integrations/praison.jpg"
+    alt="Praison AI"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/praison"
+  >
+    Firecrawlツールでウェブからデータをスクレイピング
+  </Card>
+</CardGroup>
+
+<div id="visual-ai-builders">
+  ## ビジュアルAIビルダー
+</div>
+
+Firecrawlノードをビジュアルキャンバスにドラッグ＆ドロップして、エージェントやRAGパイプラインを構築します。
+
+<CardGroup cols={2}>
+  <Card
+    title="Dify"
+    icon={
+  <img
+    src="/images/integrations/dify.jpeg"
+    alt="Dify"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/dify"
+  >
+    Chatflow、Workflow、AgentアプリにFirecrawlを追加
   </Card>
 
   <Card
     title="Langflow"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/langflow.webp"
+    src="/images/integrations/langflow_2.png"
     alt="Langflow"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="ja/integrations/langflow"
+    href="/ja/integrations/langflow"
   >
-    ビジュアルなウェブデータパイプラインを設計
+    ビジュアルビルダーでAIアプリを構築
   </Card>
 
   <Card
-    title="Camel AI"
+    title="Flowise"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/camelai.jpg"
-    alt="CamelAI"
+    src="/images/integrations/flowise.png"
+    alt="Flowise"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="ja/integrations/camelai"
+    href="/ja/integrations/flowise"
   >
-    ビジュアルなウェブデータパイプラインを設計
+    ドラッグ＆ドロップでLLMフローを構築
+  </Card>
+</CardGroup>
+
+<div id="workflow-automation">
+  ## ワークフローの自動化
+</div>
+
+スケジュールまたはトリガーに応じて Firecrawl を実行し、結果を任意の場所に送信できます。
+
+<CardGroup cols={2}>
+  <Card
+    title="Zapier"
+    icon={
+  <img
+    src="/images/integrations/zapier-logomark.png"
+    alt="Zapier"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/zapier"
+  >
+    Firecrawl を9,000以上のアプリと連携
+  </Card>
+
+  <Card
+    title="Make"
+    icon={
+  <img
+    src="/images/integrations/make.png"
+    alt="Make"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/make"
+  >
+    Firecrawl を Make と連携
+  </Card>
+
+  <Card
+    title="n8n"
+    icon={
+  <img
+    src="/images/integrations/n8n.webp"
+    alt="n8n"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/n8n"
+  >
+    Firecrawl を n8n と連携
+  </Card>
+
+  <Card
+    title="Pipedream"
+    icon={
+  <img
+    src="/images/integrations/pipedream.png"
+    alt="Pipedream"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/pipedream"
+  >
+    Pipedream のワークフローで Firecrawl を使用
+  </Card>
+</CardGroup>
+
+<div id="tooling-and-data-platforms">
+  ## ツールとデータプラットフォーム
+</div>
+
+ツールレイヤーを介して Firecrawl を利用したり、ウェブデータをナレッジベースに同期したりできます。
+
+<CardGroup cols={2}>
+  <Card
+    title="Composio"
+    icon={
+  <img
+    src="/images/integrations/composio.png"
+    alt="Composio"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
+  />
+}
+    href="/ja/integrations/composio"
+  >
+    Composio で Firecrawl を使用
   </Card>
 
   <Card
     title="SourceSync.ai"
     icon={
   <img
-    src="https://raw.githubusercontent.com/hellofirecrawl/docs/main/images/integrations/sourcesyncai.png"
+    src="/images/integrations/sourcesyncai.png"
     alt="SourceSync.ai"
+    width="24"
+    height="24"
+    style={{ objectFit: "contain" }}
   />
 }
-    href="ja/integrations/sourcesyncai"
+    href="/ja/integrations/sourcesyncai"
   >
-    ウェブデータで RAG アプリを構築
+    ウェブデータで RAG アプリケーションを構築
   </Card>
 </CardGroup>
+
+<Note>
+  お使いのプラットフォームが見当たりませんか？Firecrawl は、HTTP リクエストを送信できる環境ならどこでも利用できます。[APIリファレンス](/ja/api-reference/v2-introduction)、[SDKs](/ja/sdks/overview)、または [MCP Server](/ja/mcp-server) をご覧ください。
+</Note>

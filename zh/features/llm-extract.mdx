@@ -118,8 +118,36 @@ Firecrawl 借助 AI 通过 3 个步骤从网页获取结构化数据：
 
 * `schema`: 描述所需结构化输出的 JSON Schema (基于 schema 的提取为必填) 。
 * `prompt`: 可选提示，用于引导提取 (也用于无 schema 的提取) 。
+* `checkPromptInjection`: 可选布尔值 (默认值为 `false`) 。启用后，Firecrawl 会在运行提取前扫描已抓取页面内容中的 prompt 注入尝试。请参见 [Prompt 注入检测](#prompt-injection-detection)。
 
 **重要说明：** 与 v1 不同，v2 中没有单独的 `jsonOptions` 参数。schema 必须直接包含在 `formats` 数组中的 format 对象内。
+
+<div id="prompt-injection-detection">
+  ### prompt 注入检测
+</div>
+
+网页可能包含精心构造的隐藏文本，用于劫持基于 LLM 的提取——例如，指示模型忽略你的 schema 并返回由攻击者控制的数据。如果你从不受信任或用户提交的 URL 中提取数据，可以选择启用防护机制，在提取运行前检查抓取到的内容：
+
+```json
+{
+  "url": "https://example.com",
+  "formats": [
+    {
+      "type": "json",
+      "schema": { "type": "object", "properties": { "title": { "type": "string" } } },
+      "checkPromptInjection": true
+    }
+  ]
+}
+```
+
+工作原理：
+
+* 专用分类器会检查抓取的页面内容 (与提取并行运行，因此启用后不会拖慢正常抓取) 。
+* 如果检测到 prompt 注入尝试，请求会失败并返回 HTTP `403` 和错误代码 `SCRAPE_PROMPT_INJECTION_DETECTED`——不会返回任何提取结果。
+* 该检查运行时，会在标准 JSON 格式成本的基础上额外计费 **+4 额度**。如果检查运行后抓取失败 (包括检测到注入且请求被封禁时) ，则会计费 **5 额度**，而不是失败抓取通常的 0 额度，因为分类器调用仍已运行。
+
+在 v1 中，同一选项以 `jsonOptions.checkPromptInjection` 的形式提供。所有官方 SDK 中也提供了该选项 (例如 JS SDK 中的 `checkPromptInjection`、Python SDK 的 v2 JSON 格式中的 `check_prompt_injection`) 。
 
 <Note>
   **JSON 提取中不支持 HTML 属性。** JSON 提取是基于页面的 Markdown 转换结果工作的，该转换只保留可见文本内容。HTML 属性 (例如 `data-id`、元素上的自定义属性) 会在转换过程中被去除，大语言模型无法看到这些属性。如果你需要提取 HTML 属性值，请使用 `rawHtml` format 并在客户端解析属性，或者使用 `executeJavascript` 动作为在提取前将属性值注入到可见文本中。

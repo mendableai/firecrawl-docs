@@ -5,7 +5,7 @@ og:title: "ElevenAgents | Firecrawl"
 og:description: "Firecrawl を使って、ElevenLabs の音声エージェントとチャットエージェントに Web へのリアルタイムアクセスを提供"
 ---
 
-[ElevenAgents](https://elevenlabs.io/agents) の音声エージェントとチャットエージェントに、Firecrawl を使って Web をリアルタイムでスクレイピング、検索、クロールできる機能を追加します。このガイドでは、2 つの統合方法を紹介します。
+[ElevenAgents](https://elevenlabs.io/agents) の音声エージェントとチャットエージェントに、Firecrawl を使って Web へのリアルタイムアクセスを提供します。このガイドでは、2 つのインテグレーション識別子方法を紹介します。
 
 1. **MCP サーバー** — コード不要でセットアップできる、ホスト版 Firecrawl MCP サーバー に接続します。
 2. **サーバー webhook ツール** — リクエストを完全に制御できるよう、カスタムツールから Firecrawl の REST API を呼び出します。
@@ -31,14 +31,14 @@ og:description: "Firecrawl を使って、ElevenLabs の音声エージェント
 2. インテグレーション識別子ライブラリから **Custom MCP Server** を選択します。
 3. 次のフィールドを入力します。
 
-| フィールド           | 値                                         |
-| --------------- | ----------------------------------------- |
-| **Name**        | Firecrawl                                 |
-| **Description** | あらゆる Web サイトのコンテンツを検索、スクレイピング、クロール、抽出します。 |
-| **Server type** | Streamable HTTP                           |
-| **Server URL**  | `https://mcp.firecrawl.dev/v2/mcp`        |
+| フィールド           | 値                                       |
+| --------------- | --------------------------------------- |
+| **Name**        | Firecrawl                               |
+| **Description** | Firecrawl で Web コンテンツを検索、スクレイピング、解析します。 |
+| **Server type** | Streamable HTTP                         |
+| **Server URL**  | `https://mcp.firecrawl.dev/v2/mcp`      |
 
-この URL で、キー不要の Firecrawl ツールセットを利用できます。アカウント接続または無人セットアップについては、[ホスト型 MCP 接続モード](/ja/developer-guides/mcp-setup-guides/oauth)に従ってください。API キーは URL には含めず、Authorization ヘッダーまたは安全なシークレットストアに保管してください。
+キー不要の MCP では、共有制限のもとで Search、Scrape、Parse のみを利用できます。より広範なツールセットを使用するには、[サインイン](/ja/mcp-server/oauth) または [API キーを追加](/ja/mcp-server/keyless#add-an-api-key) してください。API キーは URL には含めず、環境変数またはシークレットストアに保管してください。
 
 <Note>
   サーバータイプには必ず **Streamable HTTP** を選択してください。デフォルトの SSE オプションは Firecrawl MCP エンドポイントでは動作しません。
@@ -46,12 +46,12 @@ og:description: "Firecrawl を使って、ElevenLabs の音声エージェント
 
 4. **Tool Approval Mode** で、承認レベルを選択します。
    * **No Approval** — エージェントはツールを自由に使用します。読み取り専用のスクレイピングに適しています。
-   * **Fine-Grained Tool Approval** — 自動実行できるツールと承認が必要なツールを事前に選べます。コストの高いクロール オペレーションを制御するのに適しています。
+   * **Fine-Grained Tool Approval** — 自動実行できるツールと承認が必要なツールを事前に選べます。
    * **Always Ask** (default) — ツールを呼び出すたびに、エージェントが許可を求めます。
 
 5. **I trust this server** をチェックして、**Add Server** をクリックします。
 
-ElevenLabs がサーバーに接続し、利用可能なツール (scrape、search、crawl、map など) を一覧表示します。
+ElevenLabs がキー不要のサーバーに接続し、Search、Scrape、Parse を一覧表示します。
 
 <div id="attach-it-to-an-agent">
   ### エージェントに紐付ける
@@ -154,7 +154,7 @@ Firecrawl API はデフォルトでページのコンテンツを Markdown と�
 
 4. **Add tool** をクリックします。
 
-<div id="update-the-system-prompt">
+<div id="update-the-system-prompt-2">
   ### システムプロンプトを更新する
 </div>
 
@@ -169,7 +169,7 @@ Firecrawl API はデフォルトでページのコンテンツを Markdown と�
 常に情報を簡潔にまとめ、参照元のURLを明記してください。
 ```
 
-<div id="test-it">
+<div id="test-it-2">
   ### 試してみる
 </div>
 

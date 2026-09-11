@@ -1,0 +1,9 @@
+```bash cURL
+curl -X GET "https://api.firecrawl.dev/v2/agent" \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY"
+
+# Fetch the next page (unix ms timestamp from the previous page's `next` URL)
+curl -X GET "https://api.firecrawl.dev/v2/agent?before=1756600000000" \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY"
+```
+

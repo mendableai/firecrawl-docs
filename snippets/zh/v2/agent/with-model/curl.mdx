@@ -1,19 +1,12 @@
 ```bash cURL
-# Using Spark 1 Mini (default)
+# Spark 2 为默认模型——所有运行均使用它执行
 curl -X POST "https://api.firecrawl.dev/v2/agent" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "Find the pricing of Firecrawl",
-    "model": "spark-1-mini"
+    "model": "spark-2"
   }'
 
-# 使用 Spark 1 Pro 处理复杂任务
-curl -X POST "https://api.firecrawl.dev/v2/agent" \
-  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "Compare all enterprise features and pricing across Firecrawl, Apify, and ScrapingBee",
-    "model": "spark-1-pro"
-  }'
+# 已弃用：仍可传入 Spark 1 的模型名称，但会路由到 "spark-2"。
 ```

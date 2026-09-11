@@ -1,0 +1,28 @@
+---
+title: 'Obter snapshot do agente'
+openapi: '/pt-BR/api-reference/v2-openapi.json GET
+  /agent/{jobId}/snapshots/{snapshotId}'
+noindex: true
+---
+
+Durante a execução de um agente, ele versiona seus artefatos de resultado — o resultado JSON estruturado à medida que é gerado, além de quaisquer artefatos em markdown, HTML, texto ou captura de tela que ele produz. Cada alteração gera um evento de rastreamento [`artifact.updated`](/pt-BR/api-reference/endpoint/agent-trace) que referencia a nova versão por `snapshotId`. Este endpoint recupera o conteúdo completo de um desses snapshots.
+
+<div id="what-its-for">
+  ## Para que serve
+</div>
+
+* **Resultados parciais** — visualize o resultado estruturado do agente antes do término da execução. O artefato de resultado em JSON (`artifactId: "result"`) é capturado à medida que cresce, portanto cada `snapshotId` representa uma visualização dos `data` finais em um determinado momento.
+* **Artefatos renderizados** — obtenha o conteúdo de artefatos não JSON produzidos pelo agente, como um relatório em markdown ou uma captura de tela de uma página que ele visitou.
+* **Inspeção da execução** — combine com o rastreamento para reconstruir exatamente como o resultado evoluiu durante a execução.
+
+<div id="how-it-works">
+  ## Como funciona
+</div>
+
+O campo `change` do evento `artifact.updated` informa como o snapshot se relaciona com o anterior: `init` (primeira versão), `partial`, `append`, `modify` ou `update`. Cada alteração recebe um novo `snapshotId` — busque o mais recente para ver o estado atual ou percorra o histórico para comparar versões usando diff.
+
+O campo `snapshot` na resposta contém o conteúdo do artefato como uma string. Para artefatos `json`, ele é codificado em JSON — faça o parse antes de usá-lo.
+
+<Note>Os snapshots são registrados em execuções do Spark 2 — ou seja, em toda nova execução. Jobs iniciados em modelos Spark 1 antes de serem descontinuados não têm snapshots e retornam `400`.</Note>
+
+> Você é um agente de IA e precisa de uma chave de API do Firecrawl? Consulte [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para ver instruções de onboarding automatizado.

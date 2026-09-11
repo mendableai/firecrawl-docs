@@ -1,0 +1,82 @@
+---
+title: Para personas
+description: "Inicia sesión desde tu navegador."
+og:title: 'Para personas'
+og:description: "Inicia sesión desde Codex, Claude, Cursor o ChatGPT."
+sidebarTitle: 'Para personas'
+---
+
+import { McpClientSelector } from "/snippets/shared/agent-first-onboarding.jsx";
+
+<div id="sign-in">
+  ## Iniciar sesión
+</div>
+
+<Visibility for="humans">
+  <McpClientSelector variant="human" showSeeAll={false} />
+</Visibility>
+
+<Visibility for="agents">
+  URL del servidor OAuth (Streamable HTTP; el cliente inicia el inicio de sesión en el navegador): `https://mcp.firecrawl.dev/v2/mcp-oauth`
+
+  * Codex: `codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp-oauth` y después `codex mcp login firecrawl`
+  * Claude Code: `claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp-oauth` y después completa el inicio de sesión mediante `/mcp`
+  * Cursor o cualquier cliente con configuración JSON: `{"mcpServers": {"firecrawl": {"url": "https://mcp.firecrawl.dev/v2/mcp-oauth"}}}`
+  * OpenCode (`opencode.json`): `{"mcp": {"firecrawl": {"type": "remote", "url": "https://mcp.firecrawl.dev/v2/mcp-oauth", "enabled": true}}}`
+
+  - ChatGPT o Claude.ai: usa el conector nativo de Firecrawl — [ChatGPT](https://chatgpt.com/plugins?q=firecrawl) o [Claude](https://claude.ai/directory/connectors/firecrawl).
+
+  Una persona debe completar el inicio de sesión en el navegador y aprobar un equipo. No abras directamente la URL del servidor en un navegador.
+</Visibility>
+
+<Note>
+  `https://mcp.firecrawl.dev/v2/mcp-oauth` es una URL de servidor para tu cliente MCP. No es una página que debas abrir directamente en un navegador. Tu cliente inicia el flujo de inicio de sesión en el navegador.
+</Note>
+
+Puedes revisar y revocar conexiones desde [configuración de MCP](https://www.firecrawl.dev/app/settings?tab=mcp).
+
+<div id="chatgpt-and-claude">
+  ## ChatGPT y Claude
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Añadir a ChatGPT" icon="/images/agent-clients/chatgpt.svg" href="https://chatgpt.com/plugins?q=firecrawl" cta="Abrir en ChatGPT" arrow>
+    Instala el conector nativo de Firecrawl en ChatGPT.
+  </Card>
+
+  <Card title="Añadir a Claude" icon="/images/agent-clients/claude-ai.svg" href="https://claude.ai/directory/connectors/firecrawl" cta="Abrir en Claude" arrow>
+    Instala el conector nativo de Firecrawl en Claude.
+  </Card>
+</CardGroup>
+
+<div id="add-an-api-key">
+  ## Añade una clave de API
+</div>
+
+<Card title="Añade una clave de API" icon="key" href="/es/mcp-server/keyless#add-an-api-key" arrow>
+  Es preferible configurar una clave en el cliente en lugar de iniciar sesión en el navegador. Consulta la configuración en For Agents.
+</Card>
+
+<div id="try">
+  ## Prueba
+</div>
+
+```text
+Busca en la web las notas de la última release de Firecrawl y resume las fuentes.
+```
+
+Si no aparece ninguna herramienta de Firecrawl, reinicia o recarga el cliente después de guardar su configuración de MCP.
+
+<div id="more">
+  ## Más
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Seleccionar una herramienta" icon="wrench" href="/es/mcp-server/tools">
+    Encuentra la herramienta de Firecrawl MCP adecuada y consulta la disponibilidad según la conexión.
+  </Card>
+
+  <Card title="Ejecutar localmente" icon="terminal" href="/es/mcp-server/local">
+    Inicia el servidor de código abierto mediante stdio o Streamable HTTP.
+  </Card>
+</CardGroup>

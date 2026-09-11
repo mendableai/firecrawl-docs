@@ -328,7 +328,7 @@
             "type": "boolean"
           },
           "proxy": {
-            "description": "指定要使用的代理类型。\n\n- **basic**：适用于抓取没有或只有基础反爬虫机制的网站。速度快，通常可用。\n- **enhanced**：适用于抓取具备高级反爬虫机制的网站。速度较慢，但在某些网站上更可靠。每次请求最多消耗 5 个积分。\n- **auto**：如果 basic 代理失败，Firecrawl 会自动使用 enhanced 代理重试抓取。如果使用 enhanced 重试成功，则本次抓取将扣除 5 个积分；如果首次使用 basic 即成功，则只收取常规费用。\n\n如果你未指定代理类型，Firecrawl 将默认使用 basic。",
+            "description": "指定要使用的代理类型。\n\n- **basic**：适用于抓取没有或只有基础反爬虫机制的网站。速度快，通常可用。\n- **enhanced**：适用于抓取具备高级反爬虫机制的网站。速度较慢，但在某些网站上更可靠。额度成本与 basic 相同。\n- **auto**：如果 basic 代理失败，Firecrawl 会自动使用 enhanced 代理重试抓取。增强型代理不收取额外额度，因此无论哪种情况，都只收取常规费用。\n\n如果你未指定代理类型，Firecrawl 将默认使用 basic。",
             "enum": [
               "basic",
               "enhanced",
@@ -3009,7 +3009,7 @@
                           "type": "string"
                         },
                         "plan_credits": {
-                          "description": "套餐中自带的额度数量。不包括优惠券额度、额度包或自动充值获得的额度。",
+                          "description": "套餐中自带的额度数量。不包括优惠券额度或通过按量付费添加的额度。",
                           "example": 500000,
                           "type": "number"
                         },

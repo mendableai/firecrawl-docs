@@ -873,7 +873,7 @@
           },
           "proxy": {
             "default": "auto",
-            "description": "Especifica el tipo de proxy que se va a usar.\n\n - **basic**: Proxies para hacer scraping de sitios con soluciones anti‑bot nulas o básicas. Son rápidos y normalmente funcionan.\n - **enhanced**: Proxies mejorados para hacer scraping de sitios con soluciones anti‑bot avanzadas. Son más lentos, pero más fiables en ciertos sitios. Pueden costar hasta 5 créditos por solicitud.\n - **auto**: Firecrawl reintentará automáticamente el scraping con proxies mejorados si el proxy básico falla. Si el reintento con **enhanced** tiene éxito, se facturarán 5 créditos por la operación de scraping. Si el primer intento con **basic** tiene éxito, solo se facturará el coste normal.\n\nSi no especificas un proxy, Firecrawl usará **auto** por defecto.",
+            "description": "Especifica el tipo de proxy que se va a usar.\n\n - **basic**: Proxies para hacer scraping de sitios con soluciones anti‑bot nulas o básicas. Son rápidos y normalmente funcionan.\n - **enhanced**: Proxies mejorados para hacer scraping de sitios con soluciones anti‑bot avanzadas. Son más lentos, pero más fiables en ciertos sitios. Se facturan al mismo coste en créditos que **basic**.\n - **auto**: Firecrawl reintentará automáticamente el scraping con proxies mejorados si el proxy básico falla. Los proxies mejorados no conllevan ningún recargo de créditos, por lo que, en cualquier caso, solo se facturará el coste normal.\n\nSi no especificas un proxy, Firecrawl usará **auto** por defecto.",
             "enum": [
               "basic",
               "enhanced",
@@ -2883,7 +2883,7 @@
                           "type": "string"
                         },
                         "planCredits": {
-                          "description": "Número de créditos del plan. Esto no incluye créditos provenientes de cupones, paquetes de créditos ni créditos de recarga automática.",
+                          "description": "Número de créditos del plan. Esto no incluye créditos provenientes de cupones ni créditos añadidos mediante pago por uso.",
                           "example": 500000,
                           "type": "number"
                         },

@@ -1,8 +1,8 @@
 ---
 title: "Depura Firecrawl con Ask"
-description: "Depuración con agentes de tu integración con Firecrawl"
+description: "Depura un trabajo fallido o cualquier problema de integración de Firecrawl con una API de soporte con agentes"
 og:title: "Ask | Firecrawl"
-og:description: "Depura problemas de scraping y obtén correcciones verificadas, todo mediante una sola llamada a la API."
+og:description: "Depura trabajos fallidos y problemas de scraping, y obtén correcciones verificadas, todo mediante una sola llamada a la API."
 sidebarTitle: "Depura con Ask"
 icon: "messages-question"
 ---
@@ -53,6 +53,73 @@ curl -X POST https://api.firecrawl.dev/v2/support/docs-search \
     "question": "how do I set up webhook signature verification?"
   }'
 ```
+
+<div id="debug-a-failed-job">
+  ## Depura un trabajo fallido
+</div>
+
+Todos los trabajos de Firecrawl —scraping, rastreo, extracción por lotes, search, mapeo o extracción— se pueden depurar con `/support/ask`. Describe el fallo en lenguaje sencillo e incluye el ID de trabajo si lo tienes; el agente consulta los registros de ese trabajo y el estado de tu cuenta antes de responder.
+
+```bash
+curl -X POST https://api.firecrawl.dev/v2/support/ask \
+  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "debug failed job 0f8c9a1b-4e2d-47a1-9c3f-1b2d3e4f5a6b — crawl of https://example.com failed after 12 pages",
+    "rationale": "user needs the full docs site indexed before their demo"
+  }'
+```
+
+Incluye toda la información que tengas; cada dato acota el diagnóstico:
+
+| Detalle                             | Por qué ayuda                                                                                                    |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| ID de trabajo                       | Permite al agente consultar directamente los registros, el estado y los resultados por página de ese trabajo     |
+| URL de destino                      | Identifica bloqueadores específicos del sitio, como protección contra bots, renderizado de JS o reglas de robots |
+| Mensaje de error o código de estado | Distingue los límites de tasa y el agotamiento de créditos de los fallos de scraping                             |
+| Lo que esperabas                    | Distingue un fallo crítico de un trabajo que &quot;tuvo éxito&quot; pero sin contenido                           |
+| `rationale`                         | Indica al agente qué busca el usuario final para que priorice la evidencia adecuada                              |
+
+<div id="what-ask-checks-for-common-failures">
+  ### Qué comprueba Ask ante fallos comunes
+</div>
+
+| Síntoma                                            | Qué investiga el agente                                                                                             |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Estado del trabajo `failed`                        | Registros del trabajo, código de estado HTTP ascendente, historial de proxy y reintentos                            |
+| El rastreo devolvió menos páginas de las esperadas | `limit`, `maxDiscoveryDepth`, `includePaths`/`excludePaths`, cobertura del mapa del sitio, reglas de robots         |
+| Markdown vacío o truncado                          | Renderizado del lado del cliente, tiempo de espera de `waitFor`, `actions` necesarias, recorte de `onlyMainContent` |
+| Respuestas `401` / `402` / `429`                   | Validez y restricciones de la clave de API, créditos restantes, límites de tasa del plan                            |
+| Trabajo bloqueado o con tiempo de espera agotado   | Estado de la cola, tiempos de espera por página, concurrencia de trabajos de tu plan                                |
+| El Webhook nunca se activó                         | Intentos de entrega, respuestas del endpoint, errores de verificación de firma                                      |
+
+¿No tienes un ID de trabajo? Pasa el cursor sobre la URL de una fila en [Activity Logs](https://www.firecrawl.dev/app/logs) y haz clic en **Copy ID**, o usa el `id` devuelto al iniciar el trabajo.
+
+<div id="debug-from-activity-logs">
+  ### Depurar desde los registros de actividad
+</div>
+
+Si prefieres no hacer la llamada tú mismo, el dashboard ejecuta el mismo agente por ti. Abre los [registros de actividad](https://www.firecrawl.dev/app/logs) y busca el botón con destellos en la columna **Acciones** de una fila fallida; su texto emergente dice **Depurar incidencia**. Solo aparece en trabajos que fallaron o finalizaron con errores en solicitudes secundarias, por lo que los trabajos correctos o en curso no lo tendrán.
+
+Al hacer clic, el diagnóstico se inicia de inmediato; no hay ningún prompt que escribir. Firecrawl envía la URL, el endpoint, el estado, el mensaje de error y los parámetros de scraping de ese trabajo al mismo agente que está detrás de `/support/ask`, que luego lee los registros del trabajo y el estado de tu cuenta. El contenido de las páginas extraídas nunca se incluye.
+
+El panel que se abre muestra:
+
+| Elemento               | Qué es                                                                                              |
+| ---------------------- | --------------------------------------------------------------------------------------------------- |
+| Diagnóstico            | La explicación del agente sobre qué salió mal y qué cambiar                                         |
+| Indicador de confianza | Alta, media o baja: el nivel de certeza del agente sobre la respuesta                               |
+| Indicador **Validado** | Se muestra cuando el agente probó su propia solución sugerida y la prueba se completó correctamente |
+| Solución sugerida      | Los parámetros corregidos en formato JSON, con un botón para copiar; pégalos en tu próxima llamada  |
+| Fuentes                | Enlaces a las páginas de documentación en las que se basa la respuesta                              |
+
+Si el diagnóstico no lo resuelve, **Abrir ticket de soporte** al final del panel crea un ticket con el análisis del agente ya adjunto, para que no tengas que volver a explicar el fallo.
+
+<Info>
+  La depuración desde el dashboard está limitada a 30 ejecuciones por hora por equipo, y tu equipo necesita al menos una clave de API; el agente se ejecuta con tu propia clave, por lo que solo puede ver tus trabajos.
+</Info>
+
+Una vez que tengas un diagnóstico, aplica los `fixParameters` devueltos y vuelve a intentarlo; consulta el [patrón de reintento del agente](#agent-retry-pattern) a continuación.
 
 <div id="how-it-works">
   ## Cómo funciona

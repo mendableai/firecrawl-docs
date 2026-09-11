@@ -1,509 +1,117 @@
 ---
-title: Firecrawl MCP tools and operations
-description: Available tools, operational behavior, and error handling for Firecrawl MCP.
-sidebarTitle: Tools and operations
+title: Firecrawl MCP tools
+description: Choose a Firecrawl MCP tool and understand its availability and operating behavior.
+sidebarTitle: Tools
 ---
 
-The tools listed here describe the full Firecrawl MCP server surface. Tool availability depends on how you connect.
+Firecrawl MCP exposes tools for finding, extracting, interacting with, and monitoring web content. Your MCP client receives the exact input schema for every available tool when it connects.
 
-| Connection mode | Tool availability |
+## Tool availability
+
+| Connection mode | Available tools |
 | --- | --- |
-| Hosted account OAuth | Full tool surface, subject to plan and feature availability |
-| Hosted API key | Full tool surface, subject to plan and feature availability |
-| Hosted keyless | `firecrawl_search`, `firecrawl_scrape`, and `firecrawl_parse` only |
-| Local MCP with a cloud API key | API-backed tools; direct local-file Parse requires a self-hosted API URL |
-| Local MCP with a self-hosted API | Tools supported by the services enabled in that deployment |
+| Hosted OAuth | Full tool surface, subject to plan and team policy |
+| Hosted API key | Full tool surface, subject to plan and team policy |
+| Hosted keyless | `firecrawl_search`, `firecrawl_scrape`, and `firecrawl_parse` |
+| Local with the Firecrawl cloud API | API-backed tools; direct local-file Parse is unavailable |
+| Local with a self-hosted Firecrawl API | Tools supported by the services enabled in that deployment |
+
+Start with [Get Started](/mcp-server) and pick [For Agents](/mcp-server/keyless) or [For Humans](/mcp-server/oauth). Some optional tools can be disabled by environment or team policy.
+
+## Choose a tool
+
+| Job | Tool | Use it when |
+| --- | --- | --- |
+| Read one page | `firecrawl_scrape` | You know the URL and need page content or structured fields. |
+| Extract structured data | `firecrawl_scrape` with JSON format | You have the URL and want data matching a prompt or JSON schema. |
+| Discover site URLs | `firecrawl_map` | You need to find pages before deciding what to extract. |
+| Search the web | `firecrawl_search` | You have a query rather than a known URL. |
+| Parse a file | `firecrawl_parse` | You need content from a PDF, document, spreadsheet, or HTML file. |
+| Extract many pages | `firecrawl_crawl` and `firecrawl_check_crawl_status` | You need to traverse a site or section. The crawl tool polls the job to a terminal state before returning. |
+| Run autonomous research | `firecrawl_agent` and `firecrawl_agent_status` | The task spans multiple sources and the exact pages are not known. |
+| Operate a live page | `firecrawl_interact` and `firecrawl_interact_stop` | You need clicks, form fills, navigation, or dynamic-page extraction. |
+| Search scientific literature | `firecrawl_research_*` | You need to find papers, read passages from inside one, or follow citations. Searches the [Research Index](/features/research) of PubMed, bioRxiv, medRxiv, and arXiv paper abstracts. |
+| Answer a programming question | `firecrawl_developer_search` | You need primary-source answers from issues, merged pull requests, READMEs, and curated docs. |
+| Monitor changes | `firecrawl_monitor_*` | You need recurring checks, diffs, and webhook or email notifications. |
+| Send product feedback | `firecrawl_search_feedback` and `firecrawl_feedback` | You want to rate search results or report endpoint-level quality. |
 
 <Note>
-Some optional tools can be disabled by environment or team policy. Start with [Connect Firecrawl MCP](/mcp-server/connect) to choose an authentication mode, and see [Rate limits](/rate-limits#keyless-no-api-key) for the current keyless allowance.
+The former Extract MCP tool is deprecated and is not part of the current tool surface. Use Scrape with JSON format for a known page, or Agent when Firecrawl must discover the sources. See [Choosing the Data Extractor](/developer-guides/usage-guides/choosing-the-data-extractor) for the full comparison.
 </Note>
 
-## Available Tools
-
-### 1. Scrape Tool (`firecrawl_scrape`)
-
-Scrape content from a single URL with advanced options.
-
-```json
-{
-  "name": "firecrawl_scrape",
-  "arguments": {
-    "url": "https://example.com",
-    "formats": ["markdown"],
-    "onlyMainContent": true,
-    "waitFor": 1000,
-    "mobile": false,
-    "includeTags": ["article", "main"],
-    "excludeTags": ["nav", "footer"],
-    "skipTlsVerification": false
-  }
-}
-```
-
-To redact personally identifiable information, include `redactPII` in the scrape tool arguments.
-
-```json
-{
-  "name": "firecrawl_scrape",
-  "arguments": {
-    "url": "https://example.com/contact",
-    "formats": ["markdown"],
-    "redactPII": true
-  }
-}
-```
-
-### 2. Map Tool (`firecrawl_map`)
-
-Map a website to discover all indexed URLs on the site.
-
-```json
-{
-  "name": "firecrawl_map",
-  "arguments": {
-    "url": "https://example.com",
-    "search": "blog",
-    "sitemap": "include",
-    "includeSubdomains": false,
-    "limit": 100,
-    "ignoreQueryParameters": true
-  }
-}
-```
-
-#### Map Tool Options:
-
-- `url`: The base URL of the website to map
-- `search`: Optional search term to filter URLs
-- `sitemap`: Control sitemap usage - "include", "skip", or "only"
-- `includeSubdomains`: Whether to include subdomains in the mapping
-- `limit`: Maximum number of URLs to return
-- `ignoreQueryParameters`: Whether to ignore query parameters when mapping
-
-**Best for:** Discovering URLs on a website before deciding what to scrape; finding specific sections of a website.
-**Returns:** Array of URLs found on the site.
-
-### 3. Search Tool (`firecrawl_search`)
-
-Search the web and optionally extract content from search results.
-
-```json
-{
-  "name": "firecrawl_search",
-  "arguments": {
-    "query": "your search query",
-    "limit": 5,
-    "location": "United States",
-    "tbs": "qdr:m",
-    "scrapeOptions": {
-      "formats": ["markdown"],
-      "onlyMainContent": true
-    }
-  }
-}
-```
-
-#### Search Tool Options:
-
-- `query`: The search query string (required)
-- `limit`: Maximum number of results to return
-- `location`: Geographic location for search results
-- `tbs`: Time-based search filter (e.g., `qdr:d` for past day, `qdr:w` for past week, `qdr:m` for past month)
-- `filter`: Additional search filter
-- `sources`: Array of source types to search (`web`, `images`, `news`)
-- `scrapeOptions`: Options for scraping search result pages
-- `enterprise`: Array of enterprise options (`default`, `anon`, `zdr`)
-
-### 3b. Search Feedback Tool (`firecrawl_search_feedback`)
-
-Send structured feedback after using `firecrawl_search`. The first feedback submission for a search ID can refund one credit, subject to the daily team cap.
-
-```json
-{
-  "name": "firecrawl_search_feedback",
-  "arguments": {
-    "searchId": "search-id-from-firecrawl-search",
-    "rating": "good",
-    "valuableSources": [
-      {
-        "url": "https://docs.firecrawl.dev/mcp-server",
-        "reason": "Contains the current connection guidance."
-      }
-    ]
-  }
-}
-```
-
-Set `FIRECRAWL_NO_SEARCH_FEEDBACK=1` to prevent this optional tool from being registered.
-
-### 3c. Generic Feedback Tool (`firecrawl_feedback`)
-
-Send concise endpoint-level feedback for completed Scrape, Parse, Map, or Search jobs. Do not include raw scraped or parsed content.
-
-```json
-{
-  "name": "firecrawl_feedback",
-  "arguments": {
-    "endpoint": "scrape",
-    "jobId": "job-id",
-    "rating": "partial",
-    "issues": ["missing_markdown"],
-    "url": "https://example.com"
-  }
-}
-```
-
-Use `firecrawl_search_feedback` for search-result quality. Set `FIRECRAWL_NO_ENDPOINT_FEEDBACK=1` to prevent the generic feedback tool from being registered.
-
-### 4. Parse Tool (`firecrawl_parse`)
-
-Parse a local file such as a PDF, DOCX, XLSX, or HTML document into clean, LLM-ready data.
-
-```json
-{
-  "name": "firecrawl_parse",
-  "arguments": {
-    "filePath": "/absolute/path/to/report.pdf",
-    "formats": ["markdown"]
-  }
-}
-```
-
-When you run Firecrawl MCP locally against a Firecrawl API instance with `FIRECRAWL_API_URL`, the MCP server can read `filePath` directly and sends the file bytes to `/v2/parse`.
-
-When you use the remote hosted MCP server, the hosted server cannot read files from your machine. In that case `firecrawl_parse` uses a two-step handoff that also works on the remote keyless URL:
-
-1. Call `firecrawl_parse` with `filePath`. The tool returns a pre-filled upload command and a `nextToolCall` containing an `uploadRef`.
-2. Run the upload command on the machine that can read the file, then call `firecrawl_parse` again with the returned `uploadRef`.
-
-The upload command sends the file bytes to a short-lived signed upload target. It does not include your Firecrawl API key.
-
-#### Parse Tool Options:
-
-- `filePath`: Local path to the file you want to parse. Use this for the first call.
-- `uploadRef`: Reference returned by the first hosted-MCP call. Use this for the second call after the upload succeeds.
-- `formats`: Output formats. Defaults to `markdown`.
-- `parsers`: Parser controls, such as PDF parsing options.
-- `contentType`: Optional file MIME type override.
-- `declaredSizeBytes`: Optional file size hint. Files are limited to 50 MB.
-
-**Best for:** Local or non-public documents that are not available at a public URL.
-
-**Not recommended for:** Public document URLs. Use `firecrawl_scrape` instead; it will detect and parse documents from URLs.
-
-### 5. Crawl Tool (`firecrawl_crawl`)
-
-Start an asynchronous crawl with advanced options.
-
-```json
-{
-  "name": "firecrawl_crawl",
-  "arguments": {
-    "url": "https://example.com",
-    "maxDiscoveryDepth": 2,
-    "limit": 100,
-    "allowExternalLinks": false,
-    "deduplicateSimilarURLs": true
-  }
-}
-```
-
-### 6. Check Crawl Status (`firecrawl_check_crawl_status`)
-
-Check the status of a crawl job.
-
-```json
-{
-  "name": "firecrawl_check_crawl_status",
-  "arguments": {
-    "id": "550e8400-e29b-41d4-a716-446655440000"
-  }
-}
-```
-
-**Returns:** Status and progress of the crawl job, including results if available.
-
-### 7. Extract Tool (`firecrawl_extract`)
-
-Extract structured information from web pages using LLM capabilities. Supports both cloud AI and self-hosted LLM extraction.
-
-```json
-{
-  "name": "firecrawl_extract",
-  "arguments": {
-    "urls": ["https://example.com/page1", "https://example.com/page2"],
-    "prompt": "Extract product information including name, price, and description",
-    "schema": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "price": { "type": "number" },
-        "description": { "type": "string" }
-      },
-      "required": ["name", "price"]
-    },
-    "allowExternalLinks": false,
-    "enableWebSearch": false,
-    "includeSubdomains": false
-  }
-}
-```
-
-Example response:
-
-```json
-{
-  "content": [
-    {
-      "type": "text",
-      "text": {
-        "name": "Example Product",
-        "price": 99.99,
-        "description": "This is an example product description"
-      }
-    }
-  ],
-  "isError": false
-}
-```
-
-#### Extract Tool Options:
-
-- `urls`: Array of URLs to extract information from
-- `prompt`: Custom prompt for the LLM extraction
-- `schema`: JSON schema for structured data extraction
-- `allowExternalLinks`: Allow extraction from external links
-- `enableWebSearch`: Enable web search for additional context
-- `includeSubdomains`: Include subdomains in extraction
-
-When using a self-hosted instance, the extraction will use your configured LLM. For cloud API, it uses Firecrawl's managed LLM service.
-
-### 8. Agent Tool (`firecrawl_agent`)
-
-Autonomous web research agent that independently browses the internet, searches for information, navigates through pages, and extracts structured data based on your query. This runs asynchronously -- it returns a job ID immediately, and you poll `firecrawl_agent_status` to check when complete and retrieve results.
-
-```json
-{
-  "name": "firecrawl_agent",
-  "arguments": {
-    "prompt": "Find the top 5 AI startups founded in 2024 and their funding amounts",
-    "schema": {
-      "type": "object",
-      "properties": {
-        "startups": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "name": { "type": "string" },
-              "funding": { "type": "string" },
-              "founded": { "type": "string" }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-You can also provide specific URLs for the agent to focus on:
-
-```json
-{
-  "name": "firecrawl_agent",
-  "arguments": {
-    "urls": ["https://docs.firecrawl.dev", "https://firecrawl.dev/pricing"],
-    "prompt": "Compare the features and pricing information from these pages"
-  }
-}
-```
-
-#### Agent Tool Options:
-
-- `prompt`: Natural language description of the data you want (required, max 10,000 characters)
-- `urls`: Optional array of URLs to focus the agent on specific pages
-- `schema`: Optional JSON schema for structured output
-
-**Best for:** Complex research tasks where you don't know the exact URLs; multi-source data gathering; finding information scattered across the web; extracting data from JavaScript-heavy SPAs that fail with regular scrape.
-
-**Returns:** Job ID for status checking. Use `firecrawl_agent_status` to poll for results.
-
-### 9. Check Agent Status (`firecrawl_agent_status`)
-
-Check the status of an agent job and retrieve results when complete. Poll every 15-30 seconds and keep polling for at least 2-3 minutes before considering the request failed.
-
-```json
-{
-  "name": "firecrawl_agent_status",
-  "arguments": {
-    "id": "550e8400-e29b-41d4-a716-446655440000"
-  }
-}
-```
-
-#### Agent Status Options:
-
-- `id`: The agent job ID returned by `firecrawl_agent` (required)
-
-**Possible statuses:**
-- `processing`: Agent is still researching -- keep polling
-- `completed`: Research finished -- response includes the extracted data
-- `failed`: An error occurred
-
-**Returns:** Status, progress, and results (if completed) of the agent job.
-
-### 10. Interact with a Page (`firecrawl_interact`)
-
-Interact with a page in a live browser session: click buttons, fill forms, extract dynamic content, or navigate deeper.
-
-Use one of two targeting modes:
-
-- Pass `url` to open and interact with a fresh page in one MCP call.
-- Pass `scrapeId` from a previous `firecrawl_scrape` call to reuse the already-loaded page.
-
-Do not pass both `url` and `scrapeId`. Provide either `prompt` or `code`. `scrapeOptions` can only be used with `url` mode.
-
-**URL mode example:**
-
-```json
-{
-  "name": "firecrawl_interact",
-  "arguments": {
-    "url": "https://example.com/products",
-    "prompt": "Click on the first product and tell me its price"
-  }
-}
-```
-
-**Scrape reuse example:**
-
-```json
-{
-  "name": "firecrawl_interact",
-  "arguments": {
-    "scrapeId": "scrape-id-from-previous-scrape",
-    "prompt": "Click the Sign In button"
-  }
-}
-```
-
-#### Interact Tool Options:
-
-- `url`: Page to interact with; opens the session for you. Use this or `scrapeId`.
-- `scrapeId`: Scrape job ID from a previous `firecrawl_scrape` call. Use this or `url`.
-- `prompt`: Natural language instruction describing the action to take. Provide `prompt` or `code`.
-- `code`: Code to execute in the browser session. Provide `code` or `prompt`.
-- `language`: `bash`, `python`, or `node` (optional, defaults to `node`, only used with `code`).
-- `timeout`: Execution timeout in seconds, 1–300 (optional, defaults to 30).
-- `scrapeOptions`: Optional scrape controls used only with `url` mode.
-
-**Best for:** Multi-step workflows on a single page — searching a site, clicking through results, filling forms, extracting data that requires interaction.
-
-**Returns:** Interaction result including output and live view URLs.
-
-### 11. Stop Interact Session (`firecrawl_interact_stop`)
-
-Stop an interact session for a scraped page. Call this when you are done interacting to free resources.
-
-```json
-{
-  "name": "firecrawl_interact_stop",
-  "arguments": {
-    "scrapeId": "scrape-id-from-previous-scrape"
-  }
-}
-```
-
-#### Interact Stop Options:
-
-- `scrapeId`: The scrape ID for the session to stop (required)
-
-**Returns:** Confirmation that the session has been stopped.
-
-### 12. Research Tools (`firecrawl_research_*`)
-
-Use the read-only research tools for literature review, paper inspection, citation discovery, and public GitHub repository search.
-
-| Tool | Purpose |
-| --- | --- |
-| `firecrawl_research_search_papers` | Search research papers |
-| `firecrawl_research_inspect_paper` | Inspect one paper's metadata and details |
-| `firecrawl_research_related_papers` | Find papers related to an anchor paper |
-| `firecrawl_research_read_paper` | Read available paper content |
-| `firecrawl_research_search_github` | Search public GitHub repositories |
-
-These tools are not part of the hosted keyless surface.
-
-### 13. Monitor Tools (`firecrawl_monitor_*`)
-
-Create and manage recurring page monitors. Monitors run scheduled checks, compare results with retained snapshots, and can notify through webhooks or email.
-
-```json
-{
-  "name": "firecrawl_monitor_create",
-  "arguments": {
-    "page": "https://example.com/pricing",
-    "goal": "Alert when pricing, packaging, or launch messaging changes."
-  }
-}
-```
-
-| Tool | Purpose |
-| --- | --- |
-| `firecrawl_monitor_create` | Create a page or crawl monitor |
-| `firecrawl_monitor_list` | List monitors |
-| `firecrawl_monitor_get` | Get one monitor |
-| `firecrawl_monitor_update` | Update a monitor |
-| `firecrawl_monitor_run` | Trigger a check now |
-| `firecrawl_monitor_delete` | Delete a monitor |
-| `firecrawl_monitor_checks` | List checks for a monitor |
-| `firecrawl_monitor_check` | Get one page-level check and its diff |
-
-<Warning>
-`firecrawl_monitor_delete` permanently removes a monitor. An MCP client should call it only when the user explicitly intends to delete that monitor.
-</Warning>
-
-## Logging System
-
-The server includes comprehensive logging:
-
-- Operation status and progress
-- Performance metrics
-- Credit usage monitoring
-- Rate limit tracking
-- Error conditions
-
-Example log messages:
-
-```
-[INFO] Firecrawl MCP Server initialized successfully
-[INFO] Starting scrape for URL: https://example.com
-[INFO] Starting crawl for URL: https://example.com
-[WARNING] Credit usage has reached warning threshold
-[ERROR] Rate limit exceeded, retrying in 2s...
-```
-
-## Error Handling
-
-The server provides robust error handling:
-
-- Automatic retries for transient errors
-- Rate limit handling with backoff
-- Detailed error messages
-- Credit usage warnings
-- Network resilience
-
-Example error response:
-
-```json
-{
-  "content": [
-    {
-      "type": "text",
-      "text": "Error: Rate limit exceeded. Retrying in 2 seconds..."
-    }
-  ],
-  "isError": true
-}
-```
+<Tip>
+Use the schema shown by your MCP client for the current arguments. The feature guides below explain the underlying Firecrawl behavior without duplicating those schemas here.
+</Tip>
+
+## Important behavior
+
+<AccordionGroup>
+  <Accordion title="Parse a local file">
+    A local MCP server connected to a self-hosted Firecrawl API can read `filePath` directly. The hosted server cannot read files from your machine, so it uses a two-call handoff:
+
+    1. Call `firecrawl_parse` with `filePath` to receive an upload command and `uploadRef`.
+    2. Run the upload command on the machine that can read the file.
+    3. Call `firecrawl_parse` again with the returned `uploadRef`.
+
+    The upload command uses a short-lived signed target and does not contain your Firecrawl API key. Use `firecrawl_scrape` for a public document URL.
+  </Accordion>
+
+  <Accordion title="Check a running crawl">
+    `firecrawl_crawl` normally starts a crawl and polls it to a terminal state before returning. If that wait times out, resume the job with `firecrawl_check_crawl_status` and the crawl ID. Use the same status tool for a crawl created outside the current MCP call.
+
+    `firecrawl_agent` is asynchronous: it returns a job identifier, and `firecrawl_agent_status` checks that job until it completes or fails.
+  </Accordion>
+
+  <Accordion title="Close Interact sessions">
+    Start with a `url`, or reuse the `scrapeId` from a previous Scrape call. When the workflow is finished, call `firecrawl_interact_stop` with the `scrapeId` to release the session.
+  </Accordion>
+
+  <Accordion title="Manage monitors safely">
+    The `firecrawl_monitor_*` family creates, lists, updates, runs, and inspects recurring monitors. `firecrawl_monitor_delete` permanently removes a monitor and should be called only when the user explicitly intends to delete it.
+  </Accordion>
+
+  <Accordion title="Enable optional feedback tools">
+    Set `FIRECRAWL_NO_SEARCH_FEEDBACK=1` to prevent `firecrawl_search_feedback` from being registered. Set `FIRECRAWL_NO_ENDPOINT_FEEDBACK=1` to prevent `firecrawl_feedback` from being registered.
+  </Accordion>
+</AccordionGroup>
+
+## Feature guides
+
+<CardGroup cols={3}>
+  <Card title="Scrape" href="/features/scrape" icon="file-lines">
+    Extract content or structured fields from one URL.
+  </Card>
+  <Card title="Search" href="/features/search" icon="magnifying-glass">
+    Find relevant web, news, image, and developer sources.
+  </Card>
+  <Card title="Research Index" href="/features/research" icon="book-open">
+    Search papers, read passages, and follow citations.
+  </Card>
+  <Card title="Developer Index" href="/features/developer" icon="code">
+    Answer coding questions from issues, PRs, READMEs, and docs.
+  </Card>
+  <Card title="Crawl" href="/features/crawl" icon="spider-web">
+    Traverse and extract a site or section.
+  </Card>
+  <Card title="Parse" href="/features/parse" icon="file-import">
+    Convert files into LLM-ready output.
+  </Card>
+  <Card title="Interact" href="/features/interact" icon="arrow-pointer">
+    Operate dynamic pages in a live browser session.
+  </Card>
+  <Card title="Agent" href="/features/agent" icon="sparkles">
+    Run autonomous multi-source research.
+  </Card>
+  <Card title="Monitoring" href="/features/monitoring" icon="bell">
+    Track page changes and receive notifications.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+- **A tool is missing:** confirm the connection mode on [Get Started](/mcp-server), reconnect or restart the client, and check whether team policy disables optional tools.
+- **The client returns `401`:** check the configured server URL first.
+  - If the configured URL is `/v2/mcp-oauth`, sign in again through the client.
+  - If it is `/v2/mcp`, either replace the API key on that server or update the existing server URL to `/v2/mcp-oauth` and complete sign-in.
+  - Start a new client session after either change.
+- **The client is rate-limited:** review the current [rate limits](/rate-limits), wait for the retry interval, or move from keyless to authenticated access.

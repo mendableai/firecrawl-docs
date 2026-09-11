@@ -13,16 +13,16 @@ Le [dashboard Firecrawl](https://www.firecrawl.dev/app) vous permet de gérer vo
 
 Le playground vous permet de tester directement dans le navigateur les points de terminaison Firecrawl avant de les intégrer à votre code.
 
-* **[Scrape](https://www.firecrawl.dev/app/playground?endpoint=scrape)** — Extraire le contenu d’une seule page.
-* **[Search](https://www.firecrawl.dev/app/playground?endpoint=search)** — Effectuer une recherche sur le web et obtenir des résultats scrapés.
-* **[Crawl](https://www.firecrawl.dev/app/playground?endpoint=crawl)** — Effectuer le crawl d’un site web entier et extraire le contenu de chaque page.
-* **[Map](https://www.firecrawl.dev/app/playground?endpoint=map)** — Découvrir toutes les URL d’un site web.
+* **[Scrape](https://www.firecrawl.dev/app/playground?endpoint=scrape)** : Extraire le contenu d’une seule page.
+* **[Search](https://www.firecrawl.dev/app/playground?endpoint=search)** : Effectuer une recherche sur le web et obtenir des résultats scrapés.
+* **[Crawl](https://www.firecrawl.dev/app/playground?endpoint=crawl)** : Effectuer le crawl d’un site web entier et extraire le contenu de chaque page.
+* **[Map](https://www.firecrawl.dev/app/playground?endpoint=map)** : Découvrir toutes les URL d’un site web.
 
 <div id="browser">
   ## Browser
 </div>
 
-[Interagissez avec le web](https://www.firecrawl.dev/app/browser) via une session de navigateur en direct. Vous pouvez créer des profils persistants, exécuter des actions et faire des captures d’écran — idéal pour les pages qui nécessitent une authentification ou une interaction complexe.
+[Interagissez avec le web](https://www.firecrawl.dev/app/browser) via une session de navigateur en direct. Vous pouvez créer des profils persistants, exécuter des actions et faire des captures d’écran. Cela est utile pour les pages qui nécessitent une authentification ou une interaction complexe.
 
 <div id="agent">
   ## Agent
@@ -35,6 +35,8 @@ L’[Agent](https://www.firecrawl.dev/app/agent) est un outil de recherche propu
 </div>
 
 Les [journaux d’activité](https://www.firecrawl.dev/app/logs) affichent l’historique de vos requêtes API récentes, y compris l’état, la durée et les crédits consommés.
+
+Les lignes ayant échoué ou s’étant terminées avec des erreurs affichent un bouton ✨ **Déboguer le ticket** dans la colonne Actions. Il exécute l’agent de support de Firecrawl sur ce job et renvoie un diagnostic accompagné d’une correction suggérée que vous pouvez copier. Consultez [Déboguer avec Ask](/fr/features/ask#debug-from-activity-logs).
 
 <div id="usage">
   ## Usage
@@ -52,11 +54,11 @@ Sur la page [clés API](https://www.firecrawl.dev/app/api-keys), vous pouvez cr�
   ## Paramètres
 </div>
 
-La page [Paramètres](https://www.firecrawl.dev/app/settings) comporte trois onglets :
+La page [Paramètres](https://www.firecrawl.dev/app/settings) comporte trois onglets :
 
-* **Équipe** — Invitez des membres, attribuez des rôles et gérez votre équipe. Voir [Gestion d’équipe et rôles](#team-management--roles) ci-dessous.
-* **Facturation** — Consultez votre offre actuelle, vos factures, les paramètres d’auto-recharge et appliquez des codes promo. Voir aussi [Facturation](/fr/billing).
-* **Avancé** — Secret de signature du Webhook et suppression de l’équipe.
+* **Équipe** : Invitez des membres, attribuez des rôles et gérez votre équipe. Voir [Gestion d’équipe et rôles](#team-management--roles) ci-dessous.
+* **Facturation** : Consultez votre offre actuelle et vos factures, définissez votre limite mensuelle de paiement à l’usage et appliquez des codes promo. Voir aussi [Facturation](/fr/billing).
+* **Avancé** : Secret de signature du Webhook et suppression de l’équipe.
 
 ***
 
@@ -85,12 +87,12 @@ Chaque membre de l’équipe se voit attribuer l’un des deux rôles suivants 
 | Révoquer les invitations en attente                           |   ✓   |    ✗   |
 | Modifier le nom de l’équipe                                   |   ✓   |    ✗   |
 | **Facturation**                                               |       |        |
-| Consulter les factures et l’utilisation                       |   ✓   |    ✓   |
-| Appliquer des coupons de crédit                               |   ✓   |    ✓   |
+| Consulter les factures et l’utilisation                       |   ✓   |    ✗   |
+| Appliquer des coupons de crédit                               |   ✓   |    ✗   |
 | Gérer l’abonnement et le portail de facturation               |   ✓   |    ✗   |
 | **Paramètres**                                                |       |        |
 | Consulter le secret de signature du Webhook                   |   ✓   |    ✓   |
 | Régénérer le secret de signature du Webhook                   |   ✓   |    ✗   |
 | Supprimer l’équipe                                            |   ✓   |    ✗   |
 
-En bref, les **Admins** ont un contrôle total sur la gestion de l’équipe, la facturation et les paramètres, tandis que les **Members** peuvent utiliser les ressources de l’équipe, consulter l’utilisation et appliquer des coupons, mais ne peuvent pas modifier l’équipe ni l’abonnement.
+En bref, les **Admins** ont un contrôle total sur la gestion de l’équipe, la facturation et les paramètres, tandis que les **Members** peuvent utiliser les ressources de l’équipe et consulter l’utilisation sur la page Usage, mais ne peuvent pas accéder à l’onglet Facturation ni modifier l’équipe.

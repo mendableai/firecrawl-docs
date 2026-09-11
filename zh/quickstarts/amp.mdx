@@ -4,65 +4,13 @@ description: "将 Firecrawl 的网页抓取和搜索功能添加到 Sourcegraph 
 sidebarTitle: "Amp"
 ---
 
-通过 MCP 为 [Sourcegraph Amp](https://ampcode.com) 添加 Firecrawl 的搜索、抓取、爬取和浏览器工具。
+通过远程托管的 MCP 服务器，为 [Sourcegraph Amp](https://ampcode.com) 添加 Firecrawl 的免密钥 Search、Scrape 和 Parse Tool。
 
 <div id="quick-setup">
-  ## 快速开始
+  ## 快速设置
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. 获取你的 API 密钥
-</div>
-
-在 [firecrawl.dev/app](https://www.firecrawl.dev/app) 注册并复制你的 API 密钥。
-
-<div id="2-add-firecrawl-to-amp">
-  ### 2. 在 Amp 中添加 Firecrawl
-</div>
-
-打开 Amp 的设置并添加一个 MCP Server。Amp 支持标准的 MCP 配置：
-
-```json
-{
-  "amp.mcpServers": {
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
-    }
-  }
-}
-```
-
-将 `fc-YOUR-API-KEY` 替换为你的 Firecrawl API 密钥。
-
-<div id="3-reload-amp">
-  ### 3. 重新加载 Amp
-</div>
-
-重新加载 Amp 窗口。Firecrawl 工具现已在代理中可用。
-
-<div id="quick-demo">
-  ## 快速演示
-</div>
-
-```
-进行网页搜索，查找"Sourcegraph Cody vs Amp"并总结两者的区别。
-```
-
-```
-抓取 https://docs.firecrawl.dev and list the core endpoints.
-```
-
-```
-爬取 https://example.com and output a site map as JSON.
-```
-
-<div id="remote-hosted-url-no-nodejs-required">
-  ## 远程托管 URL (无需 Node.js)
-</div>
+打开 Amp 设置，添加此远程 MCP 服务器：
 
 ```json
 {
@@ -74,11 +22,25 @@ sidebarTitle: "Amp"
 }
 ```
 
-此配置使用免密钥 Firecrawl 工具集。如需连接账户或进行无人值守设置，请按照[托管 MCP 连接模式](/zh/developer-guides/mcp-setup-guides/oauth)操作；API 密钥应存放在 Authorization 请求头或安全密钥存储中，切勿置于 URL 中。
+重新加载 Amp，并确认 `firecrawl_search`、`firecrawl_scrape` 和 `firecrawl_parse` 可用。
 
-<div id="troubleshooting">
-  ## 故障排查
+免密钥访问的限额由同一公共 IP 的用户共享。请通过交互式客户端使用 [For Humans](/zh/mcp-server/oauth) 登录，或为无人值守使用[添加 API 密钥](/zh/mcp-server/keyless#add-an-api-key)。
+
+<div id="try-it">
+  ## 试用
 </div>
 
-* **服务器无法启动** — 在 Amp 的 MCP 日志视图中查看 stderr 输出。
-* **缺少 `npx`** — 安装 Node.js 18+，或使用上方的远程托管 URL。
+```text
+进行网页搜索，查找"Sourcegraph Cody vs Amp"并总结这些来源。
+```
+
+```text
+抓取 https://docs.firecrawl.dev and list the core endpoints.
+```
+
+<div id="troubleshooting">
+  ## 故障排除
+</div>
+
+* **服务器无法连接：**确认 URL 是否准确为 `https://mcp.firecrawl.dev/v2/mcp`，并检查 Amp 的 MCP 日志。
+* **缺少 Crawl 或其他工具：**免密钥模式仅提供 Search、Scrape 和 Parse。请通过 OAuth 或 API 密钥连接，以使用更完整的工具集。

@@ -1,0 +1,43 @@
+```js Node
+import { Firecrawl } from 'firecrawl';
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
+
+const started = await firecrawl.startAgent({ prompt: "Find the founders of Firecrawl" });
+const seen = new Set();
+let finished = false;
+let quietPolls = 0;
+
+for (;;) {
+  const trace = await firecrawl.getAgentTrace(started.id);
+
+  // producerSequence 仅在同一个发出事件的代理内单调递增，因此先按代理分组。
+  const byAgent = new Map();
+  for (const event of trace.events ?? []) {
+    const bucket = byAgent.get(event.agent.id) ?? [];
+    bucket.push(event);
+    byAgent.set(event.agent.id, bucket);
+  }
+
+  let newEvents = 0;
+  for (const [agentId, events] of byAgent) {
+    for (const event of events.sort((a, b) => a.producerSequence - b.producerSequence)) {
+      if (seen.has(event.eventId)) continue;
+      seen.add(event.eventId);
+      newEvents++;
+      console.log(agentId, event.producerSequence, event.type);
+    }
+  }
+
+  if (!finished) {
+    finished = (await firecrawl.getAgentStatus(started.id)).status !== "processing";
+  } else if (newEvents) {
+    quietPolls = 0;
+  } else {
+    // 收尾窗口：运行结束后的短时间内仍可能有事件到达。
+    if (++quietPolls === 3) break;
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+}
+```

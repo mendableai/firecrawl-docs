@@ -1,64 +1,263 @@
 ---
 title: "Dify"
-description: "Découvrez comment utiliser Firecrawl avec Dify"
-og:title: "Dify | Firecrawl"
-og:description: "Découvrez comment utiliser Firecrawl avec Dify"
+description: "Plugin officiel Firecrawl pour les workflows Dify, avec synchronisation de sites web avec la base de connaissances"
 ---
 
-<div id="sync-data-from-websites-for-dify-workflows">
-  ## Synchroniser des données depuis des sites web pour les workflows Dify
+<Note>
+  **Plugin officiel Dify :** [marketplace.dify.ai/plugins/langgenius/firecrawl](https://marketplace.dify.ai/plugins/langgenius/firecrawl)
+
+  Plugin officiel de l’équipe Dify • Plus de 170 000 installations • Applications Chatflow et Agent • Gratuit
+</Note>
+
+<div id="dify-integration-overview">
+  ## Présentation de l’intégration Dify
 </div>
 
-Firecrawl peut être utilisé dans [Dify, le concepteur de workflows LLM](https://cloud.dify.ai/). Cette page explique comment extraire des données d’une page web, les convertir en Markdown, puis les importer dans la base de connaissances de Dify via leur intégration Firecrawl.
+Dify est une plateforme open source de développement d’applications basées sur des LLM. Le plugin officiel de Firecrawl permet d’effectuer du crawling et du scraping web directement dans vos workflows d’IA.
+
+<CardGroup cols={2}>
+  <Card title="Applications Chatflow et Workflow" icon="diagram-project">
+    Créez des pipelines visuels avec des nœuds Firecrawl pour extraire des données
+  </Card>
+
+  <Card title="Applications d’agents" icon="robot">
+    Donnez aux agents IA la possibilité de scraper des données web en temps réel, à la demande
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-tools-in-dify">
+  ## Outils Firecrawl dans Dify
+</div>
+
+Le plugin propose sept actions.
+
+<AccordionGroup>
+  <Accordion title="Recherche" icon="magnifying-glass">
+    Recherchez sur le Web et, si besoin, scrapez les résultats obtenus pour récupérer des métadonnées récentes ou le contenu complet des pages en une seule étape.
+
+    **Cas d&#39;utilisation :** Assistants de recherche IA, identification de concurrents, enrichissement des réponses avec des sources en temps réel.
+  </Accordion>
+
+  <Accordion title="Scrape" icon="file-code">
+    Convertissez n&#39;importe quelle URL en données propres et structurées. Transformez du HTML brut en insights exploitables.
+
+    **Cas d&#39;utilisation :** Extraction de données produit, scraping du contenu d&#39;articles, obtention de données structurées avec le mode JSON.
+  </Accordion>
+
+  <Accordion title="Crawl" icon="spider">
+    Effectuez des crawls récursifs de sites Web et de sous-domaines pour collecter de grandes quantités de contenu.
+
+    **Cas d&#39;utilisation :** Extraction du contenu complet d&#39;un site, scraping de documentation, collecte de données sur plusieurs pages.
+  </Accordion>
+
+  <Accordion title="cartographie" icon="sitemap">
+    Générez une cartographie complète de toutes les URL présentes sur un site Web.
+
+    **Cas d&#39;utilisation :** Analyse de la structure du site, audit SEO, découverte d&#39;URL pour le scraping par lots.
+  </Accordion>
+
+  <Accordion title="Tâche de crawl" icon="list-check">
+    Récupérez les résultats de scraping à partir d&#39;un ID de tâche ou annulez les tâches en cours.
+
+    **Cas d&#39;utilisation :** Surveiller les crawls de longue durée, gérer les workflows de scraping asynchrones, annuler des opérations si nécessaire.
+  </Accordion>
+
+  <Accordion title="Créer un monitor" icon="bell">
+    Créez un monitor planifié qui revérifie une cible à intervalles réguliers.
+
+    **Cas d&#39;utilisation :** Maintenir les données ingérées à jour, surveiller les journaux des modifications, suivre les concurrents.
+  </Accordion>
+
+  <Accordion title="Vérifications du monitor" icon="clock-rotate-left">
+    Récupérez les détails d&#39;un monitor et les résultats de ses vérifications afin d&#39;agir uniquement sur les pages modifiées.
+
+    **Cas d&#39;utilisation :** Mises à jour incrémentielles de la base de connaissances, alertes de changement, déclencheurs en aval.
+  </Accordion>
+</AccordionGroup>
+
+<div id="getting-started">
+  ## Premiers pas
+</div>
+
+<Steps>
+  <Step title="Installer le plugin Firecrawl">
+    Accédez au [Marketplace des plugins Dify](https://marketplace.dify.ai/plugins/langgenius/firecrawl) et installez l’outil Firecrawl
+  </Step>
+
+  <Step title="Obtenir une clé API Firecrawl">
+    Rendez-vous sur [Clés API Firecrawl](https://www.firecrawl.dev/app/api-keys) et créez une clé API
+  </Step>
+
+  <Step title="Autoriser Firecrawl dans Dify">
+    Accédez à **Plugins &gt; Firecrawl &gt; To Authorize** et saisissez votre clé API
+  </Step>
+
+  <Step title="Ajouter à votre workflow">
+    Glissez les outils Firecrawl dans votre application Chatflow, Workflow ou Agent
+  </Step>
+
+  <Step title="Configurer et tester">
+    Configurez les paramètres et testez votre workflow
+  </Step>
+</Steps>
+
+<div id="usage-patterns">
+  ## Modèles d’utilisation
+</div>
+
+<Tabs>
+  <Tab title="Applications Chatflow">
+    **Intégration dans un pipeline visuel**
+
+    1. Ajoutez un nœud Firecrawl à votre pipeline
+    2. Sélectionnez une action (cartographie, Crawl, Scrape)
+    3. Définissez les variables d’entrée
+    4. Exécutez le pipeline de manière séquentielle
+
+    **Exemple de flux :**
+
+    ```
+    Entrée utilisateur → Firecrawl (Scrape) → Traitement par un LLM → Réponse
+    ```
+  </Tab>
+
+  <Tab title="Applications de workflow">
+    **Traitement automatisé des données**
+
+    Créez des workflows à plusieurs étapes avec :
+
+    * Scraping planifié
+    * Transformation des données
+    * Stockage en base de données
+    * Notifications
+
+    **Exemple de flux :**
+
+    ```
+    Déclencheur planifié → Firecrawl (Crawl) → Traitement des données → Stockage
+    ```
+  </Tab>
+
+  <Tab title="Applications d’agents">
+    **Accès au web optimisé par l’IA**
+
+    Offrez aux agents des capacités de scraping web en temps réel :
+
+    1. Ajoutez l’outil Firecrawl à l’agent
+    2. L’agent décide de manière autonome quand effectuer un scraping
+    3. Le LLM analyse le contenu extrait
+    4. L’agent fournit des réponses pertinentes
+
+    **Cas d’utilisation :** Agents de support client consultant la documentation à jour
+  </Tab>
+</Tabs>
+
+<div id="common-use-cases">
+  ## Cas d&#39;utilisation courants
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Chatbot IA avec données en temps réel" icon="messages">
+    Créez des chatbots basés sur la RAG qui scrappent et citent du contenu web en temps réel
+  </Card>
+
+  <Card title="Agent d'analyse de contenu" icon="brain">
+    Des agents qui étudient des sujets en scrappant et analysant plusieurs sources
+  </Card>
+
+  <Card title="Surveillance des concurrents" icon="binoculars">
+    Des workflows automatisés qui suivent les sites web des concurrents et vous alertent en cas de changement
+  </Card>
+
+  <Card title="Pipeline d'enrichissement des données" icon="database">
+    Extrayez et enrichissez les données de sites web dans des bases de données structurées
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-actions">
+  ## Actions Firecrawl
+</div>
+
+| Outil                        | Description                                       | Idéal pour                                            |
+| ---------------------------- | ------------------------------------------------- | ----------------------------------------------------- |
+| **Recherche**                | Recherche web avec contenu de page facultatif     | Étayer les réponses à l’aide de sources en temps réel |
+| **Scrape**                   | Extraction de données d’une seule page            | Capture rapide de contenu                             |
+| **Crawl**                    | Crawl récursif de plusieurs pages                 | Extraction complète d’un site                         |
+| **Cartographie**             | Découverte d’URL et cartographie de site          | Analyse SEO, listes d’URL                             |
+| **Tâche de crawl**           | Gestion asynchrone des tâches                     | Opérations de longue durée                            |
+| **Créer un monitor**         | Vérifications programmées d’une cible             | Maintenir à jour les données ingérées                 |
+| **Vérifications du monitor** | Détails du monitor et résultats des vérifications | Agir uniquement sur les pages modifiées               |
+
+<div id="best-practices">
+  ## Bonnes pratiques
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Applications d’agents" icon="robot">
+    * Laissez les agents décider quand effectuer un scrape
+    * Utilisez des instructions en langage naturel
+    * Activez l’appel d’outils dans les paramètres du LLM
+    * Surveillez l’utilisation des jetons lors de scrapes volumineux
+  </Card>
+
+  <Card title="Applications de workflows" icon="diagram-project">
+    * Utilisez cartographie avant Crawl pour les sites volumineux
+    * Définissez des limites de crawl adaptées
+    * Ajoutez des nœuds de gestion des erreurs
+    * Commencez par tester avec de petits jeux de données
+  </Card>
+</CardGroup>
+
+<div id="dify-vs-other-platforms">
+  ## Dify et les autres plateformes
+</div>
+
+| Fonctionnalité   | Dify                              | Make                        | Zapier                      | n8n                            |
+| ---------------- | --------------------------------- | --------------------------- | --------------------------- | ------------------------------ |
+| **Type**         | Plateforme d&#39;applications LLM | Automatisation de workflows | Automatisation de workflows | Automatisation de workflows    |
+| **Idéal pour**   | Agents IA et chatbots             | Workflows visuels           | Automatisation rapide       | Contrôle pour les développeurs |
+| **Tarification** | Open source + Cloud               | À l&#39;opération           | À la tâche                  | À l&#39;exécution              |
+| **Natif IA**     | Oui                               | Partiel                     | Partiel                     | Partiel                        |
+| **Auto-hébergé** | Oui                               | Non                         | Non                         | Oui                            |
+
+<Tip>
+  **Conseil de pro :** Dify excelle dans la création d&#39;applications nativement basées sur l&#39;IA, où les agents ont besoin d&#39;un accès dynamique au web. Idéal pour les chatbots, les assistants de recherche IA et les outils d&#39;IA nécessitant des données en temps réel.
+</Tip>
+
+<div id="sync-websites-into-the-dify-knowledge-base">
+  ## Synchroniser des sites web dans la base de connaissances de Dify
+</div>
+
+Firecrawl peut également extraire une page web au format Markdown et l’importer dans la base de connaissances de Dify depuis [Dify Cloud](https://cloud.dify.ai/).
 
 <div id="configuring-firecrawl">
   ### Configuration de Firecrawl
 </div>
 
-Commencez par configurer les identifiants Firecrawl dans la section Source de données de la page Paramètres.
+Ouvrez le menu de votre avatar, accédez à la page **DataSource**, puis configurez les identifiants Firecrawl.
 
-<img
-  className="block"
-  src="/images/fc_dify_config.avif"
-  alt="Configurer la clé Firecrawl"
-/>
+<img className="block" src="/images/fc_dify_config.avif" alt="Configurer la clé Firecrawl" />
 
 Connectez-vous à votre compte Firecrawl, récupérez votre clé d’API, puis saisissez-la et enregistrez-la dans Dify.
 
-<img
-  className="block"
-  src="/images/fc_dify_savekey.png"
-  alt="Enregistrer la clé Firecrawl"
-/>
+<img className="block" src="/images/fc_dify_savekey.png" alt="Enregistrer la clé Firecrawl" />
 
-<div id="scrape-target-webpage">
+<div id="scrape-the-target-webpage">
   ### Scraper la page web cible
 </div>
 
-Passons à la partie intéressante : le scraping et le crawling. Sur la page de création de la base de connaissances, sélectionnez Sync from website et saisissez l’URL à scraper.
+Sur la page de création de la base de connaissances, sélectionnez Sync from website, choisissez Firecrawl comme provider et saisissez l’URL à scraper.
 
-<img
-  className="block"
-  src="/images/fc_dify_webscrape.webp"
-  alt="Configuration du scraping"
-/>
+<img className="block" src="/images/fc_dify_webscrape.webp" alt="Configuration du scraping" />
 
 Les options de configuration incluent : Activer le crawl des sous-pages, Limite de pages à crawler, Profondeur maximale de scraping par page, Chemins exclus, Chemins à inclure uniquement, et Portée de l’extraction de contenu. Une fois la configuration terminée, cliquez sur Run pour prévisualiser les pages analysées.
 
-<img
-  className="block"
-  src="/images/fc_dify_fcoptions.webp"
-  alt="Définir la configuration Firecrawl"
-/>
+<img className="block" src="/images/fc_dify_fcoptions.webp" alt="Définir la configuration Firecrawl" />
 
 <div id="review-import-results">
   ### Examiner les résultats de l’importation
 </div>
 
-Après avoir importé le texte analysé depuis la page web, il est enregistré dans les documents de la base de connaissances. Consultez les résultats de l’importation et cliquez sur Add URL pour continuer à importer de nouvelles pages web.
+Le texte des pages importées est enregistré dans les documents de la base de connaissances. Consultez les résultats et cliquez sur Add URL pour importer davantage de pages.
 
-<img
-  className="block"
-  src="/images/fc_dify_results.webp"
-  alt="Voir les résultats du scraping Firecrawl"
-/>
+<img className="block" src="/images/fc_dify_results.webp" alt="Voir les résultats du scraping Firecrawl" />

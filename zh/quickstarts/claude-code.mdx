@@ -3,62 +3,62 @@ title: "在 Claude Code 中使用 MCP 进行网页搜索和抓取"
 description: "两分钟内为 Claude Code 添加网页抓取和搜索功能"
 ---
 
-使用 Firecrawl MCP 为 Claude Code 添加网页抓取和搜索能力。
+通过远程托管的 MCP 服务器将 Claude Code 连接到 Firecrawl。推荐使用 OAuth 进行交互式设置，因为密钥不会出现在命令行、项目文件或对话中。
 
 <div id="quick-setup">
   ## 快速开始
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. 获取你的 API 密钥
+<div id="1-add-firecrawl">
+  ### 1. 添加 Firecrawl
 </div>
 
-在 [firecrawl.dev/app](https://firecrawl.dev/app) 注册并复制你的 API 密钥。
-
-<div id="2-add-firecrawl-mcp-server">
-  ### 2. 添加 Firecrawl MCP 服务器
-</div>
-
-**选项 A：远程托管 URL (推荐)&#x20;**
+运行：
 
 ```bash
 claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp-oauth
 ```
 
-添加服务器后，在 Claude Code 中使用 `/mcp` 完成 Firecrawl 登录流程。
+`https://mcp.firecrawl.dev/v2/mcp-oauth` 是客户端配置值，不是可直接在浏览器中打开的页面。
 
-**选项 B：本地 (npx)&#x20;**
-
-```bash
-claude mcp add firecrawl -e FIRECRAWL_API_KEY=your-api-key -- npx -y firecrawl-mcp@3.23.0
-```
-
-将 `your-api-key` 替换为你的实际 Firecrawl API 密钥。
-
-完成！现在你可以在 Claude Code 中搜索并抓取网页了。
-
-<div id="quick-demo">
-  ## 快速演示
+<div id="2-sign-in-and-verify">
+  ### 2. 登录并验证
 </div>
 
-在 Claude Code 中试试这些：
+在 Claude Code 中输入 `/mcp`，选择 `firecrawl`，然后在浏览器中完成登录。如果你修改了现有的 Firecrawl 连接，请新建一个 Claude Code 会话。
 
-**搜索网页：**
+确认只有一个 `firecrawl` 服务器处于活跃状态，然后尝试：
 
-```
-Search for the latest Next.js 15 features
-```
-
-**抓取网页：**
-
-```
-Scrape firecrawl.dev and tell me what it does
+```text
+搜索最新的 Next.js 版本发布说明，并总结这些来源。
 ```
 
-**查看文档：**
-
-```
-Find and scrape the Stripe API docs for payment intents
+```text
+抓取 https://firecrawl.dev 并说明它的用途。
 ```
 
-Claude 会自动使用 Firecrawl 的搜索和抓取工具来获取相关信息。
+<div id="other-connection-modes">
+  ## 其他连接方式
+</div>
+
+* 使用[免密钥 MCP](/zh/mcp-server/keyless#try-keyless)，无需账户或密钥即可使用网页搜索、抓取 和 Parse。
+* 如需无人值守运行，请[配置 API 密钥](/zh/mcp-server/keyless#add-an-api-key)。请勿在代理聊天中透露密钥，改用环境变量引用。
+* 仅当需要本地进程或自托管 Firecrawl API 时，才[在本地运行 MCP](/zh/mcp-server/local)。本地软件包要求 Node.js 22 或更高版本。
+
+<div id="optional-literature-research">
+  ## 可选：文献研究
+</div>
+
+处理论文和文献相关任务时，research-index 技能会将这些查询转发至 `firecrawl_research_*` 工具和[研究索引](/zh/features/research)，而非通用网页搜索：
+
+```bash
+npx skills add firecrawl/skills@firecrawl-research-index
+```
+
+<div id="troubleshooting">
+  ## 故障排除
+</div>
+
+* **Firecrawl 服务器已存在：**运行 `claude mcp remove firecrawl`，添加所需的连接一次，然后开启新会话。
+* **浏览器未打开：**输入 `/mcp`，选择 `firecrawl`，然后在客户端发起身份验证。
+* **服务器显示 `401`：**通过 `/mcp` 重新登录；请勿将 API 密钥粘贴到对话或 OAuth URL 中。

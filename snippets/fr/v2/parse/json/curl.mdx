@@ -1,0 +1,6 @@
+```bash cURL
+curl -X POST https://api.firecrawl.dev/v2/parse \
+  -H 'Authorization: Bearer VOTRE_CLÉ_API' \
+  -F 'file=@./invoice.pdf' \
+  -F 'options={"formats":[{"type":"json","schema":{"type":"object","properties":{"total":{"type":"number"},"vendor":{"type":"string"}}}}]};type=application/json'
+```

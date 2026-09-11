@@ -8,22 +8,20 @@ og:description: "在复杂站点上使用增强代理，实现可靠抓取并保
 import ProxyPython from "/snippets/zh/v1/scrape/proxy/python.mdx";
 import ProxyNode from "/snippets/zh/v1/scrape/proxy/js.mdx";
 import ProxyCURL from "/snippets/zh/v1/scrape/proxy/curl.mdx";
-import ProxyRetryPython from "/snippets/zh/v1/scrape/proxy-retry/python.mdx";
-import ProxyRetryNode from "/snippets/zh/v1/scrape/proxy-retry/js.mdx";
-import ProxyRetryCURL from "/snippets/zh/v1/scrape/proxy-retry/curl.mdx";
+
+<Warning>
+  `proxy` 参数已弃用。建议使用 `auto`，由 Firecrawl 自动选择代理。
+</Warning>
 
 Firecrawl 提供多种代理类型，帮助你抓取复杂程度不同的网站。可通过 `proxy` 参数指定代理类型。
-
 
 <div id="proxy-types">
   ### 代理类型
 </div>
 
-Firecrawl 支持三种代理类型：
-
-- **basic**：适用于抓取大多数网站的代理。速度快，通常有效。
-- **enhanced**：适用于在保护隐私的前提下抓取复杂网站的增强型代理。速度较慢，但在某些网站上更可靠。
-- **auto**：如果 basic 代理失败，Firecrawl 将自动使用 enhanced 代理重试抓取。若使用 enhanced 重试成功，该次抓取计费 5 个额度；若首次使用 basic 即成功，则仅按常规成本计费。
+* **basic**：适用于抓取大多数网站的代理。
+* **enhanced**：适用于在保护隐私的前提下抓取复杂网站的增强代理。
+* **auto**：推荐使用。如果 basic 代理失败，Firecrawl 将自动使用增强代理重试抓取。
 
 如果未指定代理，Firecrawl 默认为 basic。
 
@@ -31,34 +29,12 @@ Firecrawl 支持三种代理类型：
   ### 使用 enhanced 模式
 </div>
 
-在抓取复杂网站时，你可以使用 enhanced 代理模式，在提高成功率的同时保护隐私。
-
 <CodeGroup>
+  <ProxyPython />
 
-<ProxyPython />
+  <ProxyNode />
 
-<ProxyNode />
-
-<ProxyCURL />
-
+  <ProxyCURL />
 </CodeGroup>
 
-**注意：** enhanced 代理每次请求消耗 5 个积分。
-
-<div id="using-enhanced-as-a-retry-mechanism">
-  ## 将 Enhanced 用作重试机制
-</div>
-
-一个常见的做法是先使用默认代理设置进行抓取；如果在响应的 `metadata.statusCode` 字段中遇到特定错误状态码（401、403 或 500），则改用 Enhanced 模式重试。这些状态码可能表明网站正在阻止你的请求。
-
-<CodeGroup>
-
-<ProxyRetryPython />
-
-<ProxyRetryNode />
-
-<ProxyRetryCURL />
-
-</CodeGroup>
-
-这种方法通过仅在必要时启用 Enhanced 模式来优化你的额度使用。
+**注意：** enhanced 代理请求现在与基础请求相同，每次请求消耗 1 个额度。

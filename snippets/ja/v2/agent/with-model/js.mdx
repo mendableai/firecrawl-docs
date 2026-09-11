@@ -3,17 +3,13 @@ import { Firecrawl } from 'firecrawl';
 
 const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
 
-// Spark 1 Miniを使用(デフォルト - 省略可)
+// Spark 2がデフォルト — すべての実行はこのモデルで動作します
 const result = await firecrawl.agent({
   prompt: "Find the pricing of Firecrawl",
-  model: "spark-1-mini"
+  model: "spark-2"
 });
 
-// 複雑なタスクにSpark 1 Proを使用
-const resultPro = await firecrawl.agent({
-  prompt: "Compare all enterprise features and pricing across Firecrawl, Apify, and ScrapingBee",
-  model: "spark-1-pro"
-});
+// 非推奨: Spark 1のモデル名も引き続き指定できますが、"spark-2"にルーティングされます。
 
 console.log(result.data);
 ```

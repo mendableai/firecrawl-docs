@@ -1,183 +1,184 @@
 ---
-title: "本地运行"
-description: "在本地机器上设置 Firecrawl，用于开发和贡献。"
-og:title: "本地运行 | Firecrawl"
-og:description: "在本地机器上设置 Firecrawl，用于开发和贡献。"
-sidebarTitle: "本地运行"
+title: "Firecrawl 贡献者环境设置"
+sidebarTitle: "贡献者设置"
+description: "设置 Firecrawl API 开发环境，验证本地抓取，并在贡献代码前运行仓库自带的测试工具。"
+og:title: "Firecrawl 贡献者环境设置 | Firecrawl"
+og:description: "设置 Firecrawl API 开发环境，验证本地抓取，并在贡献代码前运行仓库自带的测试工具。"
 ---
 
-本指南将引导你在本地机器上运行 Firecrawl API 服务器。请按照以下步骤完成开发环境的设置、启动相关服务，并发送你的第一个请求。
+修改 API、worker 或测试时，请在本地运行 Firecrawl。此流程会安装开发依赖项，并通过 API 测试框架启动仓库自带的服务。
 
-如果你要参与贡献，流程遵循标准的开源规范：fork 仓库、进行修改、运行测试并提交 pull request。如有问题或需要入门帮助，请联系 help@firecrawl.com 或 [提交 issue](https://github.com/mendableai/firecrawl/issues)。
+<Warning>
+  这是面向贡献者的开发环境，不是部署指南。如果你想在自己控制的基础设施上运行 Firecrawl，
+  而不修改产品，请参阅 [自托管 Firecrawl](/zh/contributing/self-host)。
+</Warning>
 
-<div id="prerequisites">
-  ## 前置条件
+<div id="choose-local-development-or-self-hosting">
+  ## 选择本地开发还是自行托管
 </div>
 
-继续之前，请先安装以下组件：
+* 需要基于当前源代码版本快速进行编写、测试和调试时，请**在本地开发**。
+* 希望在自己的基础设施上使用稳定的 Docker Compose 基线时，请**自行托管固定版本**。
+* 希望以最快的托管方式使用 Firecrawl，而无需维护上述任一环境时，请**使用 Firecrawl Cloud**。
 
-| 依赖 | 是否必需 | 安装指南 |
-|------------|----------|---------------|
-| Node.js | 是 | [nodejs.org](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs) |
-| pnpm (v9+) | 是 | [pnpm.io](https://pnpm.io/installation) |
-| Redis | 是 | [redis.io](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/) |
-| PostgreSQL | 是 | 通过 Docker（见下文）或直接安装 |
-| Docker | 可选 | 用于创建 PostgreSQL 容器 |
+请将这些环境分开使用。`apps/api/.env` 中的 API 开发配置文件与根目录的 Compose `.env` 分别用于不同的进程，不能互换。
 
-<div id="set-up-the-database">
-  ## 设置数据库
+<div id="start-the-firecrawl-development-environment">
+  ## 启动 Firecrawl 开发环境
 </div>
 
-你需要一个使用 `apps/nuq-postgres/nuq.sql` 中的 schema 初始化好的 PostgreSQL 数据库。最简单的方法是使用 `apps/nuq-postgres` 目录下的 Docker 镜像。
-
-在 Docker 已启动的情况下，构建并启动该容器：
-
-```bash
-docker build -t nuq-postgres apps/nuq-postgres
-```
-
-```bash
-docker run --name nuqdb \
-  -e POSTGRES_PASSWORD=postgres \
-  -p 5433:5432 \
-  -v nuq-data:/var/lib/postgresql/data \
-  -d nuq-postgres
-```
-
-
-<div id="configure-environment-variables">
-  ## 配置环境变量
+<div id="install-the-prerequisites">
+  ### 安装前置依赖
 </div>
 
-复制模板，在 `apps/api/` 目录下创建 `.env` 文件：
+安装：
+
+* [Git](https://git-scm.com/downloads)
+* Node.js 22
+* pnpm `11.4.0`
+* [Redis](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/)
+* Docker 或 Podman，用于运行由 API 测试框架管理的 PostgreSQL 和 RabbitMQ 容器
+* [Go](https://go.dev/dl/) 1.23 或更高版本，API 测试框架会在每次启动时重新构建
+* [Rust](https://www.rust-lang.org/tools/install)，执行 `pnpm install` 时会为 `@mendable/firecrawl-rs` 原生包构建 Rust 组件
+
+启用 API 所使用的包管理器版本：
 
 ```bash
-cp apps/api/.env.example apps/api/.env
+corepack enable
+corepack prepare pnpm@11.4.0 --activate
 ```
 
-对于本地最小化部署且不启用身份验证或可选附加服务（PDF 解析、JS 阻塞、AI 功能）的情况，请使用以下配置：
+<div id="clone-firecrawl-and-install-dependencies">
+  ### 克隆 Firecrawl 并安装依赖
+</div>
 
-```bash apps/api/.env
-# ===== 必填 =====
-NUM_WORKERS_PER_QUEUE=8
+```bash
+git clone https://github.com/firecrawl/firecrawl.git
+cd firecrawl/apps/api
+pnpm install
+```
+
+使用最精简的无需认证的开发配置创建 `apps/api/.env`：
+
+```bash
+cat > .env <<'EOF'
 PORT=3002
 HOST=0.0.0.0
 REDIS_URL=redis://localhost:6379
 REDIS_RATE_LIMIT_URL=redis://localhost:6379
-
-## 要启用数据库身份验证，需要配置 supabase。
 USE_DB_AUTHENTICATION=false
-
-## 用于队列的 PostgreSQL 连接 — 如凭据、主机或数据库不同请修改
-NUQ_DATABASE_URL=postgres://postgres:postgres@localhost:5433/postgres
-
-# ===== 可选 =====
-# SUPABASE_ANON_TOKEN=
-# SUPABASE_URL=
-# SUPABASE_SERVICE_TOKEN=
-# TEST_API_KEY=               # 如已配置身份验证并希望使用真实 API 密钥进行测试，请设置此项
-# OPENAI_API_KEY=             # LLM 相关功能（图片 alt 生成等）必填
-# BULL_AUTH_KEY=@
-# PLAYWRIGHT_MICROSERVICE_URL= # 设置以启用 Playwright 回退
-# LLAMAPARSE_API_KEY=         # 设置以使用 LlamaParse 解析 PDF
-# SLACK_WEBHOOK_URL=          # 设置以发送 Slack 服务器健康状态消息
-# POSTHOG_API_KEY=            # 设置以发送 PostHog 事件（如任务日志）
-# POSTHOG_HOST=               # 设置以发送 PostHog 事件（如任务日志）
+PLAYWRIGHT_MICROSERVICE_URL=
+EOF
 ```
 
+如需让测试框架创建本地 PostgreSQL 和 RabbitMQ 容器，请不要设置 `NUQ_DATABASE_URL` 和 `NUQ_RABBITMQ_URL`。仅在您有意自行管理这些依赖项时才设置它们。
 
-<div id="install-dependencies">
-  ## 安装依赖项
+<div id="start-redis-and-firecrawl">
+  ### 启动 Redis 和 Firecrawl
 </div>
 
-在 `apps/api/` 目录下使用 pnpm 安装依赖包：
-
-```bash
-cd apps/api
-pnpm install
-```
-
-
-<div id="start-the-services">
-  ## 启动服务
-</div>
-
-你需要同时开启三个终端会话：一个运行 Redis、一个运行 API 服务器，另一个用于发送请求。
-
-<div id="terminal-1-redis">
-  ### 终端 1 — Redis
-</div>
-
-在项目中的任意目录启动 Redis 服务器：
+在一个终端中启动 Redis：
 
 ```bash
 redis-server
 ```
 
-
-<div id="terminal-2-api-server">
-  ### Terminal 2 — API 服务器
-</div>
-
-进入 `apps/api/` 目录并启动服务：
+然后在另一个终端中，从 `apps/api` 目录启动 Firecrawl：
 
 ```bash
 pnpm start
 ```
 
-这将启动 API 服务器以及负责处理抓取任务的工作进程。
+启动命令会构建 API、启动 API 和 worker 进程，并管理本地队列容器。开发期间请保持此终端窗口处于打开状态。
 
-<Note>
-  如果你计划使用 [LLM 提取功能](https://github.com/firecrawl/firecrawl/pull/586/)，请先导出你的 OpenAI API 密钥：`export OPENAI_API_KEY=sk-...`
-</Note>
-
-
-<div id="terminal-3-send-a-test-request">
-  ### 终端 3 — 发送测试请求
+<div id="verify-one-local-scrape">
+  ### 验证本地抓取
 </div>
 
-运行健康检查以验证服务器是否正常运行：
+检查 API 进程是否正常响应：
 
 ```bash
-curl -X GET http://localhost:3002/test
+curl \
+  --fail \
+  --silent \
+  --show-error \
+  http://localhost:3002/v0/health/readiness
 ```
 
-这应该返回 `Hello, world!`。
+预期响应：
 
-要测试 crawl 端点：
+```json
+{"status":"ok"}
+```
+
+然后测试抓取路径：
 
 ```bash
-curl -X POST http://localhost:3002/v1/crawl \
+curl \
+  --fail-with-body \
+  --silent \
+  --show-error \
+  --max-time 75 \
+  -X POST \
+  http://localhost:3002/v2/scrape \
   -H 'Content-Type: application/json' \
   -d '{
-    "url": "https://mendable.ai"
+    "url": "https://example.com",
+    "formats": ["markdown"],
+    "timeout": 60000
   }'
 ```
 
+成功的响应包含 `success: true`、`data.markdown` 中的 Markdown 内容，以及 `data.metadata.statusCode` 中的 HTTP 状态码。
 
-<div id="alternative-docker-compose">
-  ## 替代方案：Docker Compose
+<div id="change-and-test-firecrawl">
+  ## 修改并测试 Firecrawl
 </div>
 
-为了更简单的搭建方式，Docker Compose 可以通过一条命令运行所有服务（Redis、API 服务器和工作进程）。
+每次修改都应聚焦明确，覆盖成功路径及相关失败场景，并运行由源码维护、且足以验证该行为的最小范围测试命令。
 
-1. 确保已安装 Docker 和 Docker Compose。
-2. 在 `apps/api/` 目录下将 `.env.example` 复制为 `.env`，并根据需要进行配置。
-3. 在项目根目录运行：
+在 `apps/api` 目录下，运行 API snippet 测试套件及其依赖项：
 
 ```bash
-docker compose up
+pnpm harness pnpm test:snips
 ```
 
-这将自动以正确的配置启动所有服务。
+测试框架会为测试命令启动 API、worker、PostgreSQL 和 RabbitMQ，随后清理其启动的进程。如果无需运行完整的 snippet 测试套件，请使用更有针对性的 Vitest 路径。
 
+贡献前，请先阅读仓库中的 [`CONTRIBUTING.md`](https://github.com/firecrawl/firecrawl/blob/main/CONTRIBUTING.md)，再创建 pull request。
 
-<div id="running-tests">
-  ## 运行测试
+<div id="troubleshoot-the-development-environment">
+  ## 排查开发环境问题
 </div>
 
-使用以下命令运行测试套件：
+<div id="redis-does-not-connect">
+  ### Redis 无法连接
+</div>
 
-```bash
-npm run test:snips
-```
+确认 Redis 正在监听 `localhost:6379`，并确保 `apps/api/.env` 中的两个 Redis URL 都使用该地址。
+
+<div id="the-harness-cannot-start-postgresql-or-rabbitmq">
+  ### 测试框架无法启动 PostgreSQL 或 RabbitMQ
+</div>
+
+启动 Docker 或 Podman，然后重新运行 `pnpm start`。如果这些服务由你自行管理，请显式设置其连接 URL，而不要依赖测试框架管理的容器。
+
+<div id="port-3002-is-already-in-use">
+  ### 端口 3002 已被占用
+</div>
+
+请停止其他进程，或在 `apps/api/.env` 中更改 `PORT`，然后在验证请求中使用相同的端口。
+
+<div id="basic-fetch-works-but-browser-rendering-does-not">
+  ### 基本抓取可用，但浏览器渲染不可用
+</div>
+
+将 `PLAYWRIGHT_MICROSERVICE_URL` 留空会禁用独立的 Playwright 服务。仅当测试的变更需要该服务时，才启动并配置它。
+
+<div id="where-to-go-next">
+  ## 下一步
+</div>
+
+* **需要部署而非开发？** 请参阅[自托管 Firecrawl](/zh/contributing/self-host)。
+* **还在选择方案？** 比较[开源版与 Firecrawl Cloud](/zh/contributing/open-source-or-cloud)。
+* **准备好贡献了吗？** 请查看由源代码仓库维护的[贡献指南](https://github.com/firecrawl/firecrawl/blob/main/CONTRIBUTING.md)。

@@ -6,7 +6,7 @@ openapi: '/es/api-reference/v2-openapi.json DELETE /scrape/{jobId}/interact'
 
 Usa este endpoint para detener la sesión interactiva del navegador de un trabajo de scrape. Al detener la sesión, se liberan recursos del navegador y se finaliza la facturación.
 
-Los credits se facturan según la duración de la sesión: **2 credits por minuto de navegador**, prorrateados por segundo.
+Los credits se facturan según la duración de la sesión: **7 credits por minuto de navegador** si la sesión usó un `prompt`, o **2 credits por minuto de navegador** si no lo hizo. La duración se prorratea por segundo, con un cargo mínimo de un minuto de navegador.
 
 <div id="path-parameters">
   ## Parámetros de ruta

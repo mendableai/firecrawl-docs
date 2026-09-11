@@ -3,7 +3,15 @@ title: "Guia Avançado de Scraping"
 description: "Aprenda a aprimorar seu scraping no Firecrawl com opções avançadas."
 og:title: "Guia Avançado de Scraping | Firecrawl"
 og:description: "Aprenda a aprimorar seu scraping no Firecrawl com opções avançadas."
+canonical: "https://docs.firecrawl.dev/advanced-scraping-guide"
 ---
+
+<Warning>
+  **Esta página documenta a API v0, descontinuada em 1º de abril de 2025.** Ela é mantida para
+  referência histórica e não descreve como o Firecrawl funciona atualmente. Documentação
+  atual: [Guia Avançado de Scraping](/pt-BR/advanced-scraping-guide). Para migrar uma integração v0 existente, consulte
+  [Migrando da v0](/pt-BR/migrating-from-v0).
+</Warning>
 
 Este guia apresenta os diferentes endpoints do Firecrawl e como utilizá-los plenamente, explorando todos os seus parâmetros.
 
@@ -52,7 +60,7 @@ Para extrair o conteúdo em markdown de uma única página, use o endpoint `/scr
 
     content, err := app.ScrapeURL("docs.firecrawl.dev", nil)
     if err != nil {
-      log.Fatalf("Failed")
+      log.Fatalf("Failed to scrape URL: %v", err)
     }
   }
   ```
@@ -102,41 +110,41 @@ Ao usar o endpoint `/scrape`, você pode personalizar o comportamento de scrapin
   ### Obtendo conteúdo mais limpo com `onlyMainContent`
 </div>
 
-- **Tipo**: `boolean`
-- **Descrição**: Retorna somente o conteúdo principal da página, excluindo cabeçalhos, barras de navegação, rodapés etc.
-- **Padrão**: `false`
+* **Tipo**: `boolean`
+* **Descrição**: Retorna somente o conteúdo principal da página, excluindo cabeçalhos, barras de navegação, rodapés etc.
+* **Padrão**: `false`
 
 <div id="getting-the-html-with-includehtml">
   ### Obtendo o HTML com `includeHtml`
 </div>
 
-- **Tipo**: `boolean`
-- **Descrição**: Inclui o conteúdo da página em HTML. Isso adicionará a chave `html` na resposta.
-- **Padrão**: `false`
+* **Tipo**: `boolean`
+* **Descrição**: Inclui o conteúdo da página em HTML. Isso adicionará a chave `html` na resposta.
+* **Padrão**: `false`
 
 <div id="getting-the-raw-html-with-includerawhtml">
   ### Obtendo o HTML bruto com `includeRawHtml`
 </div>
 
-- **Tipo**: `boolean`
-- **Descrição**: Inclui o HTML bruto da página. Isso adicionará a chave `rawHtml` na resposta.
-- **Padrão**: `false`
+* **Tipo**: `boolean`
+* **Descrição**: Inclui o HTML bruto da página. Isso adicionará a chave `rawHtml` na resposta.
+* **Padrão**: `false`
 
 <div id="getting-a-screenshot-of-the-page-with-screenshot">
   ### Obtendo uma captura de tela da página com `screenshot`
 </div>
 
-- **Tipo**: `boolean`
-- **Descrição**: Inclui uma captura de tela da parte superior da página que você está extraindo.
-- **Padrão**: `false`
+* **Tipo**: `boolean`
+* **Descrição**: Inclui uma captura de tela da parte superior da página que você está extraindo.
+* **Padrão**: `false`
 
 <div id="waiting-for-the-page-to-load-with-waitfor">
   ### Aguardando o carregamento da página com `waitFor`
 </div>
 
-- **Tipo**: `integer`
-- **Descrição**: Use apenas como último recurso. Aguarde um número específico de milissegundos para a página carregar antes de obter o conteúdo.
-- **Padrão**: `0`
+* **Tipo**: `integer`
+* **Descrição**: Use apenas como último recurso. Aguarde um número específico de milissegundos para a página carregar antes de obter o conteúdo.
+* **Padrão**: `0`
 
 <div id="example-usage">
   ### Exemplo de uso
@@ -173,26 +181,31 @@ Aqui está a referência da API correspondente: [Scrape Endpoint Documentation](
 
 Ao usar o endpoint `/scrape`, você pode especificar opções para **extrair informações estruturadas** do conteúdo da página com o parâmetro `extractorOptions`. Aqui estão as opções disponíveis:
 
-### mode
+<div id="mode">
+  ### mode
+</div>
 
-- **Type**: `string`
-- **Enum**: `["llm-extraction", "llm-extraction-from-raw-html"]`
-- **Description**: O modo de extração a ser utilizado.
+* **Type**: `string`
 
-  - `llm-extraction`: Extrai informações do conteúdo limpo e processado.
-  - `llm-extraction-from-raw-html`: Extrai informações diretamente do HTML cru.
+* **Enum**: `["llm-extraction", "llm-extraction-from-raw-html"]`
 
-- **Type**: `string`
-- **Description**: Um prompt que descreve quais informações devem ser extraídas da página.
+* **Description**: O modo de extração a ser utilizado.
+
+  * `llm-extraction`: Extrai informações do conteúdo limpo e processado.
+  * `llm-extraction-from-raw-html`: Extrai informações diretamente do HTML cru.
+
+* **Type**: `string`
+
+* **Description**: Um prompt que descreve quais informações devem ser extraídas da página.
 
 <div id="extractionschema">
   ### extractionSchema
 </div>
 
-- **Tipo**: `object`
-- **Descrição**: O esquema dos dados a serem extraídos. Define a estrutura dos dados extraídos.
+* **Tipo**: `object`
+* **Descrição**: O esquema dos dados a serem extraídos. Define a estrutura dos dados extraídos.
 
-<div id="example-usage">
+<div id="example-usage-2">
   ### Exemplo de uso
 </div>
 
@@ -265,7 +278,7 @@ curl -X POST https://api.firecrawl.dev/v0/scrape \
 
 Você pode ajustar o tempo limite do processo de scraping usando o parâmetro `timeout` em milissegundos.
 
-<div id="example-usage">
+<div id="example-usage-3">
   ### Exemplo de uso
 </div>
 
@@ -323,52 +336,52 @@ Ao usar o endpoint `/crawl`, você pode personalizar o comportamento do rastream
   #### `includes`
 </div>
 
-- **Tipo**: `array`
-- **Descrição**: Padrões de URL a serem incluídos na varredura. Somente URLs que corresponderem a esses padrões serão rastreadas.
-- **Exemplo**: `["/blog/*", "/products/*"]`
+* **Tipo**: `array`
+* **Descrição**: Padrões de URL a serem incluídos na varredura. Somente URLs que corresponderem a esses padrões serão rastreadas.
+* **Exemplo**: `["/blog/*", "/products/*"]`
 
 <div id="excludes">
   #### `excludes`
 </div>
 
-- **Tipo**: `array`
-- **Descrição**: Padrões de URL a serem excluídos da varredura. URLs que corresponderem a esses padrões serão puladas.
-- **Exemplo**: `["/admin/*", "/login/*"]`
+* **Tipo**: `array`
+* **Descrição**: Padrões de URL a serem excluídos da varredura. URLs que corresponderem a esses padrões serão puladas.
+* **Exemplo**: `["/admin/*", "/login/*"]`
 
 <div id="returnonlyurls">
   #### `returnOnlyUrls`
 </div>
 
-- **Tipo**: `boolean`
-- **Descrição**: Se definido como `true`, a resposta incluirá apenas uma lista de URLs, em vez dos dados completos do documento.
-- **Padrão**: `false`
+* **Tipo**: `boolean`
+* **Descrição**: Se definido como `true`, a resposta incluirá apenas uma lista de URLs, em vez dos dados completos do documento.
+* **Padrão**: `false`
 
 <div id="maxdepth">
   #### `maxDepth`
 </div>
 
-- **Tipo**: `integer`
-- **Descrição**: Profundidade máxima de rastreamento em relação à URL informada. Um maxDepth de 0 extrai apenas a URL informada. Um maxDepth de 1 extrai a URL informada e todas as páginas a um nível de profundidade. Um maxDepth de 2 extrai a URL informada e todas as páginas até dois níveis de profundidade. Valores maiores seguem o mesmo padrão.
-- **Exemplo**: `2`
+* **Tipo**: `integer`
+* **Descrição**: Profundidade máxima de rastreamento em relação à URL informada. Um maxDepth de 0 extrai apenas a URL informada. Um maxDepth de 1 extrai a URL informada e todas as páginas a um nível de profundidade. Um maxDepth de 2 extrai a URL informada e todas as páginas até dois níveis de profundidade. Valores maiores seguem o mesmo padrão.
+* **Exemplo**: `2`
 
-<div id="mode">
+<div id="mode-2">
   #### `mode`
 </div>
 
-- **Tipo**: `string`
-- **Enum**: `["default", "fast"]`
-- **Descrição**: O modo de rastreamento a ser usado. O modo `fast` rastreia sites sem sitemap 4x mais rápido, mas pode ser menos preciso e não é recomendado para sites com forte uso de JavaScript para renderização.
-- **Padrão**: `default`
+* **Tipo**: `string`
+* **Enum**: `["default", "fast"]`
+* **Descrição**: O modo de rastreamento a ser usado. O modo `fast` rastreia sites sem sitemap 4x mais rápido, mas pode ser menos preciso e não é recomendado para sites com forte uso de JavaScript para renderização.
+* **Padrão**: `default`
 
 <div id="limit">
   #### `limit`
 </div>
 
-- **Tipo**: `integer`
-- **Descrição**: Número máximo de páginas a serem rastreadas.
-- **Padrão**: `10000`
+* **Tipo**: `integer`
+* **Descrição**: Número máximo de páginas a serem rastreadas.
+* **Padrão**: `10000`
 
-<div id="example-usage">
+<div id="example-usage-4">
   ### Exemplo de uso
 </div>
 
@@ -404,7 +417,7 @@ Neste exemplo, o crawler vai:
 
 Você pode combinar os parâmetros `pageOptions` e `crawlerOptions` para personalizar completamente o comportamento de rastreamento.
 
-<div id="example-usage">
+<div id="example-usage-5">
   ### Exemplo de uso
 </div>
 

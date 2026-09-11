@@ -1,0 +1,84 @@
+---
+title: Para agentes
+description: "Los agentes pueden empezar a usarlo al instante, sin necesidad de una clave de API. Añade una clave de API para acceder a más capacidad de uso."
+og:title: 'Para agentes'
+og:description: "Configura Firecrawl MCP en Codex, Claude Code, Cursor u otro entorno de ejecución de agentes."
+sidebarTitle: 'Para agentes'
+---
+
+import { McpClientSelector } from "/snippets/shared/agent-first-onboarding.jsx";
+
+<div id="try-keyless">
+  ## Prueba el acceso sin clave
+</div>
+
+<div id="try-instantly" />
+
+<Visibility for="humans">
+  <McpClientSelector variant="agent" showSeeAll={false} />
+</Visibility>
+
+<Visibility for="agents">
+  URL del servidor sin clave (Streamable HTTP, sin credenciales): `https://mcp.firecrawl.dev/v2/mcp`
+
+  * Codex: `codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp`
+  * Claude Code: `claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp`
+  * Cursor o cualquier cliente con configuración JSON: `{"mcpServers": {"firecrawl": {"url": "https://mcp.firecrawl.dev/v2/mcp"}}}`
+  * OpenCode (`opencode.json`): `{"mcp": {"firecrawl": {"type": "remote", "url": "https://mcp.firecrawl.dev/v2/mcp", "enabled": true}}}`
+
+  ChatGPT y Claude usan el conector nativo de Firecrawl: consulta [Para personas](/es/mcp-server/oauth.md#chatgpt-and-claude).
+</Visibility>
+
+El MCP sin clave está sujeto a límites de tasa y ofrece Search, scraping y procesamiento. Añade una clave de API para desbloquear todas las herramientas de Firecrawl MCP o límites más altos.
+
+<div id="add-an-api-key">
+  ## Añade una clave de API
+</div>
+
+[Crea una clave de API de Firecrawl](https://www.firecrawl.dev/app/api-keys) y añádela como token bearer en el mismo endpoint dentro de la configuración de tu cliente:
+
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
+```
+
+<div id="verify-your-connection">
+  ## Verifica la conexión
+</div>
+
+Abre el estado de MCP o la lista de herramientas de tu cliente y confirma que `firecrawl` esté conectado. Una conexión sin clave muestra `firecrawl_search`, `firecrawl_scrape` y `firecrawl_parse`; una conexión con clave de API puede ofrecer [todas las herramientas de Firecrawl MCP](/es/mcp-server/tools), según el plan, la implementación y la política del equipo.
+
+<div id="try">
+  ## Prueba
+</div>
+
+```text
+Busca en la web las notas de la última release de Firecrawl y resume las fuentes.
+```
+
+Si no aparece ninguna herramienta de Firecrawl, reinicia o recarga el cliente después de guardar su configuración de MCP.
+
+<div id="more">
+  ## Más
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Selecciona una herramienta" icon="wrench" href="/es/mcp-server/tools">
+    Encuentra la herramienta adecuada de Firecrawl MCP y consulta su disponibilidad según la conexión.
+  </Card>
+
+  <Card title="Ejecuta localmente" icon="terminal" href="/es/mcp-server/local">
+    Inicia el servidor de código abierto mediante stdio o Streamable HTTP.
+  </Card>
+</CardGroup>
+
+Para consultar la asignación actual sin clave y los límites del plan, consulta [Límites de tasa](/es/rate-limits#keyless-no-api-key).

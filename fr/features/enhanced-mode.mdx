@@ -9,20 +9,21 @@ import ProxyPython from "/snippets/fr/v2/scrape/proxy/python.mdx";
 import ProxyNode from "/snippets/fr/v2/scrape/proxy/js.mdx";
 import ProxyCURL from "/snippets/fr/v2/scrape/proxy/curl.mdx";
 
-Firecrawl propose différents types de proxy pour vous aider à effectuer du scraping sur des sites web de complexité variable. Définissez le paramètre `proxy` pour choisir la stratégie de proxy utilisée pour une requête.
+<Warning>
+  Le paramètre `proxy` est obsolète. Nous recommandons `auto` — la valeur par défaut — qui permet à Firecrawl de gérer la sélection du proxy pour vous.
+</Warning>
 
+Firecrawl propose différents types de proxy pour vous aider à effectuer du scraping sur des sites web de complexité variable. Définissez le paramètre `proxy` pour choisir la stratégie de proxy utilisée pour une requête.
 
 <div id="proxy-types">
   ## Types de proxy
 </div>
 
-Firecrawl prend en charge trois types de proxy :
-
-| Type | Description | Vitesse | Coût |
-|------|-------------|---------|------|
-| `basic` | Proxies standard adaptés à la plupart des sites | Rapide | 1 crédit |
-| `enhanced` | Proxies avancés pour les sites complexes | Plus lent | 5 crédits par requête |
-| `auto` | Essaie d’abord `basic`, puis réessaie avec `enhanced` en cas d’échec | Variable | 1 crédit si `basic` réussit, 5 crédits si `enhanced` est nécessaire |
+| Type       | Description                                                                          |
+| ---------- | ------------------------------------------------------------------------------------ |
+| `basic`    | Proxies standard adaptés à la plupart des sites                                      |
+| `enhanced` | Proxies avancés pour les sites complexes                                             |
+| `auto`     | **Recommandé.** Essaie d’abord `basic`, puis réessaie avec `enhanced` en cas d’échec |
 
 Si vous ne spécifiez pas de proxy, Firecrawl utilise `auto` par défaut.
 
@@ -33,17 +34,25 @@ Si vous ne spécifiez pas de proxy, Firecrawl utilise `auto` par défaut.
 Définissez le paramètre `proxy` pour choisir une stratégie de proxy. L’exemple suivant utilise `auto`, ce qui permet à Firecrawl de décider quand passer à des proxies avancés.
 
 <CodeGroup>
+  <ProxyPython />
 
-<ProxyPython />
+  <ProxyNode />
 
-<ProxyNode />
-
-<ProxyCURL />
-
+  <ProxyCURL />
 </CodeGroup>
 
+<div id="when-firecrawl-escalates">
+  ## Quand Firecrawl procède à une escalade
+</div>
+
+Firecrawl démarre sur des proxys basic. Si la target répond avec un code **401, 403 ou 429**, Firecrawl y voit le signe que le proxy n&#39;était pas suffisant et réessaie la même URL via des proxys avancés. Les autres codes d&#39;état, y compris 404 et 5xx, ne déclenchent aucune escalade, car un autre proxy ne changerait rien à la réponse.
+
+L&#39;escalade a lieu au maximum une fois par requête. Dès lors qu&#39;une requête utilise déjà des proxys avancés, un nouveau 401, 403 ou 429 vous est renvoyé comme résultat au lieu de faire l&#39;objet d&#39;un nouvel essai.
+
+Vous n&#39;avez rien à détecter ni à gérer. Le réessai fait partie de la même requête, et la réponse que vous recevez est la réponse finale.
+
 <Info>
-Les requêtes via un proxy avancé coûtent **5 crédits par requête**. Avec `auto`, ce coût de 5 crédits ne s’applique que si le proxy de base échoue et que la nouvelle tentative avec le proxy avancé réussit.
+  Les requêtes avec proxy avancé coûtent autant que les requêtes basic — **1 crédit par requête**. Un réessai après escalade n&#39;est pas facturé séparément : une requête qui démarre en basic et se termine en avancé coûte donc toujours 1 crédit.
 </Info>
 
-> Êtes-vous un agent d’IA ayant besoin d’une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour les instructions d’intégration automatisée.
+> Vous êtes un agent IA et avez besoin d&#39;une API key Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour des instructions d&#39;intégration automatisée.

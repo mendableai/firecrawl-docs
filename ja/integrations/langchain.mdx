@@ -1,83 +1,103 @@
 ---
-title: 'Langchain'
-description: 'Firecrawl はドキュメントローダーとして Langchain と統合されています。'
-og:title: "Langchain | Firecrawl"
-og:description: "Firecrawl はドキュメントローダーとして Langchain と統合されています。"
+title: 'LangChain'
+description: 'LangChain で Firecrawl をドキュメントローダーやエージェントツールとして使用します。'
+og:title: "LangChain | Firecrawl"
+og:description: "LangChain で Firecrawl をドキュメントローダーやエージェントツールとして使用します。"
 ---
 
-> 注記: この連携は現在も [Firecrawl API の v0 版](/ja/v0/introduction) を使用しています。Python SDK は 0.0.20、Node SDK は 0.0.36 をインストールしてください。
+<Note>
+  **公式パッケージ:** [`langchain-firecrawl`](https://pypi.org/project/langchain-firecrawl/) · [ソース](https://github.com/firecrawl/langchain-firecrawl)
 
-<div id="installation">
+  LangChain から、ドキュメントローダーやエージェントツールとしてスクレイピング、クロール、マッピング、抽出、検索を実行できます
+</Note>
+
+<div id="install">
   ## インストール
 </div>
 
 ```bash
-pip install firecrawl-py==0.0.20
+pip install langchain-firecrawl
 ```
 
-<div id="usage">
-  ## 使い方
-</div>
-
-ご自身の API キーが必要です。https://firecrawl.dev をご確認ください
-
-```python
-from langchain_community.document_loaders import FireCrawlLoader
-
-loader = FireCrawlLoader(
-    api_key="YOUR_API_KEY", url="https://firecrawl.dev", mode="crawl"
-)
-
-docs = loader.load()
-```
-
-<div id="modes">
-  ### モード
-</div>
-
-Scrape: 単一のURLをスクレイピングし、Markdownを返します。
-Crawl: 指定のURLとアクセス可能なすべてのサブページをクロールし、それぞれのページのMarkdownを返します。
-
-```python
-loader = FireCrawlLoader(
-    api_key="YOUR_API_KEY",
-    url="https://firecrawl.dev",
-    mode="scrape",
-)
-
-data = loader.load()
-```
-
-<div id="crawler-options">
-  ### クローラーのオプション
-</div>
-
-ローダーにパラメータを渡すこともできます。これはクローラーに渡すオプションのディクショナリです。詳細は Firecrawl の API ドキュメントを参照してください。
-
-<div id="langchain-js">
-  ## Langchain JS
-</div>
-
-Langchain JS で使うには、npm でインストールします。
+[firecrawl.dev](https://www.firecrawl.dev/app/api-keys) からキーを取得し、環境変数に設定するか、`api_key=...` として渡します：
 
 ```bash
-npm install @mendableai/firecrawl-js
+export FIRECRAWL_API_KEY="fc-your-api-key"
 ```
 
-次に、次のように使えます。
+<div id="document-loader">
+  ## ドキュメントローダー
+</div>
+
+`FirecrawlLoader` は LangChain の `Document` を返します。`mode` を選択します。
+
+| モード       | 読み込む内容    |
+| --------- | --------- |
+| `scrape`  | 1 ページ     |
+| `crawl`   | サイト全体     |
+| `map`     | 検出された URL |
+| `extract` | 構造化データ    |
+| `search`  | Web 検索結果  |
+
+```python
+from langchain_firecrawl import FirecrawlLoader
+
+loader = FirecrawlLoader(url="https://www.firecrawl.dev", mode="scrape")
+docs = loader.load()
+
+print(docs[0].page_content[:200])
+print(docs[0].metadata)
+```
+
+<div id="agent-tools">
+  ## エージェントツール
+</div>
+
+各機能は、エージェントにバインドできる `BaseTool` としても使用できます。
+
+```python
+from langchain_firecrawl import (
+    FirecrawlScrape,
+    FirecrawlCrawl,
+    FirecrawlMap,
+    FirecrawlExtract,
+    FirecrawlSearch,
+)
+
+scrape = FirecrawlScrape()
+result = scrape.invoke({"url": "https://www.firecrawl.dev"})
+print(result["markdown"])
+
+search = FirecrawlSearch()
+print(search.invoke({"query": "best web scraping libraries", "limit": 5}))
+```
+
+<div id="langchain-js">
+  ## LangChain JS
+</div>
+
+JavaScript ローダーは `@langchain/community` に含まれており、Firecrawl JS SDK をピア依存関係として必要とします。
+
+```bash
+npm install @langchain/community @mendable/firecrawl-js
+```
 
 ```typescript
-import { FireCrawlLoader } from "langchain/document_loaders/web/firecrawl";
+import { FireCrawlLoader } from "@langchain/community/document_loaders/web/firecrawl";
 
 const loader = new FireCrawlLoader({
-  url: "https://firecrawl.dev", // スクレイプ対象のURL
-  apiKey: process.env.FIRECRAWL_API_KEY, // 省略可。環境変数 `FIRECRAWL_API_KEY` がデフォルト
-  mode: "scrape", // クローラーの実行モード。"scrape" は単一URL用、"crawl" はアクセス可能なサブページ全体用
-  params: {
-    // Firecrawl API ドキュメントに基づく任意パラメータ
-    // API ドキュメント: https://docs.firecrawl.dev
-  },
+  url: "https://firecrawl.dev",
+  apiKey: process.env.FIRECRAWL_API_KEY, // デフォルトは FIRECRAWL_API_KEY
+  mode: "scrape", // 単一ページは "scrape"、サブページも含める場合は "crawl"
 });
 
 const docs = await loader.load();
 ```
+
+<div id="resources">
+  ## リソース
+</div>
+
+* [PyPI の `langchain-firecrawl`](https://pypi.org/project/langchain-firecrawl/)
+* Firecrawl の[スクレイピング](/ja/features/scrape)および[クロール](/ja/features/crawl)に関するドキュメント
+* [Firecrawl Python SDK](/ja/sdks/python)および[Node SDK](/ja/sdks/node)

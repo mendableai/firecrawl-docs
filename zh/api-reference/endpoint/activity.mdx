@@ -11,3 +11,14 @@ openapi: '/zh/api-reference/v2-openapi.json GET /team/activity'
 | `crawl`        | `GET /v2/crawl/{id}`        |
 | `batch_scrape` | `GET /v2/batch/scrape/{id}` |
 | `agent`        | `GET /v2/agent/{jobId}`     |
+
+<div id="team-management-endpoints">
+  ## 团队管理端点
+</div>
+
+| 操作       | API 路径                                 | 文档页面                                                                         |
+| -------- | -------------------------------------- | ---------------------------------------------------------------------------- |
+| 团队活动     | `GET /v2/team/activity`                | [`activity`](/zh/api-reference/endpoint/activity)                               |
+| 额度使用情况   | `GET /v2/team/credit-usage`            | [`credit-usage`](/zh/api-reference/endpoint/credit-usage)                       |
+| 历史额度使用情况 | `GET /v2/team/credit-usage/historical` | [`credit-usage-historical`](/zh/api-reference/endpoint/credit-usage-historical) |
+| 队列状态     | `GET /v2/team/queue-status`            | [`queue-status`](/zh/api-reference/endpoint/queue-status)                       |

@@ -79,7 +79,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
 }
 ```
 
-
 <div id="crawlpage">
   ### `crawl.page`
 </div>
@@ -113,7 +112,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
 }
 ```
 
-
 <div id="crawlcompleted">
   ### `crawl.completed`
 </div>
@@ -129,7 +127,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
   "metadata": {}
 }
 ```
-
 
 <div id="batch-scrape-events">
   ## 批量抓取事件
@@ -150,7 +147,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
   "metadata": {}
 }
 ```
-
 
 <div id="batch_scrapepage">
   ### `batch_scrape.page`
@@ -185,7 +181,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
 }
 ```
 
-
 <div id="batch_scrapecompleted">
   ### `batch_scrape.completed`
 </div>
@@ -201,7 +196,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
   "metadata": {}
 }
 ```
-
 
 <div id="monitor-events">
   ## 监控事件
@@ -245,7 +239,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
 }
 ```
 
-
 <div id="extractcompleted">
   ### `extract.completed`
 </div>
@@ -274,7 +267,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
 }
 ```
 
-
 <div id="extractfailed">
   ### `extract.failed`
 </div>
@@ -292,10 +284,11 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
 }
 ```
 
-
 <div id="agent-events">
-  ## Agent 事件
+  ## 代理事件
 </div>
+
+适用于通过 [`/v2/agent`](/zh/features/agent) 使用 `webhook` 启动的任务。
 
 <div id="agentstarted">
   ### `agent.started`
@@ -313,12 +306,11 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
 }
 ```
 
-
 <div id="agentaction">
   ### `agent.action`
 </div>
 
-在每次调用工具（scrape、search 等）后发送。
+在每次调用工具 (scrape、search 等) 后发送。
 
 ```json
 {
@@ -343,12 +335,11 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
   `completed`、`failed` 或 `cancelled` 事件中可用。
 </Note>
 
-
 <div id="agentcompleted">
   ### `agent.completed`
 </div>
 
-当 agent 成功完成时会发送该事件。`data` 数组包含提取的数据以及消耗的总额度（credits）。
+当 agent 成功完成时会发送该事件。`data` 数组包含提取的数据以及消耗的总额度 (credits) 。
 
 ```json
 {
@@ -368,7 +359,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
   "metadata": {}
 }
 ```
-
 
 <div id="agentfailed">
   ### `agent.failed`
@@ -391,7 +381,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
 }
 ```
 
-
 <div id="agentcancelled">
   ### `agent.cancelled`
 </div>
@@ -411,7 +400,6 @@ Firecrawl 会在任务生命周期的各个阶段发送 Webhook 事件，因此�
   "metadata": {}
 }
 ```
-
 
 <div id="event-filtering">
   ## 事件过滤

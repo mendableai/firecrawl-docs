@@ -105,7 +105,6 @@ if (result.changeTracking.json) {
 }
 ```
 
-
 <div id="git-diff-results-example">
   ### Git diff 結果の例:
 </div>
@@ -119,7 +118,6 @@ if (result.changeTracking.json) {
 ...
 ```
 
-
 <div id="json-comparison-results-example">
   ### JSON 比較結果の例：
 </div>
@@ -132,7 +130,6 @@ if (result.changeTracking.json) {
   }
 }
 ```
-
 
 <div id="typescript-interface">
   ### TypeScript インターフェース
@@ -182,12 +179,11 @@ interface ScrapeParams {
 }
 ```
 
-
 <div id="python-sdk">
   ## Python SDK
 </div>
 
-<div id="basic-usage">
+<div id="basic-usage-2">
   ### 基本的な使い方
 </div>
 
@@ -207,7 +203,7 @@ print("可視状態:", result.changeTracking.visibility)  # 'visible' または 
 print("前回のスクレイプ時刻:", result.changeTracking.previousScrapeAt)  # 前回スクレイプのISOタイムスタンプ
 ```
 
-<div id="advanced-options">
+<div id="advanced-options-2">
   ### 高度なオプション
 </div>
 
@@ -241,7 +237,6 @@ if 'json' in result.changeTracking:
     print(result.changeTracking.json.title.current)  # 現在のタイトル
 ```
 
-
 <div id="python-data-model">
   ### Python データモデル
 </div>
@@ -259,7 +254,6 @@ class ChangeTrackingData(pydantic.BaseModel):
     diff: Optional[Dict[str, Any]] = None
     json: Optional[Any] = None
 ```
-
 
 <div id="change-tracking-modes">
   ## 変更追跡モード
@@ -309,7 +303,6 @@ changeTracking 機能は、次の2つのモードをサポートしています�
 ```
 
 JSONモードを使用するには、抽出して比較するフィールドを定義するスキーマを指定する必要があります。
-
 
 <div id="important-facts">
   ## 重要なポイント
@@ -375,7 +368,6 @@ change tracking 機能を使用する際に知っておくべき重要事項は�
 }
 ```
 
-
 <div id="tracking-product-price-changes">
   ### 商品価格の変動を追跡する
 </div>
@@ -421,7 +413,6 @@ if result.changeTracking.changeStatus == 'changed':
     print(f"価格が {result.changeTracking.json.price.previous} から {result.changeTracking.json.price.current} に変更されました")
 ```
 
-
 <div id="monitoring-content-changes-with-git-diff">
   ### git diff を使ったコンテンツ変更の監視
 </div>
@@ -454,7 +445,6 @@ if result.changeTracking.changeStatus == 'changed':
     print('コンテンツの変更:')
     print(result.changeTracking.diff.text)
 ```
-
 
 <div id="billing">
   ## 請求

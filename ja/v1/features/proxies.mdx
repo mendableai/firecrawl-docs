@@ -50,12 +50,10 @@ Firecrawlは、指定または検出されたロケーションに基づいて�
   ## プロキシタイプ
 </div>
 
-Firecrawl は 3 種類のプロキシをサポートしています：
+<Warning>
+  `proxy` パラメータは非推奨です。Firecrawl にプロキシの選択を任せられる `auto` を推奨します。
+</Warning>
 
-* **basic**: ほとんどのサイトのスクレイピング向けのプロキシ。高速で、たいていは動作します。
-* **enhanced**: 複雑なサイトをプライバシーを維持しながらスクレイピングするための Enhanced プロキシ。速度は遅いものの、特定のサイトではより信頼性があります。[Enhanced モードの詳細はこちら →](/ja/features/enhanced-mode)
-* **auto**: basic のプロキシが失敗した場合、Firecrawl が自動的に Enhanced プロキシでのスクレイピングを再試行します。Enhanced での再試行が成功した場合、そのスクレイプには 5 クレジットが請求されます。最初の basic の試行が成功した場合は、通常のコストのみが請求されます。
-
-***
-
-> 注: クレジットのコストやリトライ戦略を含む Enhanced プロキシの詳細については、[Enhanced モードのドキュメント](/ja/features/enhanced-mode)を参照してください。
+* **basic**: ほとんどのサイトのスクレイピング向けのプロキシ。
+* **enhanced**: 複雑なサイトをプライバシーを維持しながらスクレイピングするための Enhanced プロキシ。[Enhanced モードの詳細はこちら →](/ja/features/enhanced-mode)
+* **auto**: 推奨。basic のプロキシが失敗した場合、Firecrawl が自動的に Enhanced プロキシでのスクレイピングを再試行します。

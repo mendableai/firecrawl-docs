@@ -131,7 +131,7 @@ let results = client
 * `options.categories`
   * Type : `Vec<SearchCategory>`
   * À utiliser lorsque : vous souhaitez filtrer les résultats par catégorie.
-  * Valeurs confirmées : `Github`, `Research`, `Pdf`
+  * Valeurs confirmées : `Research`, `Pdf`
 
 * `options.limit`
   * Type : u32
@@ -166,19 +166,19 @@ let results = client
   ## Scrape
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### Pourquoi l’utiliser
 </div>
 
 Utilisez scrape lorsque vous avez déjà une URL et que vous souhaitez obtenir un contenu structuré dans un ou plusieurs formats.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### Méthode recommandée du SDK
 </div>
 
 `client.scrape(url, options)` → `Result<Document, FirecrawlError>` (dans le SDK, le champ `data` de la réponse HTTP est extrait automatiquement).
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Exemple simple
 </div>
 
@@ -193,7 +193,7 @@ let doc = client
     .await?;
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Exemple complexe
 </div>
 
@@ -246,7 +246,7 @@ let doc = client
     .await?;
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### Paramètres
 </div>
 
@@ -380,13 +380,13 @@ let doc = client
   ## Interact
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### Pourquoi l’utiliser
 </div>
 
 Utilisez interact lorsqu’une page nécessite des actions du navigateur ou l’exécution de code une fois le scrape lancé.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### Méthode recommandée du SDK
 </div>
 
@@ -394,7 +394,7 @@ Utilisez interact lorsqu’une page nécessite des actions du navigateur ou l’
 
 Pour mettre fin à la session de navigateur, utilisez `client.stop_interaction(job_id)` (HTTP `DELETE` sur `/v2/scrape/{jobId}/interact`).
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Exemple simple
 </div>
 
@@ -412,7 +412,7 @@ let result = client
     .await?;
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Exemple complexe
 </div>
 
@@ -441,7 +441,7 @@ let stopped = client.stop_interaction("<scrapeJobId>").await?;
 // stopped : ScrapeBrowserDeleteResponse { success, session_duration_ms, credits_billed, error, ... }
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### Paramètres
 </div>
 

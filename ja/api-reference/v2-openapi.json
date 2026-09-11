@@ -13,6 +13,889 @@
       }
     },
     "schemas": {
+      "AgentTraceAgent": {
+        "description": "イベントを発行したエージェントの識別情報。",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "description": "親エージェントの ID（サブエージェントに存在）。",
+            "format": "uuid",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "orchestrator",
+              "subagent",
+              "system"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "role",
+          "name"
+        ],
+        "type": "object"
+      },
+      "AgentTraceArtifact": {
+        "description": "出力アーティファクトの変更を表す記述子。",
+        "properties": {
+          "artifactId": {
+            "type": "string"
+          },
+          "change": {
+            "enum": [
+              "init",
+              "partial",
+              "append",
+              "modify",
+              "update"
+            ],
+            "type": "string"
+          },
+          "changedFields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "itemCount": {
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "json",
+              "markdown",
+              "html",
+              "screenshot",
+              "text"
+            ],
+            "type": "string"
+          },
+          "path": {
+            "description": "アーティファクトのワークスペースパス（例: /workspace/data.json）。",
+            "type": "string"
+          },
+          "snapshotId": {
+            "description": "このスナップショットの内容を取得するには、GET /agent/{jobId}/snapshots/{snapshotId} に渡します。",
+            "format": "uuid",
+            "type": "string"
+          },
+          "sourceToolCallId": {
+            "description": "該当する場合、この変更を生成したツール呼び出し。",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "artifactId",
+          "snapshotId",
+          "change"
+        ],
+        "type": "object"
+      },
+      "AgentTraceError": {
+        "description": "終端イベントおよびエラーイベントに付加される構造化エラー。",
+        "properties": {
+          "code": {
+            "enum": [
+              "cancelled",
+              "credit_limit_reached",
+              "parent_finished",
+              "refused",
+              "internal"
+            ],
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "source": {
+            "enum": [
+              "agent",
+              "tool",
+              "billing",
+              "system"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "source",
+          "retryable",
+          "message"
+        ],
+        "type": "object"
+      },
+      "AgentTraceEvent": {
+        "description": "エージェント実行の正規イベント。すべてのイベントには、schemaVersion、eventId、runId、occurredAt、producerSequence、agent のエンベロープフィールドが含まれ、type フィールドでバリアントを識別します。usage.recorded イベントは内部用で公開されず、agent.started イベントには model フィールドが含まれません。",
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "実行開始時に発行されます。",
+                "enum": [
+                  "run.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type"
+            ],
+            "title": "run.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "reason": {
+                "enum": [
+                  "user"
+                ],
+                "type": "string"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "キャンセルがリクエストされたときに発行されます（DELETE /agent/{jobId} 経由）。",
+                "enum": [
+                  "run.cancel_requested"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "reason"
+            ],
+            "title": "run.cancel_requested",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AgentTraceError"
+                  }
+                ],
+                "description": "outcome が succeeded の場合は Null、それ以外の場合は構造化エラー。",
+                "nullable": true
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "succeeded",
+                  "failed",
+                  "cancelled",
+                  "refused",
+                  "credit_limit_reached"
+                ],
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "実行の終端イベント。",
+                "enum": [
+                  "run.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "outcome",
+              "error"
+            ],
+            "title": "run.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "エージェント（オーケストレーターまたはサブエージェント）の開始時に発行されます。",
+                "enum": [
+                  "agent.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type"
+            ],
+            "title": "agent.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "durationMs": {
+                "type": "integer"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AgentTraceError"
+                  }
+                ],
+                "description": "outcome が succeeded の場合は Null、それ以外の場合は構造化エラー。",
+                "nullable": true
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "succeeded",
+                  "failed",
+                  "cancelled",
+                  "refused"
+                ],
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "エージェントの完了時に発行されます。",
+                "enum": [
+                  "agent.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "outcome",
+              "durationMs",
+              "error"
+            ],
+            "title": "agent.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "sessionId": {
+                "type": "string"
+              },
+              "type": {
+                "description": "ブラウザセッションの開始時に発行されます。",
+                "enum": [
+                  "browser.session.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "sessionId"
+            ],
+            "title": "browser.session.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "durationMs": {
+                "type": "integer"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "sessionId": {
+                "type": "string"
+              },
+              "type": {
+                "description": "ブラウザセッションの終了時に発行されます。",
+                "enum": [
+                  "browser.session.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "sessionId",
+              "durationMs"
+            ],
+            "title": "browser.session.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "phase": {
+                "enum": [
+                  "planning",
+                  "working",
+                  "finalizing"
+                ],
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "オーケストレーターが進行状況を報告したときに発行されます。",
+                "enum": [
+                  "progress.reported"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "phase",
+              "message"
+            ],
+            "title": "progress.reported",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "text": {
+                "type": "string"
+              },
+              "type": {
+                "description": "エージェントの推論の要約。",
+                "enum": [
+                  "reasoning.summary"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "text"
+            ],
+            "title": "reasoning.summary",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "parameters": {
+                "description": "ツールに渡される入力（任意の JSON）。"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "toolCallId": {
+                "type": "string"
+              },
+              "toolName": {
+                "type": "string"
+              },
+              "type": {
+                "description": "ツール呼び出しの開始時に発行されます。",
+                "enum": [
+                  "tool_call.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "toolCallId",
+              "toolName",
+              "parameters"
+            ],
+            "title": "tool_call.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "result": {
+                "description": "ツールから返される結果（任意の JSON）。"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "toolCallId": {
+                "type": "string"
+              },
+              "toolName": {
+                "type": "string"
+              },
+              "type": {
+                "description": "ツール呼び出しの完了時に発行されます。",
+                "enum": [
+                  "tool_call.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "toolCallId",
+              "toolName",
+              "result"
+            ],
+            "title": "tool_call.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "artifact": {
+                "$ref": "#/components/schemas/AgentTraceArtifact"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "出力アーティファクトが変更されたときに発行されます。",
+                "enum": [
+                  "artifact.updated"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "artifact"
+            ],
+            "title": "artifact.updated",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "error": {
+                "$ref": "#/components/schemas/AgentTraceError"
+              },
+              "eventId": {
+                "description": "このイベントの一意の ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "発行元エージェントによる単調増加のシーケンス番号。この値でイベントを並べ替えます。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "このイベントが属するエージェントジョブ ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "実行中に致命的ではないエラーが発生したときに発行されます。",
+                "enum": [
+                  "error.occurred"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "error"
+            ],
+            "title": "error.occurred",
+            "type": "object"
+          }
+        ]
+      },
       "AuditMetadata": {
         "additionalProperties": false,
         "description": "組織でSIEM Loggingが有効になっている場合、SIEMロギングイベントに含まれるユーザーの属性情報。",
@@ -75,6 +958,102 @@
             "description": "バッチスクレイピングのデータ。",
             "items": {
               "properties": {
+                "blocks": {
+                  "description": "PDFのページごとの型付きレイアウトブロック。リクエストで`blocks` PDFパーサーオプションを設定した場合にのみ含まれます。",
+                  "items": {
+                    "properties": {
+                      "height": {
+                        "description": "ページのレンダリング高さ（px）。一度もレンダリングされなかったページではNull。",
+                        "nullable": true,
+                        "type": "number"
+                      },
+                      "items": {
+                        "items": {
+                          "properties": {
+                            "bbox": {
+                              "description": "ページの幅と高さを基準に0～1へ正規化された[x0, y0, x1, y1]。ページの幅と高さを掛けるとピクセル座標を取得できます。ページの寸法が不明な場合はNull。",
+                              "items": {
+                                "type": "number"
+                              },
+                              "maxItems": 4,
+                              "minItems": 4,
+                              "nullable": true,
+                              "type": "array"
+                            },
+                            "confidence": {
+                              "properties": {
+                                "layout": {
+                                  "description": "レイアウトモデルの検出スコア（0～1）。ページがレイアウト分析をスキップした場合はNull。",
+                                  "nullable": true,
+                                  "type": "number"
+                                },
+                                "ocr": {
+                                  "description": "ソースパスで提供される場合のテキスト信頼度。提供されない場合はnull。",
+                                  "nullable": true,
+                                  "type": "number"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "content": {
+                              "description": "このブロックがドキュメントMarkdownに追加したMarkdownフラグメント。",
+                              "type": "string"
+                            },
+                            "id": {
+                              "description": "レスポンス内で一意かつ安定: p<page>.b<読み取り順のインデックス>。",
+                              "type": "string"
+                            },
+                            "label": {
+                              "description": "生のレイアウトモデルラベル。将来の互換性を考慮してそのまま渡されます。",
+                              "nullable": true,
+                              "type": "string"
+                            },
+                            "markdownSpan": {
+                              "description": "このブロックのフラグメントを含むドキュメントMarkdown内の[start, end)文字オフセット。後処理変換によってフラグメントが書き換えられた場合はNull。",
+                              "items": {
+                                "type": "integer"
+                              },
+                              "maxItems": 2,
+                              "minItems": 2,
+                              "nullable": true,
+                              "type": "array"
+                            },
+                            "readingOrder": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "description": "このブロックを生成したパイプラインパス（例: native_text、layout_ocr、tsr、formula_model、full_page）。",
+                              "nullable": true,
+                              "type": "string"
+                            },
+                            "type": {
+                              "description": "ブロックタイプ: title、section_header、text、table、formula、figure、caption、page_number、page_header、page_footer。新しいタイプが追加される場合があります。",
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "pageNumber": {
+                        "description": "1始まりの物理PDFページ番号。",
+                        "type": "integer"
+                      },
+                      "status": {
+                        "description": "ページレベルの集計結果: ok | partial | failed。",
+                        "type": "string"
+                      },
+                      "width": {
+                        "description": "ページのレンダリング幅（px）。bbox座標を非正規化する基準です。一度もレンダリングされなかったページではNull。",
+                        "nullable": true,
+                        "type": "number"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "nullable": true,
+                  "type": "array"
+                },
                 "html": {
                   "description": "`includeHtml` が true の場合に返されるページコンテンツの HTML バージョン",
                   "nullable": true,
@@ -197,6 +1176,28 @@
                   },
                   "type": "object"
                 },
+                "pages": {
+                  "description": "PDFの物理ページごとのMarkdown。リクエストで`pages` PDFパーサーオプションを設定した場合にのみ含まれます。",
+                  "items": {
+                    "properties": {
+                      "markdown": {
+                        "type": "string"
+                      },
+                      "pageNumber": {
+                        "description": "1始まりの物理PDFページ番号。",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "nullable": true,
+                  "type": "array"
+                },
+                "rawBase64": {
+                  "description": "`rawBase64` が `formats` に含まれている場合の、Base64 エンコードされた元の HTTP レスポンスボディ。データ URI ではなく、Base64 文字列のみです。MIME タイプは `metadata.contentType` に含まれます。",
+                  "nullable": true,
+                  "type": "string"
+                },
                 "rawHtml": {
                   "description": "`includeRawHtml` が true の場合に取得されるページの生の HTML コンテンツ",
                   "nullable": true,
@@ -313,6 +1314,102 @@
             "description": "クロールデータ。",
             "items": {
               "properties": {
+                "blocks": {
+                  "description": "PDFのページごとの型付きレイアウトブロック。リクエストで`blocks` PDFパーサーオプションを設定した場合にのみ含まれます。",
+                  "items": {
+                    "properties": {
+                      "height": {
+                        "description": "ページのレンダリング高さ（px）。一度もレンダリングされなかったページではnullです。",
+                        "nullable": true,
+                        "type": "number"
+                      },
+                      "items": {
+                        "items": {
+                          "properties": {
+                            "bbox": {
+                              "description": "ページの幅/高さに対して0～1に正規化された[x0, y0, x1, y1]。ページの幅/高さを掛けるとピクセル座標になります。ページの寸法が不明な場合はnullです。",
+                              "items": {
+                                "type": "number"
+                              },
+                              "maxItems": 4,
+                              "minItems": 4,
+                              "nullable": true,
+                              "type": "array"
+                            },
+                            "confidence": {
+                              "properties": {
+                                "layout": {
+                                  "description": "レイアウトモデルの検出スコア（0～1）。ページがレイアウト分析をスキップした場合はNull。",
+                                  "nullable": true,
+                                  "type": "number"
+                                },
+                                "ocr": {
+                                  "description": "ソースパスで提供される場合のテキスト信頼度。提供されない場合はnull。",
+                                  "nullable": true,
+                                  "type": "number"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "content": {
+                              "description": "このブロックがドキュメントのMarkdownに追加したMarkdownフラグメント。",
+                              "type": "string"
+                            },
+                            "id": {
+                              "description": "レスポンス内で一意かつ安定: p<page>.b<index in reading order>。",
+                              "type": "string"
+                            },
+                            "label": {
+                              "description": "生のレイアウトモデルラベル。将来の互換性のため、そのまま返されます。",
+                              "nullable": true,
+                              "type": "string"
+                            },
+                            "markdownSpan": {
+                              "description": "このブロックのフラグメントを含むドキュメントMarkdown内の[start, end)文字オフセット。後処理変換によってフラグメントが書き換えられた場合はNull。",
+                              "items": {
+                                "type": "integer"
+                              },
+                              "maxItems": 2,
+                              "minItems": 2,
+                              "nullable": true,
+                              "type": "array"
+                            },
+                            "readingOrder": {
+                              "type": "integer"
+                            },
+                            "source": {
+                              "description": "このブロックを生成したパイプラインパス（例: native_text、layout_ocr、tsr、formula_model、full_page）。",
+                              "nullable": true,
+                              "type": "string"
+                            },
+                            "type": {
+                              "description": "ブロックタイプ: title、section_header、text、table、formula、figure、caption、page_number、page_header、page_footer。今後、新しいタイプが追加される可能性があります。",
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "pageNumber": {
+                        "description": "1始まりの物理PDFページ番号。",
+                        "type": "integer"
+                      },
+                      "status": {
+                        "description": "ページレベルの集計結果: ok | partial | failed。",
+                        "type": "string"
+                      },
+                      "width": {
+                        "description": "ページのレンダリング幅（px）。bbox座標を非正規化する際の基準です。一度もレンダリングされなかったページではnullです。",
+                        "nullable": true,
+                        "type": "number"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "nullable": true,
+                  "type": "array"
+                },
                 "html": {
                   "description": "`includeHtml` が true の場合のページコンテンツの HTML 版",
                   "nullable": true,
@@ -435,6 +1532,28 @@
                   },
                   "type": "object"
                 },
+                "pages": {
+                  "description": "PDFの物理ページごとのMarkdown。リクエストで`pages` PDFパーサーオプションを設定した場合にのみ含まれます。",
+                  "items": {
+                    "properties": {
+                      "markdown": {
+                        "type": "string"
+                      },
+                      "pageNumber": {
+                        "description": "1始まりの物理PDFページ番号。",
+                        "type": "integer"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "nullable": true,
+                  "type": "array"
+                },
+                "rawBase64": {
+                  "description": "`rawBase64` が `formats` に含まれている場合の、Base64 エンコードされた元の HTTP レスポンスボディ。データ URI ではなく、Base64 文字列のみです。MIME タイプは `metadata.contentType` に含まれます。",
+                  "nullable": true,
+                  "type": "string"
+                },
                 "rawHtml": {
                   "description": "`includeRawHtml` が true の場合に含まれるページの生の HTML コンテンツ",
                   "nullable": true,
@@ -471,6 +1590,172 @@
           "total": {
             "description": "クロールを試行したページ数の合計。",
             "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "DeveloperSearchResponse": {
+        "properties": {
+          "coverage": {
+            "description": "結果タイプごとの結果。想定した結果タイプがない場合に確認してください。`skipped` は、`types` の値でそのタイプが指定されていないことを意味します。`degraded` または `unavailable` の場合、その欠落はqueryではなくインデックスまたはフィルターに起因します。リポジトリフィルターもその原因の一つです。詳細は、[リポジトリフィルターが検索対象を限定する仕組み](/api-reference/endpoint/developer-search#how-the-repository-filters-scope-a-search)を参照してください。",
+            "properties": {
+              "doc": {
+                "enum": [
+                  "ok",
+                  "degraded",
+                  "unavailable",
+                  "skipped"
+                ],
+                "type": "string"
+              },
+              "issue": {
+                "enum": [
+                  "ok",
+                  "degraded",
+                  "unavailable",
+                  "skipped"
+                ],
+                "type": "string"
+              },
+              "pull_request": {
+                "enum": [
+                  "ok",
+                  "degraded",
+                  "unavailable",
+                  "skipped"
+                ],
+                "type": "string"
+              },
+              "readme": {
+                "enum": [
+                  "ok",
+                  "degraded",
+                  "unavailable",
+                  "skipped"
+                ],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "repos": {
+            "description": "`repos` が送信された場合にのみ存在します。各スラッグについて、インデックス化の有無と `types` 配下のタイプ別の内訳を返します。",
+            "example": [
+              {
+                "indexed": true,
+                "repo": "firecrawl/firecrawl",
+                "types": {
+                  "issue": true,
+                  "pullRequest": true,
+                  "readme": true
+                }
+              }
+            ],
+            "items": {
+              "properties": {
+                "indexed": {
+                  "type": "boolean"
+                },
+                "repo": {
+                  "type": "string"
+                },
+                "types": {
+                  "description": "このリポジトリでインデックス化されている結果タイプ: `issue`、`pullRequest`、`readme`。",
+                  "properties": {
+                    "issue": {
+                      "type": "boolean"
+                    },
+                    "pullRequest": {
+                      "type": "boolean"
+                    },
+                    "readme": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "reranked": {
+            "description": "ランク付けされたリストが再ランキング処理を経たかどうか。",
+            "type": "boolean"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/DeveloperSearchResult"
+            },
+            "type": "array"
+          },
+          "sources": {
+            "description": "`sources` が送信された場合にのみ含まれます。要求どおりに各 ID と、その ID がインデックス化されているかどうかを返します。`indexed: true` は、ソースに公開済みの生成があることを意味するため、そのソースのドキュメント上の根拠が表示される場合があります。`indexed: false` は、その ID に由来するものはいずれも一致しないことを意味します。これにより、インデックスに存在しない ID と、単に何も見つからなかった query を区別できます。",
+            "example": [
+              {
+                "indexed": true,
+                "source": "some-docs-site"
+              },
+              {
+                "indexed": false,
+                "source": "unknown-docs-site"
+              }
+            ],
+            "items": {
+              "properties": {
+                "indexed": {
+                  "type": "boolean"
+                },
+                "source": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "success": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "DeveloperSearchResult": {
+        "properties": {
+          "id": {
+            "description": "`issue:owner/repo#123` などの安定した結果ID。",
+            "example": "issue:firecrawl/firecrawl#1234",
+            "type": "string"
+          },
+          "passages": {
+            "description": "表やコードブロックを保持できるMarkdown形式の一致した本文箇所。",
+            "items": {
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "title": {
+            "description": "`doc` の結果では、ソースページに使用可能なタイトルがないため、含まれないことがよくあります。代わりに `url` を使用してください。",
+            "type": "string"
+          },
+          "type": {
+            "description": "結果タイプ。",
+            "enum": [
+              "doc",
+              "issue",
+              "pull_request",
+              "readme"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "type": "string"
           }
         },
         "type": "object"
@@ -745,6 +2030,21 @@
               "properties": {
                 "type": {
                   "enum": [
+                    "rawBase64"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Raw Base64",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "type": {
+                  "enum": [
                     "links"
                   ],
                   "type": "string"
@@ -775,11 +2075,11 @@
               "properties": {
                 "fullPage": {
                   "default": false,
-                  "description": "ページ全体のスクリーンショットを取得するか（その場合は viewport.height を無視）、または現在のビューポート範囲内のスクリーンショットにするかを指定します。",
+                  "description": "ページ全体のスクリーンショットを取得するか（viewport.height は無視）、現在のビューポートに制限するかを指定します。",
                   "type": "boolean"
                 },
                 "quality": {
-                  "description": "スクリーンショットの画質を1〜100で指定します。100が最高画質です。",
+                  "description": "スクリーンショットの品質（1～100）。100が最高品質です。",
                   "type": "integer"
                 },
                 "type": {
@@ -791,11 +2091,11 @@
                 "viewport": {
                   "properties": {
                     "height": {
-                      "description": "ビューポートの高さ（ピクセル単位）",
+                      "description": "ビューポートの高さ（ピクセル）",
                       "type": "integer"
                     },
                     "width": {
-                      "description": "ビューポートの幅（ピクセル単位）",
+                      "description": "ビューポートの幅（ピクセル）",
                       "type": "integer"
                     }
                   },
@@ -814,12 +2114,17 @@
             },
             {
               "properties": {
+                "checkPromptInjection": {
+                  "default": false,
+                  "description": "有効にすると、抽出を実行する前にスクレイピングしたページコンテンツをスキャンし、プロンプトインジェクションの試行を検出します。インジェクションが検出された場合、リクエストは403およびエラーコード SCRAPE_PROMPT_INJECTION_DETECTED で失敗します。チェックを実行すると4クレジットが追加で消費されます。デフォルトは false です。",
+                  "type": "boolean"
+                },
                 "prompt": {
-                  "description": "JSON出力用プロンプト",
+                  "description": "JSON出力に使用するプロンプトです。",
                   "type": "string"
                 },
                 "schema": {
-                  "description": "JSON出力用のスキーマ。[JSON Schema](https://json-schema.org/) に準拠している必要があります。",
+                  "description": "JSON出力に使用するスキーマです。[JSON Schema](https://json-schema.org/) に準拠する必要があります。",
                   "type": "object"
                 },
                 "type": {
@@ -838,7 +2143,7 @@
             {
               "properties": {
                 "modes": {
-                  "description": "変更追跡に使用するモードです。'git-diff' は詳細な差分を表示し、'json' は抽出した JSON データを比較します。",
+                  "description": "変更追跡に使用するモードです。'git-diff' は詳細な差分を提供し、'json' は抽出したJSONデータを比較します。",
                   "items": {
                     "enum": [
                       "git-diff",
@@ -858,7 +2163,7 @@
                 },
                 "tag": {
                   "default": null,
-                  "description": "変更追跡に使用するタグ。タグを使うことで、変更追跡の履歴を個別の「ブランチ」に分割できます。特定のタグを指定した場合、そのタグに対する変更追跡は、同じタグで実行されたスクレイプとのみ比較されます。指定しない場合は、デフォルトタグ（null）が使用されます。",
+                  "description": "変更追跡に使用するタグです。タグにより変更追跡の履歴を別々の「ブランチ」に分けることができ、特定のタグでの変更追跡では同じタグで行われたスクレイピングとのみ比較されます。指定しない場合はデフォルトのタグ（null）が使用されます。",
                   "nullable": true,
                   "type": "string"
                 },
@@ -956,7 +2261,7 @@
               "description": "ページについて自然言語で質問します。回答はレスポンスの `answer` フィールドで返されます。",
               "properties": {
                 "question": {
-                  "description": "ページについて回答を得るための質問です。最大10,000文字です。",
+                  "description": "ページについて回答する質問。最大10,000文字。",
                   "maxLength": 10000,
                   "type": "string"
                 },
@@ -978,7 +2283,7 @@
               "description": "ページから関連するソーステキストを見つけます。選択されたテキストはレスポンスの `highlights` フィールドで返されます。",
               "properties": {
                 "query": {
-                  "description": "ページに対して実行するテキスト選択用のqueryです。最大10,000文字です。",
+                  "description": "ページに対して実行するテキスト選択query。最大10,000文字。",
                   "maxLength": 10000,
                   "type": "string"
                 },
@@ -1176,7 +2481,8 @@
               "completed",
               "failed",
               "partial",
-              "skipped_overlap"
+              "skipped_overlap",
+              "skipped_no_credits"
             ],
             "type": "string"
           },
@@ -1945,6 +3251,11 @@
                 {
                   "additionalProperties": false,
                   "properties": {
+                    "blocks": {
+                      "default": false,
+                      "description": "ドキュメントのMarkdownに加え、ページごとの型付きレイアウトブロックを含めます。ドキュメントの`blocks`フィールドには、正規化された境界ボックス、読み取り順序、Markdown内の文字範囲へのリンク、ブロックごとの信頼度を持つ型付きブロック（title、section_header、text、table、formula、figure、caption、...）が設定されます。追加コストはかかりません。",
+                      "type": "boolean"
+                    },
                     "maxPages": {
                       "description": "PDF から解析する最大ページ数です。",
                       "maximum": 10000,
@@ -1960,6 +3271,16 @@
                         "ocr"
                       ],
                       "type": "string"
+                    },
+                    "pageMarkers": {
+                      "default": false,
+                      "description": "ドキュメントのMarkdownに改ページ情報を追加します。ページは `\\n\\n---\\n\\n<!-- page N -->\\n\\n` で区切られ、Nは後続するコンテンツの1始まりの物理ページ番号です。マーカーはページ間にのみ挿入され（ページ1の先頭には挿入されません）、改ページをまたいで結合されたページは番号が飛ぶ場合があります。すべての物理ページが必要な場合は `pages: true` を使用してください。新しいレスポンスフィールドや追加コストはありません。",
+                      "type": "boolean"
+                    },
+                    "pages": {
+                      "default": false,
+                      "description": "ドキュメントのMarkdownに加え、物理ページごとのMarkdownを含めます。ドキュメントの`pages`フィールドには、{ pageNumber, markdown } の配列が設定されます。追加コストはかかりません。",
+                      "type": "boolean"
                     },
                     "type": {
                       "enum": [
@@ -2065,75 +3386,6 @@
             "type": "string"
           }
         },
-        "type": "object"
-      },
-      "ResearchGitHubItem": {
-        "properties": {
-          "contentMd": {
-            "description": "利用可能な場合は、一致した完全なMarkdownコンテンツ。",
-            "type": "string"
-          },
-          "number": {
-            "type": "integer"
-          },
-          "pageType": {
-            "description": "issue/PR/discussion 結果の履歴ページ種別。",
-            "type": "string"
-          },
-          "readmeUrl": {
-            "format": "uri",
-            "type": "string"
-          },
-          "repo": {
-            "description": "owner/name 形式の repository。",
-            "type": "string"
-          },
-          "resultType": {
-            "description": "issue、pull、discussion、repo_readme などの結果クラス。",
-            "type": "string"
-          },
-          "scores": {
-            "$ref": "#/components/schemas/ResearchGitHubScoreBreakdown"
-          },
-          "segmentCount": {
-            "type": "integer"
-          },
-          "snippet": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "url": {
-            "format": "uri",
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "ResearchGitHubScoreBreakdown": {
-        "additionalProperties": {
-          "type": "number"
-        },
-        "description": "semantic、lexical、fusion、rrf、rerank などのコンポーネントスコア。",
-        "type": "object"
-      },
-      "ResearchGitHubSearchResponse": {
-        "properties": {
-          "results": {
-            "items": {
-              "$ref": "#/components/schemas/ResearchGitHubItem"
-            },
-            "type": "array"
-          },
-          "success": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "success",
-          "results"
-        ],
         "type": "object"
       },
       "ResearchIdMap": {
@@ -2747,6 +3999,11 @@
                 {
                   "additionalProperties": false,
                   "properties": {
+                    "blocks": {
+                      "default": false,
+                      "description": "ドキュメントのMarkdownに加え、ページごとの型付きレイアウトブロックを含めます。ドキュメントの`blocks`フィールドには、正規化された境界ボックス、読み取り順序、Markdown内の文字範囲へのリンク、ブロックごとの信頼度を持つ型付きブロック（title、section_header、text、table、formula、figure、caption、...）が設定されます。追加コストはかかりません。",
+                      "type": "boolean"
+                    },
                     "maxPages": {
                       "description": "PDF から解析するページの最大数です。1〜10000 の正の整数で指定してください。",
                       "maximum": 10000,
@@ -2762,6 +4019,16 @@
                         "ocr"
                       ],
                       "type": "string"
+                    },
+                    "pageMarkers": {
+                      "default": false,
+                      "description": "ドキュメントのMarkdownに改ページ情報を追加します。ページは `\\n\\n---\\n\\n<!-- page N -->\\n\\n` で区切られ、Nは後続するコンテンツの1始まりの物理ページ番号です。マーカーはページ間にのみ挿入され（ページ1の先頭には挿入されません）、改ページをまたいで結合されたページは番号が飛ぶ場合があります。すべての物理ページが必要な場合は `pages: true` を使用してください。新しいレスポンスフィールドや追加コストはありません。",
+                      "type": "boolean"
+                    },
+                    "pages": {
+                      "default": false,
+                      "description": "ドキュメントのMarkdownに加え、物理ページごとのMarkdownを含めます。ドキュメントの`pages`フィールドには、{ pageNumber, markdown } の配列が設定されます。追加コストはかかりません。",
+                      "type": "boolean"
                     },
                     "type": {
                       "enum": [
@@ -2801,7 +4068,7 @@
           },
           "proxy": {
             "default": "auto",
-            "description": "使用するプロキシの種類を指定します。\n\n - **basic**: ボット対策がない、または基本的なボット対策のみを行っているサイト向けのプロキシです。高速で、多くのケースではこれで十分です。\n - **enhanced**: 高度なボット対策を行っているサイト向けの強化プロキシです。basic よりは遅くなりますが、一部のサイトではより高い成功率が期待できます。1 リクエストあたり最大 5 クレジット消費します。\n - **auto**: basic プロキシでのスクレイピングに失敗した場合、Firecrawl が自動的に enhanced プロキシで再試行します。enhanced での再試行が成功した場合、そのスクレイプには 5 クレジットが課金されます。最初の basic で成功した場合は、通常のコストのみが課金されます。",
+            "description": "使用するプロキシの種類を指定します。\n\n - **basic**: ボット対策がない、または基本的なボット対策のみを行っているサイト向けのプロキシです。高速で、多くのケースではこれで十分です。\n - **enhanced**: 高度なボット対策を行っているサイト向けの強化プロキシです。basic よりは遅くなりますが、一部のサイトではより高い成功率が期待できます。basic と同じクレジットコストで課金されます。\n - **auto**: basic プロキシでのスクレイピングに失敗した場合、Firecrawl が自動的に enhanced プロキシで再試行します。強化プロキシに追加のクレジット料金はかからないため、どちらの場合も通常のコストのみが課金されます。",
             "enum": [
               "basic",
               "enhanced",
@@ -2917,6 +4184,102 @@
                 "description": "`formats` に `audio` が含まれている場合の、抽出された MP3 音声ファイルへの署名付き URL です。署名付き URL は 1 時間で期限切れになります。",
                 "nullable": true,
                 "type": "string"
+              },
+              "blocks": {
+                "description": "PDFのページごとの型付きレイアウトブロック。リクエストで`blocks` PDFパーサーオプションを設定した場合にのみ含まれます。",
+                "items": {
+                  "properties": {
+                    "height": {
+                      "description": "ページのレンダリング高さ（px）。一度もレンダリングされなかったページではnullです。",
+                      "nullable": true,
+                      "type": "number"
+                    },
+                    "items": {
+                      "items": {
+                        "properties": {
+                          "bbox": {
+                            "description": "ページの幅/高さに対して0～1に正規化された[x0, y0, x1, y1]。ページの幅/高さを掛けるとピクセル座標になります。ページの寸法が不明な場合はnullです。",
+                            "items": {
+                              "type": "number"
+                            },
+                            "maxItems": 4,
+                            "minItems": 4,
+                            "nullable": true,
+                            "type": "array"
+                          },
+                          "confidence": {
+                            "properties": {
+                              "layout": {
+                                "description": "レイアウトモデルの検出スコア（0～1）。ページでレイアウト分析がスキップされた場合はnullです。",
+                                "nullable": true,
+                                "type": "number"
+                              },
+                              "ocr": {
+                                "description": "ソースパスで提供される場合のテキスト信頼度。提供されない場合はnullです。",
+                                "nullable": true,
+                                "type": "number"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "content": {
+                            "description": "このブロックがドキュメントのMarkdownに追加したMarkdownフラグメント。",
+                            "type": "string"
+                          },
+                          "id": {
+                            "description": "レスポンス内で一意かつ安定: p<page>.b<index in reading order>。",
+                            "type": "string"
+                          },
+                          "label": {
+                            "description": "生のレイアウトモデルラベル。将来の互換性のため、そのまま返されます。",
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "markdownSpan": {
+                            "description": "このブロックのフラグメントに対応する、ドキュメントMarkdown内の[start, end)文字オフセット。後処理でフラグメントが書き換えられた場合はnullです。",
+                            "items": {
+                              "type": "integer"
+                            },
+                            "maxItems": 2,
+                            "minItems": 2,
+                            "nullable": true,
+                            "type": "array"
+                          },
+                          "readingOrder": {
+                            "type": "integer"
+                          },
+                          "source": {
+                            "description": "ブロックを生成したパイプラインパス（例: native_text、layout_ocr、tsr、formula_model、full_page）。",
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "type": {
+                            "description": "ブロックタイプ: title、section_header、text、table、formula、figure、caption、page_number、page_header、page_footer。今後、新しいタイプが追加される可能性があります。",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "pageNumber": {
+                      "description": "1始まりの物理PDFページ番号。",
+                      "type": "integer"
+                    },
+                    "status": {
+                      "description": "ページレベルの集計結果: ok | partial | failed。",
+                      "type": "string"
+                    },
+                    "width": {
+                      "description": "ページのレンダリング幅（px）。bbox座標を非正規化する際の基準です。一度もレンダリングされなかったページではnullです。",
+                      "nullable": true,
+                      "type": "number"
+                    }
+                  },
+                  "type": "object"
+                },
+                "nullable": true,
+                "type": "array"
               },
               "branding": {
                 "description": "`branding` が `formats` に含まれている場合、ページから抽出されるブランディング情報です。色、フォント、タイポグラフィ、余白、コンポーネントなどが含まれます。",
@@ -3556,6 +4919,23 @@
                 },
                 "type": "object"
               },
+              "pages": {
+                "description": "PDFの物理ページごとのMarkdown。リクエストで`pages` PDFパーサーオプションを設定した場合にのみ含まれます。",
+                "items": {
+                  "properties": {
+                    "markdown": {
+                      "type": "string"
+                    },
+                    "pageNumber": {
+                      "description": "1始まりの物理PDFページ番号。",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "nullable": true,
+                "type": "array"
+              },
               "product": {
                 "description": "`formats`に`product`が含まれている場合に、ページから抽出される商品情報です。タイトル、ブランド、カテゴリ、説明、バリアントが含まれます。価格、在庫状況、画像は各バリアントごとに含まれます。",
                 "nullable": true,
@@ -3706,6 +5086,11 @@
                   "variants"
                 ],
                 "type": "object"
+              },
+              "rawBase64": {
+                "description": "`rawBase64` が `formats` に含まれている場合の、Base64 エンコードされた元の HTTP レスポンスボディ。データ URI ではなく、Base64 文字列のみです。MIME タイプは `metadata.contentType` に含まれます。",
+                "nullable": true,
+                "type": "string"
               },
               "rawHtml": {
                 "description": "ページから取得した、変更や加工を一切行っていない生の HTML。`formats` に `rawHtml` が含まれている場合に返されます。クリーニングやフィルタリングなどの処理は一切行われません。",
@@ -4016,6 +5401,154 @@
   "openapi": "3.0.0",
   "paths": {
     "/agent": {
+      "get": {
+        "operationId": "listAgents",
+        "parameters": [
+          {
+            "description": "この Unix ミリ秒タイムスタンプより前に作成されたエージェント実行のみを返します。1ページあたりの実行数は20件です。次のページを取得するには、前のページの `next` URL にある `before` 値を使用します。",
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "agents": {
+                      "items": {
+                        "properties": {
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "id": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "integration": {
+                            "description": "指定して実行を開始した場合のインテグレーション識別子",
+                            "type": "string"
+                          },
+                          "options": {
+                            "description": "実行開始時に指定したオプション",
+                            "properties": {
+                              "effort": {
+                                "description": "エージェント実行に使用される推論予算（effort を設定した実行にのみ含まれます）",
+                                "enum": [
+                                  "low",
+                                  "medium",
+                                  "high"
+                                ],
+                                "type": "string"
+                              },
+                              "model": {
+                                "description": "エージェント実行で使用されるモデルプリセット。新規の実行はすべて spark-2 で実行されます。Spark 1 の名称はレガシー実行にのみ表示されます。",
+                                "enum": [
+                                  "spark-2",
+                                  "spark-1-pro",
+                                  "spark-1-mini"
+                                ],
+                                "type": "string"
+                              },
+                              "prompt": {
+                                "type": "string"
+                              },
+                              "schema": {
+                                "type": "object"
+                              },
+                              "urls": {
+                                "items": {
+                                  "format": "uri",
+                                  "type": "string"
+                                },
+                                "type": "array"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "origin": {
+                            "description": "実行の origin（例: \"api\"）",
+                            "type": "string"
+                          },
+                          "settings": {
+                            "properties": {
+                              "hidden": {
+                                "type": "boolean"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "starred": {
+                                "type": "boolean"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "status": {
+                            "enum": [
+                              "processing",
+                              "completed",
+                              "failed"
+                            ],
+                            "type": "string"
+                          },
+                          "targetHint": {
+                            "description": "実行の対象を示す短い説明（最初の URL またはプロンプト）",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "next": {
+                      "description": "次のページの絶対 URL。後続のページがある場合にのみ含まれます。",
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "エージェント実行の一覧（新しい順）"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid before timestamp.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "不正なリクエスト — before タイムスタンプが無効です。"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "エージェント実行を一覧表示",
+        "tags": [
+          "Agent"
+        ]
+      },
       "post": {
         "operationId": "startAgent",
         "requestBody": {
@@ -4026,14 +5559,24 @@
                   "auditMetadata": {
                     "$ref": "#/components/schemas/AuditMetadata"
                   },
+                  "effort": {
+                    "description": "エージェントタスクの推論予算。すべての実行は spark-2 で実行されるため、モデルの指定有無にかかわらず effort を送信できます。",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ],
+                    "type": "string"
+                  },
                   "maxCredits": {
                     "description": "このエージェントタスクで使用するクレジットの最大値です。未設定の場合、デフォルトは2500です。2,500を超える値は、常に有料リクエストとして課金されます。",
                     "type": "number"
                   },
                   "model": {
-                    "default": "spark-1-mini",
-                    "description": "エージェントタスクで使用するモデルを指定します。デフォルトの spark-1-mini はコストを約 60% 削減でき、spark-1-pro はより複雑なタスク向けに高い精度を提供します。",
+                    "default": "spark-2",
+                    "description": "エージェントタスクで使用するモデルを指定します。spark-2 はデフォルトで、すべての実行で使用されるモデルです。Spark 1 のモデル名は後方互換性のため引き続き使用できますが、非推奨であり、spark-2 にルーティングされます。",
                     "enum": [
+                      "spark-2",
                       "spark-1-mini",
                       "spark-1-pro"
                     ],
@@ -4062,6 +5605,55 @@
                       "type": "string"
                     },
                     "type": "array"
+                  },
+                  "webhook": {
+                    "description": "webhook 仕様オブジェクト。エージェントのライフサイクルイベント（agent.started、agent.action、agent.completed、agent.failed、agent.cancelled）を購読します。",
+                    "properties": {
+                      "events": {
+                        "default": [
+                          "started",
+                          "action",
+                          "completed",
+                          "failed",
+                          "cancelled"
+                        ],
+                        "description": "webhook URL に送信するイベント。デフォルトではすべてのイベントです。",
+                        "items": {
+                          "enum": [
+                            "started",
+                            "action",
+                            "completed",
+                            "failed",
+                            "cancelled"
+                          ],
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "headers": {
+                        "additionalProperties": {
+                          "type": "string"
+                        },
+                        "description": "webhook URL に送信するヘッダー。",
+                        "type": "object"
+                      },
+                      "metadata": {
+                        "additionalProperties": {
+                          "type": "string"
+                        },
+                        "description": "このエージェントジョブのすべての webhook ペイロードに含まれるカスタムメタデータ。",
+                        "type": "object"
+                      },
+                      "url": {
+                        "description": "webhook イベントの送信先 URL。",
+                        "format": "uri",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ],
+                    "type": "object"
                   }
                 },
                 "required": [
@@ -4093,6 +5685,22 @@
             },
             "description": "エージェントタスクが正常に開始されました"
           },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid JSON schema: ...",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "不正なリクエスト — リクエストボディの検証に失敗しました（たとえば、無効な JSON schema）。"
+          },
           "402": {
             "content": {
               "application/json": {
@@ -4109,6 +5717,22 @@
             },
             "description": "お支払いが必要です"
           },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "This URL (https://example.com) is blocked by your organization's threat protection policy (rule: blocklist). If you believe this is a mistake, contact your organization administrator to adjust the policy (e.g. whitelist the domain).",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "禁止 — 指定された URL はチームの脅威保護ポリシーによりブロックされています。"
+          },
           "429": {
             "content": {
               "application/json": {
@@ -4124,6 +5748,22 @@
               }
             },
             "description": "リクエストが多すぎます"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Failed to passthrough agent request.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "内部サーバーエラー — エージェントサービスに接続できませんでした。"
           }
         },
         "security": [
@@ -4155,6 +5795,54 @@
               }
             },
             "description": "エージェントジョブが正常にキャンセルされました"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid job ID format. Job ID must be a valid UUID.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "不正なリクエスト — ジョブ ID が有効な UUID ではありません。"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "エージェントジョブが見つかりません"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent already finished",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "競合 — エージェントジョブはすでに完了しているか、すでにキャンセルされています。"
           }
         },
         "security": [
@@ -4182,6 +5870,15 @@
                       "description": "抽出されたデータ（ステータスが completed の場合にのみ存在）",
                       "type": "object"
                     },
+                    "effort": {
+                      "description": "エージェント実行で使用される推論予算（effort を設定した実行でのみ存在）",
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high"
+                      ],
+                      "type": "string"
+                    },
                     "error": {
                       "description": "エラーメッセージ（status が failed の場合にのみ含まれます）",
                       "type": "string"
@@ -4191,9 +5888,10 @@
                       "type": "string"
                     },
                     "model": {
-                      "default": "spark-1-pro",
-                      "description": "エージェント実行時に使用されたモデルプリセット",
+                      "default": "spark-2",
+                      "description": "エージェント実行時に使用されたモデルプリセット。新しいすべての実行は spark-2 で実行されます。Spark 1 の名前はレガシー実行にのみ表示されます。",
                       "enum": [
+                        "spark-2",
                         "spark-1-pro",
                         "spark-1-mini"
                       ],
@@ -4216,6 +5914,38 @@
               }
             },
             "description": "成功時のレスポンス"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid job ID format. Job ID must be a valid UUID.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "不正なリクエスト — ジョブ ID が有効な UUID ではありません。"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "エージェントジョブが見つかりません"
           }
         },
         "security": [
@@ -4231,6 +5961,234 @@
       "parameters": [
         {
           "description": "エージェントジョブのID",
+          "in": "path",
+          "name": "jobId",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/agent/{jobId}/snapshots/{snapshotId}": {
+      "get": {
+        "operationId": "getAgentSnapshot",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "snapshot": {
+                      "description": "JSON エンコードされた文字列としてのスナップショット内容 — 実行中のその時点におけるエージェントの作業用出力アーティファクト。",
+                      "type": "string"
+                    },
+                    "snapshotId": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "成功したレスポンス"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Snapshots are only available for Spark 2 extracts",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "不正なリクエスト — ジョブ ID またはスナップショット ID が有効な UUID ではないか、ジョブが spark-2 で実行されていません（スナップショットは spark-2 エージェントジョブでのみ利用可能です）。"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "エージェントジョブが見つかりません"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "エージェントジョブの出力スナップショットを取得",
+        "tags": [
+          "Agent"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "エージェントジョブの ID",
+          "in": "path",
+          "name": "jobId",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        {
+          "description": "artifact.updated トレースイベントから取得したスナップショット ID",
+          "in": "path",
+          "name": "snapshotId",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/agent/{jobId}/trace": {
+      "get": {
+        "operationId": "getAgentTrace",
+        "parameters": [
+          {
+            "description": "\"true\" の場合、ライブビュー URL を含む現在アクティブなブラウザセッションを含めます。",
+            "in": "query",
+            "name": "liveView",
+            "required": false,
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "activeBrowserSessions": {
+                      "description": "現在アクティブなブラウザセッション（liveView=true の場合にのみ存在）。",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "liveViewUrl": {
+                            "type": "string"
+                          },
+                          "viewport": {
+                            "properties": {
+                              "height": {
+                                "type": "number"
+                              },
+                              "width": {
+                                "type": "number"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "creditsUsed": {
+                      "description": "これまでに消費したクレジット数。maxCredits が設定されている場合はその値が上限です。",
+                      "type": "number"
+                    },
+                    "events": {
+                      "description": "実行に関する正規イベント。agent.id でグループ化し、各グループを producerSequence 順に並べ替えます。producerSequence はイベントを発行するエージェントごとに単調増加します。artifact.updated イベントには、snapshots エンドポイントで使用する snapshotId の値が含まれます。",
+                      "items": {
+                        "$ref": "#/components/schemas/AgentTraceEvent"
+                      },
+                      "type": "array"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "成功したレスポンス"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Trace is only available for Spark 2 extracts",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "不正なリクエスト — ジョブ ID が有効な UUID ではないか、ジョブが spark-2 で実行されていません（トレースは spark-2 エージェントジョブでのみ利用可能です）。"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "エージェントジョブが見つかりません"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "エージェントジョブの実行トレースを取得",
+        "tags": [
+          "Agent"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "エージェントジョブの ID",
           "in": "path",
           "name": "jobId",
           "required": true,
@@ -4649,7 +6607,7 @@
                 "properties": {
                   "allowExternalLinks": {
                     "default": false,
-                    "description": "クローラーが外部のウェブサイトへのリンクをたどれるようにします。",
+                    "description": "クローラーが外部のウェブサイトへのリンクをたどれるようにします。外部リンクは1ホップ先までたどられます（これらの外部ページで見つかったリンクはクロールされません）。外部サイトのホームページ（パスのないルートURL）を指すリンクはスキップされ、コードEXTERNAL_LINKとしてGet Crawl Errorsに報告されます。外部のホームページへのリダイレクトも同じ理由でスキップされます。",
                     "type": "boolean"
                   },
                   "allowSubdomains": {
@@ -6546,7 +8504,8 @@
                 "completed",
                 "failed",
                 "partial",
-                "skipped_overlap"
+                "skipped_overlap",
+                "skipped_no_credits"
               ],
               "type": "string"
             }
@@ -6701,7 +8660,7 @@
               "schema": {
                 "properties": {
                   "file": {
-                    "description": "解析するファイルのバイト列です。対応拡張子: .html、.htm、.pdf、.docx、.doc、.odt、.rtf、.xlsx、.xls。",
+                    "description": "解析するファイルのバイト列です。対応拡張子: .html、.htm、.xhtml、.pdf、.docx、.doc、.docm、.odt、.ods、.odp、.rtf、.xlsx、.xls、.xlsm、.xlsb、.pptx、.ppt、.pptm、.epub、.csv。",
                     "format": "binary",
                     "type": "string"
                   },
@@ -7426,7 +9385,7 @@
                           "properties": {
                             "type": {
                               "enum": [
-                                "github"
+                                "developer"
                               ],
                               "type": "string"
                             }
@@ -7434,7 +9393,7 @@
                           "required": [
                             "type"
                           ],
-                          "title": "GitHub",
+                          "title": "Developer",
                           "type": "object"
                         },
                         {
@@ -7528,6 +9487,10 @@
                     "description": "検索クエリ",
                     "maxLength": 500,
                     "type": "string"
+                  },
+                  "safe": {
+                    "description": "`true`の場合、検索結果から露骨なコンテンツを除外します（SafeSearch）。省略した場合は、フィルターを適用しないデフォルトの動作になります。",
+                    "type": "boolean"
                   },
                   "scrapeOptions": {
                     "allOf": [
@@ -7941,12 +9904,12 @@
         ]
       }
     },
-    "/search/research/github": {
+    "/search/developer": {
       "get": {
-        "operationId": "researchSearchGitHub",
+        "operationId": "developerSearch",
         "parameters": [
           {
-            "description": "GitHub の issue、pull request、discussion、repository の README を対象とした自然言語 query。",
+            "description": "自然言語の質問または検索フレーズ。",
             "in": "query",
             "name": "query",
             "required": true,
@@ -7956,15 +9919,152 @@
             }
           },
           {
-            "description": "返される GitHub 結果の最大数。",
+            "description": "返すランク付け済み結果の数。",
             "in": "query",
             "name": "k",
             "required": false,
             "schema": {
-              "default": 20,
+              "default": 10,
               "maximum": 100,
               "minimum": 1,
               "type": "integer"
+            }
+          },
+          {
+            "description": "検索する結果タイプ。デフォルトでは4種類すべてです。繰り返しパラメータ（`types=issue&types=pull_request`）または単一のカンマ区切り値（`types=issue,pull_request`）を指定できます。",
+            "in": "query",
+            "name": "types",
+            "required": false,
+            "schema": {
+              "items": {
+                "enum": [
+                  "doc",
+                  "issue",
+                  "pull_request",
+                  "readme"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          {
+            "description": "`firecrawl/firecrawl` など、インデックスのリポジトリ側の対象を絞り込むリポジトリスラッグ。`issue`、`pull_request`、`readme` タイプにのみ適用されます。`sources` とともに送信した場合、両方の対象は共通部分ではなく結合されるため、いずれかに一致する結果が返されます。`types` にリポジトリタイプが含まれていない場合は、`repos` は要求されたどのタイプにも一致できないため、リポジトリタイプを追加するか `repos` を削除するよう示して400を返します。",
+            "in": "query",
+            "name": "repos",
+            "required": false,
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          {
+            "description": "ドキュメント側の対象を絞り込むドキュメントのソースID。最大20件まで指定できます。`doc` タイプにのみ適用されます。固定の列挙値ではありません。IDはインデックス内のドキュメントサイトを反映しており、対象のセットは時間の経過とともに増えるため、IDを送信し、レスポンスの `sources` 配列を確認してIDが解決されることを確かめてください。`types` に `doc` が含まれていない場合は、`sources cannot match any requested type; add doc or drop sources` とともに400を返します。",
+            "in": "query",
+            "name": "sources",
+            "required": false,
+            "schema": {
+              "items": {
+                "maxLength": 512,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxItems": 20,
+              "type": "array"
+            }
+          },
+          {
+            "description": "検索対象をインデックス化された agent-skill ファイルに限定するには、`only` に設定します。",
+            "in": "query",
+            "name": "skills",
+            "required": false,
+            "schema": {
+              "enum": [
+                "only"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "結果ごとに返す一致した本文箇所。",
+            "in": "query",
+            "name": "passages",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "リポジトリの主要言語。`Rust` など。リポジトリの結果にのみ適用されます。`sources` のスコープを指定せずに送信すると、`doc` の結果は返されません。[リポジトリフィルターによる検索範囲の絞り込み](/api-reference/endpoint/developer-search#how-the-repository-filters-scope-a-search)を参照してください。",
+            "in": "query",
+            "name": "language",
+            "required": false,
+            "schema": {
+              "example": "Rust",
+              "type": "string"
+            }
+          },
+          {
+            "description": "リポジトリのトピック。`async` など。リポジトリの結果にのみ適用されます。`sources` スコープを指定せずに送信した場合、`doc` の結果は返されません。",
+            "in": "query",
+            "name": "topic",
+            "required": false,
+            "schema": {
+              "example": "async",
+              "type": "string"
+            }
+          },
+          {
+            "description": "リポジトリのライセンス。`MIT` など。リポジトリの結果にのみ適用されます。`sources` スコープを指定せずに送信した場合、`doc` の結果は返されません。",
+            "in": "query",
+            "name": "license",
+            "required": false,
+            "schema": {
+              "example": "MIT",
+              "type": "string"
+            }
+          },
+          {
+            "description": "リポジトリのスター数の下限。リポジトリの結果にのみ適用されます。`sources` スコープを指定せずに送信した場合、`doc` の結果は返されません。",
+            "in": "query",
+            "name": "min_stars",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "リポジトリのスター数の上限。リポジトリの結果にのみ適用されます。`sources` を指定せずに送信すると、`doc` の結果は返されません。",
+            "in": "query",
+            "name": "max_stars",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "アーカイブ済みリポジトリを含めるか除外するか。リポジトリの結果にのみ適用されます。`sources` のスコープなしで送信すると、`doc` 結果は返されません。",
+            "in": "query",
+            "name": "archived",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "フォークを含めるか除外するか。リポジトリの結果にのみ適用されます。`sources` のスコープなしで送信すると、`doc` 結果は返されません。",
+            "in": "query",
+            "name": "fork",
+            "required": false,
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
@@ -7973,36 +10073,40 @@
             "content": {
               "application/json": {
                 "example": {
+                  "coverage": {
+                    "doc": "ok",
+                    "issue": "ok",
+                    "pull_request": "ok",
+                    "readme": "ok"
+                  },
+                  "reranked": true,
                   "results": [
                     {
-                      "contentMd": "Full matched markdown content when available.",
-                      "number": 123,
-                      "pageType": "issue",
-                      "repo": "firecrawl/firecrawl",
-                      "resultType": "issue",
-                      "scores": {
-                        "semantic": 0.82
-                      },
-                      "segmentCount": 2,
-                      "snippet": "Queue worker shutdown can lose completion signals...",
-                      "title": "Worker shutdown race",
-                      "url": "https://github.com/firecrawl/firecrawl/issues/123"
+                      "id": "issue:firecrawl/firecrawl#1234",
+                      "passages": [
+                        {
+                          "text": "The client treats 429 as a terminal status, so the backoff never runs."
+                        }
+                      ],
+                      "title": "Retries are not applied to 429 responses",
+                      "type": "issue",
+                      "url": "https://github.com/firecrawl/firecrawl/issues/1234"
                     }
                   ],
                   "success": true
                 },
                 "schema": {
-                  "$ref": "#/components/schemas/ResearchGitHubSearchResponse"
+                  "$ref": "#/components/schemas/DeveloperSearchResponse"
                 }
               }
             },
-            "description": "順位付けされた GitHub の履歴/README 結果。"
+            "description": "一致した本文箇所を含む、ランク付け済みの開発者向け検索結果。"
           },
           "400": {
-            "description": "無効なリクエスト"
+            "description": "要求したどのタイプにも一致しない絞り込み条件を含む、無効なリクエスト"
           },
           "401": {
-            "description": "bearer token が存在しないか無効です"
+            "description": "Bearerトークンがないか、無効です"
           },
           "429": {
             "description": "レート制限を超過しました"
@@ -8016,9 +10120,153 @@
             "bearerAuth": []
           }
         ],
-        "summary": "GitHub の履歴を検索",
+        "summary": "Developer Indexを検索",
         "tags": [
-          "Research"
+          "Developer"
+        ]
+      },
+      "post": {
+        "operationId": "developerSearchPost",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "k": 10,
+                "query": "how do I configure retries",
+                "types": [
+                  "issue",
+                  "pull_request"
+                ]
+              },
+              "schema": {
+                "properties": {
+                  "archived": {
+                    "description": "アーカイブ済みリポジトリを含めるか除外するか。リポジトリの結果にのみ適用されます。`sources` を指定せずに送信すると、`doc` の結果は返されません。",
+                    "type": "boolean"
+                  },
+                  "fork": {
+                    "description": "フォークを含めるか除外するか。リポジトリの結果にのみ適用されます。`sources` を指定せずに送信すると、`doc` の結果は返されません。",
+                    "type": "boolean"
+                  },
+                  "k": {
+                    "default": 10,
+                    "maximum": 100,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "language": {
+                    "description": "リポジトリの主要言語（例: `Rust`）。リポジトリの結果にのみ適用されます。`sources` を指定せずに送信すると、`doc` の結果は返されません。[リポジトリフィルターが検索範囲を限定する方法](/api-reference/endpoint/developer-search#how-the-repository-filters-scope-a-search)を参照してください。",
+                    "example": "Rust",
+                    "type": "string"
+                  },
+                  "license": {
+                    "description": "リポジトリのライセンス（例: `MIT`）。リポジトリの結果にのみ適用されます。`sources` を指定せずに送信すると、`doc` の結果は返されません。",
+                    "example": "MIT",
+                    "type": "string"
+                  },
+                  "max_stars": {
+                    "description": "リポジトリのスター数の上限。リポジトリの結果にのみ適用されます。`sources` を指定せずに送信すると、`doc` の結果は返されません。",
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "min_stars": {
+                    "description": "リポジトリのスター数の下限。リポジトリの結果にのみ適用されます。`sources` を指定せずに送信すると、`doc` の結果は返されません。",
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "passages": {
+                    "default": 1,
+                    "maximum": 5,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "query": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "repos": {
+                    "description": "リポジトリ側のインデックスの検索範囲を限定するリポジトリスラッグ。`issue`、`pull_request`、`readme` タイプにのみ適用されます。`sources` とともに送信した場合、2つの対象範囲は積集合ではなく結合されます。`types` にリポジトリタイプが含まれない場合、`repos` は要求されたどのタイプにも一致できないため、リポジトリタイプを追加するか `repos` を削除するよう示す 400 エラーを返します。",
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "skills": {
+                    "description": "検索対象をインデックス化された agent-skill ファイルに限定するには、`only` に設定します。",
+                    "enum": [
+                      "only"
+                    ],
+                    "type": "string"
+                  },
+                  "sources": {
+                    "description": "ドキュメント側の検索範囲を限定するドキュメントソース ID（最大20件）。`doc` タイプにのみ適用されます。固定の列挙値ではなく、ID はインデックス内のドキュメントサイトを反映しており、その集合は時間とともに増加します。`types` に `doc` が含まれない場合、`sources cannot match any requested type; add doc or drop sources` を含む 400 エラーを返します。",
+                    "items": {
+                      "maxLength": 512,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "maxItems": 20,
+                    "type": "array"
+                  },
+                  "topic": {
+                    "description": "リポジトリのトピック（例: `async`）。リポジトリの結果にのみ適用されます。`sources` を指定せずに送信すると、`doc` の結果は返されません。",
+                    "example": "async",
+                    "type": "string"
+                  },
+                  "types": {
+                    "items": {
+                      "enum": [
+                        "doc",
+                        "issue",
+                        "pull_request",
+                        "readme"
+                      ],
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "query"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeveloperSearchResponse"
+                }
+              }
+            },
+            "description": "一致した本文箇所を含む、ランク付け済みの開発者向け検索結果。"
+          },
+          "400": {
+            "description": "要求したどのタイプにも一致しない絞り込み条件を含む、無効なリクエスト"
+          },
+          "401": {
+            "description": "Bearerトークンがないか、無効です"
+          },
+          "429": {
+            "description": "レート制限を超過しました"
+          },
+          "500": {
+            "description": "内部サーバーエラー"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Developer Indexを検索",
+        "tags": [
+          "Developer"
         ]
       }
     },
@@ -8798,7 +11046,7 @@
                           "type": "string"
                         },
                         "planCredits": {
-                          "description": "プランに含まれるクレジット数です。クーポンクレジット、クレジットパック、自動チャージで付与されるクレジットは含まれません。",
+                          "description": "プランに含まれるクレジット数です。クーポンクレジットおよび従量課金で追加されるクレジットは含まれません。",
                           "example": 500000,
                           "type": "number"
                         },

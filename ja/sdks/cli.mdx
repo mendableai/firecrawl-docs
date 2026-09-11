@@ -1,6 +1,6 @@
 ---
-title: "スキル + CLI"
-description: "Firecrawl スキルは、Claude Code、Antigravity、OpenCode などの AI エージェントが CLI 経由で Firecrawl を利用するための手軽な方法です。"
+title: "CLI"
+description: "Firecrawl スキルは、Codex、Claude Code、Cursor、OpenCode などの AI エージェントが CLI 経由で Firecrawl を利用するための手軽な方法です。"
 og:title: "CLI | Firecrawl"
 og:description: "Firecrawl スキルは、AI エージェントが CLI 経由で Firecrawl を利用するための手軽な方法です。AI エージェントは、より高機能でコンテキスト効率に優れたインターフェースを通じてウェブデータを取得できます"
 ---
@@ -24,19 +24,19 @@ import AgentBasic from "/snippets/ja/v2/cli/agent/basic.mdx";
 import AgentOptions from "/snippets/ja/v2/cli/agent/options.mdx";
 import InteractCLI from "/snippets/ja/v2/interact/quickstart/cli.mdx";
 
-ターミナルから直接、検索、スクレイピング、Interact、クロール、マッピング、エージェントジョブの実行を行えます。Firecrawl CLIは単体でも動作し、Claude Code、Antigravity、OpenCodeのようなAIコーディングエージェントが自動的に検出して利用できるスキルと組み合わせて使うこともできます。
+ターミナルから直接、検索、スクレイピング、Interact、クロール、マッピング、エージェントジョブの実行を行えます。Firecrawl CLIは単体でも動作し、Codex、Claude Code、Cursor、OpenCodeのようなAIコーディングエージェントが自動的に検出して利用できるスキルと組み合わせて使うこともできます。
 
 <div id="installation">
   ## インストール
 </div>
 
-Claude Code のような AI エージェントを使用している場合は、以下の Firecrawl スキル をインストールすると、エージェントがセットアップしてくれます。
+Codex、Claude Code、Cursor、OpenCode のような AI エージェントを使用している場合は、以下の Firecrawl スキル をインストールすると、エージェントがセットアップしてくれます。
 
 ```bash
 npx -y firecrawl-cli@latest init --all --browser
 ```
 
-* `--all` はすべての Firecrawl スキル セグメント (CLI、ビルド、ワークフロー) を、検出されたすべての AI コーディングエージェントにインストールします
+* `--all` はエージェントの選択をスキップし、検出されたすべてのエージェントを初期化します
 * `--browser` は Firecrawl の認証のためにブラウザを自動的に開きます
 
 <Note>
@@ -75,15 +75,23 @@ CLIを使用する前に、Firecrawl APIキーで認証する必要がありま�
 
 <AuthLogout />
 
-<div id="self-hosted-local-development">
-  ### セルフホスト / ローカル開発
+<div id="connect-the-cli-to-self-hosted-firecrawl">
+  ### CLI をセルフホスト版 Firecrawl に接続する
 </div>
 
-セルフホスト環境の Firecrawl インスタンスやローカル開発では、`--api-url` オプションを使用してください:
+まず、[セルフホスティングガイド](/ja/contributing/self-host)に従って、スクレイピングが 1 回正常に実行できる状態にします。次に、`--api-url` または `FIRECRAWL_API_URL` で CLI の接続先 API を指定します。
 
 <AuthSelfHosted />
 
-カスタム API URL (`https://api.firecrawl.dev` 以外のもの) を使用している場合、API キー認証は自動的にスキップされるため、ローカルインスタンスでは API キーなしで利用できます。
+`https://api.firecrawl.dev` ではなくカスタム API URL を使用すると、CLI は Firecrawl Cloud API キー認証をスキップします。これは、`USE_DB_AUTHENTICATION=false` を設定する信頼済みネットワーク向け Quickstart と同じ動作です。
+
+<Warning>
+  認証なしの API は、信頼済みネットワーク上でのみ運用してください。認証
+  プロキシやその他のアクセス制御レイヤーを追加する場合は、この方法に依存する前に、
+  CLI がそのレイヤーで必要な認証情報を送信できることを確認してください。
+</Warning>
+
+CLI で呼び出せるのは、デプロイ環境で有効になっている機能のみです。Cloud 専用またはプロバイダー依存のコマンドを使用する前に、[セルフホスト版の機能サポート](/ja/contributing/self-host#self-hosted-feature-support)を確認してください。
 
 <div id="check-status">
   ### ステータスの確認
@@ -175,7 +183,7 @@ firecrawl --status
 <SearchBasic />
 
 <div id="search-options">
-  #### 検索オプション
+  #### Searchオプション
 </div>
 
 <SearchOptions />
@@ -185,19 +193,41 @@ firecrawl --status
 | オプション                        | 説明                                                                        |
 | ---------------------------- | ------------------------------------------------------------------------- |
 | `--limit <number>`           | 最大結果数 (デフォルト: 5、最大: 100)                                                  |
-| `--sources <sources>`        | 検索対象のソース: `web`、`images`、`news` (カンマ区切り)                                  |
-| `--categories <categories>`  | カテゴリでフィルタリング: `github`、`research`、`pdf` (カンマ区切り)                          |
-| `--tbs <value>`              | 時間フィルタ: `qdr:h` (時間) 、`qdr:d` (日) 、`qdr:w` (週) 、`qdr:m` (月) 、`qdr:y` (年)  |
+| `--sources <sources>`        | Search対象のソース: `web`、`images`、`news` (カンマ区切り)                              |
+| `--categories <categories>`  | カテゴリで絞り込む: `research`、`pdf`、`developer` (カンマ区切り)                          |
+| `--tbs <value>`              | 時間で絞り込む: `qdr:h` (時間) 、`qdr:d` (日) 、`qdr:w` (週) 、`qdr:m` (月) 、`qdr:y` (年) |
 | `--location <location>`      | ジオターゲティング (例: &quot;Berlin,Germany&quot;)                                 |
 | `--country <code>`           | ISO 国コード (デフォルト: US)                                                      |
 | `--timeout <ms>`             | タイムアウト (ミリ秒単位、デフォルト: 60000)                                               |
 | `--ignore-invalid-urls`      | 他の Firecrawl エンドポイントで利用できない URL を除外                                       |
-| `--scrape`                   | 検索結果をスクレイピング                                                              |
+| `--scrape`                   | Search結果をスクレイピング                                                          |
 | `--scrape-formats <formats>` | スクレイピングしたコンテンツのフォーマット (デフォルト: markdown)                                   |
 | `--only-main-content`        | スクレイピング時にメインコンテンツのみを含める (デフォルト: true)                                     |
 | `--json`                     | JSON として出力                                                                |
 | `--output <path>`            | 出力をファイルに保存                                                                |
 | `--pretty`                   | JSON 出力を見やすく整形して表示                                                        |
+
+***
+
+<div id="developer">
+  ### Developer
+</div>
+
+[Developer Index](/ja/features/developer) で、公開コードリポジトリのissue、マージ済みのプルリクエスト、READMEに加え、厳選されたドキュメントサイトを検索できます。
+
+```bash CLI
+firecrawl developer "how do I configure retries" --limit 10
+```
+
+**利用可能なオプション:**
+
+| オプション              | 説明                                               |
+| ------------------ | ------------------------------------------------ |
+| `--limit <number>` | 返す結果数 (デフォルト: 10、最大: 100)                        |
+| `--skills-only`    | インデックス化された agent-skill ファイルのみを検索 (デフォルト: false)  |
+| `--json`           | コンパクトな JSON 形式で出力                                |
+| `--output <path>`  | 出力をファイルに保存                                       |
+| `--pretty`         | JSON 出力を見やすく整形                                   |
 
 ***
 
@@ -366,21 +396,21 @@ Monitor の目標は、短く、ユーザーの意図に忠実であるべきで
 
 **利用可能なオプション:**
 
-| Option                      | Description                                                    |
-| --------------------------- | -------------------------------------------------------------- |
-| `--urls <urls>`             | エージェントが対象とするURLの任意のリスト (カンマ区切り)                                |
-| `--model <model>`           | 使用するモデル: `spark-1-mini` (デフォルト、60%安価) または `spark-1-pro` (高精度)  |
-| `--schema <json>`           | 構造化出力用のJSONスキーマ (インラインJSON文字列)                                 |
-| `--schema-file <path>`      | 構造化出力用のJSONスキーマファイルへのパス                                        |
-| `--max-credits <number>`    | 消費するクレジットの上限 (上限に達するとジョブは失敗)                                   |
-| `--webhook <url-or-json>`   | webhook URLまたは設定                                               |
-| `--status`                  | 既存のエージェントジョブのステータスを確認                                          |
-| `--cancel`                  | ジョブ ID を指定して実行中のエージェントジョブをキャンセル                                |
-| `--wait`                    | 結果を返す前にエージェントの完了を待つ                                            |
-| `--poll-interval <seconds>` | 待機中のポーリング間隔 (デフォルト: 5)                                         |
-| `--timeout <seconds>`       | 待機時のタイムアウト (デフォルト: タイムアウトなし)                                   |
-| `--output <path>`           | 出力をファイルに保存                                                     |
-| `--json`                    | JSON形式で出力                                                      |
+| Option                      | Description                                                                         |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| `--urls <urls>`             | エージェントが対象とするURLの任意のリスト (カンマ区切り)                                                     |
+| `--model <model>`           | 使用するモデル。デフォルトは、すべての実行で使用されるモデルである`spark-2`です。Spark 1モデルは非推奨であり、`spark-2`にルーティングされます |
+| `--schema <json>`           | 構造化出力用のJSONスキーマ (インラインJSON文字列)                                                      |
+| `--schema-file <path>`      | 構造化出力用のJSONスキーマファイルへのパス                                                             |
+| `--max-credits <number>`    | 消費するクレジットの上限 (上限に達するとジョブは失敗)                                                        |
+| `--webhook <url-or-json>`   | webhook URLまたは設定                                                                    |
+| `--status`                  | 既存のエージェントジョブのステータスを確認                                                               |
+| `--cancel`                  | ジョブ ID を指定して実行中のエージェントジョブをキャンセル                                                     |
+| `--wait`                    | 結果を返す前にエージェントの完了を待つ                                                                 |
+| `--poll-interval <seconds>` | 待機中のポーリング間隔 (デフォルト: 5)                                                              |
+| `--timeout <seconds>`       | 待機時のタイムアウト (デフォルト: タイムアウトなし)                                                        |
+| `--output <path>`           | 出力をファイルに保存                                                                          |
+| `--json`                    | JSON形式で出力                                                                           |
 
 ***
 
@@ -425,6 +455,8 @@ firecrawl --version
 | `--api-url <url>` |      | カスタム API URL を使用する (セルフホスト環境／ローカル開発向け)  |
 | `--help`          | `-h` | コマンドのヘルプを表示する                           |
 | `--version`       | `-V` | CLI のバージョン情報を表示する                       |
+
+`init` では `--skip-auth`、`--skip-install`、`--skip-skills`、`--agent <name>` も指定できます。`firecrawl init --help` を参照してください。
 
 <div id="output-handling">
   ## 出力の処理
@@ -501,7 +533,7 @@ firecrawl map https://example.com --search "blog" -o blog-urls.txt
 firecrawl search "machine learning best practices 2024" --scrape --scrape-formats markdown --pretty
 ```
 
-<div id="agent">
+<div id="agent-2">
   ### エージェント
 </div>
 
@@ -524,8 +556,8 @@ jq -r '.data.web[].url' search-results.json
 # Get titles from search results
 jq -r '.data.web[] | "\(.title): \(.url)"' search-results.json
 
-# リンクを抽出してjqで処理
-firecrawl https://example.com --format links | jq '.links[].url'
+# リンクをJSONとして抽出し、1行につき1つのURLを出力
+firecrawl https://example.com --format links --json | jq -r '.links[]'
 
 # Count URLs from map
 firecrawl map https://example.com | wc -l

@@ -1,45 +1,65 @@
 ---
-title: "Open Source vs Cloud"
-description: "Comprendre les différences entre les offres open source et cloud de Firecrawl"
-og:title: "Open Source vs Cloud | Firecrawl"
-og:description: "Comparez la version open source de Firecrawl à notre solution cloud riche en fonctionnalités"
+title: "Open source ou Firecrawl Cloud"
+sidebarTitle: "Open Source vs Cloud"
+description: "Choisissez entre l’auto-hébergement de Firecrawl pour garder le contrôle de votre infrastructure et Firecrawl Cloud pour le chemin géré le plus rapide vers la production."
+og:title: "Open source ou Firecrawl Cloud | Firecrawl"
+og:description: "Choisissez entre l’auto-hébergement de Firecrawl pour garder le contrôle de votre infrastructure et Firecrawl Cloud pour le chemin géré le plus rapide vers la production."
 ---
 
-Firecrawl est open source sous la [licence AGPL-3.0](https://github.com/firecrawl/firecrawl/blob/main/LICENSE). Pour offrir le meilleur produit possible, nous proposons également une version cloud hébergée sur [firecrawl.dev](https://firecrawl.dev) avec des fonctionnalités supplémentaires et une infrastructure managée.
+Choisissez l’open source lorsque vous avez besoin de contrôler le code source ou l’infrastructure. Choisissez Firecrawl Cloud si vous souhaitez démarrer le scraping sans gérer la stack. Les deux options donnent accès aux API principales de Firecrawl ; la différence tient à la personne qui configure, sécurise et exécute les services associés.
 
-<div id="feature-comparison">
-  ## Comparaison des fonctionnalités
+<Note>
+  Utiliser Firecrawl pour le développement produit et exploiter un déploiement
+  auto-hébergé sont deux tâches distinctes. Utilisez [Configuration pour les contributeurs](/fr/contributing/guide)
+  lorsque vous modifiez le code de Firecrawl. Utilisez le [guide d’auto-hébergement](/fr/contributing/self-host)
+  si vous souhaitez exécuter une API sur une infrastructure
+  que vous contrôlez.
+</Note>
+
+<div id="choose-your-firecrawl-deployment">
+  ## Choisissez votre déploiement Firecrawl
 </div>
 
-La version open source inclut le moteur principal de scraping et de crawling. Firecrawl Cloud ajoute des capacités d&#39;infrastructure, un tableau de bord d&#39;administration et des fonctionnalités entreprise, en plus de tout ce que propose l&#39;édition open source.
+<div id="use-open-source-when">
+  ### Utilisez l’open source lorsque
+</div>
+
+* **Vous avez besoin de maîtriser le code source ou l’infrastructure.** Vous pouvez examiner le code, choisir où la stack s’exécute et connecter vos propres fournisseurs.
+* **Vous êtes prêt à l’exploiter.** Votre équipe est responsable de l’authentification, de TLS, de la persistance, de la surveillance, de la capacité, des mises à niveau et de la récupération.
+* **Vous pouvez ajouter des fonctionnalités de manière réfléchie.** Le scraping de base fonctionne avec la stack par défaut ; les formats reposant sur des LLM, les services de scraping avancés et les processus d’extraction spécialisés nécessitent une configuration supplémentaire.
+
+<div id="use-firecrawl-cloud-when">
+  ### Utilisez Firecrawl Cloud si
+</div>
+
+* **Vous souhaitez le chemin le plus rapide et pris en charge vers la production.** Firecrawl gère l’infrastructure et les services managés.
+* **Vous avez besoin de fonctionnalités disponibles uniquement dans Cloud.** Agent, Browser, les tableaux de bord managés, les options de proxy avancé et les contrôles d’entreprise sont fournis via Cloud.
+* **Vous souhaitez un compte unique pour l’utilisation et l’assistance.** Les clés API, les crédits, les limites et l’assistance opérationnelle restent centralisés dans le service managé.
+
+**Notre recommandation :** commencez avec Firecrawl Cloud, sauf si l’accès au code source ou le contrôle de l’infrastructure justifie l’effort opérationnel. Si vous auto-hébergez, validez d’abord un scrape, puis n’ajoutez des services que lorsque votre cas d’utilisation l’exige.
+
+<div id="compare-the-operating-model">
+  ## Comparez les modèles d’exploitation
+</div>
+
+| Décision                                                    | Open source                                               | Firecrawl Cloud                                        |
+| ----------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------ |
+| API principales de scrape, crawl, cartographie et recherche | Incluses                                                  | Incluses et gérées                                     |
+| Traitement Fetch et Playwright                              | Inclus dans la stack par défaut                           | Géré                                                   |
+| Extraction et formats basés sur des LLM                     | Connectez un fournisseur compatible avec OpenAI ou Ollama | Fournisseur géré                                       |
+| Services avancés d’anti-bot ou d’extraction spécialisée     | Exécutez et configurez séparément le service requis       | Gérés lorsque le produit Cloud les prend en charge     |
+| Contrôles Agent, Browser, Interact, tableau de bord et entreprise | Non inclus dans la stack par défaut                        | Inclus selon la disponibilité du produit et de l’offre |
+| Sécurité, persistance, disponibilité et mises à niveau      | Vous en êtes responsable                                  | Firecrawl les gère                                     |
+| Utilisation, limites et facturation                         | Vos coûts d’infrastructure et de fournisseur              | Modèle d’offre et de crédits Firecrawl                 |
 
 ![Firecrawl Cloud vs Open Source](/images/open-source-cloud.png)
 
-| Fonctionnalité | Open Source | Cloud |
-|---------|:----------:|:-----:|
-| Scrape | ✔ | ✔ |
-| Crawl | ✔ | ✔ |
-| Map | ✔ | ✔ |
-| Search | ✔ | ✔ |
-| Scraping par lots | ✔ | ✔ |
-| Extract | ✔ | ✔ |
-| mode JSON | ✔ | ✔ |
-| formats prêts pour les LLM | ✔ | ✔ |
-| Suivi des changements | ✔ | ✔ |
-| SDKs | ✔ | ✔ |
-| Agent | ✘ | ✔ |
-| Sandbox navigateur | ✘ | ✔ |
-| Actions | ✘ | ✔ |
-| Proxies améliorés | ✘ | ✔ |
-| Rotations de proxy | ✘ | ✔ |
-| Tableau de bord | ✘ | ✔ |
-| Fonctionnalités entreprise | ✘ | ✔ |
-
-<div id="why-both">
-  ## Pourquoi les deux ?
+<div id="start-with-the-path-you-chose">
+  ## Commencez par la voie que vous avez choisie
 </div>
 
-La solution cloud nous permet d’innover en continu et de maintenir un service de haute qualité, durable, pour tous les utilisateurs. Les revenus de Firecrawl Cloud financent le développement continu du projet open source.
+* **Auto-héberger Firecrawl :** suivez le [guide d’auto-hébergement avec Docker Compose](/fr/contributing/self-host), d’une version épinglée à un scrape vérifié.
+* **Modifier le code de Firecrawl :** utilisez [Configuration pour les contributeurs](/fr/contributing/guide) pour l’environnement de développement.
+* **Utiliser Firecrawl Cloud :** [créez un compte](https://firecrawl.dev) et suivez le [démarrage rapide](/fr/quickstart).
 
-* **Open source** — Exécutez Firecrawl sur votre propre infrastructure avec un contrôle total sur le moteur de scraping principal. Voir [Exécution en local](/fr/contributing/guide) et [Auto‑hébergement](/fr/contributing/self-host).
-* **Cloud** — Commencez immédiatement avec un service géré incluant des proxys améliorés, un tableau de bord d’utilisation et des fonctionnalités pour les entreprises. Inscrivez-vous sur [firecrawl.dev](https://firecrawl.dev).
+L’open source rend le moteur principal inspectable et adaptable. Firecrawl Cloud finance ce travail tout en offrant aux développeurs une solution gérée avec des fonctionnalités produit et d’infrastructure supplémentaires.

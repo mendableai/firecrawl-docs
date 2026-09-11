@@ -1,0 +1,136 @@
+---
+title: "Hermes Agent"
+description: "Hermes AgentのデフォルトのWeb検索・抽出バックエンドとしてFirecrawlを使用する"
+---
+
+<Note>
+  **Hermes公式ドキュメント：** [Web検索](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-search) · [ブラウザ](https://hermes-agent.nousresearch.com/docs/user-guide/features/browser)
+
+  Nous Researchの[Hermes Agent](https://hermes-agent.nousresearch.com/)では、`web_search`と`web_extract`のデフォルトバックエンドとしてFirecrawlを使用しています。
+</Note>
+
+<div id="overview">
+  ## 概要
+</div>
+
+Hermes Agent は、Nous Research が提供するオープンソースのターミナル／デスクトップエージェントです。以下の Web ツールを備えています。
+
+| ツール               | 機能                       |
+| ----------------- | ------------------------ |
+| **`web_search`**  | Web を検索し、ランク付け済み結果を返す    |
+| **`web_extract`** | URL から読みやすいコンテンツを取得・抽出する |
+
+Firecrawl は、検索と抽出の両方で使用される**デフォルト**のプロバイダーです。`FIRECRAWL_API_KEY` を設定するか、セルフホストの `FIRECRAWL_API_URL` または Nous Tool Gateway を使用してください。複数のプロバイダーの認証情報がある場合は、`hermes tools` または `config.yaml` で Firecrawl を選択します。Firecrawl のクラウドモードによるブラウザ自動化は任意です。
+
+<div id="quick-start">
+  ## クイックスタート
+</div>
+
+1. [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com/) から Hermes Agent をインストールします
+2. Firecrawl のキーを追加します：
+
+```bash
+# ~/.hermes/.env
+FIRECRAWL_API_KEY=fc-your-key-here
+```
+
+[firecrawl.dev](https://www.firecrawl.dev/app/api-keys)でキーを取得します。
+
+3. または、対話形式で設定します：
+
+```bash
+hermes tools
+```
+
+**Web Search &amp; Extract** → **Firecrawl** を選択します。
+
+4. 確認：
+
+```bash
+hermes setup
+```
+
+<div id="capabilities">
+  ## 機能
+</div>
+
+| 機能               | Hermes での対応                       |
+| ---------------- | --------------------------------- |
+| **検索**           | デフォルトの `web_search` バックエンド        |
+| **抽出 / スクレイピング** | デフォルトの `web_extract` バックエンド       |
+| **ブラウザ**         | 任意で利用可能な Firecrawl クラウドブラウザプロバイダー |
+
+<div id="use-firecrawl-for-one-capability-only">
+  ### Firecrawl を一方の機能にのみ使用する
+</div>
+
+Hermes では検索バックエンドと抽出バックエンドを個別に選択できるため、無料の検索バックエンドと Firecrawl の抽出を組み合わせることも、その逆も可能です。
+
+```yaml
+# ~/.hermes/config.yaml
+web:
+  search_backend: "searxng"
+  extract_backend: "firecrawl"
+```
+
+これらのキーが空の場合、どちらも `web.backend` にフォールバックし、Hermes は利用可能な認証情報に基づいて自動検出を行います。自動検出時には他のプロバイダーの認証情報が Firecrawl より優先される場合があるため、Firecrawl が確実に使用されるようにするには、`search_backend`、`extract_backend`、または `web.backend` を明示的に設定してください。
+
+<div id="browser-cloud-mode">
+  ### ブラウザクラウドモード
+</div>
+
+Firecrawl をブラウザ自動化に使用するには：
+
+```bash
+# ~/.hermes/.env
+FIRECRAWL_API_KEY=fc-your-key-here
+```
+
+```bash
+hermes setup tools
+# → Browser Automation → Firecrawl を選択
+```
+
+任意：
+
+```bash
+# セルフホスト版 Firecrawl（未指定の場合は cloud API を使用）
+FIRECRAWL_API_URL=http://localhost:3002
+
+# session の TTL（秒単位、デフォルト: 300）
+FIRECRAWL_BROWSER_TTL=600
+```
+
+<div id="nous-portal-managed-firecrawl">
+  ## Nous Portal (マネージド Firecrawl)
+</div>
+
+有料の[Nous Portal](https://portal.nousresearch.com/)サブスクリプションでは、マネージド Firecrawl を使用して、Hermes **Tool Gateway** 経由でウェブ検索と抽出を実行できます。Firecrawl のキーを別途用意する必要はありません。
+
+```bash
+hermes setup --portal
+```
+
+既存のインストールでは、`hermes tools` でWebツールを有効にできます。
+
+<div id="self-hosted-firecrawl">
+  ## セルフホスト版 Firecrawl
+</div>
+
+```bash
+# ~/.hermes/.env
+FIRECRAWL_API_URL=http://localhost:3002
+```
+
+`FIRECRAWL_API_URL` が設定されており、Firecrawl サーバーの認証が無効 (Firecrawl インスタンスで `USE_DB_AUTHENTICATION=false`) の場合、API キーは任意です。
+
+<div id="resources">
+  ## リソース
+</div>
+
+* [Hermes Agent](https://hermes-agent.nousresearch.com/)
+* [Hermes Web Search ドキュメント (Firecrawl がデフォルト) ](https://hermes-agent.nousresearch.com/docs/user-guide/features/web-search#firecrawl-default)
+* [Hermes Browser ドキュメント (Firecrawl クラウドモード) ](https://hermes-agent.nousresearch.com/docs/user-guide/features/browser#firecrawl-cloud-mode)
+* [Firecrawl 検索](/ja/features/search)
+* [Firecrawl スクレイピング](/ja/features/scrape)
+* [Nous Research モデルのクイックスタート](/ja/quickstarts/nous-research) (Hermes モデルでの API ツール呼び出し)

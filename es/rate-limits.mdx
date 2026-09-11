@@ -44,20 +44,20 @@ El tiempo que se pasa en la cola se contabiliza en el parámetro [`timeout`](/es
 
       <tr>
         <td style={{ padding: '8px 12px' }}>estándar</td>
+        <td style={{ padding: '8px 12px' }}>25</td>
+        <td style={{ padding: '8px 12px' }}>50,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>crecimiento</td>
         <td style={{ padding: '8px 12px' }}>50</td>
         <td style={{ padding: '8px 12px' }}>100,000</td>
       </tr>
 
       <tr>
-        <td style={{ padding: '8px 12px' }}>crecimiento</td>
-        <td style={{ padding: '8px 12px' }}>100</td>
-        <td style={{ padding: '8px 12px' }}>200,000</td>
-      </tr>
-
-      <tr>
         <td style={{ padding: '8px 12px' }}>escala / Enterprise</td>
-        <td style={{ padding: '8px 12px' }}>150+</td>
-        <td style={{ padding: '8px 12px' }}>300,000+</td>
+        <td style={{ padding: '8px 12px' }}>100+</td>
+        <td style={{ padding: '8px 12px' }}>200,000+</td>
       </tr>
     </tbody>
   </table>
@@ -79,7 +79,7 @@ Los límites de tasa se miden en solicitudes por minuto y existen principalmente
 
 El endpoint sin clave del MCP alojado de Firecrawl ofrece exclusivamente **Search, Scrape y Parse** sin una clave de API. Las demás herramientas MCP alojadas requieren una conexión de cuenta o una clave de API.
 
-Para los clientes oficiales de Firecrawl, la CLI, los SDKs y la API REST, el acceso sin clave también incluye **Interact**. Los endpoints de research también se pueden usar sin una clave de API en Firecrawl Cloud, donde el research index está habilitado. Ningún otro endpoint (crawl, extract, map, batch scrape, etc.) está disponible sin una clave.
+Para los clientes oficiales de Firecrawl, la CLI, los SDKs y la API REST, el acceso sin clave también incluye **Interact**. En Firecrawl Cloud, los endpoints de research y developer search también se pueden usar sin una clave de API. Ningún otro endpoint (crawl, extract, map, batch scrape, etc.) está disponible sin una clave.
 
 El uso sin clave es gratuito y está limitado por dirección IP al día mediante **dos límites**; si superas cualquiera de ellos, recibirás un `429`:
 
@@ -88,7 +88,7 @@ El uso sin clave es gratuito y está limitado por dirección IP al día mediante
 
 [Regístrate para obtener una clave de API gratuita](https://firecrawl.dev) y consigue 1.000 créditos y límites de tasa más altos sin costo; los clientes oficiales usan automáticamente tu clave una vez configurada.
 
-<div id="current-plans">
+<div id="current-plans-2">
   ### Planes actuales
 </div>
 

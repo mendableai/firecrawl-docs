@@ -16,43 +16,33 @@ Firecrawl 提供强大的文档解析能力，支持从多种文档 formats 中�
 
 Firecrawl 目前支持以下文档 formats：
 
-* **Excel 电子表格** (`.xlsx`、`.xls`) 
-  * 每个工作表会转换为一个 HTML 表格
+* **Excel 电子表格** (`.xlsx`、`.xls`、`.xlsm`、`.xlsb`、`.ods`)
+  * 每个工作表会转换为一个表格
   * 不同工作表以带有工作表名称的 H2 标题分隔
   * 保留单元格格式和数据类型
 
-* **Word 文档** (`.docx`、`.doc`、`.odt`、`.rtf`) 
+* **Word 文档** (`.docx`、`.doc`、`.docm`、`.odt`、`.rtf`)
   * 在保留文档结构的同时提取文本内容
   * 保留标题、段落、列表和表格
   * 保留基础格式与样式
 
-* **PDF 文档** (`.pdf`) 
+* **PowerPoint 演示** (`.pptx`、`.ppt`、`.pptm`、`.odp`)
+  * 按阅读顺序提取幻灯片内容
+  * 包含演讲者备注
+
+* **EPUB 电子书** (`.epub`)
+  * 在保留文档结构的同时提取章节内容
+
+* **CSV 文件** (`.csv`)
+  * 转换为表格
+
+* **PDF 文档** (`.pdf`)
   * 提取包含布局信息的文本内容
   * 保留包括章节与段落在内的文档结构
-  * 支持处理基于文本的 PDF 和扫描版 PDF (含 OCR) 
-  * 支持通过 `mode` 选项控制解析策略：`fast` (仅文本) 、`auto` (文本并在需要时回退到 OCR，默认) 、`ocr` (强制使用 OCR) 
+  * 支持处理基于文本的 PDF 和扫描版 PDF (含 OCR)
+  * 可选提供按页输出的 markdown，以及带边界框的带类型布局块
   * 费用为每页 1 个积分。详情请参阅 [Pricing](https://firecrawl.dev/pricing)。
-
-<div id="pdf-parsing-modes">
-  ### PDF 解析模式
-</div>
-
-使用 `parsers` 选项来控制 PDF 的解析方式：
-
-| Mode   | Description                                    |
-| ------ | ---------------------------------------------- |
-| `auto` | 优先尝试快速的文本解析，如有需要会回退到 OCR。这是默认模式。               |
-| `fast` | 仅进行基于文本的解析（嵌入文本）。这是最快的选项，但无法从扫描件或图片较多的页面中提取文本。 |
-| `ocr`  | 对每一页都强制使用 OCR 解析。适用于扫描文档，或在 `auto` 误判页面类型时使用。  |
-
-```js
-// 带模式的对象语法
-parsers: [{ type: "pdf", mode: "ocr", maxPages: 20 }]
-
-// 默认（自动模式）
-parsers: [{ type: "pdf" }]
-```
-
+  * 有关解析模式、页面上限、按页 markdown 和布局块的完整参考，请参见 [PDF 选项](/zh/features/parse#pdf-options)。
 
 <div id="how-to-use-document-parsing">
   ## 如何使用文档解析

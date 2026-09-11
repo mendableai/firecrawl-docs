@@ -26,15 +26,33 @@ import {
 } from "/snippets/shared/agent-first-onboarding.jsx";
 import GeneralFeedbackCTA from "/snippets/general-feedback-cta.mdx";
 
-<Note>
-  **For AI agents:** Use [llms.txt](/llms.txt) for a full index of all documentation.
-</Note>
-
-<GeneralFeedbackCTA src="docs-introduction" />
-
 ## Get started
 
-<McpClientSelector />
+<Visibility for="humans">
+  <McpClientSelector variant="human" />
+</Visibility>
+
+<Visibility for="agents">
+  Connect over Streamable HTTP. The keyless server URL (Search, Scrape, and Parse; no credential required) is `https://mcp.firecrawl.dev/v2/mcp`.
+
+  - Codex: `codex mcp add firecrawl --url https://mcp.firecrawl.dev/v2/mcp`
+  - Claude Code: `claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp`
+  - Cursor or any JSON-config client: `{"mcpServers": {"firecrawl": {"url": "https://mcp.firecrawl.dev/v2/mcp"}}}`
+  - OpenCode (`opencode.json`): `{"mcp": {"firecrawl": {"type": "remote", "url": "https://mcp.firecrawl.dev/v2/mcp", "enabled": true}}}`
+  - ChatGPT or Claude.ai: use the native Firecrawl connector — [ChatGPT](https://chatgpt.com/plugins?q=firecrawl) or [Claude](https://claude.ai/directory/connectors/firecrawl).
+
+  Both setup paths and API-key setup: [MCP Get Started](/mcp-server.md), [For Agents](/mcp-server/keyless.md), and [For Humans](/mcp-server/oauth.md).
+</Visibility>
+
+### Build directly with the API
+
+Scrape your first page now. No account or API key is required for this request.
+
+<ScrapeCURL />
+
+Add an [API key](https://www.firecrawl.dev/app/api-keys) when you need higher limits. See the [Python SDK](/sdks/python), [Node SDK](/sdks/node), or [API reference](/api-reference/endpoint/scrape) to build it into your application.
+
+## Other ways to get started
 
 ### Install the Firecrawl CLI
 
@@ -46,14 +64,18 @@ npx -y firecrawl-cli@latest init --all --browser
 
 <Note>
   Restart your coding agent after setup so it can discover the new skills. See
-  [Skills + CLI](/sdks/cli) for the full setup.
+  [CLI](/sdks/cli) for the full setup.
 </Note>
 
 ### Set up with an agent
 
-Provide your agent with this Firecrawl setup prompt.
+Provide your agent with this Firecrawl setup prompt, or see [all MCP setup options](/mcp-server).
 
 <AgentSetupButton />
+
+<Note>
+  **For AI agents:** Use [llms.txt](https://docs.firecrawl.dev/llms.txt) for an index of the documentation, or [llms-full.txt](https://docs.firecrawl.dev/llms-full.txt) for the full text.
+</Note>
 
 ### Build and test directly
 
@@ -98,6 +120,8 @@ Provide your agent with this Firecrawl setup prompt.
 - **Reliable**: Built for production with high uptime and consistent results.
 - **Fast**: Results in seconds, optimized for high throughput.
 - **MCP Server**: Connect Firecrawl to any AI tool via the [Model Context Protocol](/mcp-server).
+
+<GeneralFeedbackCTA src="docs-introduction" />
 
 ---
 
@@ -178,6 +202,9 @@ Scrape a page, then keep working with it: click buttons, fill forms, extract dyn
   </Card>
   <Card title="Browser Sandbox" icon="browser" href="/features/browser">
     Managed browser sessions for interactive workflows
+  </Card>
+  <Card title="Parse" icon="file-magnifying-glass" href="/features/parse">
+    Turn local PDFs, DOCX, XLSX, HTML, and more into Markdown or structured JSON
   </Card>
   <Card title="Map" icon="map" href="/features/map">
     Discover all URLs on a website

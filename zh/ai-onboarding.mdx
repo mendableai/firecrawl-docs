@@ -6,10 +6,10 @@ og:description: "让你的 AI 代理接入 Firecrawl 所需的一切。技能、
 sidebarTitle: "使用 AI 构建"
 ---
 
-如果你在使用 AI 开发，Firecrawl 提供了多种资源来提升你的开发体验。Firecrawl 内置了 **技能**——可独立使用的知识包，AI 编码代理会自动发现并使用它们。只需一条安装命令，代理即可获得三个完整的技能模块：用于实时网页操作的 CLI 技能、将 Firecrawl 集成到应用代码中的构建技能，以及用于产出可复用交付成果的工作流技能。Firecrawl 用户可以通过两种方式获取 API 密钥。请参见下方的[获取凭据](#get-credentials)。
+如果你在使用 AI 开发，Firecrawl 提供了多种资源来提升你的开发体验。Firecrawl 内置了 **技能**——自包含的知识包，AI 编码代理会自动发现并使用它们。只需一条安装命令，代理即可获得用于实时网页操作的 CLI 技能，以及用于产出可重复交付成果的工作流技能。将 Firecrawl 集成到应用代码中的构建技能则需要单独一步 (`firecrawl setup build`) 。Firecrawl 用户可以通过两种方式获取 API 密钥。请参见下方的[获取凭据](#get-credentials)。
 
 * [获取凭据](#get-credentials)
-* [技能 + CLI](#skills-cli)
+* [CLI 和代理技能](#cli)
 * [将 Firecrawl 作为工具使用](#using-firecrawl-as-a-tool)
 * [代理式调试](#agentic-debugging)
 * [Firecrawl MCP 服务器](#firecrawl-mcp-server)
@@ -44,22 +44,25 @@ Firecrawl 用户可以通过两种方式获取 API 密钥。大多数用户应�
 
 **无法登录或获取密钥？** CLI、SDKs 和 REST API 支持免密钥搜索、抓取、交互和解析。托管 MCP 提供功能范围更有限的免密钥 Search、Scrape 和 Parse；其中交互需要账户连接或 API 密钥。免密钥访问会受到限流，仅作为后备方案，因此一旦可以使用免费账户或 API 密钥，请尽快切换。详情请参见 [Keyless (无 API 密钥)](/zh/rate-limits#keyless-no-api-key)。
 
-获得 API 密钥后，继续阅读下方的 [Skills + CLI](#skills-cli)。
+获得 API 密钥后，继续阅读下方的 [CLI 和代理技能](#cli)。
 
-<div id="skills-cli">
-  ## Skills + CLI
+<span id="cli" />
+
+<div id="cli-and-agent-skills">
+  ## CLI 和代理技能
 </div>
 
 [Firecrawl CLI](/zh/sdks/cli) 让你的代理能够通过终端搜索、抓取、交互、爬取、映射、提取，并运行代理任务。它专为人类用户、AI 代理和 CI/CD 流水线打造。
 
-Firecrawl **技能**是一组自包含的知识包，Claude Code、Antigravity 和 OpenCode 等 AI 编码代理会自动发现并使用它们。只需一条安装命令即可完成全部设置——既包括用于实时网页操作的 CLI 工具，也包括用于将 Firecrawl 集成到应用代码中的构建技能，以及用于产出可重复交付成果的工作流技能：
+Firecrawl **技能**是一组自包含的知识包，Codex、Claude Code、Cursor 和 OpenCode 等 AI 编码代理会自动发现并使用它们。只需一条安装命令，即可设置用于实时网页操作的 CLI 工具，以及用于产出可重复交付成果的工作流技能。用于将 Firecrawl 集成到应用代码中的构建技能则通过 `firecrawl setup build` 安装：
 
 ```bash
 npx -y firecrawl-cli@latest init --all --browser
 ```
 
-* `--all` 会将每个 Firecrawl 技能模块 (CLI、构建、工作流) 安装到此设备上检测到的每个 AI 编程代理
+* `--all` 会跳过代理选择，并初始化检测到的每个代理
 * `--browser` 会自动打开浏览器进行 Firecrawl 身份验证
+* 还可使用 `--skip-auth`、`--skip-install`、`--skip-skills` 和 `--agent <name>`。请参见 `firecrawl init --help`。
 
 安装后，请确认一切运行正常：
 
@@ -68,10 +71,11 @@ firecrawl --status
 firecrawl scrape "https://firecrawl.dev"
 ```
 
-如需稍后重新安装，或将范围限定到特定代理：
+如需稍后重新安装，或指定特定代理：
 
 ```bash
-firecrawl setup skills      # CLI + 构建技能
+firecrawl setup skills      # CLI / 核心技能
+firecrawl setup build       # 构建技能
 firecrawl setup workflows   # 工作流技能
 ```
 
@@ -79,23 +83,34 @@ firecrawl setup workflows   # 工作流技能
   ### 安装后会提供什么
 </div>
 
-安装会配置三类技能，覆盖代理使用 Firecrawl 的全部方式。每个部分都位于各自独立的 repo 中，因此可以独立演进：
+Firecrawl 技能分为三类。`init` 会安装 CLI 技能和工作流技能。运行 `firecrawl setup build` 可获取构建技能。每个部分都位于各自独立的 repo 中，因此可以独立演进：
 
 * [`firecrawl/cli`](https://github.com/firecrawl/cli) — 用于实时网页操作的 CLI 技能
 * [`firecrawl/skills`](https://github.com/firecrawl/skills) — 用于应用集成的构建技能
-* [`firecrawl/firecrawl-workflows`](https://github.com/firecrawl/firecrawl-workflows) — 用于产出可复用交付成果的工作流技能
+* [`firecrawl/firecrawl-workflows`](https://github.com/firecrawl/firecrawl-workflows) — 用于产出可重复交付成果的工作流技能
 
 **CLI 技能** — 用于代理会话期间进行实时网页操作：
 
-| 技能                   | Purpose               |
-| -------------------- | --------------------- |
-| `firecrawl/cli`      | 整体 CLI 命令工作流          |
-| `firecrawl-search`   | 进行网页搜索并发现页面           |
-| `firecrawl-scrape`   | 从已知 URL 提取干净内容        |
-| `firecrawl-interact` | 使用 prompt 或代码与已抓取页面交互 |
-| `firecrawl-crawl`    | 从整个网站批量提取内容           |
-| `firecrawl-map`      | 发现域名下的所有 URL          |
-| `firecrawl-agent`    | 通过任务运行自主网页数据采集        |
+| 技能                          | Purpose                          |
+| --------------------------- | -------------------------------- |
+| `firecrawl`                 | 整体 CLI 命令工作流                     |
+| `firecrawl-search`          | 进行网页搜索并发现页面                      |
+| `firecrawl-scrape`          | 从已知 URL 提取干净内容                   |
+| `firecrawl-interact`        | 使用 prompt 或代码与已抓取页面交互            |
+| `firecrawl-crawl`           | 从整个网站批量提取内容                      |
+| `firecrawl-map`             | 发现域名下的所有 URL                     |
+| `firecrawl-agent`           | 通过任务运行自主网页数据采集                   |
+| `firecrawl-monitor`         | 检测站点变更并接收通知                      |
+| `firecrawl-parse`           | 将本地文档解析为 markdown                |
+| `firecrawl-download`        | 将站点下载为本地文件                       |
+| `firecrawl-research-index`  | 搜索论文、阅读段落并追踪引用                   |
+| `firecrawl-developer-index` | 搜索 issue、pull request、README 和文档 |
+
+上述安装包含两种索引技能。若只想将论文搜索技能添加到现有设置中——处理生物医学或科学文献时值得这样做——请运行：
+
+```bash
+npx skills add firecrawl/skills@firecrawl-research-index
+```
 
 **构建技能** — 用于将 Firecrawl 集成到应用代码中：
 
@@ -106,9 +121,6 @@ firecrawl setup workflows   # 工作流技能
 | `firecrawl-build-scrape`     | 在应用代码中实现抓取              |
 | `firecrawl-build-search`     | 在应用代码中实现搜索              |
 | `firecrawl-build-interact`   | 在应用代码中实现页面交互            |
-| `firecrawl-build-crawl`      | 在应用代码中实现爬取              |
-| `firecrawl-build-map`        | 在应用代码中实现 URL 发现         |
-| `firecrawl-build-parse`      | 在应用代码中实现文档解析            |
 
 **工作流技能** — 以结果为导向的技能，可基于 Firecrawl 网页数据产出具体交付物：
 
@@ -135,7 +147,7 @@ firecrawl setup workflows   # 工作流技能
   ### 选择你的路径
 </div>
 
-三类技能的安装方式相同。区别在于后续的使用场景：
+CLI 技能和工作流技能通过上面的安装步骤获得。构建技能则需要单独一步：`firecrawl setup build`。区别在于后续的使用场景：
 
 <Steps>
   <Step title="实时网页工具（CLI 技能）">
@@ -162,7 +174,7 @@ firecrawl setup workflows   # 工作流技能
   </Step>
 
   <Step title="应用集成（构建技能）">
-    当你在构建应用、代理或工作流，并需要通过代码调用 Firecrawl API 时，请选择这个。构建技能可帮助你选择合适的端点、接入 SDK，并运行一次冒烟测试。
+    当你在构建应用、代理或工作流，并需要通过代码调用 Firecrawl API 时，请选择这个。使用 `firecrawl setup build` 安装构建技能。它们可帮助你选择合适的端点、接入 SDK，并运行一次冒烟测试。
 
     代理会回答一个关键问题——*Firecrawl 应该在产品中执行什么任务？*——然后构建技能会据此路由到 `/search`、`/scrape`、`/interact`、`/parse`、`/crawl`、`/map` 或 `/agent`。
   </Step>
@@ -247,7 +259,9 @@ Firecrawl 为代理提供了 5 个处理网页的核心工具。每个工具都�
       -d '{"query": "latest OpenAI API pricing"}'
     ```
 
-    **适用场景：** 研究任务、查找文档、竞品分析、回答需要最新网页信息的问题。
+    **适用场景：** 常规网页研究、查找文档、竞品分析、回答需要最新网页信息的问题。
+
+    **不适用场景：** 科学文献。要查找论文、阅读论文中的段落或追踪引文，请改用[研究索引](/zh/features/research) — 使用 `firecrawl_research_*` MCP 工具、CLI 中的 `firecrawl research search-papers`，或 `firecrawl-research-index` 技能。搜索返回网页 snippet；研究索引返回包含完整摘要的论文记录。
   </Accordion>
 
   <Accordion title="抓取 — 从 URL 提取内容" icon="file-lines">
@@ -385,34 +399,10 @@ curl -X POST https://api.firecrawl.dev/v2/support/ask \
   ## Firecrawl MCP 服务器
 </div>
 
-MCP 是一种开放协议，规范了应用如何向 LLM 提供上下文。除此之外，它还为 LLM 提供了可代表你执行操作的工具。我们的 [MCP server](https://github.com/firecrawl/firecrawl-mcp-server) 是开源的，覆盖了完整的 API 能力——search、scrape、交互、爬取、map、extract 和 agent。
+MCP 是一项开放协议，可让兼容的应用程序为模型提供工具访问权限。开源的 [Firecrawl MCP 服务器](https://github.com/firecrawl/firecrawl-mcp-server) 支持搜索、抓取、浏览、爬取、映射、通过 Scrape JSON 进行结构化提取，以及自主代理任务。
 
-使用远程托管 URL (在免密钥免费档位下无需 API 密钥即可使用) ：
-
-```
-https://mcp.firecrawl.dev/v2/mcp
-```
-
-如需使用 API 密钥，请将其作为 `Authorization: Bearer fc-YOUR-API-KEY` 请求头发送，即可解锁所有工具和更高的限制。
-
-或者将本地服务器添加到任意 MCP 客户端：
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
-    }
-  }
-}
-```
-
-<Card title="MCP Server" icon="plug" href="/zh/mcp-server">
-  查看 Cursor、Claude Desktop、Windsurf、VS Code 等平台的安装说明。
+<Card title="选择 MCP 连接方式" icon="plug" href="/zh/mcp-server">
+  可尝试免密钥访问、通过交互式客户端登录，或为代理、CI 和后端服务配置 API 密钥。
 </Card>
 
 <div id="firecrawl-docs-for-agents">
@@ -445,7 +435,7 @@ https://mcp.firecrawl.dev/v2/mcp
   </Step>
 
   <Step title="MCP 文档服务器">
-    如果你想通过 MCP 工具以结构化方式接入，请在任意 MCP 客户端 (Cursor、Claude Code、Claude Desktop、Windsurf) 中连接 Firecrawl MCP 服务器。请参见 [MCP Server](/zh/mcp-server) 页面获取安装命令。
+    如需通过 MCP 工具以结构化方式接入，请在 Codex、Cursor、Claude Code、Claude Desktop 或其他兼容客户端中连接 Firecrawl MCP 服务器。请从 [MCP 设置选择器](/zh/mcp-server) 开始。Windsurf 用户应遵循 [Windsurf 快速入门](/zh/quickstarts/windsurf)。
   </Step>
 
   <Step title="复制到 ChatGPT / Claude">
@@ -461,7 +451,7 @@ https://mcp.firecrawl.dev/v2/mcp
 
 更想交给 Cursor 处理？一键安装 Firecrawl MCP 服务器，然后在 Cursor 中开始编写 prompt：
 
-<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=firecrawl&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImZpcmVjcmF3bC1tY3AiXSwiZW52Ijp7IkZJUkVDUkFXTF9BUElfS0VZIjoiWU9VUi1BUEktS0VZIn19">
+<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=firecrawl&config=eyJ1cmwiOiJodHRwczovL21jcC5maXJlY3Jhd2wuZGV2L3YyL21jcCJ9">
   <img src="https://cursor.com/deeplink/mcp-install-dark.png" alt="在 Cursor 中打开——添加 Firecrawl MCP 服务器" style={{ maxHeight: 32 }} />
 </a>
 

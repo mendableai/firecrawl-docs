@@ -1,0 +1,826 @@
+---
+title: "n8n"
+description: "Webスクレイピングを自動化するためにFirecrawlをn8nで使用する方法を、ステップごとに解説します。"
+---
+
+<div id="introduction-to-firecrawl-and-n8n">
+  ## Firecrawl と n8n の概要
+</div>
+
+Web スクレイピングの自動化は、現代のビジネスに不可欠です。競合他社の価格監視、コンテンツの集約、見込み顧客の獲得、リアルタイムデータを活用した AI アプリケーションの構築など、Firecrawl と n8n を組み合わせれば、プログラミングの知識がなくても強力なソリューションを実現できます。
+
+![Firecrawl と n8n の連携](/images/guides/n8n/firecrawl-n8n-integration-hero.png)
+
+**n8n とは？**
+
+n8n は、さまざまなツールやサービスを接続するオープンソースのワークフロー自動化プラットフォームです。キャンバス上にノードをドラッグ＆ドロップして接続し、自動化ワークフローを作成できるビジュアルプログラミング環境と考えてください。1,900 を超える連携により、n8n ではコードを書かずに複雑な自動化を構築できます。
+
+<div id="why-use-firecrawl-with-n8n">
+  ## n8n で Firecrawl を使用する理由
+</div>
+
+従来の Web スクレイピングには、いくつかの課題があります。Web サイトの構造が更新されると、カスタムスクリプトは動作しなくなります。ボット対策システムによって自動リクエストがブロックされることもあります。JavaScript を多用するサイトは適切にレンダリングされません。インフラストラクチャにも継続的なメンテナンスが必要です。
+
+Firecrawl はスクレイピングに伴うこうした技術的な複雑さを処理し、n8n は自動化のためのフレームワークを提供します。両者を組み合わせることで、次のような本番環境対応のワークフローを構築できます。
+
+* あらゆる Web サイトからデータを確実に抽出
+* スクレイピングしたデータを他の業務ツールに連携
+* スケジュールまたはイベントをトリガーに実行
+* シンプルなタスクから複雑なパイプラインまで拡張
+
+このガイドでは、両方のプラットフォームの設定から、最初のスクレイピングワークフローをゼロから構築する方法まで解説します。
+
+<div id="step-1-create-your-firecrawl-account">
+  ## ステップ1：Firecrawl アカウントを作成する
+</div>
+
+Firecrawl は、ワークフローにWebスクレイピング機能を提供します。アカウントを設定し、API認証情報を取得しましょう。
+
+<div id="sign-up-for-firecrawl">
+  ### Firecrawl に登録する
+</div>
+
+1. ウェブブラウザで [firecrawl.dev](https://firecrawl.dev) にアクセスします
+2. 「Get Started」または「Sign Up」ボタンをクリックします
+3. メールアドレスまたは GitHub アカウントでアカウントを作成します
+4. 求められた場合は、メールアドレスを確認します
+
+<div id="get-your-api-key">
+  ### APIキーを取得する
+</div>
+
+サインイン後、Firecrawl を n8n に接続するには APIキーが必要です。
+
+1. Firecrawlダッシュボードに移動します
+2. [APIキーのページ](https://www.firecrawl.dev/app/api-keys)に移動します
+3. 「Create New API Key」をクリックします
+4. キーにわかりやすい名前を付けます (例：「n8n Integration」)
+5. 生成されたAPIキーをコピーし、安全な場所に保管します
+
+![Firecrawl APIキーのセクション](/images/guides/n8n/firecrawl-api-key-creation-dashboard.gif)
+
+<Note>
+  APIキーはパスワードのようなものです。安全に保管し、公開の場で共有しないでください。このキーは次のセクションで必要になります。
+</Note>
+
+Firecrawlでは、登録時に無料クレジットが付与されます。ワークフローのテストや、このチュートリアルを完了するには十分な量です。
+
+<div id="step-2-set-up-n8n">
+  ## ステップ2: n8n をセットアップする
+</div>
+
+n8n には、クラウドホスト型とセルフホスト型の 2 つのデプロイオプションがあります。初心者には、クラウド版が最も手軽に始められます。
+
+<div id="choose-your-n8n-version">
+  ### n8nのバージョンを選択
+</div>
+
+**n8n Cloud (初心者におすすめ) :**
+
+* インストール不要
+* Free tierあり
+* インフラは管理済み
+* 自動アップデート
+
+**Self-Hosted:**
+
+* データを完全に管理可能
+* 自分のserverで実行
+* Dockerのインストールが必要
+* 特定のセキュリティ要件がある上級ユーザーに適しています
+
+ニーズに合った選択肢を選んでください。どちらを選んでも、同じワークフローエディターのインターフェースを利用できます。
+
+<div id="option-a-n8n-cloud-recommended-for-beginners">
+  ### オプションA: n8n Cloud (初心者におすすめ)
+</div>
+
+1. [n8n.cloud](https://n8n.cloud)にアクセスします
+2. 「Start Free」または「Sign Up」をクリックします
+3. メールアドレスまたはGitHubアカウントで登録します
+4. 確認手続きを完了します
+5. n8nのダッシュボードが表示されます
+
+![サインアップの選択肢が表示されたn8n Cloudのホームページ](/images/guides/n8n/n8n-cloud-signup-homepage.png)
+
+Free tierでは、ワークフローの構築とテストに必要なものがすべて利用できます。より長い実行時間や高度な機能が必要になった場合は、後からアップグレードできます。
+
+<div id="option-b-self-hosted-with-docker">
+  ### オプションB：Docker でセルフホストする
+</div>
+
+独自のインフラで n8n を実行する場合は、Docker を使ってすばやくセットアップできます。
+
+**前提条件：**
+
+* コンピュータに [Docker Desktop](https://www.docker.com/products/docker-desktop/) がインストールされていること
+* コマンドライン／ターミナルの基本的な知識
+
+**インストール手順：**
+
+1. ターミナルまたはコマンドプロンプトを開きます
+2. ワークフローデータを永続化するための Docker ボリュームを作成します：
+
+```bash
+docker volume create n8n_data
+```
+
+このボリュームにはワークフロー、認証情報、実行履歴が保存されるため、コンテナを再起動しても保持されます。
+
+3. n8n の Docker コンテナを実行します。
+
+```bash
+docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n
+```
+
+![Docker コマンドの実行と n8n の起動を示すターミナル](/images/guides/n8n/n8n-docker-self-hosted-installation.gif)
+
+4. n8n が起動するまで待ちます。サーバーが実行中であることを示す出力が表示されます
+5. Web ブラウザを開き、`http://localhost:5678` にアクセスします
+6. メールアドレスを登録して n8n アカウントを作成します
+
+![localhost:5678 のセルフホスト型 n8n のウェルカム画面](/images/guides/n8n/n8n-localhost-registration-form.gif)
+
+セルフホスト型の n8n インスタンスがローカルで実行されています。インターフェースは n8n Cloud と同一のため、どちらのオプションを選択した場合でも、このガイドの残りの手順に従えます。
+
+<Note>
+  `--rm` フラグを使用すると、停止時にコンテナが自動的に削除されますが、データは `n8n_data` ボリュームに安全に保持されます。本番環境へのデプロイでは、より高度な構成オプションについて [n8n self-hosting documentation](https://docs.n8n.io/hosting/) を参照してください。
+</Note>
+
+<div id="understanding-the-n8n-interface">
+  ### n8nのインターフェースを理解する
+</div>
+
+n8nに初めてログインすると、メインダッシュボードが表示されます。
+
+![「Create new workflow」ボタンがあるワークフロー一覧画面を表示したn8nダッシュボード](/images/guides/n8n/n8n-dashboard-workflow-list.png)
+
+主なインターフェース要素：
+
+* **Workflows**: 保存した自動化がここに表示されます
+* **Executions**: ワークフローの実行履歴
+* **認証情報**: 保存されたAPIキーと認証トークン
+* **Settings**: アカウントとワークスペースの設定
+
+「Create New Workflow」をクリックして、ワークフローエディターを開きます。
+
+<div id="the-workflow-canvas">
+  ### ワークフローキャンバス
+</div>
+
+ワークフローエディターで自動化を構築します。
+
+![中央に「+」ボタンが表示された空の n8n ワークフローキャンバス](/images/guides/n8n/n8n-empty-workflow-canvas.png)
+
+主な要素：
+
+* **キャンバス**：ノードを配置して接続するメインエリア
+* **ノード追加ボタン (+)&#x20;**：クリックしてワークフローに新しいノードを追加します
+* **ノードパネル**：「+」をクリックすると開き、利用可能なすべてのノードが表示されます
+* **ワークフローを実行**：テスト用にワークフローを手動で実行します
+* **保存**：ワークフローの構成を保存します
+
+Firecrawl ノードを追加して、最初のワークフローを作成しましょう。
+
+<div id="step-3-install-and-configure-the-firecrawl-node">
+  ## ステップ3: Firecrawlノードをインストールして設定する
+</div>
+
+n8n は Firecrawl をネイティブでサポートしています。ノードをインストールし、先ほど作成した API キーを使用して Firecrawl アカウントに接続します。
+
+<div id="add-the-firecrawl-node-to-your-workflow">
+  ### ワークフローにFirecrawlノードを追加する
+</div>
+
+1. 新しいワークフローキャンバスの中央にある「**+**」ボタンをクリックします
+2. 右側にノード選択パネルが開きます
+3. 上部の検索ボックスに「**Firecrawl**」と入力します
+4. 検索結果にFirecrawlノードが表示されます
+
+![+ボタンをクリックして検索欄に「Firecrawl」と入力すると、Firecrawlノードが表示される](/images/guides/n8n/n8n-search-install-firecrawl-node.gif)
+
+5. Firecrawlノードの横にある「**Install**」をクリックします
+6. インストールが完了するまで待ちます (数秒かかります)
+7. インストール後、Firecrawlノードをクリックしてキャンバスに追加します
+
+![Firecrawlロゴ付きのボックスとしてキャンバスに追加されたFirecrawlノード](/images/guides/n8n/n8n-firecrawl-node-added-canvas.gif)
+
+Firecrawlノードは、Firecrawlロゴ付きのボックスとしてキャンバスに表示されます。このノードは、ワークフロー内の1つのFirecrawlオペレーションを表します。
+
+<div id="connect-your-firecrawl-api-key">
+  ### Firecrawl APIキーを接続する
+</div>
+
+<Tip>
+  **n8n Cloud ユーザー:** 無料のHobbyプランと100,000クレジットを含むローンチ特典は終了しました。Firecrawlノードを追加する際は、ワンクリックの**「Firecrawlに接続」**OAuthボタンを引き続き使用できます。これにより、n8nアカウントに紐付いた新しいFirecrawlチームが自動的に作成され、**10,000の無料クレジット**が付与されます。これらのクレジットには、Hobbyプランへのアップグレードは含まれません。[Firecrawlダッシュボード](https://www.firecrawl.dev/app/usage)で確認するには、左上隅のチームセレクターでn8nに紐付いたチームに切り替えてください。
+</Tip>
+
+Firecrawlノードを使用する前に、APIキーで認証する必要があります。
+
+1. Firecrawlノードのボックスをクリックして、右側の構成パネルを開きます
+2. 上部に「接続に使用する認証情報」のドロップダウンが表示されます
+3. 初めての場合は、**「新しい認証情報を作成」**をクリックします
+
+![「新しい認証情報を作成」オプションがある認証情報ドロップダウンを表示したFirecrawlノードの構成パネル](/images/guides/n8n/n8n-firecrawl-api-credentials-setup.gif)
+
+4. 認証情報の構成ウィンドウが開きます
+5. この認証情報の名前を入力します (例: 「My Firecrawl Account」)
+6. 「API Key」フィールドにFirecrawl APIキーを貼り付けます
+7. 下部の**「保存」**をクリックします
+
+認証情報がn8nに保存されました。今後Firecrawlノードを使用する際に、APIキーを再入力する必要はありません。
+
+<div id="test-your-connection">
+  ### 接続をテストする
+</div>
+
+Firecrawl ノードが正しく接続されていることを確認しましょう。
+
+1. Firecrawl ノードを選択したまま、構成パネルを確認します
+2. 「Resource」ドロップダウンで「**Scrape a url and get its content**」を選択します
+3. 「URL」フィールドに `https://firecrawl.dev` と入力します
+4. その他の設定は、ひとまずデフォルトのままにします
+5. ノード右下の「**Test step**」ボタンをクリックします
+
+![Scrape オペレーションを選択し、example.com の URL を入力して、Test step ボタンをクリックする](/images/guides/n8n/n8n-firecrawl-test-connection-scrape.gif)
+
+すべてが正しく設定されていれば、ノード下部の出力パネルに example.com からスクレイピングしたコンテンツが表示されます。
+
+おめでとうございます！Firecrawl ノードは接続され、正常に動作しています。
+
+<div id="step-4-create-your-telegram-bot">
+  ## ステップ4: Telegramボットを作成する
+</div>
+
+最初のワークフローを構築する前に、通知を受け取るためのTelegramボットを作成します。Telegramボットは無料で、TelegramのBotFatherから簡単に作成できます。
+
+<div id="create-a-bot-with-botfather">
+  ### BotFather でボットを作成する
+</div>
+
+1. スマートフォンまたはデスクトップで Telegram を開きます
+2. Telegram 公式ボットの「**@BotFather**」を検索します
+3. 「**Start**」をクリックして BotFather との会話を開始します
+4. `/newbot` コマンドを送信して新しいボットを作成します
+5. BotFather からボット名を選ぶよう求められます (ユーザーに表示される名前です)
+6. 「**My Firecrawl Bot**」のような名前を入力します
+7. 次に、ボットのユーザー名を選択します。末尾は「bot」である必要があります (例: 「**my&#95;firecrawl&#95;updates&#95;bot**」)
+8. ユーザー名が利用可能な場合、BotFather がボットを作成し、ボットトークンを含むメッセージを送信します
+
+![BotFather でボットを作成する際の会話フロー全体](/images/guides/n8n/telegram-botfather-create-new-bot.png)
+
+<Note>
+  ボットトークンは安全に保存してください。このトークンは、n8n があなたのボットとしてメッセージを送信するためのパスワードのようなものです。絶対に公開しないでください。
+</Note>
+
+<div id="get-your-chat-id">
+  ### チャットIDを取得する
+</div>
+
+自分宛てにメッセージを送信するには、TelegramのチャットIDが必要です。
+
+1. Webブラウザを開き、次のURLにアクセスします (`YOUR_BOT_TOKEN` を実際のボットトークンに置き換えてください) 。
+   ```
+   https://api.telegram.org/botYOUR_BOT_TOKEN/getUpdates
+   ```
+2. このブラウザタブは開いたままにしておきます
+3. Telegramで、先ほど作成したボットのユーザー名を検索します
+4. &quot;**Start**&quot; をクリックして、ボットとの会話を開始します
+5. ボットに任意のメッセージを送信します (例: &quot;hello&quot;)
+6. ブラウザタブに戻り、ページを更新します
+7. JSONレスポンス内の `"chat":{"id":` フィールドを探します
+8. `"id":` の横にある数字がチャットIDです (例: `123456789`)
+9. このチャットIDは後で使うために保存しておきます
+
+![チャットIDが強調表示されたTelegram APIのgetUpdatesレスポンスを表示するブラウザ](/images/guides/n8n/telegram-api-get-chat-id-browser.gif)
+
+<Note>
+  チャットIDは、ボットとの会話を一意に識別するIDです。これを使って、メッセージの送信先をn8nに指定します。
+</Note>
+
+これで、Telegramをn8nのワークフローに統合するために必要なものがすべて揃いました。
+
+<div id="step-5-build-practical-workflows-with-telegram">
+  ## ステップ5: Telegramを使った実用的なワークフローの構築
+</div>
+
+Telegramに情報を直接送信する、実践的なワークフローを3つ構築してみましょう。これらの例では、さまざまなFirecrawlオペレーションと、Telegram通知への統合方法を紹介します。
+
+<div id="example-1-daily-firecrawl-product-updates-summary">
+  ### 例 1: Firecrawl プロダクトアップデートの毎日の要約
+</div>
+
+Firecrawl のプロダクトアップデートの要約を毎朝 Telegram に配信します。
+
+**作成するもの:**
+
+* Firecrawl のプロダクトアップデートブログを毎日午前 9 時にスクレイピング
+* AI を使用してコンテンツの要約を生成
+* 要約を Telegram に送信
+
+**手順:**
+
+1. n8n で新しいワークフローを作成します
+2. **Schedule Trigger** ノードを追加します:
+   * キャンバス の &quot;**+**&quot; ボタンをクリックします
+   * &quot;**Schedule Trigger**&quot; を検索します
+   * 次のように構成します: 毎日午前 9:00
+
+![毎日午前9時に実行するよう構成されたSchedule Trigger](/images/guides/n8n/n8n-schedule-trigger-daily-cron.gif)
+
+3. **Firecrawl** ノードを追加します:
+   * Schedule Trigger の横にある &quot;**+**&quot; をクリックします
+   * &quot;**Firecrawl**&quot; を検索して追加します
+   * Firecrawl の認証情報を選択します
+   * 次のように構成します:
+     * **Resource**: URL をスクレイピングしてコンテンツを取得
+     * **URL**: `https://www.firecrawl.dev/blog/category/product-updates`
+     * **Formats**: &quot;Summary&quot; を選択
+
+![ブログURLとSummaryフォーマットを選択してFirecrawlノードを追加・構成する](/images/guides/n8n/n8n-firecrawl-scrape-blog-summary.gif)
+
+4. **Telegram** ノードを追加します:
+   * Firecrawl の横にある &quot;**+**&quot; をクリックします
+   * &quot;**Telegram**&quot; を検索します
+   * &quot;**Send a text message**&quot; をクリックして キャンバス に追加します
+
+5. Telegram の認証情報を設定します:
+   * Telegram ノードをクリックして構成を開きます
+   * &quot;Credential to connect with&quot; ドロップダウンで、&quot;**Create New Credential**&quot; をクリックします
+   * BotFather から取得したボットトークンを貼り付けます
+   * &quot;**Save**&quot; をクリックします
+
+![ボットトークン入力欄を含むTelegram認証情報の構成](/images/guides/n8n/n8n-telegram-bot-token-credentials.gif)
+
+6. Telegram メッセージを構成します:
+   * **Operation**: メッセージを送信
+
+   * **Chat ID**: チャット ID を入力します
+
+   * **Text**: ひとまず &quot;hello&quot; メッセージのままにします
+
+   * **Execute step** をクリックして、Firecrawl から要約を受け取りながらメッセージ送信をテストします。
+
+![Telegramノードを構成し、summaryフィールドをメッセージテキストにマッピングする](/images/guides/n8n/n8n-test-telegram-message-firecrawl.gif)
+
+* Firecrawl の要約の構造を確認したら、Firecrawl ノードの output から `summary` フィールドをドラッグしてメッセージテキストに追加します。
+
+7. ワークフローをテストします:
+   * &quot;**Execute Workflow**&quot; をクリックします
+   * Telegram で要約メッセージを確認します
+
+![Schedule Trigger → Firecrawl → Telegramのすべてのノードが接続された完全なワークフロー](/images/guides/n8n/n8n-workflow-complete-firecrawl-telegram.png)
+
+8. &quot;**Active**&quot; スイッチを切り替えてワークフローを有効化します
+
+これで、Telegram ボットが毎朝午前 9 時に Firecrawl のプロダクトアップデートの要約を送信します。
+
+<div id="example-2-ai-news-search-to-telegram">
+  ### 例2: AIニュースを検索してTelegramに送信
+</div>
+
+このワークフローでは、FirecrawlのSearchオペレーションを使用してAIニュースを検索し、整形した結果をTelegramに送信します。
+
+**例1との主な違い:**
+
+* Scheduleではなく**Manual Trigger**を使用 (必要に応じて実行)
+* Scrapeオペレーションではなく**Search**オペレーションを使用
+* 複数の結果を整形するための**Code**ノードを使用
+
+**ワークフローを構築する:**
+
+1. 新しいワークフローを作成し、**Manual Trigger**ノードを追加します
+
+2. 次の設定で**Firecrawl**ノードを追加します:
+   * **Resource**: Search and optionally scrape search results
+   * **Query**: `ai news`
+   * **Limit**: 5
+
+![「ai news」queryを使用したFirecrawl Searchノードの構成](/images/guides/n8n/n8n-firecrawl-search-ai-news-results.gif)
+
+3. 検索結果を整形するための**Code**ノードを追加します:
+   * &quot;Run Once for All Items&quot;を選択します
+   * 次のコードを貼り付けます:
+
+```javascript
+const results = $input.all();
+let message = "Latest AI News:\n\n";
+
+results.forEach((item) => {
+  const webData = item.json.data?.web || [];
+  webData.forEach((article, index) => {
+    message += `${index + 1}. ${article.title}\n`;
+    message += `${article.description}\n`;
+    message += `${article.url}\n\n`;
+  });
+});
+
+return [{ json: { message } }];
+```
+
+![Codeノードを追加し、整形スクリプトを貼り付ける](/images/guides/n8n/n8n-code-node-format-news-articles.gif)
+
+4. **Telegram**ノードを更新します (保存済みの認証情報を使用) ：
+   * **Text**：Codeノードから`message`フィールドをドラッグ＆ドロップします
+
+![AIニュースがTelegramに送信されたワークフローの実行結果](/images/guides/n8n/n8n-execute-workflow-telegram-delivery.gif)
+
+<Tip>
+  Manual TriggerをSchedule Triggerに置き換えると、設定した間隔でAIニュースのアップデートを自動で受け取れます。
+</Tip>
+
+<div id="example-3-ai-powered-news-summary">
+  ### 例 3: AI を活用したニュース要約
+</div>
+
+このワークフローでは、例 2 に AI を追加し、OpenAI を使用して最新の AI ニュースをインテリジェントに要約してから Telegram に送信します。
+
+**例 2 からの主な変更点:**
+
+* **OpenAI 認証情報**の設定を追加
+* Code と Telegram の間に **AI Agent** ノードを追加
+* AI Agent がすべてのニュース記事をインテリジェントに分析・要約
+* Telegram には生のニュース一覧ではなく、AI が生成した要約が送信される
+
+**ワークフローを変更する:**
+
+1. **OpenAI API キーを取得する**:
+   * [platform.openai.com/api-keys](https://platform.openai.com/api-keys) にアクセス
+   * サインインするか、アカウントを作成
+   * &quot;**Create new secret key**&quot; をクリック
+   * 名前を付ける (例: &quot;n8n Integration&quot;)
+   * API キーをすぐにコピーする (再度表示されることはありません)
+
+![API キー作成画面を表示する OpenAI ダッシュボード](/images/guides/n8n/openai-api-key-creation-dashboard.gif)
+
+2. **AI Agent ノードを追加して接続する**:
+   * Code ノードの後にある &quot;**+**&quot; をクリック
+   * &quot;**Basic LLM Chain**&quot; または &quot;**AI Agent**&quot; を検索
+   * Code ノードの `message` フィールドを AI Agent の入力プロンプトフィールドにドラッグ
+   * LLM プロバイダーとして **OpenAI** を選択
+
+![AI Agent ノードを追加し、Code ノードから入力をドラッグして、LLM として OpenAI を接続する](/images/guides/n8n/n8n-ai-agent-openai-llm-setup.gif)
+
+3. **OpenAI 認証情報を追加する**:
+   * OpenAI の &quot;**Create New Credential**&quot; をクリック
+   * OpenAI API キーを貼り付け
+   * モデルを選択: **gpt-5-mini** (コスト効率重視) または **gpt-5** (より高性能)
+   * &quot;**Save**&quot; をクリック
+
+![AI Agent ノードに OpenAI 認証情報を追加する](/images/guides/n8n/n8n-openai-credentials-gpt-model.gif)
+
+4. **AI Agent にシステムプロンプトを追加する**:
+   * AI Agent ノードに、次のシステムプロンプトを追加します:
+
+```
+あなたはAIニュースのアナリストです。提供されたAIニュース記事を分析し、最も重要な動きやトレンドを際立たせた、簡潔かつ示唆に富む要約を作成してください。
+関連するトピックはまとめ、それらの動きがなぜ重要なのかという背景も示してください。
+要約は会話的で読み手を引き込む調子にし、3〜4段落程度にまとめてください。
+```
+
+![AI Agentノードにシステムプロンプトを追加](/images/guides/n8n/n8n-ai-agent-system-prompt-configuration.gif)
+
+5. **Telegramノードを更新してテスト**:
+   * Telegramノードを更新します:
+     * **Text**: AI Agentの出力 (生成された要約) をドラッグ＆ドロップします
+     * Codeノードのmessageへの古いマッピングを削除します
+   * &quot;**Execute Workflow**&quot;をクリックしてテストします
+   * AIがすべてのニュース記事を分析し、要約を作成します
+   * TelegramでAIが生成した要約を確認します
+
+![AIが生成した要約がTelegramに送信されたワークフローの実行完了](/images/guides/n8n/n8n-ai-summary-telegram-workflow-execution.gif)
+
+<Note>
+  AI Agentは整形済みのすべてのニュース記事を受け取り、内容を要約します。これにより、トレンドや重要な動向をひと目で把握しやすくなります。
+</Note>
+
+<div id="understanding-firecrawl-operations">
+  ## Firecrawlオペレーションを理解する
+</div>
+
+いくつかのワークフローを構築したので、n8nで利用できるFirecrawlの各オペレーションを見ていきましょう。各オペレーションは、特定のWebスクレイピングのユースケース向けに設計されています。
+
+<div id="scrape-a-url-and-get-its-content">
+  ### URLをスクレイピングしてコンテンツを取得
+</div>
+
+1つのWebページからコンテンツを抽出し、さまざまなフォーマットで返します。
+
+**機能:**
+
+* 1つのURLをスクレイピング
+* クリーンなMarkdown、HTML、AI生成の要約を返す
+* スクリーンショットを取得し、リンクを抽出可能
+
+**最適な用途:**
+
+* 記事の抽出
+* 商品ページの監視
+* ブログ記事のスクレイピング
+* ページ要約の生成
+
+**ユースケース例:** 毎日のブログ要約 (上記の例1など)
+
+<div id="scrape-interact-with-persistent-profiles">
+  ### 永続プロファイルを使った Scrape + Interact
+</div>
+
+Scrape の後に Interact を使用するワークフローでは、**Scrape** ステップで永続 `profile` を設定します。Interact ステップには、スクレイピングのレスポンスの `scrapeId` と、プロンプトまたはコードだけが必要です。Interact リクエストのボディに `profile` を追加しないでください。Interact はスクレイピングジョブからプロファイルを継承します。
+
+Cookie、localStorage、その他のブラウザ状態を保存するには、ワークフローの完了後に Interact セッションを停止します。後続のワークフロー実行で既存のプロファイルを読み取るだけの場合は、Scrape ステップで `saveChanges` を `false` に設定します。
+
+インストールされている Firecrawl n8n ノードのバージョンで Scrape オペレーションのプロファイル設定が表示されない場合は、Firecrawl n8n ノードを最新版に更新してください。使用中の n8n バージョンがノードのカスタムリクエストまたはボディオプションに対応している場合は、同じ `profile` オブジェクトをそこから渡すことができます。
+
+```json
+{
+  "profile": {
+    "name": "my-profile",
+    "saveChanges": true
+  }
+}
+```
+
+<div id="search-and-optionally-scrape-search-results">
+  ### 検索結果を検索し、必要に応じてスクレイピング
+</div>
+
+ウェブ検索を実行し、必要に応じてコンテンツをスクレイピングした検索結果を返します。
+
+**機能:**
+
+* ウェブ、ニュース、画像を検索
+* タイトル、説明、URLを返す
+* 必要に応じて検索結果の全文コンテンツをスクレイピング
+
+**最適な用途:**
+
+* リサーチの自動化
+* ニュースのモニタリング
+* トレンドの発見
+* 関連コンテンツの検索
+
+**ユースケース例:** AIニュースの集約 (上記の例2など)
+
+<div id="crawl-a-website">
+  ### Web サイトをクロールする
+</div>
+
+Web サイト内の複数ページを再帰的に検出し、スクレイピングします。
+
+**機能:**
+
+* リンクを自動的にたどる
+* 1 回のオペレーションで複数ページをスクレイピングする
+* URL をパターンで絞り込める
+
+**最適な用途:**
+
+* ドキュメント全体の抽出
+* サイトのアーカイブ
+* 複数ページにまたがるデータ収集
+
+<div id="map-a-website-and-get-urls">
+  ### Web サイトをマップして URL を取得
+</div>
+
+コンテンツをスクレイピングせずに、Web サイト内で見つかったすべての URL を返します。
+
+**機能:**
+
+* サイト内のすべてのリンクを検出
+* 整理された URL リストを返す
+* 高速かつ軽量
+
+**最適な用途:**
+
+* URL のディスカバリー
+* サイトマップの生成
+* 大規模なクロールの計画
+
+<div id="extract-data">
+  ### データを抽出
+</div>
+
+AI を使用して、カスタムプロンプトやスキーマに基づいて構造化情報を抽出します。
+
+**機能:**
+
+* AI を活用したデータ抽出
+* 指定した形式でデータを返す
+* 複数ページに対応
+
+**最適な用途:**
+
+* カスタムデータの抽出
+* データベースの構築
+* 構造化情報の収集
+
+<div id="batch-scrape">
+  ### バッチスクレイプ
+</div>
+
+複数の URL を効率的に並列でスクレイピングします。
+
+**機能:**
+
+* 複数の URL を同時に処理
+* ループ処理より効率的
+* すべての結果をまとめて返却
+
+**最適な用途:**
+
+* URL リストの処理
+* 大量データの収集
+* 大規模なスクレイピングプロジェクト
+
+<div id="agent">
+  ### Agent
+</div>
+
+自然言語プロンプトに基づき、AI agent が Web サイトを自律的に閲覧し、データを抽出します。
+
+**機能:**
+
+* 必要なデータを説明するプロンプトを受け取ります
+* AI agent が自律的にページを移動し、情報を抽出します
+* **Sync** モード (結果を待機) と **Async** モード (job ID を即座に返す) を利用できます
+* Async モードでは、**Get Agent Status** を使用して結果をポーリングします
+
+**最適な用途:**
+
+* プロンプトに基づく複雑な複数ページにわたるデータ収集
+* ページ構造が正確にわからない場合の情報抽出
+* 複数のページを移動する必要があるリサーチタスク
+
+**Sync と Async:**
+
+* **Agent (Sync)** は job を開始し、1 ステップで結果を待機します。ほとんどのユースケースで最もシンプルな方法です。**Max Wait Time** パラメータは、timeout になるまでノードがポーリングする時間を制御します (デフォルト: 300 秒、最大: 600 秒) 。agent job の完了にこれより長い時間がかかる場合、Firecrawl 側で job が完了する可能性があっても、ノードは timeout status を返します。10 分を超える可能性がある job には、代わりに async モードを使用してください。
+* **Agent (Async)** は job ID を即座に返します。job の完了後に結果を取得するには、**Get Agent Status** オペレーションを使用する 2 つ目の Firecrawl ノードを追加します。
+
+agent 機能の詳細については、[Agent documentation](/ja/features/agent) を参照してください。
+
+<div id="browser-sandbox">
+  ### ブラウザサンドボックス
+</div>
+
+コードで制御可能な永続的ブラウザセッションを提供します。単一のセッション内で、複数ステップのブラウザ自動化を実行できます。
+
+**オペレーション:**
+
+* **ブラウザセッションを作成** — 新しいブラウザセッションを開始し、`sessionId`を返します
+* **ブラウザコードを実行** — セッション内でJavaScript、Python、またはbashコードを実行します (作成ステップで取得した`sessionId`を使用)
+* **ブラウザセッションを一覧表示** — アクティブまたは破棄済みのセッションを一覧表示します
+* **ブラウザセッションを削除** — 不要になったセッションを破棄します
+
+**最適な用途:**
+
+* ページをまたいで状態を維持する必要がある複数ステップのブラウザワークフロー
+* ステップ数が事前にわからない動的なページナビゲーション
+* 実行をまたいでCookieとlocalStorageを保持するために、永続的なブラウザプロファイルを使用するワークフロー
+
+n8nでは、Firecrawlノードで**Browser**リソースを選択すると、これらのオペレーションを利用できます。作成ステップで取得した`sessionId`を、後続の各実行または削除ステップに渡します。n8nの**Loop Over Items**ノードを使用して動的なページリストを反復処理し、同じセッション内で各ページに対して実行を呼び出します。
+
+Browser Sandbox機能の詳細については、[Browser Sandboxのドキュメント](/ja/features/browser)を参照してください。
+
+<div id="workflow-templates-and-examples">
+  ## ワークフローテンプレートと例
+</div>
+
+ゼロから構築する代わりに、あらかじめ用意されたテンプレートを使って始められます。n8nコミュニティでは、コピーしてカスタマイズできるFirecrawlワークフローが数多く作成されています。
+
+<div id="featured-templates">
+  ### 注目のテンプレート
+</div>
+
+<CardGroup cols={2}>
+  <Card title="n8n 完全チュートリアル" icon="rocket" href="https://www.firecrawl.dev/blog/firecrawl-n8n-web-automation">
+    Firecrawl と n8n を使って、Web にアクセスできる AI チャットボットを構築
+  </Card>
+
+  <Card title="本番環境向けワークフロー 8 選" icon="layer-group" href="https://www.firecrawl.dev/blog/n8n-web-scraping-workflow-templates">
+    リード生成や価格監視などにすぐ使えるテンプレート
+  </Card>
+
+  <Card title="Supabase pgvector RAG パイプライン" icon="database" href="https://n8n.io/workflows/13911-scrape-and-ingest-web-content-into-supabase-pgvector-with-firecrawl/">
+    ページをスクレイピングして埋め込みを生成し、RAG 用に Supabase pgvector に保存
+  </Card>
+
+  <Card title="AI によるリードエンリッチメント" icon="building" href="https://n8n.io/workflows/13910-enrich-company-leads-with-firecrawl-openrouter-ai-and-supabase/">
+    企業の Web サイトをスクレイピングし、構造化されたビジネスシグナルを抽出
+  </Card>
+
+  <Card title="Pinecone RAG パイプライン" icon="tree" href="https://n8n.io/workflows/13964-scrape-and-ingest-web-pages-into-a-pinecone-rag-stack-with-firecrawl-and-openai/">
+    ページをスクレイピングして埋め込みを生成し、RAG 用に Pinecone に保存
+  </Card>
+
+  <Card title="n8n コミュニティワークフロー" icon="book" href="https://n8n.io/workflows?search=firecrawl">
+    Firecrawl を使用した数百のワークフローを閲覧
+  </Card>
+
+  <Card title="公式 n8n 連携" icon="plug" href="https://n8n.io/integrations/firecrawl/">
+    公式の連携ドキュメントを表示
+  </Card>
+</CardGroup>
+
+<div id="how-to-import-templates">
+  ### テンプレートをインポートする方法
+</div>
+
+n8nコミュニティのテンプレートを使用するには：
+
+1. ワークフローテンプレートのリンクをクリックします
+2. テンプレートページで「**Import template to localhost:5678 self-hosted instance**」ボタンをクリックします
+3. n8nインスタンスでワークフローが開きます
+4. 各ノードの認証情報を設定します
+5. ユースケースに合わせて設定をカスタマイズします
+6. ワークフローを有効化します
+
+![n8n.ioからテンプレートをインポートする画面。インポートボタンとn8nに表示されたワークフローを示しています](/images/guides/n8n/n8n-workflow-import.gif)
+
+<div id="best-practices">
+  ## ベストプラクティス
+</div>
+
+信頼性が高く効率的なワークフローを構築するために、以下のガイドラインに従ってください：
+
+<div id="testing-and-debugging">
+  ### テストとデバッグ
+</div>
+
+* スケジュールを有効にする前に、必ずワークフローを手動でテストしてください
+* &quot;**Execute Workflow**&quot; ボタンを使用して、フロー全体をテストします
+* 各ノードの出力データを確認して、正しさを検証します
+* &quot;**Executions**&quot; タブで過去の実行を確認し、問題をデバッグします
+
+![タイムスタンプとステータスを含むワークフロー実行履歴を表示するExecutionsタブ](/images/guides/n8n/n8n-debugging.gif)
+
+<div id="error-handling">
+  ### エラーハンドリング
+</div>
+
+* Error Triggerノードを追加して、失敗を検知・処理します
+* ワークフローの失敗時に通知を設定します
+* 重要度の低いノードには「**Continue On Fail**」設定を使用します
+* ワークフローの実行状況を定期的に監視します
+
+<div id="performance-optimization">
+  ### パフォーマンスの最適化
+</div>
+
+* 複数の URL を処理する場合は、ループではなくバッチスクレイプを使用する
+* 対象サイトに過度な負荷をかけないよう、適切なレート制限を設定する
+* 不要なリクエストを減らすため、可能な場合はデータをキャッシュする
+* 負荷の高いワークフローはオフピークの時間帯にスケジュールする
+
+<div id="security">
+  ### セキュリティ
+</div>
+
+* ワークフローの構成にAPIキーを含めないでください
+* n8nの認証情報システムを使用して認証情報を安全に保存してください
+* ワークフローを公開する際は注意してください
+* 対象のWebサイトの利用規約およびrobots.txtに従ってください
+
+<div id="next-steps">
+  ## 次のステップ
+</div>
+
+Firecrawl と n8n を使ったWebスクレイピング自動化の基本を学びました。さらに学習を進めるには、次の方法があります。
+
+<div id="explore-advanced-features">
+  ### 高度な機能を試す
+</div>
+
+* リアルタイムのデータ処理に向けたwebhookの構成を確認する
+* プロンプトとスキーマを使ったAIによる抽出を試す
+* 分岐ロジックを含む複雑なマルチステップワークフローを構築する
+
+<div id="join-the-community">
+  ### コミュニティに参加
+</div>
+
+* [Firecrawl Discord](https://discord.gg/firecrawl) - Firecrawl のサポートを受けたり、Web スクレイピングについて話し合ったりできます
+* [n8n Community Forum](https://community.n8n.io/) - ワークフローの自動化について質問する
+* ワークフローを共有し、他のユーザーの知見を学ぶ
+
+<div id="recommended-learning-path">
+  ### 推奨される学習パス
+</div>
+
+1. このガイドのワークフロー例を実践する
+2. コミュニティライブラリのテンプレートをカスタマイズする
+3. 実際の業務課題を解決するワークフローを構築する
+4. Firecrawl の高度なオペレーションを試す
+5. 他のユーザーの役に立つ独自のテンプレートを提供する
+
+<Note>
+  **お困りですか？** 行き詰まったり質問があったりする場合は、Firecrawl と n8n のコミュニティが活発で頼りになります。自動化を構築する際は、遠慮なくアドバイスを求めてください。
+</Note>
+
+<div id="additional-resources">
+  ## 関連リソース
+</div>
+
+* [Firecrawl API ドキュメント](/ja/api-reference/v2-introduction)
+* [n8n ドキュメント](https://docs.n8n.io/)
+* [Web スクレイピングのベストプラクティス](https://www.firecrawl.dev/blog)

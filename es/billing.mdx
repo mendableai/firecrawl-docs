@@ -9,7 +9,7 @@ og:description: "Cómo funcionan la facturación, los créditos y los planes en 
   ## Descripción general
 </div>
 
-Firecrawl utiliza un **sistema de facturación basado en créditos**. Cada llamada a la API que haces consume créditos, y la cantidad de créditos consumidos depende del endpoint y de las opciones que utilices. Recibes una asignación mensual de créditos según tu plan, y Smart Upgrade te mantiene cubierto a medida que crece tu uso.
+La facturación de Firecrawl se basa en **créditos**. Cada llamada a la API que haces consume créditos. La cantidad de créditos depende del endpoint y de las opciones que utilices. Tu plan te proporciona una asignación mensual de créditos. pago por uso agrega más créditos cuando se agota la asignación.
 
 Para ver los precios de los planes vigentes, visita la [página de precios de Firecrawl](https://www.firecrawl.dev/pricing).
 
@@ -27,29 +27,29 @@ Los créditos son la unidad de consumo en Firecrawl. Cada plan incluye una cuota
   ### Costo de créditos por endpoint
 </div>
 
-| Endpoint     | Credit Cost                      | Notes                                                                                                                                                                                                                                                                                                                                  |
-| ------------ | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Scrape**   | 1 crédito / página               | Convierte una única URL en markdown limpio, HTML o datos estructurados. Se aplican créditos adicionales al usar opciones de extracción (ver más abajo).                                                                                                                                                                                |
-| **Crawl**    | 1 crédito / página               | Extrae un sitio web completo siguiendo enlaces desde una URL inicial. Los mismos costos por página de las opciones de extracción se aplican a cada página rastreada.                                                                                                                                                                   |
-| **Map**      | 1 crédito / llamada              | Descubre todas las URL de un sitio web sin extraer su contenido.                                                                                                                                                                                                                                                                       |
-| **Search**   | 2 créditos / 10 resultados       | Busca en la web y, opcionalmente, extrae los resultados. Redondeado hacia arriba por cada 10 resultados (p. ej., 11 resultados = 4 créditos). Se aplican costos adicionales de extracción por página a cada resultado que se extrae. Consulta [aquí](/es/features/search#zero-data-retention-zdr) los precios de búsqueda ZDR Enterprise. |
-| **Interact** | 2 créditos / minuto de navegador | Sesión interactiva de navegador en sandbox, facturada por minuto.                                                                                                                                                                                                                                                                      |
-| **Agent**    | Dinámico                         | Agente autónomo de investigación web. 5 ejecuciones diarias gratuitas; precios basados en uso a partir de ese límite.                                                                                                                                                                                                                  |
+| Endpoint     | Credit Cost                        | Notes                                                                                                                                                                                                                                                                                                                                  |
+| ------------ | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Scrape**   | 1 crédito / página                 | Convierte una única URL en markdown limpio, HTML o datos estructurados. Se aplican créditos adicionales al usar opciones de extracción (ver más abajo).                                                                                                                                                                                |
+| **Crawl**    | 1 crédito / página                 | Extrae un sitio web completo siguiendo enlaces desde una URL inicial. Los mismos costos por página de las opciones de extracción se aplican a cada página rastreada.                                                                                                                                                                   |
+| **Map**      | 1 crédito / llamada                | Descubre todas las URL de un sitio web sin extraer su contenido.                                                                                                                                                                                                                                                                       |
+| **Search**   | 2 créditos / 10 resultados         | Busca en la web y, opcionalmente, extrae los resultados. Redondeado hacia arriba por cada 10 resultados (p. ej., 11 resultados = 4 créditos). Se aplican costos adicionales de extracción por página a cada resultado que se extrae. Consulta [aquí](/es/features/search#zero-data-retention-zdr) los precios de búsqueda ZDR Enterprise. |
+| **Interact** | 2–7 créditos / minuto de navegador | Sesión interactiva de navegador en sandbox, facturada por minuto de navegador con un mínimo de un minuto. Las sesiones que usan un `prompt` se facturan a 7 créditos / minuto de navegador; las sesiones sin un prompt (solo `code` de Playwright) se facturan a 2 créditos / minuto de navegador.                                     |
+| **Agent**    | Dinámico                           | Agente autónomo de investigación web. 5 ejecuciones diarias gratuitas; precios basados en uso a partir de ese límite.                                                                                                                                                                                                                  |
 
 <div id="additional-credit-costs-for-scrape-options">
-  ### Costos de crédito adicionales para las opciones de extracción
+  ### Costos de crédito adicionales para las opciones de scraping
 </div>
 
-Ciertas opciones de extracción añaden créditos sobre el costo base por página:
+Ciertas opciones de scraping añaden créditos sobre el costo base por página:
 
-| Option                       | Additional Cost         | Description                                                                                                                         |
-| ---------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| PDF parsing                  | +1 crédito / página PDF | Extrae contenido de documentos PDF                                                                                                  |
-| formato JSON (extracción con LLM) | +4 créditos / página    | Usa un LLM para extraer datos JSON estructurados de la página                                                                       |
-| Enhanced Mode                | +4 créditos / página    | Extracción mejorada para páginas a las que es difícil acceder                                                                       |
-| Zero Data Retention (ZDR)    | +1 crédito / página     | Garantiza que no se conserve ningún dato más allá de la solicitud (consulta [Scrape ZDR](/es/features/scrape#zero-data-retention-zdr)) |
+| Option                               | Additional Cost         | Description                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------ | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PDF parsing                          | +1 crédito / página PDF | Extrae contenido de documentos PDF                                                                                                                                                                                                                                                                                                    |
+| formato JSON (extracción con LLM)    | +4 créditos / página    | Usa un LLM para extraer datos JSON estructurados de la página                                                                                                                                                                                                                                                                         |
+| Comprobación de inyección de prompts | +4 créditos / página    | Protección opcional `checkPromptInjection` para el formato JSON (consulta [Detección de inyección de prompts](/es/features/llm-extract#prompt-injection-detection)). Si el scraping falla después de que se haya ejecutado la comprobación, se facturan 5 créditos. Consulta [Cuándo se cobran los créditos](#when-credits-are-charged). |
+| retención de datos cero (ZDR)        | +1 crédito / página     | Garantiza que no se conserve ningún dato más allá de la solicitud (consulta [Scrape ZDR](/es/features/scrape#zero-data-retention-zdr))                                                                                                                                                                                                   |
 
-Estos modificadores se acumulan. Por ejemplo, extraer una página con formato JSON (extracción con LLM) y Enhanced Mode cuesta **1 + 4 + 4 = 9 créditos** por página. Estos mismos modificadores se aplican a los endpoints Crawl y Search, ya que usan scrape internamente para cada página.
+Estos modificadores se acumulan. Por ejemplo, hacer scraping de una página con formato JSON (extracción con LLM) y retención de datos cero cuesta **1 + 4 + 1 = 6 créditos** por página. Estos mismos modificadores se aplican a los endpoints Crawl y Search, ya que usan scrape internamente para cada página.
 
 Las solicitudes a `x.com` y otras URL de X/Twitter usan la API de Grok y tienen precios independientes. Consulta [facturación de X (x.com)](#x-xcom-billing) al final de esta página.
 
@@ -57,12 +57,28 @@ Las solicitudes a `x.com` y otras URL de X/Twitter usan la API de Grok y tienen 
   ### Cuándo se cobran créditos
 </div>
 
-Los créditos se cobran siempre que la infraestructura de Firecrawl procesa una solicitud, incluso si el sitio de destino devuelve un código de estado de error HTTP como 403 Forbidden o 404 Not Found. Esto se debe a que la infraestructura de scraping (renderizado en el navegador, proxy, etc.) se utiliza por completo independientemente de la respuesta del sitio de destino. Puedes revisar el campo `metadata.statusCode` en la respuesta de la API para detectar estos casos y evitar reintentar URLs que se bloquean de forma constante.
+Lo que determina el cobro es si Firecrawl devolvió un documento, no si el sitio de destino devolvió un código de estado HTTP exitoso.
 
-Para trabajos de **batch scrape** y **crawl**, los créditos se cobran de forma asíncrona a medida que cada página termina de procesarse, no cuando se envía el trabajo. Esto significa que puede haber un retraso entre el envío de un trabajo y el momento en que se refleja el costo total en créditos en tu cuenta. Si un lote contiene muchas URLs o las páginas se ponen en cola durante períodos de alto tráfico, los créditos pueden seguir registrándose minutos u horas después del envío. Hacer *polling* o comprobar el estado del batch no consume créditos.
+* **Firecrawl devolvió un documento: 1 crédito por página**, más cualquiera de los costos de opciones indicados arriba. Esto incluye las páginas que regresan con un estado de error como 403 Forbidden o 404 Not Found. El destino respondió, Firecrawl capturó esa respuesta y tú la recibes como documento. Revisa el campo `metadata.statusCode` en la respuesta para detectar estos casos y dejar de reintentar URLs que se bloquean de forma constante.
+* **Firecrawl no devolvió ningún documento: 0 créditos.** Un scraping que falla por completo, por ejemplo porque el sitio nunca respondió o todos los intentos de renderizado fallaron, no se cobra.
+
+Algunos casos sí se cobran aunque no se devuelva ningún documento. Corresponden al trabajo que Firecrawl ya realizó en tu nombre antes de que terminara el scraping.
+
+| Caso                                  | Qué se cobra                                                                                                     |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Escaneo de protección contra amenazas | 2 créditos por URL analizada, incluido un scraping que el propio escaneo bloqueó                                 |
+| Comprobación de inyección de prompts  | 5 créditos, una vez que se ha ejecutado la protección `checkPromptInjection`                                     |
+| Agente FIRE-1                         | Según el uso, por la navegación que el agente ya realizó                                                         |
+| Cache miss de `lockdown`              | 1 crédito                                                                                                        |
+| Monitor check                         | Una página que da error durante una verificación se cobra al costo base de 1 crédito por página                  |
+| Sesiones de Interact y Browser        | Se cobran por minuto de navegador de tiempo de sesión, con un mínimo de un minuto, obtengas o no lo que buscabas |
+
+Para trabajos de **extracción por lotes** y **crawl**, los créditos se cobran de forma asíncrona a medida que cada página termina de procesarse, no cuando se envía el trabajo. Esto significa que puede haber un retraso entre el envío de un trabajo y el momento en que se refleja el costo total en créditos en tu cuenta. Si un lote contiene muchas URLs o las páginas se ponen en cola durante períodos de alto tráfico, los créditos pueden seguir registrándose minutos u horas después del envío. Hacer *polling* o comprobar el estado del lote no consume créditos.
 
 <Note>
-  **Verificación previa de créditos para crawl:** Antes de que comience un trabajo de crawl, Firecrawl verifica que tu saldo de créditos disponible pueda cubrir por completo el parámetro `limit` que solicitaste. Si tu saldo es inferior a `limit`, la solicitud devuelve un 402 incluso si el crawl hubiera descubierto menos páginas. El valor predeterminado de `limit` es **10,000**, por lo que, si lo omites, debes tener 10,000 créditos disponibles por adelantado. Para evitarlo, pasa un `limit` explícito que coincida con la cantidad de páginas que realmente quieres recorrer (por ejemplo, `limit: 100`).
+  **Verificación previa de créditos para crawl:** Cuando pasas un `limit` explícito, Firecrawl comprueba si la solicitud está permitida para esa cantidad. Si está permitida, incluso mediante consumo excedente, el límite no se reduce a tu saldo restante. Si se deniega, Firecrawl intenta bajar el límite al saldo restante y vuelve a comprobar la solicitud ajustada. Se devuelve un 402 si no se puede usar ningún límite positivo o si la solicitud ajustada se deniega, incluso por un límite de gasto por clave de API.
+
+  Omitir `limit` no requiere **10,000** créditos por adelantado. La verificación inicial de créditos usa **1 crédito**; no reserva créditos para el crawl completo. Si la solicitud se permite, el límite predeterminado de **10,000** no se reduce para ajustarse al saldo, aunque otras opciones de crawl pueden cambiar el límite efectivo. Las páginas se cobran a medida que se procesan. Pasa un `limit` explícito cuando quieras establecer un número máximo de páginas (por ejemplo, `limit: 100`).
 </Note>
 
 <div id="tracking-your-usage">
@@ -82,7 +98,7 @@ Puedes monitorear tu consumo de créditos de dos maneras:
   ## Planes
 </div>
 
-Firecrawl ofrece planes mensuales de suscripción. No existe una opción de pago por uso puro, pero Smart Upgrade (descrito más abajo) permite escalar de forma flexible por encima de tu plan base.
+Los planes de suscripción se facturan de forma mensual o anual. Los planes de autoservicio de pago también pueden usar el pago por uso. El pago por uso añade créditos cuando se agota la asignación de tu plan. Consulta [Pago por uso](#pay-as-you-go).
 
 <div id="paid-plans">
   ### Planes de pago
@@ -91,15 +107,30 @@ Firecrawl ofrece planes mensuales de suscripción. No existe una opción de pago
 | Plan         | Créditos mensuales          | Navegadores concurrentes |
 | ------------ | --------------------------- | -----------------------: |
 | **Hobby**    | 5,000 / 6,500 / 8,000       |                        5 |
-| **Standard** | 100,000 / 130,000 / 160,000 |                       50 |
-| **Growth**   | 500,000 / 650,000           |                      100 |
-| **escala**   | 1,000,000                   |                      150 |
+| **Standard** | 100,000 / 130,000 / 160,000 |                       25 |
+| **Growth**   | 500,000 / 650,000           |                       50 |
+| **escala**   | 1,000,000                   |                      100 |
 
 <Note>
-  Para necesidades más allá del plan escala, Firecrawl ofrece planes **Enterprise** con créditos personalizados, soporte dedicado, SLAs, descuentos por volumen, sin retención de datos y SSO. Visita la [página Enterprise](https://www.firecrawl.dev/enterprise) para más detalles.
+  Para necesidades más allá del plan escala, Firecrawl ofrece planes **Enterprise** con créditos personalizados, soporte dedicado, SLAs, descuentos por volumen, retención de datos cero y SSO. Visita la [página Enterprise](https://www.firecrawl.dev/enterprise) para más detalles.
 </Note>
 
 Todos los planes de pago están disponibles con facturación **mensual** o **anual**. La facturación anual ofrece un descuento frente a pagar mes a mes. Para ver los precios actuales de cada plan, visita la [página de precios](https://www.firecrawl.dev/pricing).
+
+<div id="free-plan">
+  ### Free plan
+</div>
+
+Las cuentas nuevas comienzan en el plan Free. No tiene costo y no requiere tarjeta. Esto es lo que incluye:
+
+* **1.000 créditos por mes.** La asignación se reinicia al comienzo de cada ciclo mensual. Los créditos gratuitos sin usar no se acumulan para el siguiente periodo.
+* **2 navegadores concurrentes**, con el mismo máximo de 50.000 trabajos en cola que los planes de autoservicio pagos.
+* **Límites de tasa de 10 solicitudes por minuto** en `/scrape`, `/map` y `/search`, y **2 solicitudes por minuto** en `/crawl`, `/agent` e `/interact`. La extracción por lotes comparte el límite de scraping y extract comparte el límite de agent. Consulta [Límite de tasa](/es/rate-limits) para ver la tabla completa.
+* **Todos los endpoints principales del producto.** Scrape, crawl, map, search, extract, batch scrape, interact y monitor funcionan en el plan Free. Algunas funciones de administración de equipos y empresariales se habilitan por equipo y no por plan, entre ellas la protección contra amenazas, el registro SIEM y search con retención de datos cero. Los costos en créditos son iguales en todos los planes, por lo que la tabla de [costos en créditos por endpoint](#credit-costs-per-endpoint) anterior se aplica sin cambios.
+
+El plan Free no incluye pago por uso, así que las solicitudes devuelven un HTTP 402 en cuanto se agota la asignación mensual. Consulta [Sin créditos](#running-out-of-credits). Tampoco incluye acumulación de créditos, un Acuerdo de Procesamiento de Datos ni soporte por Slack: el soporte es comunitario.
+
+Scrape, Search e Interact también funcionan sin ninguna API key, a través del keyless free tier, cuyo tope es por dirección IP y por día en lugar de una asignación de créditos. Consulta [Keyless (no API key)](/es/rate-limits#keyless-no-api-key).
 
 <div id="billing-cycle">
   ### Ciclo de facturación
@@ -107,40 +138,59 @@ Todos los planes de pago están disponibles con facturación **mensual** o **anu
 
 * **Planes mensuales**: Los créditos se restablecen en tu fecha de renovación mensual
 * **Planes anuales**: Se te factura anualmente, pero los créditos igual se restablecen cada mes en tu fecha de renovación mensual virtual
-* **Los créditos del plan no utilizados no se acumulan de forma predeterminada** — tu asignación mensual se restablece cada mes. **Los planes anuales Escala permiten acumular los créditos del plan no utilizados durante 1 mes**, y **los planes anuales Enterprise permiten acumularlos durante 2 meses**.
+* **Los créditos del plan no utilizados no se acumulan de forma predeterminada**: tu asignación mensual se restablece cada mes. **Los planes anuales Escala permiten acumular los créditos del plan no utilizados durante 1 mes**, y **los planes anuales Enterprise permiten acumularlos durante 2 meses**.
 
 <div id="concurrent-browsers">
   ### Navegadores concurrentes
 </div>
 
-Los navegadores concurrentes representan cuántas páginas web puede procesar Firecrawl simultáneamente para ti. Tu plan determina este límite. Si lo superas, las tareas adicionales esperarán en una cola hasta que se libere un cupo. Consulta [Límites de tasa](/es/rate-limits) para obtener todos los detalles sobre concurrencia y límites de tasa de la API.
+Los navegadores concurrentes representan cuántas páginas web puede procesar Firecrawl simultáneamente para ti. Tu plan determina este límite. Si lo superas, los trabajos adicionales esperarán en una cola hasta que se libere un cupo. Consulta [Límites de tasa](/es/rate-limits) para obtener todos los detalles sobre concurrencia y límites de tasa de la API.
 
-<div id="smart-upgrade">
-  ## Smart Upgrade
+<a id="auto-reload" />
+
+## Pago por uso {#pay-as-you-go}
+
+El pago por uso mantiene tus solicitudes en curso cuando se agotan los créditos de tu plan. Añade créditos a tu cuenta automáticamente.
+
+Compras créditos en incrementos de 5 USD. Cuando tu saldo de créditos llega a cero, añadimos un incremento a tu cuenta y realizamos el cargo en la tarjeta registrada.
+
+El pago por uso requiere un plan de autoservicio de pago. No puedes usarlo con el plan Free.
+
+También puedes comprar créditos manualmente en cualquier momento. Usa **Cargar más créditos** en tu [configuración de facturación](https://www.firecrawl.dev/app/settings?tab=billing). Introduce un múltiplo de 5 USD y paga con la tarjeta registrada. Esto funciona tanto si el pago por uso está activado como desactivado.
+
+### Créditos por incremento {#credits-in-a-batch}
+
+Los créditos por incremento dependen de tu plan. El pago por uso y las compras manuales usan la misma tarifa.
+
+| Plan         | Créditos por 5 USD |
+| ------------ | ------------------ |
+| **Hobby**    | 1,000              |
+| **Standard** | 2,000              |
+| **Growth**   | 2,500              |
+| **escala**   | 5,000              |
+
+### Establece el límite mensual de pago por uso {#set-the-monthly-auto-reload-limit}
+
+Establece tu **límite mensual de pago por uso** en uno de estos dos lugares:
+
+* En tu [configuración de facturación](https://www.firecrawl.dev/app/settings?tab=billing), en la pestaña **Facturación**.
+* En la [página de precios](https://www.firecrawl.dev/pricing), al elegir un plan.
+
+<div id="how-the-limit-caps-your-monthly-spend">
+  ### Cómo el límite restringe tu gasto mensual
 </div>
 
-<Note>
-  A partir del **1 de junio de 2026**, Smart Upgrade sustituye a Auto-Recharge. En lugar de pagar excedentes, esos pagos ahora se destinan a tus cambios de nivel, para ofrecerte una experiencia fluida y sin interrupciones.
-</Note>
+Tu límite es el importe máximo que el pago por uso puede gastar en un mes. Se redondea hacia abajo a incrementos de 5 USD completos.
 
-Cuando tu saldo llega a cero, Smart Upgrade te sube automáticamente un nivel en la escala de créditos, incluidos los niveles intermedios dentro de cada plan, para que las solicitudes sigan fluyendo sin interrupciones. Solo se te factura la diferencia de precio prorrateada entre tu nivel actual y el siguiente, y recibes de inmediato la diferencia de créditos correspondiente. Puedes deshabilitar Smart Upgrade en la [configuración de facturación](https://www.firecrawl.dev/app/settings?tab=billing) en cualquier momento. Una vez que alcances el nivel Escala (1,000,000 créditos/mes), no hay niveles superiores a los que Smart Upgrade pueda pasar; [contacta con ventas](https://www.firecrawl.dev/enterprise) para consultar un plan Enterprise personalizado.
+Por ejemplo, un límite de 25 USD permite cinco incrementos al mes. Un límite de 22 USD permite cuatro incrementos, ya que 22 USD se redondean hacia abajo a 20 USD.
 
-<div id="pro-ration-examples">
-  ### Ejemplos de prorrateo
-</div>
-
-Supongamos que estás en **Hobby 6.5k** ($28/mes o $290/año) y Smart Upgrade te pasa a **Hobby 8k** ($37/mes o $390/año). Recibes **1,500 créditos adicionales** de inmediato (la diferencia hasta 8k), y el cargo por la actualización depende de tu periodicidad de facturación:
-
-* **Plan mensual:** Hoy se te factura la diferencia mensual de $37 − $28 = **$9**. Tu fecha de renovación no cambia.
-* **Plan anual, con 5 meses restantes de tu ciclo de 12 meses:** Hoy se te factura `(5 ÷ 12) × 100 ≈ $41.67`, donde la diferencia de precio anual es $390 − $290 = $100. Los 4 meses restantes en Hobby 8k quedan cubiertos por este cargo, y tu fecha de renovación no cambia.
-
-Cuando agotas el nivel 8k, el siguiente paso es **Hobby 8k → Standard 100k**, y se te factura la diferencia entre esos dos niveles ($62/mes o $600/año, prorrateado de la misma manera), con **92,000 créditos adicionales** añadidos a tu saldo.
+Los créditos que compras manualmente no cuentan para este límite.
 
 <div id="upgrading-and-downgrading">
   ## Actualizar o bajar de plan
 </div>
 
-* **Las actualizaciones de plan** surten efecto de inmediato. Hoy se te cobra el precio completo del nuevo plan (sin prorrateo) y tu ciclo de facturación se restablece: tu próxima renovación será un mes o un año después de la fecha de actualización. Los créditos no usados de tu plan anterior se transfieren, y tu nueva asignación de créditos y tus límites de concurrencia se aplican al instante.
+* **Las actualizaciones de plan** surten efecto de inmediato. Hoy se te cobra el precio completo del nuevo plan (sin prorrateo) y tu ciclo de facturación se restablece. Tu próxima renovación será un mes o un año después de la fecha de actualización. Los créditos no usados de tu plan anterior se transfieren, y tu nueva asignación de créditos y tus límites de concurrencia se aplican al instante.
 * **Los cambios a un plan inferior** se programan para entrar en vigor en tu próxima fecha de renovación. Mantienes los créditos y límites de tu plan actual hasta entonces. El tiempo no usado de tu plan actual no se acredita ni se reembolsa. Puedes deshacer un cambio programado a un plan inferior desde tu [configuración de facturación](https://www.firecrawl.dev/app/settings?tab=billing) en cualquier momento antes de la fecha de entrada en vigor.
 
 <div id="switching-between-monthly-and-yearly-billing">
@@ -151,18 +201,18 @@ Cuando agotas el nivel 8k, el siguiente paso es **Hobby 8k → Standard 100k**, 
 * **Anual → Mensual** se considera una mejora inmediata solo si cambias a un nivel de créditos estrictamente superior.
 
 <div id="running-out-of-credits">
-  ## Quedarse sin créditos
+  ## Sin créditos
 </div>
 
-Si agotas tu asignación de créditos y no tienes Smart Upgrade habilitado, las solicitudes a la API que consumen créditos devolverán un error **HTTP 402 (Pago requerido)**.
+Si se te acaban los créditos y el pago por uso está desactivado, las solicitudes que consumen créditos devuelven un error **HTTP 402 (Pago requerido)**.
 
-Con **Smart Upgrade** habilitado, tu suscripción pasa automáticamente al siguiente nivel de créditos y recibes de inmediato la asignación de créditos del nuevo nivel, por lo que las solicitudes siguen procesándose sin interrupciones. Smart Upgrade deja de aplicarse cuando alcanzas el nivel Escala.
+Si el pago por uso está activado, añadimos un nuevo incremento de créditos de 5 USD cuando tu saldo llega a cero. Tus solicitudes continúan.
 
-Para reanudar el uso después de un bloqueo total, puedes:
+Para reanudar el uso tras una interrupción total, puedes:
 
-1. Habilitar [Smart Upgrade](#smart-upgrade) para subir de nivel automáticamente
-2. Actualizar manualmente a un plan superior
-3. Esperar a que tus créditos se restablezcan en el siguiente ciclo de facturación
+1. Establecer un **Límite mensual de pago por uso** para comprar créditos automáticamente. Consulta [Pago por uso](#pay-as-you-go).
+2. Cambiar manualmente a un plan superior
+3. Esperar a que tus créditos se restablezcan en el próximo ciclo de facturación
 
 <div id="coupons">
   ## Cupones
@@ -179,19 +229,23 @@ Firecrawl admite dos tipos de cupones:
 
 <AccordionGroup>
   <Accordion title="¿Los créditos no utilizados se trasladan al mes siguiente?">
-    Los **créditos del plan** no se acumulan de forma predeterminada — tu asignación mensual se restablece cada mes. **Los planes anuales escala acumulan los créditos del plan no utilizados durante 1 mes**, y **los planes Enterprise anuales los acumulan durante 2 meses**.
+    Los **créditos del plan** no se acumulan de forma predeterminada: tu asignación mensual se restablece cada mes. **Los planes anuales escala acumulan los créditos del plan no utilizados durante 1 mes**, y **los planes Enterprise anuales los acumulan durante 2 meses**.
   </Accordion>
 
-  <Accordion title="¿Cómo se calcula el cargo de Smart Upgrade?">
-    Smart Upgrade cobra la diferencia prorrateada entre tu nivel actual y el siguiente nivel. En los planes **mensuales**, esto es simplemente la diferencia de precio mensual. En los planes **anuales**, es `(meses restantes en tu ciclo de facturación ÷ 12) × diferencia de precio anual`, usando meses calendario completos desde el inicio de tu período actual. También recibes la diferencia de créditos entre los dos niveles, por lo que solo pagas por lo que obtienes.
+  <Accordion title="¿Los créditos de pago por uso caducan?">
+    Los créditos que compras permanecen en tu cuenta hasta que los uses. Caducan si cancelas tu suscripción, así que úsalos antes de irte. La caducidad ocurre al final de tu período de facturación actual, y una renovación no los afecta.
+  </Accordion>
+
+  <Accordion title="¿Cómo funciona el límite mensual de pago por uso?">
+    Tu límite restringe lo que el pago por uso gasta cada mes. Se redondea hacia abajo a incrementos completos de 5 USD. Un límite de 25 USD permite cinco incrementos cada mes. Deja el límite en blanco y el pago por uso no tendrá límite mensual. Establece el límite en `0` y el pago por uso se desactivará.
   </Accordion>
 
   <Accordion title="¿Cómo sé cuántos créditos me quedan?">
-    Consulta el panel de control en [firecrawl.dev/app](https://www.firecrawl.dev/app), o invoca de forma programática el [endpoint de la API de uso de créditos](/es/api-reference/endpoint/credit-usage).
+    Consulta el Dashboard en [firecrawl.dev/app](https://www.firecrawl.dev/app), o invoca de forma programática el [endpoint de la API de Credit Usage](/es/api-reference/endpoint/credit-usage).
   </Accordion>
 
   <Accordion title="¿Dónde aplico un código de cupón?">
-    Depende del tipo de cupón. Los **cupones de créditos** se aplican en la sección facturación de tu panel. Los **cupones de suscripción** (descuentos en el precio de tu plan) solo se pueden aplicar en la página de pago de Stripe al suscribirte o cambiar de plan.
+    Depende del tipo de cupón. Aplica un **cupón de créditos** en la sección facturación de tu panel. Solo puedes aplicar un **cupón de suscripción** (un descuento en el precio de tu plan) en la página de pago de Stripe al suscribirte o cambiar de plan.
   </Accordion>
 
   <Accordion title="Necesito más concurrencia o un plan personalizado. ¿Con quién me contacto?">
@@ -200,6 +254,14 @@ Firecrawl admite dos tipos de cupones:
 
   <Accordion title="¿En qué moneda se emiten las facturas?">
     Todas las facturas de Firecrawl se emiten en **dólares estadounidenses (USD)**, independientemente de tu dirección de facturación o método de pago.
+  </Accordion>
+
+  <Accordion title="¿Cómo gestiono mi suscripción, cambio de plan o cancelo?">
+    Ve a tu [configuración de facturación](https://www.firecrawl.dev/app/settings?tab=billing). Los administradores del equipo pueden gestionar todo allí. Haz clic en **Manage Subscription** para abrir el portal de facturación y actualizar tu método de pago, dirección de facturación, nombre de la empresa o número de IVA.
+
+    Para cambiar de plan, haz clic en **Change Plan** y elige un nuevo nivel. Las actualizaciones entran en vigor de inmediato. Las reducciones de plan entran en vigor al final de tu período de facturación actual y puedes deshacer una hasta entonces. Consulta [Actualizar o bajar de plan](#upgrading-and-downgrading).
+
+    Para cancelar, haz clic en **Cancel Subscription**. Tu plan permanece activo hasta el final de tu período de facturación actual y puedes reanudarlo antes de entonces. Cuando tu plan termina, los créditos que compraste caducan con él, así que úsalos antes de irte.
   </Accordion>
 
   <Accordion title="¿Cómo agrego un número de IVA, el nombre de la empresa o la dirección de facturación a mis facturas?">

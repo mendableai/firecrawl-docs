@@ -3,62 +3,62 @@ title: "Recherche web et scraping MCP dans Claude Code"
 description: "Ajoutez le scraping et la recherche web à Claude Code en 2 minutes"
 ---
 
-Ajoutez des fonctionnalités de scraping et de recherche web à Claude Code avec Firecrawl MCP.
+Connectez Claude Code à Firecrawl via le serveur MCP hébergé. OAuth est la configuration interactive recommandée, car la clé n&#39;apparaît jamais dans la ligne de commande, les fichiers du projet ou la conversation.
 
 <div id="quick-setup">
   ## Configuration rapide
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. Obtenez votre clé d’API
+<div id="1-add-firecrawl">
+  ### 1. Ajouter Firecrawl
 </div>
 
-Inscrivez-vous sur [firecrawl.dev/app](https://firecrawl.dev/app) et copiez votre clé d’API.
-
-<div id="2-add-firecrawl-mcp-server">
-  ### 2. Ajouter le serveur MCP Firecrawl
-</div>
-
-**Option A : URL hébergée sur un serveur distant (recommandée)**
+Exécutez :
 
 ```bash
 claude mcp add --transport http firecrawl https://mcp.firecrawl.dev/v2/mcp-oauth
 ```
 
-Après avoir ajouté le serveur, utilisez `/mcp` dans Claude Code pour terminer la connexion à Firecrawl.
+`https://mcp.firecrawl.dev/v2/mcp-oauth` est une valeur de configuration côté client, et non une page à ouvrir directement dans un Browser.
 
-**Option B : En local (npx)**
-
-```bash
-claude mcp add firecrawl -e FIRECRAWL_API_KEY=your-api-key -- npx -y firecrawl-mcp@3.23.0
-```
-
-Remplacez `your-api-key` par votre clé d’API Firecrawl.
-
-C’est tout ! Vous pouvez maintenant effectuer des recherches et extraire des données du web depuis Claude Code.
-
-<div id="quick-demo">
-  ## Démonstration rapide
+<div id="2-sign-in-and-verify">
+  ### 2. Connectez-vous et vérifiez
 </div>
 
-Essayez ceci dans Claude Code :
+Saisissez `/mcp` dans Claude Code, choisissez `firecrawl`, puis connectez-vous dans le Browser. Démarrez une nouvelle session Claude Code si vous avez modifié une connexion Firecrawl existante.
 
-**Rechercher sur le Web :**
+Vérifiez qu’un seul serveur `firecrawl` est actif, puis essayez :
 
-```
-Search for the latest Next.js 15 features
-```
-
-**Extraire le contenu d’une page :**
-
-```
-Scrape firecrawl.dev and tell me what it does
+```text
+Recherche les dernières notes de release de Next.js et résume les sources.
 ```
 
-**Obtenir la documentation :**
-
-```
-Find and scrape the Stripe API docs for payment intents
+```text
+Scrape https://firecrawl.dev et explique ce que fait ce site.
 ```
 
-Claude utilisera automatiquement les outils de recherche et de scraping de Firecrawl pour obtenir les informations.
+<div id="other-connection-modes">
+  ## Autres modes de connexion
+</div>
+
+* [Essayez MCP sans clé](/fr/mcp-server/keyless#try-keyless) pour effectuer des recherches, scraper et parser, sans compte ni clé.
+* [Configurez une clé API](/fr/mcp-server/keyless#add-an-api-key) pour une utilisation sans intervention. Gardez le secret en dehors du chat de l’agent et utilisez une référence à une variable d’environnement.
+* [Exécutez MCP localement](/fr/mcp-server/local) uniquement si vous avez besoin d’un processus local ou d’une API Firecrawl auto-hébergée. Le package local nécessite Node.js 22 ou une version ultérieure.
+
+<div id="optional-literature-research">
+  ## Facultatif : recherche documentaire
+</div>
+
+Pour les travaux portant sur des articles scientifiques et la littérature, la skill research-index redirige ces requêtes vers les outils `firecrawl_research_*` et le [Research Index](/fr/features/research), plutôt que vers la recherche web générale :
+
+```bash
+npx skills add firecrawl/skills@firecrawl-research-index
+```
+
+<div id="troubleshooting">
+  ## Résolution des problèmes
+</div>
+
+* **Un serveur Firecrawl existe déjà :** exécutez `claude mcp remove firecrawl`, ajoutez la connexion souhaitée une seule fois, puis démarrez une nouvelle session.
+* **Le Browser ne s&#39;ouvre pas :** saisissez `/mcp`, sélectionnez `firecrawl` et lancez l&#39;authentification depuis le client.
+* **Le serveur renvoie `401` :** reconnectez-vous via `/mcp` ; ne collez pas de clé API dans la conversation ni dans l&#39;URL OAuth.

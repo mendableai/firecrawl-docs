@@ -1,0 +1,20 @@
+```bash cURL
+# Busca todos os artifacts markdown, html ou json gerados pela execução.
+curl -s "https://api.firecrawl.dev/v2/agent/JOB_ID/trace" \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+| jq -r '.events[]
+         | select(.type == "artifact.updated")
+         | select(.artifact.kind == "markdown" or .artifact.kind == "html" or .artifact.kind == "json")
+         | "\(.artifact.kind) \(.artifact.snapshotId)"' \
+| while read -r kind snapshot_id; do
+    body=$(curl -s "https://api.firecrawl.dev/v2/agent/JOB_ID/snapshots/$snapshot_id" \
+      -H "Authorization: Bearer $FIRECRAWL_API_KEY")
+
+    # snapshots markdown e html são o próprio conteúdo; json vem codificado em JSON.
+    if [ "$kind" = "json" ]; then
+      printf '%s' "$body" | jq -r '.snapshot | fromjson'
+    else
+      printf '%s' "$body" | jq -r '.snapshot'
+    fi
+  done
+```

@@ -1,7 +1,15 @@
 ---
-title: "Introduction"
-description: "Référence de l’API Firecrawl"
+title: 'Introduction'
+description: 'Firecrawl API Reference'
+canonical: "https://docs.firecrawl.dev/api-reference/introduction"
 ---
+
+<Warning>
+  **Cette page documente l&#39;API v0, dépréciée le 1er avril 2025.** Elle est conservée à
+  titre de référence historique et ne décrit pas le fonctionnement actuel de Firecrawl. Documentation
+  actuelle : [API Reference](/fr/api-reference/introduction). Pour migrer une intégration v0 existante, consultez
+  [Migration depuis la v0](/fr/migrating-from-v0).
+</Warning>
 
 <div id="base-url">
   ## URL de base
@@ -14,10 +22,10 @@ https://api.firecrawl.dev
 ```
 
 <div id="authentication">
-  ## Authentification
+  ## Authentication
 </div>
 
-Pour l’authentification, vous devez inclure un en-tête HTTP `Authorization`. Cet en-tête doit contenir `Bearer fc_123456789`, où `fc_123456789` correspond à votre clé API.
+Pour l&#39;authentification, il est nécessaire d&#39;inclure un header Authorization. Ce header doit contenir `Bearer fc_123456789`, où `fc_123456789` correspond à votre clé API.
 
 ```bash
 Authorization: Bearer fc_123456789
@@ -29,21 +37,21 @@ Authorization: Bearer fc_123456789
   ## Codes de réponse
 </div>
 
-Firecrawl utilise des codes d'état HTTP conventionnels pour indiquer le résultat de vos requêtes.
+Firecrawl utilise les codes d&#39;état HTTP standard pour indiquer le résultat de vos requêtes.
 
-En général, les codes d'état HTTP 2xx indiquent une réussite, les codes 4xx représentent des erreurs liées à l'utilisateur, et les codes 5xx signalent des problèmes d'infrastructure.
+En règle générale, les codes d&#39;état HTTP 2xx signalent un succès, les codes 4xx des erreurs liées à l&#39;utilisateur et les codes 5xx des problèmes d&#39;infrastructure.
 
-Status | Description
---- | ---
-200 | La requête a réussi.
-400 | Vérifiez la validité des paramètres.
-401 | La clé d'API n'a pas été fournie.
-402 | Paiement requis.
-404 | La ressource demandée est introuvable.
-429 | La limite de débit a été dépassée.
-5xx | Indique une erreur de serveur avec Firecrawl.
+| État | Description                                |
+| ---- | ------------------------------------------ |
+| 200  | La requête a abouti.                       |
+| 400  | Vérifiez l&#39;exactitude des paramètres.  |
+| 401  | La clé API n&#39;a pas été fournie.        |
+| 402  | Paiement requis                            |
+| 404  | La ressource demandée est introuvable.     |
+| 429  | La limite de débit a été dépassée.         |
+| 5xx  | Indique une erreur serveur côté Firecrawl. |
 
-Consultez la section Codes d’erreur pour une explication détaillée de toutes les erreurs API possibles.
+Consultez la section Codes d&#39;erreur pour une explication détaillée de toutes les erreurs d&#39;API possibles.
 
 ​
 

@@ -49,18 +49,26 @@ import InteractFeedbackCTA from "/snippets/fr/interact-feedback-cta.mdx";
 
 Scrapez une page pour obtenir des données propres, puis appelez `/interact` pour commencer à effectuer des actions sur cette page : cliquer sur des boutons, remplir des formulaires, extraire du contenu dynamique ou naviguer plus en profondeur. Décrivez simplement ce que vous voulez faire, ou écrivez du code si vous avez besoin d’un contrôle total.
 
+Utilisez Interact lorsque vous avez besoin de :
+
+* **Scrape derrière un formulaire de connexion** — connectez-vous une fois, puis lisez les pages qui n&#39;apparaissent qu&#39;après authentification. See [Profils persistants avec Scrape + Interact](#persistent-profiles-with-scrape-+-interact).
+* **Parcourir la pagination par clics** — passez à la page suivante et récupérez chaque ensemble de résultats en réutilisant une seule session. See [Interagir par prompt](#interact-via-prompting) et [Cycle de vie d’une session](#session-lifecycle).
+* **Remplir et soumettre un formulaire** — saisissez du texte dans les champs et soumettez, depuis un prompt ou depuis du code Playwright. See [Interagir par prompt](#interact-via-prompting) et [Exécution de code](#running-code).
+* **Réutiliser une session authentifiée** — enregistrez l&#39;état du browser dans un profil nommé et chargez-le lors de scrapes ultérieurs. See [Profils persistants avec Scrape + Interact](#persistent-profiles-with-scrape-+-interact).
+* **Démarrer une session sans scraping préalable** — ouvrez un browser autonome que vous pilotez directement. See [Browser Sandbox](/fr/features/browser).
+
 <InteractFeedbackCTA src="docs-interact" />
 
 <div id="choose-the-right-interaction-model">
   ## Choisissez le bon modèle d’interaction
 </div>
 
-| Besoin                                                              | Utiliser                                    | Documentation canonique                                                                                                                                                                                                                                                                                                                              |
-| ------------------------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Démarrer une session de navigateur autonome sans scraping préalable | Browser Sandbox / session Interact autonome | [Browser Sandbox](/fr/features/browser), [Créer une session de navigateur](/fr/api-reference/endpoint/browser-create), [Exécuter du code du navigateur](/fr/api-reference/endpoint/browser-execute), [Lister les sessions de navigateur](/fr/api-reference/endpoint/browser-list), [Supprimer une session de navigateur](/fr/api-reference/endpoint/browser-delete) |
-| Continuer à partir d’un résultat de scraping avec `scrapeId`        | Interact après le scraping                  | [Exécuter Interact](/fr/api-reference/endpoint/scrape-execute), [Arrêter Interact](/fr/api-reference/endpoint/scrape-browser-delete)                                                                                                                                                                                                                       |
+| Besoin                                                              | Utiliser                                    | Documentation canonique                                                                                                                                                                                                                                                                                                                              | Méthodes SDK (Node)                                                  |
+| ------------------------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Démarrer une session de navigateur autonome sans scraping préalable | Browser Sandbox / session Interact autonome | [Browser Sandbox](/fr/features/browser), [Créer une session de navigateur](/fr/api-reference/endpoint/browser-create), [Exécuter du code du navigateur](/fr/api-reference/endpoint/browser-execute), [Lister les sessions de navigateur](/fr/api-reference/endpoint/browser-list), [Supprimer une session de navigateur](/fr/api-reference/endpoint/browser-delete) | `browser()`, `browserExecute()`, `listBrowsers()`, `deleteBrowser()` |
+| Continuer à partir d’un résultat de scraping avec `scrapeId`        | Interact après le scraping                  | [Exécuter Interact](/fr/api-reference/endpoint/scrape-execute), [Arrêter Interact](/fr/api-reference/endpoint/scrape-browser-delete)                                                                                                                                                                                                                       | `interact()`, `stopInteraction()`                                    |
 
-Utilisez Interact lié au scraping lorsque le workflow commence par `POST /v2/scrape` et que la réponse inclut `data.metadata.scrapeId`. Utilisez Browser Sandbox lorsque vous avez besoin d’une session autonome avec son propre cycle de vie.
+Utilisez Interact lié au scraping lorsque le workflow commence par `POST /v2/scrape` et que la réponse inclut `data.metadata.scrapeId`. Utilisez Browser Sandbox lorsque vous avez besoin d’une session autonome avec son propre cycle de vie. Le Python SDK utilise les équivalents en snake&#95;case (`browser()`, `browser_execute()`, `list_browsers()`, `delete_browser()`, `interact()`, `stop_interaction()`).
 
 <CardGroup cols={3}>
   <Card title="Prompts IA" icon="wand-magic-sparkles">
@@ -72,7 +80,7 @@ Utilisez Interact lié au scraping lorsque le workflow commence par `POST /v2/sc
   </Card>
 
   <Card title="Vue en direct" icon="eye">
-    Observez ou interagissez avec le browser en temps réel via un flux intégrable
+    Observez ou interagissez avec le Browser en temps réel via un flux intégrable
   </Card>
 </CardGroup>
 
@@ -309,10 +317,10 @@ Arrêtez explicitement la session une fois terminé :
   <StopCLI />
 </CodeGroup>
 
-Les sessions expirent également automatiquement en fonction du TTL (default : 10 minutes) ou du timeout d&#39;inactivité (default : 5 minutes).
+Les sessions expirent également automatiquement en fonction du TTL (par défaut : 10 minutes) ou du timeout d&#39;inactivité (par défaut : 5 minutes).
 
 <Warning>
-  Arrêtez toujours les sessions une fois terminé afin d&#39;éviter une facturation inutile. Les credits sont calculés au prorata à la seconde.
+  Arrêtez toujours les sessions une fois terminé afin d&#39;éviter une facturation inutile. Les credits sont calculés au prorata à la seconde. La facturation minimale est d&#39;une minute de browser. Les sessions qui utilisent un `prompt` sont facturées à 7 credits par minute de browser ; les sessions sans prompt sont facturées à 2. Consultez la [Facturation](/fr/billing#credit-costs-per-endpoint) pour plus de détails.
 </Warning>
 
 <div id="persistent-profiles-with-scrape-interact">

@@ -34,17 +34,19 @@ Firecrawl は MCP サーバーを提供しており、Google の ADK とシー�
 
 <CodeGroup>
   ```python Remote MCP Server
+  import os
+
   from google.adk.agents.llm_agent import Agent
   from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
   from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
 
-  FIRECRAWL_API_KEY = "YOUR-API-KEY"
+  FIRECRAWL_API_KEY = os.environ["FIRECRAWL_API_KEY"]
 
   root_agent = Agent(
       model="gemini-2.5-pro",
       name="firecrawl_agent",
-      description='Firecrawl でウェブサイトをスクレイピングするのに役立つアシスタント',
-      instruction='ユーザーのウェブサイトコンテンツの検索を支援する',
+      description='Firecrawl で Web サイトをスクレイピングするのに役立つアシスタント',
+      instruction='ユーザーの Web サイトコンテンツの検索を支援する',
       tools=[
           MCPToolset(
               connection_params=StreamableHTTPServerParams(
@@ -57,6 +59,8 @@ Firecrawl は MCP サーバーを提供しており、Google の ADK とシー�
   ```
 
   ```python Local MCP Server
+  import os
+
   from google.adk.agents.llm_agent import Agent
   from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
   from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
@@ -65,8 +69,8 @@ Firecrawl は MCP サーバーを提供しており、Google の ADK とシー�
   root_agent = Agent(
       model='gemini-2.5-pro',
       name='firecrawl_agent',
-      description='Firecrawl でウェブサイトをスクレイピングするのに役立つアシスタント',
-      instruction='ユーザーのウェブサイトコンテンツの検索を支援する',
+      description='Firecrawl で Web サイトをスクレイピングするのに役立つアシスタント',
+      instruction='ユーザーの Web サイトコンテンツの検索を支援する',
       tools=[
           MCPToolset(
               connection_params=StdioConnectionParams(
@@ -74,10 +78,10 @@ Firecrawl は MCP サーバーを提供しており、Google の ADK とシー�
                       command='npx',
                       args=[
                           "-y",
-                          "firecrawl-mcp",
+                          "firecrawl-mcp@3.23.7",
                       ],
                       env={
-                          "FIRECRAWL_API_KEY": "YOUR-API-KEY",
+                          "FIRECRAWL_API_KEY": os.environ["FIRECRAWL_API_KEY"],
                       }
                   ),
                   timeout=30,
@@ -88,18 +92,19 @@ Firecrawl は MCP サーバーを提供しており、Google の ADK とシー�
   ```
 </CodeGroup>
 
+ADK を起動する環境で `FIRECRAWL_API_KEY` を設定します。その値をエージェントのプロンプト、ソース管理、MCP URL に含めないでください。ローカル MCP パッケージには Node.js 22 以降が必要です。
+
 <div id="available-tools">
   ## 利用可能なツール
 </div>
 
 | ツール           | 名称                             | 説明                                         |
 | ------------- | ------------------------------ | ------------------------------------------ |
-| スクレイプツール      | `firecrawl_scrape`             | 高度なオプションで単一のURLからコンテンツをスクレイピングします          |
-| マップツール        | `firecrawl_map`                | サイト内のインデックス済みURLを網羅的に把握するためにサイト構造をマッピングします |
-| 検索ツール        | `firecrawl_search`             | ウェブを検索し、必要に応じて検索結果からコンテンツを抽出します            |
-| クローラーツール      | `firecrawl_crawl`              | 高度なオプションで非同期クローリングを開始します                   |
-| クローラーステータスの確認 | `firecrawl_check_crawl_status` | クローリングジョブのステータスを確認します                      |
-| 抽出ツール         | `firecrawl_extract`            | LLMを用いてウェブページから構造化された情報を抽出します              |
+| スクレイピングツール      | `firecrawl_scrape`             | 高度なオプションで単一のURLからコンテンツをスクレイピングします          |
+| マップツール        | `firecrawl_map`                | Web サイト内のインデックス済みURLを網羅的に把握するためにサイト構造をマッピングします |
+| 検索ツール         | `firecrawl_search`             | ウェブを検索し、必要に応じて検索結果からコンテンツを抽出します            |
+| クロールツール      | `firecrawl_crawl`              | 高度なオプションで非同期クロールを開始します                   |
+| クロールステータスの確認 | `firecrawl_check_crawl_status` | クロールジョブのステータスを確認します                      |
 
 <div id="configuration">
   ## 構成

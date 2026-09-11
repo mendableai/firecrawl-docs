@@ -1,83 +1,103 @@
 ---
-title: 'Langchain'
-description: 'Firecrawl se integra con Langchain como cargador de documentos.'
-og:title: "Langchain | Firecrawl"
-og:description: "Firecrawl se integra con Langchain como cargador de documentos."
+title: 'LangChain'
+description: 'Usa Firecrawl en LangChain como cargador de documentos o herramienta de agente.'
+og:title: "LangChain | Firecrawl"
+og:description: "Usa Firecrawl en LangChain como cargador de documentos o herramienta de agente."
 ---
 
-> Nota: esta integración aún utiliza la [versión v0 de la API de Firecrawl](/es/v0/introduction). Puedes instalar la versión 0.0.20 del SDK de Python o la 0.0.36 del SDK de Node.
+<Note>
+  **Paquete oficial:** [`langchain-firecrawl`](https://pypi.org/project/langchain-firecrawl/) · [código fuente](https://github.com/firecrawl/langchain-firecrawl)
 
-<div id="installation">
+  Realiza scraping, crawling, mapeo, extracción y búsquedas desde LangChain, como cargador de documentos o herramienta de agente.
+</Note>
+
+<div id="install">
   ## Instalación
 </div>
 
 ```bash
-pip install firecrawl-py==0.0.20
+pip install langchain-firecrawl
 ```
 
-<div id="usage">
-  ## Uso
-</div>
-
-Necesitas tu propia clave de API. Consulta https://firecrawl.dev
-
-```python
-from langchain_community.document_loaders import FireCrawlLoader
-
-loader = FireCrawlLoader(
-    api_key="TU_CLAVE_API", url="https://firecrawl.dev", mode="crawl"
-)
-
-docs = loader.load()
-```
-
-<div id="modes">
-  ### Modos
-</div>
-
-Scrape: Extrae una única URL y devuelve el markdown.
-Crawl: Rastrea la URL y todas las subpáginas accesibles y devuelve el markdown de cada una.
-
-```python
-loader = FireCrawlLoader(
-    api_key="TU_API_KEY",
-    url="https://firecrawl.dev",
-    mode="scrape",
-)
-
-data = loader.load()
-```
-
-<div id="crawler-options">
-  ### Opciones del crawler
-</div>
-
-También puedes pasar parámetros al loader. Es un diccionario de opciones que se envían al crawler. Consulta la documentación de la API de Firecrawl para obtener más información.
-
-<div id="langchain-js">
-  ## Langchain JS
-</div>
-
-Para usarlo en Langchain JS, puedes instalarlo con npm:
+Obtén una clave de [firecrawl.dev](https://www.firecrawl.dev/app/api-keys) y configúrala en tu entorno (o pasa `api_key=...`):
 
 ```bash
-npm install @mendableai/firecrawl-js
+export FIRECRAWL_API_KEY="fc-your-api-key"
 ```
 
-Luego puedes usarlo así:
+<div id="document-loader">
+  ## Cargador de documentos
+</div>
+
+`FirecrawlLoader` devuelve objetos `Document` de LangChain. Selecciona un `mode`:
+
+| Modo      | Qué carga                  |
+| --------- | -------------------------- |
+| `scrape`  | Una página                 |
+| `crawl`   | Un sitio web completo      |
+| `map`     | URL detectadas             |
+| `extract` | Datos estructurados        |
+| `search`  | Resultados de búsqueda web |
+
+```python
+from langchain_firecrawl import FirecrawlLoader
+
+loader = FirecrawlLoader(url="https://www.firecrawl.dev", mode="scrape")
+docs = loader.load()
+
+print(docs[0].page_content[:200])
+print(docs[0].metadata)
+```
+
+<div id="agent-tools">
+  ## Herramientas de agente
+</div>
+
+Cada capacidad también es una `BaseTool` que puedes vincular a un agente:
+
+```python
+from langchain_firecrawl import (
+    FirecrawlScrape,
+    FirecrawlCrawl,
+    FirecrawlMap,
+    FirecrawlExtract,
+    FirecrawlSearch,
+)
+
+scrape = FirecrawlScrape()
+result = scrape.invoke({"url": "https://www.firecrawl.dev"})
+print(result["markdown"])
+
+search = FirecrawlSearch()
+print(search.invoke({"query": "best web scraping libraries", "limit": 5}))
+```
+
+<div id="langchain-js">
+  ## LangChain JS
+</div>
+
+El cargador de JavaScript está incluido en `@langchain/community` y requiere el SDK de Firecrawl para JS como dependencia entre pares:
+
+```bash
+npm install @langchain/community @mendable/firecrawl-js
+```
 
 ```typescript
-import { FireCrawlLoader } from "langchain/document_loaders/web/firecrawl";
+import { FireCrawlLoader } from "@langchain/community/document_loaders/web/firecrawl";
 
 const loader = new FireCrawlLoader({
-  url: "https://firecrawl.dev", // La URL que se va a extraer
-  apiKey: process.env.FIRECRAWL_API_KEY, // Opcional; por defecto usa `FIRECRAWL_API_KEY` en tu entorno.
-  mode: "scrape", // El modo en el que se ejecuta el rastreador. Puede ser "scrape" para URLs individuales o "crawl" para todas las subpáginas accesibles
-  params: {
-    // parámetros opcionales según la documentación de la API de Firecrawl
-    // Para la documentación de la API, visita https://docs.firecrawl.dev
-  },
+  url: "https://firecrawl.dev",
+  apiKey: process.env.FIRECRAWL_API_KEY, // por defecto usa FIRECRAWL_API_KEY
+  mode: "scrape", // "scrape" para una sola página, "crawl" para subpáginas
 });
 
 const docs = await loader.load();
 ```
+
+<div id="resources">
+  ## Recursos
+</div>
+
+* [`langchain-firecrawl` en PyPI](https://pypi.org/project/langchain-firecrawl/)
+* Documentación de [scraping de Firecrawl](/es/features/scrape) y [crawl](/es/features/crawl)
+* [SDK de Python de Firecrawl](/es/sdks/python) y [SDK de Node](/es/sdks/node)

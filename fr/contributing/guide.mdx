@@ -1,183 +1,185 @@
 ---
-title: "Exécuter en local"
-description: "Configurer Firecrawl sur votre machine locale pour le développement et la contribution."
-og:title: "Exécuter en local | Firecrawl"
-og:description: "Configurer Firecrawl sur votre machine locale pour le développement et la contribution."
-sidebarTitle: "Exécuter en local"
+title: "Configuration pour les contributeurs de Firecrawl"
+sidebarTitle: "Configuration contributeur"
+description: "Configurez l’environnement de développement de l’API Firecrawl, vérifiez un scrape local et exécutez le harnais de test fourni par le dépôt source avant de contribuer."
+og:title: "Configuration pour les contributeurs de Firecrawl | Firecrawl"
+og:description: "Configurez l’environnement de développement de l’API Firecrawl, vérifiez un scrape local et exécutez le harnais de test fourni par le dépôt source avant de contribuer."
 ---
 
-Ce guide vous explique comment exécuter le serveur d'API Firecrawl sur votre machine locale. Suivez ces étapes pour configurer l'environnement de développement, démarrer les services et envoyer votre première requête.
+Exécutez Firecrawl localement lorsque vous modifiez l’API, les workers ou les tests. Cette procédure installe les dépendances de développement et démarre les services fournis par le dépôt source à l’aide du harnais de l’API.
 
-Si vous contribuez au projet, le processus suit les conventions standard de l'open source : faites un fork du dépôt, apportez vos modifications, exécutez les tests, puis ouvrez une pull request. Pour toute question ou pour obtenir de l'aide pour démarrer, contactez help@firecrawl.com ou [soumettez une issue](https://github.com/mendableai/firecrawl/issues).
+<Warning>
+  Il s’agit d’un environnement de développement destiné aux contributeurs, et non d’un guide de déploiement. Si
+  vous souhaitez exécuter Firecrawl sur une infrastructure que vous contrôlez sans modifier le
+  produit, consultez [l’auto-hébergement de Firecrawl](/fr/contributing/self-host).
+</Warning>
 
-<div id="prerequisites">
-  ## Prérequis
+<div id="choose-local-development-or-self-hosting">
+  ## Choisissez le développement local ou l’auto-hébergement
 </div>
 
-Installez les éléments suivants avant de continuer :
+* **Développez localement** lorsque vous avez besoin de cycles rapides de développement, test et débogage sur la révision actuelle du code source.
+* **Auto-hébergez une version épinglée** si vous souhaitez disposer d’une référence Docker Compose stable sur votre propre infrastructure.
+* **Utilisez Firecrawl Cloud** si vous souhaitez la solution gérée la plus rapide, sans avoir à exploiter l’un ou l’autre environnement.
 
-| Dépendance | Obligatoire | Guide d'installation |
-|------------|-------------|----------------------|
-| Node.js | Oui | [nodejs.org](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs) |
-| pnpm (v9+) | Oui | [pnpm.io](https://pnpm.io/installation) |
-| Redis | Oui | [redis.io](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/) |
-| PostgreSQL | Oui | Via Docker (voir ci-dessous) ou installation directe |
-| Docker | Facultatif | Nécessaire pour configurer le conteneur PostgreSQL |
+Gardez ces environnements distincts. Le fichier `.env` de développement de l’API dans `apps/api/.env` et le fichier `.env` Compose à la racine sont utilisés par des processus différents et ne sont pas interchangeables.
 
-<div id="set-up-the-database">
-  ## Configurer la base de données
+<div id="start-the-firecrawl-development-environment">
+  ## Démarrer l&#39;environnement de développement Firecrawl
 </div>
 
-Vous devez disposer d’une base de données PostgreSQL initialisée avec le schéma situé à `apps/nuq-postgres/nuq.sql`. Le moyen le plus simple consiste à utiliser l’image Docker dans `apps/nuq-postgres`.
-
-Une fois Docker lancé, construisez et démarrez le conteneur :
-
-```bash
-docker build -t nuq-postgres apps/nuq-postgres
-```
-
-```bash
-docker run --name nuqdb \
-  -e POSTGRES_PASSWORD=postgres \
-  -p 5433:5432 \
-  -v nuq-data:/var/lib/postgresql/data \
-  -d nuq-postgres
-```
-
-
-<div id="configure-environment-variables">
-  ## Configurer les variables d&#39;environnement
+<div id="install-the-prerequisites">
+  ### Installez les prérequis
 </div>
 
-Copiez le modèle suivant pour créer votre fichier `.env` dans le répertoire `apps/api/` :
+Installez :
+
+* [Git](https://git-scm.com/downloads)
+* Node.js 22
+* pnpm `11.4.0`
+* [Redis](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/)
+* Docker ou Podman pour les conteneurs PostgreSQL et RabbitMQ gérés par le harnais de l’API
+* [Go](https://go.dev/dl/) 1.23 ou version ultérieure, recompilé par le harnais de l’API à chaque démarrage
+* [Rust](https://www.rust-lang.org/tools/install), compilé lors de `pnpm install` pour le package natif `@mendable/firecrawl-rs`
+
+Activez la version du gestionnaire de packages utilisée par l’API :
 
 ```bash
-cp apps/api/.env.example apps/api/.env
+corepack enable
+corepack prepare pnpm@11.4.0 --activate
 ```
 
-Pour une configuration locale minimale sans authentification ni services optionnels (analyse de PDF, blocage de JS, fonctionnalités d’IA), utilisez la configuration suivante :
+<div id="clone-firecrawl-and-install-dependencies">
+  ### Clonez Firecrawl et installez les dépendances
+</div>
 
-```bash apps/api/.env
-# ===== Requis =====
-NUM_WORKERS_PER_QUEUE=8
+```bash
+git clone https://github.com/firecrawl/firecrawl.git
+cd firecrawl/apps/api
+pnpm install
+```
+
+Créez `apps/api/.env` avec la configuration minimale pour un environnement de développement sans authentification :
+
+```bash
+cat > .env <<'EOF'
 PORT=3002
 HOST=0.0.0.0
 REDIS_URL=redis://localhost:6379
 REDIS_RATE_LIMIT_URL=redis://localhost:6379
-
-## Pour activer l'authentification DB, vous devez configurer supabase.
 USE_DB_AUTHENTICATION=false
-
-## Connexion PostgreSQL pour la file d'attente — à modifier si les identifiants, l'hôte ou la base de données diffèrent
-NUQ_DATABASE_URL=postgres://postgres:postgres@localhost:5433/postgres
-
-# ===== Optionnel =====
-# SUPABASE_ANON_TOKEN=
-# SUPABASE_URL=
-# SUPABASE_SERVICE_TOKEN=
-# TEST_API_KEY=               # À définir si vous avez configuré l'authentification et souhaitez tester avec une vraie clé API
-# OPENAI_API_KEY=             # Requis pour les fonctionnalités dépendant des LLM (génération d'attributs alt d'image, etc.)
-# BULL_AUTH_KEY=@
-# PLAYWRIGHT_MICROSERVICE_URL= # À définir pour utiliser un fallback Playwright
-# LLAMAPARSE_API_KEY=         # À définir pour analyser les PDF avec LlamaParse
-# SLACK_WEBHOOK_URL=          # À définir pour envoyer des messages d'état du serveur sur Slack
-# POSTHOG_API_KEY=            # À définir pour envoyer des événements PostHog comme les journaux de tâches
-# POSTHOG_HOST=               # À définir pour envoyer des événements PostHog comme les journaux de tâches
+PLAYWRIGHT_MICROSERVICE_URL=
+EOF
 ```
 
+Ne définissez pas `NUQ_DATABASE_URL` ni `NUQ_RABBITMQ_URL` si vous souhaitez que le harnais crée des conteneurs PostgreSQL et RabbitMQ locaux. Ne les définissez que si vous gérez vous-même ces dépendances.
 
-<div id="install-dependencies">
-  ## Installer les dépendances
+<div id="start-redis-and-firecrawl">
+  ### Démarrer Redis et Firecrawl
 </div>
 
-Depuis le répertoire `apps/api/`, installez les packages avec pnpm :
-
-```bash
-cd apps/api
-pnpm install
-```
-
-
-<div id="start-the-services">
-  ## Démarrer les services
-</div>
-
-Vous avez besoin de trois sessions de terminal ouvertes simultanément : Redis, le serveur d'API et un terminal pour envoyer des requêtes.
-
-<div id="terminal-1-setting-up-redis">
-  ### Terminal 1 — Redis
-</div>
-
-Démarrez le serveur Redis depuis n’importe où dans le projet :
+Démarrez Redis dans un terminal :
 
 ```bash
 redis-server
 ```
 
-
-<div id="terminal-2-api-server">
-  ### Terminal 2 — Serveur API
-</div>
-
-Placez-vous dans `apps/api/` puis démarrez le service :
+Démarrez ensuite Firecrawl depuis `apps/api` dans un autre terminal :
 
 ```bash
 pnpm start
 ```
 
-Cela démarre le serveur API et les workers responsables du traitement des jobs de crawl.
+La commande start crée l’API, lance les processus de l’API et du worker, et gère les conteneurs de file d’attente locaux. Gardez ce terminal ouvert pendant le développement.
 
-<Note>
-  Si vous prévoyez d&#39;utiliser la [fonctionnalité d&#39;extraction LLM](https://github.com/firecrawl/firecrawl/pull/586/), exportez d&#39;abord votre clé d&#39;API OpenAI : `export OPENAI_API_KEY=sk-...`
-</Note>
-
-
-<div id="terminal-3-send-a-test-request">
-  ### Terminal 3 — Envoyer une requête de test
+<div id="verify-one-local-scrape">
+  ### Vérifier un scrape local
 </div>
 
-Vérifiez que le serveur est en cours d’exécution avec un « health check » :
+Vérifiez que le processus de l’API répond :
 
 ```bash
-curl -X GET http://localhost:3002/test
+curl \
+  --fail \
+  --silent \
+  --show-error \
+  http://localhost:3002/v0/health/readiness
 ```
 
-Cela devrait renvoyer `Hello, world!`.
+Réponse attendue :
 
-Pour tester l’endpoint de crawl :
+```json
+{"status":"ok"}
+```
+
+Testez ensuite le parcours de scraping :
 
 ```bash
-curl -X POST http://localhost:3002/v1/crawl \
+curl \
+  --fail-with-body \
+  --silent \
+  --show-error \
+  --max-time 75 \
+  -X POST \
+  http://localhost:3002/v2/scrape \
   -H 'Content-Type: application/json' \
   -d '{
-    "url": "https://mendable.ai"
+    "url": "https://example.com",
+    "formats": ["markdown"],
+    "timeout": 60000
   }'
 ```
 
+Une réponse réussie contient `success: true`, du Markdown dans `data.markdown` et un code d’état HTTP dans `data.metadata.statusCode`.
 
-<div id="alternative-docker-compose">
-  ## Alternative : Docker Compose
+<div id="change-and-test-firecrawl">
+  ## Modifier et tester Firecrawl
 </div>
 
-Pour une mise en place plus simple, Docker Compose exécute tous les services (Redis, serveur d’API et workers) avec une seule commande.
+Gardez chaque modification ciblée, ajoutez un scénario de réussite et des tests pertinents pour les cas d’échec, puis exécutez la commande de test la plus ciblée, gérée par le dépôt source, qui valide le comportement.
 
-1. Assurez-vous que Docker et Docker Compose sont installés.
-2. Copiez `.env.example` vers `.env` dans le répertoire `apps/api/` et configurez-le selon vos besoins.
-3. Depuis la racine du projet, exécutez :
+Depuis `apps/api`, exécutez la suite de snippets de l’API avec ses dépendances :
 
 ```bash
-docker compose up
+pnpm harness pnpm test:snips
 ```
 
-Cela lance automatiquement tous les services avec la configuration adéquate.
+Le harnais démarre l’API, les workers, PostgreSQL et RabbitMQ pour exécuter la commande de test, puis arrête les processus qu’il a lancés. Utilisez un chemin Vitest plus ciblé lorsque l’exécution de toute la suite de snippets n’est pas nécessaire.
 
+Pour contribuer, consultez le fichier [`CONTRIBUTING.md`](https://github.com/firecrawl/firecrawl/blob/main/CONTRIBUTING.md) du dépôt avant d’ouvrir une pull request.
 
-<div id="running-tests">
-  ## Exécuter les tests
+<div id="troubleshoot-the-development-environment">
+  ## Résoudre les problèmes liés à l&#39;environnement de développement
 </div>
 
-Exécutez la suite de tests avec :
+<div id="redis-does-not-connect">
+  ### Redis ne se connecte pas
+</div>
 
-```bash
-npm run test:snips
-```
+Vérifiez que Redis écoute sur `localhost:6379` et que les deux URL Redis dans `apps/api/.env` utilisent cette adresse.
+
+<div id="the-harness-cannot-start-postgresql-or-rabbitmq">
+  ### Le harnais ne peut pas démarrer PostgreSQL ou RabbitMQ
+</div>
+
+Démarrez Docker ou Podman, puis relancez `pnpm start`. Si vous gérez vous-même ces services, définissez explicitement leurs URL de connexion au lieu de vous appuyer sur des conteneurs gérés par le harnais.
+
+<div id="port-3002-is-already-in-use">
+  ### Le port 3002 est déjà utilisé
+</div>
+
+Arrêtez l’autre processus ou modifiez `PORT` dans `apps/api/.env`, puis utilisez ce même port pour vos requêtes de vérification.
+
+<div id="basic-fetch-works-but-browser-rendering-does-not">
+  ### La récupération de base fonctionne, mais pas le rendu dans le navigateur
+</div>
+
+Une valeur `PLAYWRIGHT_MICROSERVICE_URL` vide laisse le service Playwright distinct désactivé. Démarrez et configurez ce service uniquement si la modification que vous testez l’exige.
+
+<div id="where-to-go-next">
+  ## Prochaines étapes
+</div>
+
+* **Vous souhaitez déployer plutôt que développer ?** Consultez [l’auto-hébergement de Firecrawl](/fr/contributing/self-host).
+* **Vous hésitez encore ?** Comparez [l’open source et Firecrawl Cloud](/fr/contributing/open-source-or-cloud).
+* **Prêt à contribuer ?** Consultez le [guide de contribution](https://github.com/firecrawl/firecrawl/blob/main/CONTRIBUTING.md) du dépôt source.

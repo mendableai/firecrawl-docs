@@ -3,54 +3,37 @@ title: "MCP Web Search & Scrape in Windsurf"
 description: "Add web scraping and search to Windsurf in 2 minutes"
 ---
 
-Add web scraping and search capabilities to Windsurf with Firecrawl MCP.
+Add Firecrawl's keyless Search, Scrape, and Parse tools to Windsurf through the hosted MCP server.
 
-## Quick Setup
+## Quick setup
 
-### 1. Get Your API Key
-Sign up at [firecrawl.dev/app](https://firecrawl.dev/app) and copy your API key.
-
-### 2. Add to Windsurf
-
-Add this to your `./codeium/windsurf/model_config.json`:
+Open **Settings → Tools → Windsurf Settings → Add Server** or edit `~/.codeium/windsurf/mcp_config.json`:
 
 ```json
 {
   "mcpServers": {
     "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "YOUR_API_KEY"
-      }
+      "url": "https://mcp.firecrawl.dev/v2/mcp"
     }
   }
 }
 ```
 
-Replace `YOUR_API_KEY` with your actual Firecrawl API key.
+Restart Windsurf and confirm that `firecrawl_search`, `firecrawl_scrape`, and `firecrawl_parse` are available.
 
-### 3. Restart Windsurf
+Keyless access has limits shared by users on the same public IP. Sign in from an interactive client with [For Humans](/mcp-server/oauth), or [add an API key](/mcp-server/keyless#add-an-api-key) for unattended use.
 
-Done! Windsurf can now search and scrape the web.
+## Try it
 
-## Quick Demo
-
-Try these in Windsurf:
-
-**Search:**
-```
-Search for the latest Tailwind CSS features
+```text
+Search for the latest Tailwind CSS release notes and summarize the sources.
 ```
 
-**Scrape:**
-```
-Scrape firecrawl.dev and explain what it does
-```
-
-**Get docs:**
-```
-Find and scrape the Supabase authentication documentation
+```text
+Scrape https://firecrawl.dev and explain what it does.
 ```
 
-Windsurf's AI agents will automatically use Firecrawl tools.
+## Troubleshooting
+
+- **Server does not connect:** confirm the hosted URL and inspect Windsurf's MCP status.
+- **Crawl or another tool is missing:** keyless exposes exactly Search, Scrape, and Parse. Connect with OAuth or an API key for the broader tool surface.

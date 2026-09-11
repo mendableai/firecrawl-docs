@@ -1,63 +1,47 @@
 ---
 title: "Utiliser Firecrawl MCP dans Claude"
-description: "Connectez Claude à Firecrawl avec OAuth"
+description: "Ajoutez Firecrawl à Claude.ai avec le connecteur natif"
 ---
 
-Ajoutez des fonctionnalités Firecrawl à Claude avec un connecteur de compte distant.
+Ajoutez Firecrawl à Claude.ai avec le connecteur Firecrawl natif. Vous n’avez pas besoin d’ajouter un connecteur personnalisé ni de coller l’URL d’un serveur.
 
 <Note>
   Vous cherchez comment configurer Claude Code ? Consultez plutôt le [guide
   Claude Code](/fr/quickstarts/claude-code).
 </Note>
 
-<div id="quick-setup">
-  ## Configuration rapide
+<div id="add-to-claude">
+  ## Ajouter à Claude
 </div>
 
-<div id="1-add-a-custom-connector">
-  ### 1. Ajouter un connecteur personnalisé
+<Card title="Ajouter à Claude" icon="/images/agent-clients/claude-ai.svg" href="https://claude.ai/directory/connectors/firecrawl" cta="Ouvrir dans Claude" arrow>
+  Ouvrez le connecteur Firecrawl dans Claude.ai et connectez-le.
+</Card>
+
+1. Ouvrez le [connecteur Firecrawl dans Claude.ai](https://claude.ai/directory/connectors/firecrawl).
+2. Connectez Firecrawl. Lorsque Claude ouvre Firecrawl dans votre navigateur, connectez-vous, sélectionnez une Équipe et autorisez l’accès.
+3. Dans une conversation, ouvrez le menu **+**, accédez à **Connectors** et activez Firecrawl.
+
+Avec les offres Équipe ou Enterprise, un propriétaire de l’organisation devra peut-être autoriser le connecteur avant que les membres puissent se connecter.
+
+Les requêtes effectuées via ce connecteur utilisent les crédits et l’offre de l’Équipe sélectionnée lors de la connexion. Vous pouvez consulter ou révoquer la connexion à tout moment dans les [paramètres MCP](https://www.firecrawl.dev/app/settings?tab=mcp).
+
+<div id="try">
+  ## Essayer
 </div>
 
-Accédez à [Settings &gt; Connectors](https://claude.ai/settings/connectors) dans Claude.ai, puis cliquez sur **Add custom connector**.
+Avec Firecrawl activé, essayez :
 
-Renseignez les informations du connecteur :
-
-* **URL :** `https://mcp.firecrawl.dev/v2/mcp-oauth`
-* **OAuth Client ID :** laissez vide
-* **OAuth Client Secret :** laissez vide
-
-Cliquez sur **Add** pour enregistrer le connecteur.
-
-Claude ouvre Firecrawl dans votre navigateur. Connectez-vous, choisissez l’équipe à utiliser et approuvez l’accès. Votre clé API brute n’est jamais incluse dans l’URL du connecteur. Consultez [Connecter un client MCP à votre compte](/fr/developer-guides/mcp-setup-guides/oauth) pour connaître le contrat du point de terminaison et les autres modes pris en charge.
-
-<div id="2-enable-in-conversation">
-  ### 2. Activer dans la conversation
-</div>
-
-Dans n’importe quelle conversation sur Claude.ai, cliquez sur le bouton **+** en bas à gauche, ouvrez **Connectors**, puis activez le connecteur Firecrawl.
-
-<div id="quick-demo">
-  ## Démo rapide
-</div>
-
-Avec le connecteur Firecrawl activé, essayez les prompts suivants :
-
-**Rechercher sur le web :**
-
-```
-Search for the latest Next.js 15 features
+```text
+Search the web for the latest Firecrawl release notes and summarize the sources.
 ```
 
-**Scraper une page :**
-
-```
+```text
 Scrape firecrawl.dev and tell me what it does
 ```
 
-**Obtenir la documentation :**
+<div id="more">
+  ## Pour aller plus loin
+</div>
 
-```
-Find and scrape the Stripe API docs for payment intents
-```
-
-Claude utilisera automatiquement les outils de recherche et de scraping de Firecrawl pour obtenir les informations.
+Consultez [For Humans](/fr/mcp-server/oauth) pour configurer la connexion dans d’autres clients, ou [For Agents](/fr/mcp-server/keyless) pour démarrer sans clé.

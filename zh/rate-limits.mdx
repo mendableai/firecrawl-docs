@@ -44,20 +44,20 @@ og:description: "不同定价方案与 API 请求的速率限制"
 
       <tr>
         <td style={{ padding: '8px 12px' }}>Standard (标准) </td>
+        <td style={{ padding: '8px 12px' }}>25</td>
+        <td style={{ padding: '8px 12px' }}>50,000</td>
+      </tr>
+
+      <tr>
+        <td style={{ padding: '8px 12px' }}>Growth (增长) </td>
         <td style={{ padding: '8px 12px' }}>50</td>
         <td style={{ padding: '8px 12px' }}>100,000</td>
       </tr>
 
       <tr>
-        <td style={{ padding: '8px 12px' }}>Growth (增长) </td>
-        <td style={{ padding: '8px 12px' }}>100</td>
-        <td style={{ padding: '8px 12px' }}>200,000</td>
-      </tr>
-
-      <tr>
-        <td style={{ padding: '8px 12px' }}>Scale / Enterprise</td>
-        <td style={{ padding: '8px 12px' }}>150+</td>
-        <td style={{ padding: '8px 12px' }}>300,000+</td>
+        <td style={{ padding: '8px 12px' }}>Scale (扩展)  / Enterprise</td>
+        <td style={{ padding: '8px 12px' }}>100+</td>
+        <td style={{ padding: '8px 12px' }}>200,000+</td>
       </tr>
     </tbody>
   </table>
@@ -79,7 +79,7 @@ og:description: "不同定价方案与 API 请求的速率限制"
 
 托管的 Firecrawl MCP 无密钥端点仅提供**搜索、抓取和解析**，无需 API 密钥。其他托管 MCP 工具需要连接账户或 API 密钥。
 
-对于 Firecrawl 官方客户端、CLI、SDKs 和 REST API，无密钥访问还包括**交互**。在启用了研究索引的 Firecrawl Cloud 上，研究端点也可以在无需 API 密钥的情况下使用。除此之外，其他端点 (如 crawl、extract、map、batch scrape 等) 在没有密钥的情况下均不可用。
+对于 Firecrawl 官方客户端、CLI、SDKs 和 REST API，无密钥访问还包括**交互**。在 Firecrawl Cloud 上，研究和开发者搜索端点也可以在无需 API 密钥的情况下使用。除此之外，其他端点 (如 crawl、extract、map、batch scrape 等) 在没有密钥的情况下均不可用。
 
 无密钥使用是免费的，但会按每个 IP 地址每天受到**两项限制**，超过任一限制都会返回 `429`：
 
@@ -88,7 +88,7 @@ og:description: "不同定价方案与 API 请求的速率限制"
 
 [注册一个免费的 API 密钥](https://firecrawl.dev)即可免费获得 1,000 额度和更高的速率限制——配置完成后，官方客户端会自动使用你的密钥。
 
-<div id="current-plans">
+<div id="current-plans-2">
   ### 当前方案
 </div>
 

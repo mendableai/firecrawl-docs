@@ -4,77 +4,40 @@ description: "Add Firecrawl web scraping and search to OpenCode"
 sidebarTitle: "OpenCode"
 ---
 
-Add Firecrawl's search, scrape, crawl, and browser tools to [OpenCode](https://opencode.ai) via MCP.
+Add Firecrawl's keyless Search, Scrape, and Parse tools to [OpenCode](https://opencode.ai) through the hosted MCP server.
 
-## Quick Setup
+## Quick setup
 
-### 1. Get Your API Key
-
-Sign up at [firecrawl.dev/app](https://www.firecrawl.dev/app) and copy your API key.
-
-### 2. Add Firecrawl to OpenCode
-
-OpenCode reads config from `~/.config/opencode/config.json` (global) or `./opencode.json` in your project. Add:
+Add this to `~/.config/opencode/opencode.json` or your project's `opencode.json`:
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
     "firecrawl": {
-      "type": "local",
-      "command": ["npx", "-y", "firecrawl-mcp"],
-      "environment": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
+      "type": "remote",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "enabled": true
     }
   }
 }
 ```
 
-Replace `fc-YOUR-API-KEY` with your Firecrawl API key.
+Restart OpenCode, enter `/mcp`, and confirm that `firecrawl_search`, `firecrawl_scrape`, and `firecrawl_parse` are available.
 
-### 3. Start OpenCode
+Keyless access has limits shared by users on the same public IP. Sign in from an interactive client with [For Humans](/mcp-server/oauth), or [add an API key](/mcp-server/keyless#add-an-api-key) for unattended use.
 
-```bash
-opencode
+## Try it
+
+```text
+Search the web for the latest Bun release notes and summarize the sources.
 ```
 
-OpenCode loads MCP servers on startup. Confirm Firecrawl is attached:
-
-```
-/mcp
-```
-
-## Quick Demo
-
-```
-Search the web for "Bun 2.0 changelog" and summarize the top results.
-```
-
-```
+```text
 Scrape https://docs.firecrawl.dev/introduction and list the code examples.
 ```
 
-```
-Crawl https://example.com/blog and save each post as markdown.
-```
-
-## Remote Hosted URL (no Node.js required)
-
-```json
-{
-  "mcp": {
-    "firecrawl": {
-      "type": "remote",
-      "url": "https://mcp.firecrawl.dev/v2/mcp"
-    }
-  }
-}
-```
-
-This configuration uses the keyless Firecrawl toolset. For an account-connected or unattended setup, follow the [hosted MCP connection modes](/developer-guides/mcp-setup-guides/oauth); keep API keys in an Authorization header or secure-secret store, never in a URL.
-
 ## Troubleshooting
 
-- **Server not attached** — run `opencode doctor` to inspect MCP load errors.
-- **Permission denied on `npx`** — install Node.js 18+ and ensure your shell picks up the install (`which npx`).
+- **Server does not attach:** run `opencode doctor` and confirm the remote URL.
+- **Crawl or another tool is missing:** keyless exposes exactly Search, Scrape, and Parse. Connect with OAuth or an API key for the broader tool surface.

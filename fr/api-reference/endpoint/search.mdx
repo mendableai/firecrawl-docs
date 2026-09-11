@@ -3,9 +3,9 @@ title: "Recherche"
 openapi: '/fr/api-reference/v2-openapi.json POST /search'
 ---
 
-L'endpoint de recherche combine la recherche web avec les capacités de scraping de Firecrawl pour renvoyer le contenu complet des pages pour n'importe quelle requête.
+L&#39;endpoint de recherche combine la recherche web avec les capacités de scraping de Firecrawl pour renvoyer le contenu complet des pages pour n&#39;importe quelle requête.
 
-Incluez `scrapeOptions` avec `formats: [{"type": "markdown"}]` pour obtenir le contenu markdown complet pour chaque résultat de recherche ; sinon, vous recevrez par défaut les résultats (URL, title, description). Vous pouvez également utiliser d'autres formats comme `{"type": "summary"}` pour un contenu condensé.
+Incluez `scrapeOptions` avec `formats: [{"type": "markdown"}]` pour obtenir le contenu markdown complet pour chaque résultat de recherche ; sinon, vous recevrez par défaut les résultats (URL, title, description). Vous pouvez également utiliser d&#39;autres formats comme `{"type": "summary"}` pour un contenu condensé.
 
 <div id="supported-query-operators">
   ## Opérateurs de requête pris en charge
@@ -51,14 +51,20 @@ Exemples : `"US"`, `"DE"`, `"FR"`, `"JP"`, `"UK"`, `"CA"`.
 ```
 
 <div id="categories-parameter">
-  ## Paramètre `categories`
+  ## Paramètre categories
 </div>
 
-Filtrez les résultats de recherche par catégories spécifiques à l’aide du paramètre `categories` :
+Filtrez les résultats de recherche par catégories spécifiques à l&#39;aide du paramètre `categories` :
 
-- **`github`** : Rechercher dans les dépôts GitHub, le code, les tickets et la documentation
-- **`research`** : Rechercher sur des sites académiques et de recherche (arXiv, Nature, IEEE, PubMed, etc.)
-- **`pdf`** : Rechercher des fichiers PDF
+* **`research`** : restreint la recherche web aux sites universitaires et de recherche (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov et similaires). À partir du 2026-11-16, cette catégorie interrogera le [Research Index](/fr/features/research) et renverra des enregistrements de publications ; voir l&#39;avertissement ci-dessous
+* **`pdf`** : recherche des PDF
+* **`developer`** : interroge le [Developer Index](/fr/features/developer) — tickets, pull requests fusionnées et README de dépôts de code publics, ainsi que des sites de documentation sélectionnés
+
+<Warning>
+  **La catégorie `research` change le 2026-11-16.** Elle interrogera le [Research Index](/fr/features/research) (PubMed, bioRxiv, medRxiv, arXiv) au lieu de restreindre les résultats web à 14 sites universitaires. Les résultats passeront de `data.web` à `data.research` et seront renvoyés sous forme d&#39;enregistrements de publications : `paperId`, `primaryId`, `ids`, `title`, `abstract`, `score`. D&#39;ici là, chaque réponse qui l&#39;utilise comporte une entrée `warnings`.
+
+  Si vous souhaitez obtenir des enregistrements de publications, adaptez votre parsing avant cette date ou appelez dès aujourd&#39;hui [`GET /search/research/papers`](/fr/api-reference/endpoint/research-search-papers). Si vous souhaitez des pages web issues de sites universitaires, basculez sur [`includeDomains`](#domain-filters).
+</Warning>
 
 <div id="example-usage">
   ### Exemple d’utilisation
@@ -67,7 +73,7 @@ Filtrez les résultats de recherche par catégories spécifiques à l’aide du 
 ```json
 {
   "query": "apprentissage automatique",
-  "categories": ["github", "recherche"],
+  "categories": ["research", "pdf"],
   "limit": 10
 }
 ```
@@ -116,22 +122,21 @@ Chaque résultat inclut un champ `category` indiquant sa source :
   "data": {
     "web": [
       {
-        "url": "https://github.com/example/ml-project",
-        "title": "Machine Learning Project",
-        "description": "Implementation of ML algorithms",
-        "category": "github"
-      },
-      {
         "url": "https://arxiv.org/abs/2024.12345",
         "title": "ML Research Paper",
         "description": "Latest advances in machine learning",
         "category": "research"
+      },
+      {
+        "url": "https://example.com/ml-survey.pdf",
+        "title": "ML Survey",
+        "description": "A survey of machine learning methods",
+        "category": "pdf"
       }
     ]
   }
 }
 ```
-
 
 <div id="time-based-search">
   ## Recherche basée sur le temps

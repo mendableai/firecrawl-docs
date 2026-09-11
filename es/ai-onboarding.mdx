@@ -6,10 +6,10 @@ og:description: "Todo lo que necesitas para integrar tu agente de IA con Firecra
 sidebarTitle: "Desarrolla con IA"
 ---
 
-Si estás desarrollando con IA, Firecrawl ofrece varios recursos para mejorar tu experiencia. Firecrawl incluye **skills**: paquetes de conocimiento autocontenidos que los agentes de IA para programación descubren y usan automáticamente. Con un solo comando de instalación, los agentes obtienen tres segmentos completos de skills: skills de CLI para trabajar con la web en tiempo real, skills de Build para integrar Firecrawl en el código de la aplicación y skills de flujo de trabajo para generar entregables repetibles. Los usuarios de Firecrawl pueden obtener una clave de API de dos maneras. Consulta [Obtener credenciales](#get-credentials) más abajo.
+Si estás desarrollando con IA, Firecrawl ofrece varios recursos para mejorar tu experiencia. Firecrawl incluye **skills**: paquetes de conocimiento autocontenidos que los agentes de programación con IA descubren y usan automáticamente. Con un solo comando de instalación, los agentes obtienen skills de CLI para trabajar con la web en tiempo real y skills de flujo de trabajo para generar entregables repetibles. Las skills de Build para integrar Firecrawl en el código de la aplicación son un paso aparte (`firecrawl setup build`). Los usuarios de Firecrawl pueden obtener una clave de API de dos maneras. Consulta [Obtener credenciales](#get-credentials) más abajo.
 
 * [Obtener credenciales](#get-credentials)
-* [Skills + CLI](#skills-cli)
+* [CLI y skills de agente](#cli)
 * [Utilizar Firecrawl como herramienta](#using-firecrawl-as-a-tool)
 * [Depuración con agentes](#agentic-debugging)
 * [Firecrawl MCP Server](#firecrawl-mcp-server)
@@ -44,22 +44,25 @@ Los usuarios de Firecrawl pueden obtener una clave de API de dos formas. La mayo
 
 **¿No puedes iniciar sesión ni obtener una clave?** La CLI, los SDKs y la API REST permiten buscar, hacer scraping, interactuar y procesar sin clave. El MCP alojado expone una superficie sin clave más limitada para Search, Scrape y Parse; allí, interactuar requiere una conexión de cuenta o una clave de API. El acceso sin clave tiene limitación de tasa y está pensado como alternativa temporal, así que cambia a una cuenta Free o a una clave de API en cuanto haya una disponible. Consulta [Keyless (no API key)](/es/rate-limits#keyless-no-api-key) para más detalles.
 
-Una vez que tengas una clave de API, continúa con [Skills + CLI](#skills-cli) a continuación.
+Una vez que tengas una clave de API, continúa con [CLI y skills de agente](#cli) a continuación.
 
-<div id="skills-cli">
-  ## Skills + CLI
+<span id="cli" />
+
+<div id="cli-and-agent-skills">
+  ## CLI y skills de agente
 </div>
 
-La [CLI de Firecrawl](/es/sdks/cli) permite que tu agente busque, haga scraping, interactúe, rastree, mapee, extraiga y ejecute trabajos de agente desde la terminal. Está diseñada para personas, agentes de IA y pipelines de CI/CD.
+La [CLI de Firecrawl](/es/sdks/cli) permite que tu agente busque, haga scraping, interactúe, rastree, mapee, extraiga y ejecute trabajos del agente desde la terminal. Está diseñada para personas, agentes de IA y pipelines de CI/CD.
 
-Las **skills** de Firecrawl son paquetes de conocimiento autocontenidos que agentes de programación con IA como Claude Code, Antigravity y OpenCode descubren y usan automáticamente. Un solo comando de instalación lo configura todo: las herramientas de la CLI para trabajar con la web en tiempo real, las skills de Build para integrar Firecrawl en el código de la aplicación y las skills de flujo de trabajo para generar entregables repetibles:
+Las **skills** de Firecrawl son paquetes de conocimiento autocontenidos que agentes de programación con IA como Codex, Claude Code, Cursor y OpenCode descubren y usan automáticamente. Un solo comando de instalación configura las herramientas de la CLI para trabajar con la web en tiempo real y las skills de flujo de trabajo para generar entregables repetibles. Las skills de Build para integrar Firecrawl en el código de la aplicación se instalan con `firecrawl setup build`:
 
 ```bash
 npx -y firecrawl-cli@latest init --all --browser
 ```
 
-* `--all` instala cada segmento de skills de Firecrawl (CLI, Build, flujos de trabajo) en todos los agentes de código con IA detectados en el equipo
+* `--all` omite la selección de agentes e inicializa todos los agentes detectados
 * `--browser` abre automáticamente el navegador para autenticarte en Firecrawl
+* También están disponibles `--skip-auth`, `--skip-install`, `--skip-skills` y `--agent <name>`. Consulta `firecrawl init --help`.
 
 Después de la instalación, verifica que todo funcione correctamente:
 
@@ -71,7 +74,8 @@ firecrawl scrape "https://firecrawl.dev"
 Para reinstalarlo o limitarlo a un agente específico más adelante:
 
 ```bash
-firecrawl setup skills      # CLI + skills de Build
+firecrawl setup skills      # CLI / skills principales
+firecrawl setup build       # skills de Build
 firecrawl setup workflows   # skills de flujo de trabajo
 ```
 
@@ -79,36 +83,44 @@ firecrawl setup workflows   # skills de flujo de trabajo
   ### Lo que incluye la instalación
 </div>
 
-La instalación configura tres categorías de skills que cubren todas las formas en que un agente usa Firecrawl. Cada segmento vive en su propio repositorio para que pueda evolucionar de forma independiente:
+Las skills de Firecrawl abarcan tres categorías. `init` instala las skills de CLI y de flujo de trabajo. Ejecuta `firecrawl setup build` para las skills de Build. Cada segmento vive en su propio repositorio para que pueda evolucionar de forma independiente:
 
-* [`firecrawl/cli`](https://github.com/firecrawl/cli) — Skills de CLI para trabajar en la web en vivo
+* [`firecrawl/cli`](https://github.com/firecrawl/cli) — Skills de CLI para trabajo web en tiempo real
 * [`firecrawl/skills`](https://github.com/firecrawl/skills) — skills de Build para la integración en aplicaciones
 * [`firecrawl/firecrawl-workflows`](https://github.com/firecrawl/firecrawl-workflows) — skills de flujo de trabajo para entregables repetibles
 
-**Skills de CLI** — para trabajar en la web en vivo durante una sesión del agente:
+**Skills de CLI** — para trabajo web en tiempo real durante una sesión de agente:
 
-| Skill                | Propósito                                                     |
-| -------------------- | ------------------------------------------------------------- |
-| `firecrawl/cli`      | Flujo general de comandos de la CLI                           |
-| `firecrawl-search`   | Buscar en la web y descubrir páginas                          |
-| `firecrawl-scrape`   | Extraer contenido limpio de una URL conocida                  |
-| `firecrawl-interact` | Interactuar con páginas extraídas usando prompts o código     |
-| `firecrawl-crawl`    | Extraer contenido a gran escala de un sitio completo          |
-| `firecrawl-map`      | Descubrir todas las URL de un dominio                         |
-| `firecrawl-agent`    | Ejecutar la recopilación autónoma de datos web con un trabajo |
+| Skill                       | Propósito                                                     |
+| --------------------------- | ------------------------------------------------------------- |
+| `firecrawl`                 | Flujo general de comandos de la CLI                           |
+| `firecrawl-search`          | Buscar en la web y descubrir páginas                          |
+| `firecrawl-scrape`          | Extraer contenido limpio de una URL conocida                  |
+| `firecrawl-interact`        | Interactuar con páginas extraídas usando prompts o código     |
+| `firecrawl-crawl`           | Extraer contenido a gran escala de un sitio completo          |
+| `firecrawl-map`             | Descubrir todas las URL de un dominio                         |
+| `firecrawl-agent`           | Ejecutar la recopilación autónoma de datos web con un trabajo |
+| `firecrawl-monitor`         | Detectar cambios en sitios y recibir notificaciones           |
+| `firecrawl-parse`           | Procesar documentos locales y convertirlos en markdown        |
+| `firecrawl-download`        | Descargar un sitio como archivos locales                      |
+| `firecrawl-research-index`  | Buscar artículos, leer pasajes y seguir citas                 |
+| `firecrawl-developer-index` | Buscar issues, pull requests, README y documentación          |
+
+La instalación anterior incluye ambas skills de índice. Para añadir solo la de búsqueda de artículos a una configuración existente —algo recomendable cuando el trabajo trata sobre literatura biomédica o científica—, ejecuta:
+
+```bash
+npx skills add firecrawl/skills@firecrawl-research-index
+```
 
 **Skills de Build** — para integrar Firecrawl en el código de la aplicación:
 
-| Skill                        | Propósito                                                                |
-| ---------------------------- | ------------------------------------------------------------------------ |
-| `firecrawl-build`            | Seleccionar el endpoint de Firecrawl adecuado para tu producto           |
-| `firecrawl-build-onboarding` | Autenticación y configuración del proyecto                               |
-| `firecrawl-build-scrape`     | Implementar scraping en el código de la aplicación                       |
-| `firecrawl-build-search`     | Implementar búsqueda en el código de la aplicación                       |
-| `firecrawl-build-interact`   | Implementar interacción con la página en el código de la aplicación      |
-| `firecrawl-build-crawl`      | Implementar rastreo en el código de la aplicación                        |
-| `firecrawl-build-map`        | Implementar descubrimiento de URL en el código de la aplicación          |
-| `firecrawl-build-parse`      | Implementar el procesamiento de documentos en el código de la aplicación |
+| Skill                        | Propósito                                                           |
+| ---------------------------- | ------------------------------------------------------------------- |
+| `firecrawl-build`            | Seleccionar el endpoint de Firecrawl adecuado para tu producto      |
+| `firecrawl-build-onboarding` | Autenticación y configuración del proyecto                          |
+| `firecrawl-build-scrape`     | Implementar scraping en el código de la aplicación                  |
+| `firecrawl-build-search`     | Implementar búsqueda en el código de la aplicación                  |
+| `firecrawl-build-interact`   | Implementar interacción con la página en el código de la aplicación |
 
 **Skills de flujo de trabajo** — skills centradas en resultados que producen un entregable concreto a partir de los datos web de Firecrawl:
 
@@ -135,11 +147,11 @@ La instalación configura tres categorías de skills que cubren todas las formas
   ### Elige tu camino
 </div>
 
-Las tres categorías de skill usan la misma instalación. La diferencia está en lo que sucede después:
+Las skills de CLI y de flujo de trabajo vienen con la instalación anterior. Las skills de Build son un paso aparte: `firecrawl setup build`. La diferencia está en lo que sucede después:
 
 <Steps>
   <Step title="Herramientas web en tiempo real (skills de CLI)">
-    Usa esto cuando necesites datos web durante tu sesión actual: buscar en la web, hacer scraping de URLs conocidas, interactuar con páginas extraídas, rastrear documentación, hacer el mapeo de un sitio o ejecutar un trabajo de agente.
+    Usa esto cuando necesites datos web durante tu sesión actual: buscar en la web, hacer scraping de URLs conocidas, interactuar con páginas extraídas, rastrear documentación, hacer el mapeo de un sitio o ejecutar un trabajo del agente.
 
     El flujo predeterminado:
 
@@ -162,7 +174,7 @@ Las tres categorías de skill usan la misma instalación. La diferencia está en
   </Step>
 
   <Step title="Integración en aplicaciones (skills de Build)">
-    Usa esto cuando estés creando una aplicación, un agente o un flujo de trabajo que llame a la API de Firecrawl desde código. Las skills de Build ayudan a seleccionar el endpoint correcto, conectar el SDK y ejecutar una prueba rápida.
+    Usa esto cuando estés creando una aplicación, un agente o un flujo de trabajo que llame a la API de Firecrawl desde código. Instala las skills de Build con `firecrawl setup build`. Ayudan a seleccionar el endpoint correcto, conectar el SDK y ejecutar una prueba rápida.
 
     El agente responde una pregunta clave: *¿qué debe hacer Firecrawl dentro del producto?*; y las skills de Build enrutan a `/search`, `/scrape`, `/interact`, `/parse`, `/crawl`, `/map` o `/agent` según corresponda.
   </Step>
@@ -247,7 +259,9 @@ Firecrawl ofrece a los agentes cinco herramientas principales para trabajar con 
       -d '{"query": "latest OpenAI API pricing"}'
     ```
 
-    **Cuándo usarlo:** Tareas de investigación, búsqueda de documentación, análisis competitivo, responder preguntas que requieren información web actualizada.
+    **Cuándo usarlo:** Investigación web general, búsqueda de documentación, análisis competitivo, responder preguntas que requieren información web actualizada.
+
+    **Cuándo no usarlo:** Literatura científica. Para encontrar artículos, leer pasajes dentro de uno o seguir citas, usa en su lugar el [Research Index](/es/features/research): las herramientas MCP `firecrawl_research_*`, `firecrawl research search-papers` en la CLI o la skill `firecrawl-research-index`. Search devuelve fragmentos de páginas web; Research Index devuelve registros de artículos con resúmenes completos.
   </Accordion>
 
   <Accordion title="Scrape — extrae contenido de una URL" icon="file-lines">
@@ -385,34 +399,10 @@ La respuesta incluye un `answer`, una puntuación de `confidence`, `fixParameter
   ## Firecrawl MCP Server
 </div>
 
-MCP es un protocolo abierto que estandariza cómo las aplicaciones proporcionan contexto a los LLM. Entre otras ventajas, ofrece a los LLM herramientas para actuar en tu nombre. Nuestro [MCP Server](https://github.com/firecrawl/firecrawl-mcp-server) es de código abierto y cubre toda nuestra API: search, scrape, interact, crawl, map, extract y agent.
+MCP es un protocolo abierto que permite a las aplicaciones compatibles dar a los modelos acceso a herramientas. El [Firecrawl MCP server](https://github.com/firecrawl/firecrawl-mcp-server) de código abierto admite búsqueda, scraping, navegación, rastreo, mapeo, extracción estructurada mediante Scrape JSON y trabajos autónomos de Agent.
 
-Usa la URL alojada remotamente (funciona sin una clave de API en el plan Free sin clave):
-
-```
-https://mcp.firecrawl.dev/v2/mcp
-```
-
-Con una clave de API, envíala en la cabecera `Authorization: Bearer fc-YOUR-API-KEY` para desbloquear todas las herramientas y obtener límites más altos.
-
-O agrega el servidor local a cualquier cliente MCP:
-
-```json
-{
-  "mcpServers": {
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "fc-YOUR-API-KEY"
-      }
-    }
-  }
-}
-```
-
-<Card title="MCP Server" icon="plug" href="/es/mcp-server">
-  Ver las instrucciones de instalación para Cursor, Claude Desktop, Windsurf, VS Code y más.
+<Card title="Selecciona una conexión MCP" icon="plug" href="/es/mcp-server">
+  Prueba el acceso sin clave, inicia sesión a través de un cliente interactivo o configura una clave de API para agentes, CI y servicios de backend.
 </Card>
 
 <div id="firecrawl-docs-for-agents">
@@ -445,7 +435,7 @@ Puedes dar a tu agente la documentación más reciente de Firecrawl de forma con
   </Step>
 
   <Step title="Servidor de documentación MCP">
-    Para un enfoque estructurado con herramientas MCP, conecta el MCP Server de Firecrawl en cualquier cliente MCP (Cursor, Claude Code, Claude Desktop, Windsurf). Consulta la página de [MCP Server](/es/mcp-server) para ver los comandos de instalación.
+    Para un enfoque estructurado con herramientas MCP, conecta el Firecrawl MCP Server en Codex, Cursor, Claude Code, Claude Desktop u otro cliente compatible. Empieza con el [selector de configuración de MCP](/es/mcp-server). Los usuarios de Windsurf deben seguir el [inicio rápido de Windsurf](/es/quickstarts/windsurf).
   </Step>
 
   <Step title="Copiar a ChatGPT / Claude">
@@ -461,7 +451,7 @@ Guías de inicio rápido listas para usar para los stacks sobre los que los agen
 
 ¿Prefieres dejar que Cursor tome el control? Instala con un clic el MCP Server de Firecrawl y empieza a escribir prompts en Cursor:
 
-<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=firecrawl&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImZpcmVjcmF3bC1tY3AiXSwiZW52Ijp7IkZJUkVDUkFXTF9BUElfS0VZIjoiWU9VUi1BUEktS0VZIn19">
+<a href="cursor://anysphere.cursor-deeplink/mcp/install?name=firecrawl&config=eyJ1cmwiOiJodHRwczovL21jcC5maXJlY3Jhd2wuZGV2L3YyL21jcCJ9">
   <img src="https://cursor.com/deeplink/mcp-install-dark.png" alt="Abrir en Cursor — Agregar MCP Server de Firecrawl" style={{ maxHeight: 32 }} />
 </a>
 

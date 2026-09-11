@@ -1,0 +1,16 @@
+```python Python
+from firecrawl import Firecrawl
+
+app = Firecrawl(api_key="fc-YOUR_API_KEY")
+
+# Lista tus ejecuciones de agente más recientes
+page = app.list_agents()
+
+for run in page.agents:
+    print(run.id, run.status, run.target_hint)
+
+# Obtén la siguiente página utilizando el cursor de `next`
+if page.next:
+    before = int(page.next.split("before=")[-1])
+    older = app.list_agents(before=before)
+```

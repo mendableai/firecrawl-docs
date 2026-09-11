@@ -1,0 +1,94 @@
+---
+title: "搜索 Developer Index"
+openapi: "/zh/api-reference/v2-openapi.json GET /search/developer"
+---
+
+搜索公开代码仓库中的 issue、已合并的拉取请求和 README，以及精选文档站点。结果按相关性排序，并以 Markdown 格式提供匹配段落。
+
+如需将数组筛选条件作为 JSON 传递，可在同一路径使用 `POST`。
+
+可重复指定的筛选条件在 `GET` 中支持以下任一形式：重复的查询参数，例如 `types=issue&types=pull_request`，或以逗号分隔的单个值，例如 `types=issue,pull_request`。
+
+<div id="how-repos-and-sources-scope-a-search">
+  ## `repos` 和 `sources` 如何限定搜索范围
+</div>
+
+索引分为两部分，这两个筛选条件分别限定各自部分的搜索范围：
+
+* `repos` 限定仓库部分，即 `issue`、`pull_request` 和 `readme` 类型
+* `sources` 限定文档部分，即 `doc` 类型
+* 同时传入两者会合并这两部分，而非取交集，因此会返回任一部分中的匹配结果
+
+由于每个筛选条件仅适用于其中一部分，无法匹配任何请求类型的筛选条件会被拒绝，而不会静默地返回空结果：
+
+* 当 `types` 中不包含仓库类型时，`repos` 会返回 `400`，提示 `repos` 无法匹配任何请求类型，且应添加仓库类型或移除 `repos`
+* 当 `types` 中不包含 `doc` 时，`sources` 会返回 `400`，并提示 `sources cannot match any requested type; add doc or drop sources`
+
+<div id="how-the-repository-filters-scope-a-search">
+  ## 仓库筛选条件如何限定搜索范围
+</div>
+
+七个仓库筛选条件——`language` (如 `Rust`) 、`topic` (如 `async`) 、`license` (如 `MIT`) 、`min_stars`、`max_stars`、`archived` 和 `fork`——用于描述代码仓库。索引中的大多数文档页面来自已爬取的网站，并不对应任何仓库，因此无法通过仓库属性将这类页面纳入或排除。
+
+因此，请求中使用任一此类筛选条件但未通过 `sources` 限定范围时，不会返回 `doc` 结果。响应中只包含仓库证据：`issue`、`pull_request` 和 `readme` 类型，因为索引的文档部分根本不会执行。这是预期设计，并非索引故障。
+
+如需保留文档结果，请移除仓库筛选条件。你也可以通过 `sources` 限定文档部分的范围，然后读取响应中回显的 `sources`，确认该 id 已编入索引。
+
+<CodeGroup>
+  ```bash cURL
+  # 无需 API 密钥即可开始使用；如需更高的限流额度，请添加 -H "Authorization: Bearer $FIRECRAWL_API_KEY"：
+  curl -s "https://api.firecrawl.dev/v2/search/developer?query=how%20do%20I%20configure%20retries&k=10&language=Rust&license=MIT"
+  ```
+
+  ```bash cURL (POST)
+  curl -X POST https://api.firecrawl.dev/v2/search/developer \
+    -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "query": "how do I configure retries",
+      "k": 10,
+      "types": ["issue", "pull_request"],
+      "language": "Rust",
+      "license": "MIT"
+    }'
+  ```
+</CodeGroup>
+
+<div id="which-values-sources-accepts">
+  ## `sources` 可接受的值
+</div>
+
+`sources` 不是固定的枚举类型。它接受文档来源 ID；每个 ID 都是长度不超过 512 个字符的非空字符串，且每个请求最多可传入 20 个。这些 ID 对应索引中的文档站点，集合会随时间不断扩展。
+
+要确认某个 ID 是否有效，请传入该 ID，然后查看响应中新增的 `sources` 数组。该数组仅在你传入 `sources` 时出现，并会按请求中的原样返回每个 ID 及其是否已编入索引：
+
+```json
+{
+  "success": true,
+  "results": [],
+  "sources": [
+    { "source": "some-docs-site", "indexed": true },
+    { "source": "unknown-docs-site", "indexed": false }
+  ]
+}
+```
+
+`indexed: true` 表示该 source 存在已发布的 generation，因此可能会出现来自该 source 的文档证据。`indexed: false` 表示该 id 中没有任何内容可以匹配，这可区分不在索引中的 id 与仅仅未找到结果的 query。
+
+`repos` 也会以相同方式返回，作为一个 `repos` Array，其中包含 `indexed`，并在 `types` 下提供按 Type 划分的明细：
+
+```json
+{
+  "success": true,
+  "results": [],
+  "repos": [
+    {
+      "repo": "firecrawl/firecrawl",
+      "indexed": true,
+      "types": { "issue": true, "pullRequest": true, "readme": true }
+    }
+  ]
+}
+```
+
+如需了解工作流概览，请参见 [Developer Index 指南](/zh/features/developer)。

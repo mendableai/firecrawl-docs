@@ -9,19 +9,21 @@ import ProxyPython from "/snippets/pt-BR/v2/scrape/proxy/python.mdx";
 import ProxyNode from "/snippets/pt-BR/v2/scrape/proxy/js.mdx";
 import ProxyCURL from "/snippets/pt-BR/v2/scrape/proxy/curl.mdx";
 
+<Warning>
+  O parâmetro `proxy` está descontinuado. Recomendamos `auto` — o padrão — que permite que a Firecrawl selecione o proxy para você.
+</Warning>
+
 A Firecrawl oferece diferentes tipos de proxy para ajudar você a fazer scraping de sites com diferentes níveis de complexidade. Defina o parâmetro `proxy` para controlar qual estratégia de proxy será usada em uma requisição.
 
 <div id="proxy-types">
   ## Tipos de proxy
 </div>
 
-O Firecrawl oferece suporte a três tipos de proxy:
-
-| Tipo       | Descrição                                                                  | Velocidade | Custo                                                                          |
-| ---------- | -------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------ |
-| `basic`    | Proxies padrão adequados para a maioria dos sites                          | Rápido     | 1 crédito                                                                      |
-| `enhanced` | Proxies aprimorados para sites complexos                                   | Mais lento | 5 créditos por requisição                                                      |
-| `auto`     | Tenta `basic` primeiro e, em caso de falha, tenta novamente com `enhanced` | Varia      | 1 crédito se `basic` for bem-sucedido, 5 créditos se `enhanced` for necessário |
+| Tipo       | Descrição                                                                                   |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| `basic`    | Proxies padrão adequados para a maioria dos sites                                           |
+| `enhanced` | Proxies aprimorados para sites complexos                                                    |
+| `auto`     | **Recomendado.** Tenta `basic` primeiro e, em caso de falha, tenta novamente com `enhanced` |
 
 Se você não especificar um proxy, o Firecrawl usa `auto` por padrão.
 
@@ -29,7 +31,7 @@ Se você não especificar um proxy, o Firecrawl usa `auto` por padrão.
   ## Uso básico
 </div>
 
-Defina o parâmetro `proxy` para escolher uma estratégia de proxy. O exemplo a seguir usa `auto`, que permite ao Firecrawl decidir quando migrar para proxies aprimorados.
+Defina o parâmetro `proxy` para escolher uma estratégia de proxy. O exemplo a seguir usa `auto`, que permite ao Firecrawl decidir quando escalar para proxies aprimorados.
 
 <CodeGroup>
   <ProxyPython />
@@ -39,8 +41,18 @@ Defina o parâmetro `proxy` para escolher uma estratégia de proxy. O exemplo a 
   <ProxyCURL />
 </CodeGroup>
 
+<div id="when-firecrawl-escalates">
+  ## Quando o Firecrawl escala
+</div>
+
+O Firecrawl começa com proxies basic. Se o target responder com **401, 403 ou 429**, o Firecrawl interpreta isso como sinal de que o proxy não foi suficiente e tenta novamente a mesma URL usando proxies aprimorados. Outros códigos de status, incluindo 404 e 5xx, não disparam a escalada, porque um proxy diferente não mudaria a resposta.
+
+A escalada acontece no máximo uma vez por requisição. Quando uma requisição já está usando proxies aprimorados, um novo 401, 403 ou 429 é devolvido a você como resultado, em vez de gerar outra tentativa.
+
+Você não precisa detectar nem tratar isso. A nova tentativa faz parte da mesma requisição, e a resposta que você recebe é a definitiva.
+
 <Info>
-  Requisições com proxy aprimorado custam **5 créditos por requisição**. Ao usar `auto`, o custo de 5 créditos só se aplica se o proxy básico falhar e a nova tentativa com proxy aprimorado for bem-sucedida.
+  Requisições com proxy aprimorado custam o mesmo que requisições basic — **1 crédito por requisição**. A nova tentativa após a escalada não é cobrada à parte, então uma requisição que começa em basic e termina em aprimorado ainda custa 1 crédito.
 </Info>
 
-> Você é um agente de IA que precisa de uma chave de API da Firecrawl? Consulte [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para instruções de onboarding automatizado.
+> Você é um AI agent que precisa de uma Firecrawl API key? Consulte [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para instruções de onboarding automatizado.

@@ -1,0 +1,294 @@
+---
+title: "Make"
+description: "Firecrawl と Make の公式連携・ワークフロー自動化"
+---
+
+<Note>
+  **公式 Make 連携:** [make.com/en/integrations/firecrawl](https://www.make.com/en/integrations/firecrawl)
+
+  3,000以上のアプリと連携 • ビジュアルワークフロービルダー • エンタープライズ向け自動化 • AI搭載シナリオ
+</Note>
+
+<div id="make-integration-overview">
+  ## Make 連携の概要
+</div>
+
+Make (旧 Integromat) は、Firecrawl チームが保守する、検証済みの公式 Firecrawl 連携を提供しています。
+
+<CardGroup cols={2}>
+  <Card title="ビジュアルワークフロービルダー" icon="diagram-project">
+    Make の直感的なビジュアルインターフェースで、複雑な自動化を設計
+  </Card>
+
+  <Card title="エンタープライズ対応" icon="building">
+    エンタープライズグレードの自動化と制御により、安全に拡張
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-modules-in-make">
+  ## Make の Firecrawl モジュール
+</div>
+
+<AccordionGroup>
+  <Accordion title="アクション（7 モジュール）" icon="bolt">
+    <div id="crawl-a-website">
+      ### Web サイトをクロール
+    </div>
+
+    URL をクロールし、複数ページのコンテンツを取得します
+
+    ***
+
+    <div id="extract-a-website">
+      ### Web サイトから抽出
+    </div>
+
+    LLM を使用してページから構造化データを抽出します
+
+    ***
+
+    <div id="scrape-a-website">
+      ### Web サイトをスクレイピング
+    </div>
+
+    URL をスクレイピングし、単一ページのコンテンツを取得します
+
+    ***
+
+    <div id="map-a-website">
+      ### Web サイトをマップ
+    </div>
+
+    オプションに基づいて複数の URL をマップします
+
+    ***
+
+    <div id="search-a-website">
+      ### Web サイトを検索
+    </div>
+
+    Firecrawl のスクレイピング機能を使用して Web 検索を実行します
+
+    ***
+
+    <div id="get-crawl-status">
+      ### クロールのステータスを取得
+    </div>
+
+    指定したクロールイベント ID のステータスを取得します
+
+    ***
+
+    <div id="get-extract-status">
+      ### 抽出のステータスを取得
+    </div>
+
+    指定した抽出イベント ID のステータスを取得します
+  </Accordion>
+
+  <Accordion title="検索（1 モジュール）" icon="magnifying-glass">
+    <div id="search-a-website-2">
+      ### Web サイトを検索
+    </div>
+
+    任意の検索クエリに対してページ全体のコンテンツを取得します
+  </Accordion>
+
+  <Accordion title="詳細設定" icon="code">
+    <div id="make-an-api-call">
+      ### API 呼び出しを実行
+    </div>
+
+    カスタムユースケース向けに、認可済みの API 呼び出しを実行します
+  </Accordion>
+</AccordionGroup>
+
+<div id="popular-app-integrations">
+  ## 人気のアプリ連携
+</div>
+
+<Tabs>
+  <Tab title="データストレージ">
+    **Google Sheets** - スクレイピングデータをスプレッドシートで追跡・記録
+
+    **Airtable** - スクレイピングしたコンテンツをもとに構造化データベースを構築
+
+    **Google Drive** - スクレイピングしたファイルやレポートを保存
+
+    **Notion** - リサーチやWebデータを整理
+  </Tab>
+
+  <Tab title="コミュニケーション">
+    **Slack** - Webサイトの変更やアップデートに関するアラートを受信
+
+    **Telegram Bot** - モニタリングの通知を即時に受信
+
+    **Gmail** - レポートやダイジェストをメールで送信
+
+    **Microsoft 365 Email** - エンタープライズ向けメール自動化
+  </Tab>
+
+  <Tab title="CRM・営業">
+    **HubSpot CRM** - Webデータでリードを充実
+
+    **monday.com** - 競合情報を追跡
+
+    **ClickUp** - リサーチタスクを管理
+  </Tab>
+
+  <Tab title="AIツール">
+    **OpenAI (ChatGPT, DALL-E)** - スクレイピングしたコンテンツを分析・要約
+
+    **Google Gemini AI** - データを処理してインサイトを抽出
+
+    **Perplexity AI** - 高度なリサーチワークフロー
+
+    **Make AI Agents** - 適応型のAI搭載自動化を構築
+  </Tab>
+</Tabs>
+
+<div id="common-workflow-patterns">
+  ## よく使われるワークフローパターン
+</div>
+
+<CardGroup cols={2}>
+  <Card title="競合他社のモニタリング" icon="binoculars">
+    **スケジュール** → Firecrawl (スクレイピング) → Google Sheets (記録) → Slack (アラート) 
+
+    競合他社の Web サイトを追跡し、変更を即座に通知
+  </Card>
+
+  <Card title="リード情報の拡充" icon="users">
+    **Google Forms** → Firecrawl (企業サイトをスクレイピング) → HubSpot CRM (更新) 
+
+    企業データを使用してリード情報を自動的に拡充
+  </Card>
+
+  <Card title="コンテンツの集約" icon="newspaper">
+    **スケジュール** → Firecrawl (ブログをクロール) → OpenAI (要約) → Gmail (ダイジェストを送信) 
+
+    コンテンツのキュレーションと配信を自動化
+  </Card>
+
+  <Card title="価格のモニタリング" icon="chart-line">
+    **スケジュール (毎時)&#x20;**&#x20;→ Firecrawl (スクレイピング) → 絞り込み → Telegram (アラート) 
+
+    リアルタイムの価格追跡とアラート
+  </Card>
+</CardGroup>
+
+<div id="getting-started">
+  ## はじめに
+</div>
+
+<Steps>
+  <Step title="Firecrawlに登録">
+    [firecrawl.dev](https://firecrawl.dev) でAPIキーを取得します
+  </Step>
+
+  <Step title="Makeでシナリオを作成">
+    [Make](https://make.com) にログインし、「Create a new scenario」をクリックします
+  </Step>
+
+  <Step title="Firecrawlモジュールを追加">
+    「Firecrawl」を検索し、使用するアクションを選択します
+  </Step>
+
+  <Step title="APIキーを接続">
+    Firecrawl APIキーを追加して認証します
+  </Step>
+
+  <Step title="設定とテスト">
+    ワークフローのパラメータを設定し、テストを実行します
+  </Step>
+</Steps>
+
+<div id="firecrawl-actions-overview">
+  ## Firecrawl アクションの概要
+</div>
+
+| モジュール               | ユースケース            | 最適な用途         |
+| ------------------- | ----------------- | ------------- |
+| **Web サイトをスクレイピング** | 単一ページからのデータ抽出     | 迅速なデータ取得      |
+| **Web サイトをクロール**    | 複数ページのコンテンツ収集     | サイト全体のスクレイピング |
+| **Web サイトから抽出**     | AI を活用した構造化データの抽出 | 複雑なデータ抽出      |
+| **Web サイトを検索**      | 検索と全コンテンツの取得      | リサーチの自動化      |
+| **Web サイトをマップ**     | URL の検出           | SEO 分析        |
+
+<div id="best-practices">
+  ## ベストプラクティス
+</div>
+
+<CardGroup cols={2}>
+  <Card title="パフォーマンス" icon="gauge-high">
+    * 単一ページには最速の**スクレイピング**を使用
+    * 大規模サイトには上限付きの**クロール**を使用
+    * レート制限を避けるため、適切な間隔でスケジュールする
+    * エラーハンドリングモジュールを追加する
+  </Card>
+
+  <Card title="コスト最適化" icon="piggy-bank">
+    * 戦略的にスケジュールする (毎時／毎日／毎週) 
+    * 不要な実行を避けるためにフィルターを使用する
+    * API使用量を管理するためにクロールの上限を設定する
+    * まずFirecrawl Playgroundでテストする
+  </Card>
+</CardGroup>
+
+<div id="industry-use-cases">
+  ## 業界別ユースケース
+</div>
+
+<AccordionGroup>
+  <Accordion title="Eコマース" icon="cart-shopping">
+    * 競合他社の価格モニタリング
+    * 商品の在庫状況の追跡
+    * レビューの集約・分析
+    * 在庫水準のモニタリング
+  </Accordion>
+
+  <Accordion title="不動産" icon="house">
+    * 複数ソースからの出品情報の集約
+    * 市場トレンド分析
+    * 物件データの拡充
+    * 競合他社の価格動向分析
+  </Accordion>
+
+  <Accordion title="マーケティング" icon="bullhorn">
+    * 競合他社のコンテンツモニタリング
+    * SEOパフォーマンスの追跡
+    * バックリンク分析
+    * ソーシャルメディアでの言及の追跡
+  </Accordion>
+
+  <Accordion title="金融" icon="chart-line">
+    * 市場データの収集
+    * ニュースとセンチメントの集約
+    * 規制当局への提出書類のモニタリング
+    * 株価の追跡
+  </Accordion>
+
+  <Accordion title="人事・採用" icon="user-tie">
+    * 求人情報の集約
+    * 企業調査の自動化
+    * 候補者の経歴情報の拡充
+    * 給与ベンチマーク
+  </Accordion>
+</AccordionGroup>
+
+<div id="make-vs-zapier-vs-n8n">
+  ## Make vs Zapier vs n8n
+</div>
+
+| 機能         | Make              | Zapier      | n8n              |
+| ---------- | ----------------- | ----------- | ---------------- |
+| **セットアップ** | ビジュアルビルダー、クラウド    | ノーコード、クラウド  | セルフホストまたはクラウド    |
+| **料金体系**   | オペレーションベース        | タスクごとの料金体系  | 実行回数ベース          |
+| **連携**     | 3,000以上のアプリ       | 9,000以上のアプリ | 1,000以上のアプリとサービス |
+| **複雑さ**    | 高度なワークフロー         | シンプルなワークフロー | 複雑なワークフロー        |
+| **最適な用途**  | ビジュアルな自動化、中程度の複雑さ | 迅速な自動化      | 開発者による制御         |
+| **学習曲線**   | 中程度               | 簡単          | 中程度〜高度           |
+
+<Tip>
+  **プロのヒント：** Makeは、ビジュアルなワークフロー設計と複雑な自動化に優れています。Zapier以上の制御性が必要で、n8nのコードファーストなアプローチよりもビジュアルな構築を好むチームに最適です。
+</Tip>

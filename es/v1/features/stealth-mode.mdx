@@ -8,22 +8,20 @@ og:description: "Usa proxies mejorados para un scraping confiable en sitios comp
 import ProxyPython from "/snippets/es/v1/scrape/proxy/python.mdx";
 import ProxyNode from "/snippets/es/v1/scrape/proxy/js.mdx";
 import ProxyCURL from "/snippets/es/v1/scrape/proxy/curl.mdx";
-import ProxyRetryPython from "/snippets/es/v1/scrape/proxy-retry/python.mdx";
-import ProxyRetryNode from "/snippets/es/v1/scrape/proxy-retry/js.mdx";
-import ProxyRetryCURL from "/snippets/es/v1/scrape/proxy-retry/curl.mdx";
+
+<Warning>
+  El parámetro `proxy` está obsoleto. Recomendamos `auto`, que permite a Firecrawl gestionar la selección de proxy por ti.
+</Warning>
 
 Firecrawl ofrece distintos tipos de proxy para ayudarte a extraer datos de sitios web con diversos niveles de complejidad. El tipo de proxy puede especificarse con el parámetro `proxy`.
-
 
 <div id="proxy-types">
   ### Tipos de proxy
 </div>
 
-Firecrawl admite tres tipos de proxies:
-
-- **basic**: Proxies para extraer datos de la mayoría de los sitios. Es rápido y suele funcionar.
-- **enhanced**: Proxies mejorados para extraer datos de sitios complejos manteniendo la privacidad. Es más lento, pero más fiable en ciertos sitios.
-- **auto**: Firecrawl reintentará automáticamente la extracción con proxies enhanced si el proxy basic falla. Si el reintento con enhanced tiene éxito, se cobrarán 5 créditos por la extracción. Si el primer intento con basic tiene éxito, solo se cobrará el costo regular.
+* **basic**: Proxies para extraer datos de la mayoría de los sitios.
+* **mejorado**: Proxies mejorados para extraer datos de sitios complejos manteniendo la privacidad.
+* **auto**: Recomendado. Firecrawl reintentará automáticamente la extracción con proxies mejorado si el proxy basic falla.
 
 Si no especificas un proxy, Firecrawl usará basic por defecto.
 
@@ -31,34 +29,12 @@ Si no especificas un proxy, Firecrawl usará basic por defecto.
   ### Uso del modo mejorado
 </div>
 
-Al extraer datos de sitios web complejos, puedes usar el modo mejorado para mejorar la tasa de éxito y mantener la privacidad.
-
 <CodeGroup>
+  <ProxyPython />
 
-<ProxyPython />
+  <ProxyNode />
 
-<ProxyNode />
-
-<ProxyCURL />
-
+  <ProxyCURL />
 </CodeGroup>
 
-**Nota:** Las solicitudes con proxy mejorado cuestan 5 créditos por solicitud.
-
-<div id="using-enhanced-as-a-retry-mechanism">
-  ## Usar Enhanced como mecanismo de reintento
-</div>
-
-Un patrón común es intentar primero hacer scraping con la configuración de proxy predeterminada y luego reintentar con el modo enhanced si se encuentran códigos de estado de error específicos (401, 403 o 500) en el campo `metadata.statusCode` de la respuesta. Estos códigos pueden indicar que el sitio web está bloqueando la solicitud.
-
-<CodeGroup>
-
-<ProxyRetryPython />
-
-<ProxyRetryNode />
-
-<ProxyRetryCURL />
-
-</CodeGroup>
-
-Este enfoque permite optimizar el uso de créditos al usar el modo enhanced solo cuando sea necesario.
+**Nota:** Las solicitudes con proxy mejorado ahora cuestan lo mismo que las solicitudes basic: 1 crédito por solicitud.

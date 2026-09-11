@@ -8,25 +8,22 @@ og:description: "Use enhanced proxies for reliable scraping on complex sites whi
 import ProxyPython from "/snippets/v1/scrape/proxy/python.mdx";
 import ProxyNode from "/snippets/v1/scrape/proxy/js.mdx";
 import ProxyCURL from "/snippets/v1/scrape/proxy/curl.mdx";
-import ProxyRetryPython from "/snippets/v1/scrape/proxy-retry/python.mdx";
-import ProxyRetryNode from "/snippets/v1/scrape/proxy-retry/js.mdx";
-import ProxyRetryCURL from "/snippets/v1/scrape/proxy-retry/curl.mdx";
+
+<Warning>
+The `proxy` parameter is deprecated. We recommend `auto`, which lets Firecrawl handle proxy selection for you.
+</Warning>
 
 Firecrawl provides different proxy types to help you scrape websites with varying levels of complexity. The proxy type can be specified using the `proxy` parameter.
 
 ### Proxy Types
 
-Firecrawl supports three types of proxies:
-
-- **basic**: Proxies for scraping most sites. Fast and usually works.
-- **enhanced**: Enhanced proxies for scraping complex sites while maintaining privacy. Slower, but more reliable on certain sites.
-- **auto**: Firecrawl will automatically retry scraping with enhanced proxies if the basic proxy fails. If the retry with enhanced is successful, 5 credits will be billed for the scrape. If the first attempt with basic is successful, only the regular cost will be billed.
+- **basic**: Proxies for scraping most sites.
+- **enhanced**: Enhanced proxies for scraping complex sites while maintaining privacy.
+- **auto**: Recommended. Firecrawl will automatically retry scraping with enhanced proxies if the basic proxy fails.
 
 If you do not specify a proxy, Firecrawl will default to basic.
 
 ### Using Enhanced Mode
-
-When scraping complex websites, you can use enhanced mode to improve your success rate while maintaining privacy.
 
 <CodeGroup>
 
@@ -38,20 +35,4 @@ When scraping complex websites, you can use enhanced mode to improve your succes
 
 </CodeGroup>
 
-**Note:** Enhanced proxy requests cost 5 credits per request.
-
-## Using Enhanced as a Retry Mechanism
-
-A common pattern is to first try scraping with the default proxy settings, and then retry with enhanced mode if you encounter specific error status codes (401, 403, or 500) in the `metadata.statusCode` field of the response. These status codes can be indicative of the website blocking your request.
-
-<CodeGroup>
-
-<ProxyRetryPython />
-
-<ProxyRetryNode />
-
-<ProxyRetryCURL />
-
-</CodeGroup>
-
-This approach allows you to optimize your credit usage by only using enhanced mode when necessary.
+**Note:** Enhanced proxy requests now cost the same as basic requests — 1 credit per request.

@@ -8,11 +8,13 @@ og:description: "在多次抓取之间检测和监控网页内容变更"
 
 ![变更追踪](/images/launch-week/lw3d12.webp)
 
-Change tracking 会将页面的当前内容与上次抓取时的内容进行比较。将 `changeTracking` 添加到你的 `formats` 数组中，以检测页面是新增、未变化还是已修改，并 (可选) 获取结构化的差异信息，了解具体发生了哪些变更。
+变更追踪 会将页面的当前内容与上次抓取时的内容进行比较。将 `changeTracking` 添加到你的 `formats` 数组中，以检测页面是新增、未变化还是已修改，并 (可选) 获取结构化的差异信息，了解具体发生了哪些变更。
 
 * 适用于 `/scrape`、`/crawl` 和 `/batch/scrape`
 * 提供两种 diff 模式：用于行级变更的 `git-diff`，以及用于字段级比较的 `json`
 * 作用范围限定在你的团队内，也可以按你传入的 tag 进一步限定
+
+变更追踪 是单次抓取层面的 diff 原语。如果你希望 Firecrawl 按 schedule 定期执行检查，并在内容发生变更时通过 webhook、email 或 Slack 通知你，请使用[监控](/zh/features/monitoring)，而不是自己定时调用 `/scrape`。
 
 <div id="how-it-works">
   ## 工作原理
@@ -166,7 +168,7 @@ Change tracking 会将页面的当前内容与上次抓取时的内容进行比�
   ```
 </CodeGroup>
 
-<div id="response">
+<div id="response-2">
   ### 响应
 </div>
 
@@ -201,7 +203,7 @@ Change tracking 会将页面的当前内容与上次抓取时的内容进行比�
 
 结构化的 `diff.json` 对象包含：
 
-* `files`：变更文件的数组 (网页通常只有一个文件) 
+* `files`：变更文件的数组 (网页通常只有一个文件)
 * `chunks`：文件内的变更片段
 * `changes`：逐行变更记录，包含 `type` (`"add"`、`"del"` 或 `"normal"`) 、行号 (`ln`) 以及 `content`
 
@@ -286,7 +288,7 @@ Change tracking 会将页面的当前内容与上次抓取时的内容进行比�
   ```
 </CodeGroup>
 
-<div id="response">
+<div id="response-3">
   ### 响应
 </div>
 
@@ -475,10 +477,10 @@ schema 中的每个字段都会返回 `previous` 和 `current` 两个值：
 </CodeGroup>
 
 <div id="scheduling-change-tracking">
-  ## 调度变更跟踪
+  ## 调度变更追踪
 </div>
 
-当你按固定计划定期进行抓取时，变更跟踪的效果最佳。你可以使用 cron 任务、云调度服务或工作流工具来实现自动化。
+当你按固定计划定期进行抓取时，变更追踪的效果最佳。[监控](/zh/features/monitoring)会替你执行该计划，间隔最短可至 5 分钟，并发送 webhook、邮件或 Slack 通知。如果你希望自行掌控调度计划，可使用下面的选项，通过 cron 任务、云调度服务或工作流工具来实现。
 
 <div id="cron-job">
   ### Cron 任务
@@ -543,7 +545,7 @@ fi
   ### 工作流自动化
 </div>
 
-像 **n8n**、**Zapier** 和 **Make** 这样的无代码平台可以按设定的计划调用 Firecrawl API，并将结果发送到 Slack、电子邮件或数据库。请参阅 [工作流自动化指南](/zh/developer-guides/workflow-automation/n8n)。
+像 **n8n**、**Zapier** 和 **Make** 这样的无代码平台可以按设定的计划调用 Firecrawl API，并将结果发送到 Slack、电子邮件或数据库。请参阅 [工作流自动化指南](/zh/integrations/n8n)。
 
 <div id="webhooks">
   ## Webhooks

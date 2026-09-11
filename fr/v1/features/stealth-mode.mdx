@@ -1,64 +1,40 @@
 ---
-title: "Mode amélioré"
-description: "Utilisez des proxies améliorés pour un scraping fiable sur des sites complexes tout en préservant la confidentialité"
-og:title: "Mode amélioré | Firecrawl"
-og:description: "Utilisez des proxies améliorés pour un scraping fiable sur des sites complexes tout en préservant la confidentialité"
+title: "Mode avancé"
+description: "Utilisez des proxies avancés pour un scraping fiable sur des sites complexes tout en préservant la confidentialité"
+og:title: "Mode avancé | Firecrawl"
+og:description: "Utilisez des proxies avancés pour un scraping fiable sur des sites complexes tout en préservant la confidentialité"
 ---
 
 import ProxyPython from "/snippets/fr/v1/scrape/proxy/python.mdx";
 import ProxyNode from "/snippets/fr/v1/scrape/proxy/js.mdx";
 import ProxyCURL from "/snippets/fr/v1/scrape/proxy/curl.mdx";
-import ProxyRetryPython from "/snippets/fr/v1/scrape/proxy-retry/python.mdx";
-import ProxyRetryNode from "/snippets/fr/v1/scrape/proxy-retry/js.mdx";
-import ProxyRetryCURL from "/snippets/fr/v1/scrape/proxy-retry/curl.mdx";
+
+<Warning>
+  Le paramètre `proxy` est obsolète. Nous recommandons `auto`, qui permet à Firecrawl de gérer la sélection du proxy pour vous.
+</Warning>
 
 Firecrawl propose différents types de proxy pour vous aider à extraire des données depuis des sites web offrant des niveaux variables de complexité. Le type de proxy peut être défini via le paramètre `proxy`.
-
 
 <div id="proxy-types">
   ### Types de proxy
 </div>
 
-Firecrawl prend en charge trois types de proxy :
-
-- **basic** : Proxys pour l’extraction de la plupart des sites. Rapides et généralement efficaces.
-- **enhanced** : Proxys améliorés pour l’extraction de sites complexes tout en préservant la confidentialité. Plus lents, mais plus fiables sur certains sites.
-- **auto** : Firecrawl réessaiera automatiquement l’extraction avec des proxys améliorés si le proxy basic échoue. Si le nouvel essai en enhanced réussit, 5 crédits seront facturés pour l’extraction. Si la première tentative en basic réussit, seul le coût standard sera facturé.
+* **basic** : Proxys pour l’extraction de la plupart des sites.
+* **avancé** : Proxys avancés pour l’extraction de sites complexes tout en préservant la confidentialité.
+* **auto** : Recommandé. Firecrawl réessaiera automatiquement l’extraction avec des proxys avancés si le proxy basic échoue.
 
 Si vous ne spécifiez pas de proxy, Firecrawl utilisera basic par défaut.
 
 <div id="using-enhanced-mode">
-  ### Utiliser le mode Enhanced
+  ### Utiliser le mode avancé
 </div>
 
-Pour le scraping de sites web complexes, vous pouvez utiliser le mode Enhanced afin d’augmenter votre taux de réussite tout en préservant votre confidentialité.
-
 <CodeGroup>
+  <ProxyPython />
 
-<ProxyPython />
+  <ProxyNode />
 
-<ProxyNode />
-
-<ProxyCURL />
-
+  <ProxyCURL />
 </CodeGroup>
 
-**Remarque :** Les requêtes via le proxy Enhanced coûtent 5 crédits chacune.
-
-<div id="using-enhanced-as-a-retry-mechanism">
-  ## Utiliser Enhanced comme mécanisme de reprise
-</div>
-
-Un schéma courant consiste à d’abord tenter le scraping avec les paramètres de proxy par défaut, puis à réessayer avec le mode Enhanced si vous rencontrez des codes d’erreur spécifiques (401, 403 ou 500) dans le champ `metadata.statusCode` de la réponse. Ces codes d’état peuvent indiquer que le site bloque votre requête.
-
-<CodeGroup>
-
-<ProxyRetryPython />
-
-<ProxyRetryNode />
-
-<ProxyRetryCURL />
-
-</CodeGroup>
-
-Cette approche vous permet d’optimiser votre utilisation des crédits en n’activant le mode Enhanced que lorsque c’est nécessaire.
+**Remarque :** Les requêtes via le proxy avancé coûtent désormais autant que les requêtes de base — 1 crédit chacune.

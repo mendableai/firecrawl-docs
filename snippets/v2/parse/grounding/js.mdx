@@ -1,0 +1,13 @@
+```js Node
+function ground(doc, quote) {
+  const start = doc.markdown.indexOf(quote);
+  for (const page of doc.blocks) {
+    for (const block of page.items) {
+      const span = block.markdownSpan;
+      if (span && span[0] <= start && start < span[1]) {
+        return { pageNumber: page.pageNumber, bbox: block.bbox };
+      }
+    }
+  }
+}
+```

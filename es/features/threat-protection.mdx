@@ -20,8 +20,8 @@ La política se define una sola vez a nivel de la organización y se aplica auto
 Threat Protection tiene tres modos, configurados a nivel de la organización:
 
 * **Desactivado** (predeterminado) — no se realizan verificaciones.
-* **Normal** — las URL se verifican con [Google Web Risk](https://cloud.google.com/web-risk), que marca páginas y sitios asociados con malware, ingeniería social (phishing) y software no deseado. **+2 créditos por URL escaneada.**
-* **Zscaler** — las URL se verifican con el tenant de [Zscaler Internet Access](https://www.zscaler.com/products-and-solutions/zscaler-internet-access) (ZIA) de tu organización: las categorías de URL definidas por Zscaler que selecciones bloquear, además de tus categorías de URL personalizadas y listas de URL personalizadas. Consulta el [modo Zscaler](#zscaler-mode) a continuación. **Sin tarifas de escaneo** — la clasificación se realiza en tu propio tenant.
+* **Normal** — las URL se verifican con [Google Web Risk](https://cloud.google.com/security/products/web-risk), que marca páginas y sitios asociados con malware, ingeniería social (phishing) y software no deseado. **+2 créditos por URL analizada.**
+* **Zscaler** — las URL se verifican con el tenant de [Zscaler Internet Access](https://www.zscaler.com/products-and-solutions/zscaler-internet-access) (ZIA) de tu organización: las categorías de URL definidas por Zscaler que selecciones bloquear, además de tus categorías de URL personalizadas y listas de URL personalizadas. Consulta el [modo Zscaler](#zscaler-mode) a continuación. **Sin cargo por escaneo** — la clasificación se realiza en tu propio tenant.
 
 Las verificaciones están diseñadas para proteger tus datos. En el modo Normal, la inmensa mayoría de las solicitudes se resuelven localmente con una lista de amenazas sincronizada periódicamente, por lo que las URL que extraes nunca se envían al clasificador. En el modo Zscaler, la clasificación de URL se realiza en tu propio tenant de ZIA — el mismo sistema que ya conoce la política web de tu organización. En todos los modos, Firecrawl nunca almacena ningún veredicto sobre tu tráfico.
 

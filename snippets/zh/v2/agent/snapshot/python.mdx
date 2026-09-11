@@ -1,0 +1,10 @@
+```python Python
+from firecrawl import Firecrawl
+
+app = Firecrawl(api_key="fc-YOUR_API_KEY")
+
+# artifact.updated 追踪事件通过 snapshotId 引用快照内容
+snapshot = app.get_agent_snapshot("JOB_ID", "SNAPSHOT_ID")
+
+print(snapshot.snapshot)
+```

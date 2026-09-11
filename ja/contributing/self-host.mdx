@@ -1,289 +1,295 @@
 ---
-title: "セルフホスティング"
-description: "Firecrawl をセルフホストして自前で運用し、プロジェクトに貢献する方法を学びましょう。"
-og:title: "セルフホスティング | Firecrawl"
-og:description: "Firecrawl をセルフホストして自前で運用し、プロジェクトに貢献する方法を学びましょう。"
+title: "Firecrawl のセルフホスティング"
+sidebarTitle: "セルフホスティング"
+description: "Docker Compose で Firecrawl をセルフホストし、ローカルでのスクレイピングを確認し、オープンソース版の制限を把握して、本番環境に向けてスタックを準備します。"
+og:title: "Firecrawl のセルフホスティング | Firecrawl"
+og:description: "Docker Compose で Firecrawl をセルフホストし、ローカルでのスクレイピングを確認し、オープンソース版の制限を把握して、本番環境に向けてスタックを準備します。"
 ---
 
-<div id="contributor">
-  #### コントリビューターの方へ
+<span id="self-hosting-firecrawl" />
+
+ソースコードやインフラを管理する必要がある場合は、Docker Compose を使用して Firecrawl をセルフホストします。このガイドではリリース `v2.11.162` を固定し、`http://localhost:3002` で API を起動して、Markdown を含む `POST /v2/scrape` の正常なレスポンスを確認します。
+
+<Warning>
+  この信頼済みネットワーク向けクイックスタートでは API 認証を無効にしており、
+  本番環境向けのアーキテクチャではありません。永続ストレージ、TLS、高可用性、
+  または Firecrawl Cloud のすべての機能を備えずに起動します。
+</Warning>
+
+<div id="choose-self-hosting-or-firecrawl-cloud">
+  ## セルフホスティングまたは Firecrawl Cloud を選択
 </div>
 
-[Firecrawl](https://firecrawl.dev) へようこそ 🔥！プロジェクトをローカル環境にセットアップして手元で実行し、コントリビュートするための手順を紹介します。
-
-コントリビュートの流れは他のオープンソースリポジトリと同様です。Firecrawl をフォークし、変更し、テストを実行して、PR を送ってください。
-
-質問がある場合や参加のサポートが必要な場合は、Discord コミュニティに[こちら](https://discord.gg/firecrawl)から参加するか、GitHub で[こちら](https://github.com/firecrawl/firecrawl/issues/new/choose)から Issue を作成してください。
-
-<div id="self-hosting-firecrawl">
-  ## Firecrawl をセルフホストする
+<div id="self-host-firecrawl-when">
+  ### 次の場合は Firecrawl をセルフホストしてください
 </div>
 
-ローカルでの実行方法は [SELF_HOST.md](https://github.com/firecrawl/firecrawl/blob/main/SELF_HOST.md) を参照してください。
+* **ソースコードやインフラを自分で管理したい場合。** このガイドでは、API とその関連サービスをお使いのマシンで実行します。
+* **スタックの運用に慣れている場合。** アップグレード、セキュリティ、ストレージ、監視、復旧はお客様の責任となります。
+* **Firecrawl を自社環境で検証したい場合。** まずここでベースラインを動作させ、その後 [本番環境に移行する前に](#before-production) で必要な管理策を設計してください。
 
-<div id="why">
-  ## なぜ？
+インフラを運用せずにスクレイピングを始めたい場合は、[Firecrawl Cloud](https://firecrawl.dev) を選択してください。機能の違いについては、[Open Source vs Cloud](/ja/contributing/open-source-or-cloud) を参照してください。
+
+**推奨事項:** ソースコードへのアクセスやインフラの管理が運用負荷に見合う場合は、セルフホストを選択してください。本番環境への最短のサポート対象パスを求める場合は、Firecrawl Cloud から始めてください。
+
+<div id="what-self-hosting-requires">
+  ### セルフホスティングで必要となること
 </div>
 
-厳格なセキュリティポリシーにより、データを管理された環境内に留める必要がある組織にとって、Firecrawl のセルフホスティングは特に有益です。セルフホスティングを検討すべき主な理由は次のとおりです：
+* アップグレード、シークレット、ストレージ、監視、復旧、インシデント対応はすべてご自身で担います。
+* スクレイピングでは、対象 Web サイトへのアウトバウンドリクエストが引き続き送信されます。任意のプロキシ、解析、AI プロバイダーを追加すると、データフローも増えます。
+* このガイドでは、最初の実行を意図的にシンプルにしています。まず 1 回のスクレイピングを動作させ、その後は一度に 1 つの設定を変更してください。
+* コマンドは `v2.11.162` に固定されています。別のリリースでは、異なる Compose コントラクトが使用される場合があります。
 
-- **セキュリティとコンプライアンスの強化:** セルフホスティングにより、すべてのデータの取り扱いと処理を社内外の規制に適合させ、機密情報を自社の安全なインフラ内に保つことができます。なお、Firecrawl は Mendable の製品であり、SOC 2 Type II 認証に準拠しているため、プラットフォームはデータセキュリティ管理に関する高い業界基準を満たしています。
-- **サービスのカスタマイズ:** セルフホスティングにより、Playwright サービスなどを特定のニーズに合わせて調整し、標準的なクラウド提供ではサポートされない可能性のあるユースケースにも対応できます。
-- **学習とコミュニティへの貢献:** 自身でインスタンスを構築・運用することで、Firecrawl の動作をより深く理解でき、プロジェクトへのより実践的な貢献にもつながります。
-
-<div id="considerations">
-  ### 留意事項
+<div id="self-host-firecrawl-with-docker-compose">
+  ## Docker Compose で Firecrawl をセルフホストする
 </div>
 
-ただし、以下の制約や追加の責務がある点に注意してください。
-
-1. **Fire-engine へのアクセス制限:** 現時点では、自己ホスト型の Firecrawl インスタンスは Fire-engine を利用できません。Fire-engine には、IP ブロック対応、ボット検知メカニズムなどの高度な機能が含まれます。つまり、基本的なスクレイピングは可能でも、より複雑なケースでは追加の設定が必要になったり、サポート対象外となる場合があります。
-2. **手動設定が必要:** 基本的な `fetch` および Playwright オプションを超えるスクレイピング手法を用いる場合は、`.env` ファイルでの手動設定が必要です。これは関連技術への深い理解を要し、セットアップに時間がかかる可能性があります。
-| 機能 | Cloud | 自己ホスト |
-| --- | --- | --- |
-| すべての API エンドポイントがサポート対象 | はい | 常にではない（自己ホストでは `/agent` および `/browser` はサポートされません） |
-| スクリーンショット対応 | はい | はい（Playwright サービスが稼働している場合） |
-| ローカル LLM（例: Ollama） | 未サポート | `OLLAMA_BASE_URL` でサポート（実験的） |
-
-Firecrawl の自己ホストは、スクレイピングやデータ処理環境を完全に制御したい方に最適ですが、追加の保守や設定作業というトレードオフが伴います。
-
-<div id="steps">
-  ## 手順
+<div id="start-with-these-defaults">
+  ### まずは以下のデフォルトで始める
 </div>
 
-1. まず、依存関係をインストールします
+* **リリース: Firecrawl `v2.11.162`。** まずコードと構成を固定します。対象リリースの `docker-compose.yaml` とセルフホスティングに関する注意事項を確認してからアップグレードしてください。
+* **API 認証: このローカル実行では無効。** サポート対象の完全な ID 管理とデータベース設計を用意できる場合にのみ追加してください。環境変数 1 つだけでは不十分です。
+* **キュー: PostgreSQL。** 任意の FoundationDB バックエンドを意図して運用する場合を除き、そのまま使用してください。
+* **キュー管理 UI: 無効。** 強力な `BULL_AUTH_KEY` とネットワーク制御を設定できる場合にのみ有効にしてください。
+* **AI および高度なスクレイピングプロバイダー: 未構成。** 必要な機能で求められる場合にプロバイダーを追加してください。
 
-* Docker の[インストール手順](https://docs.docker.com/get-docker/)
+最初の実行はシンプルに保ちましょう。まず 1 件のスクレイピングを動作させ、その後ユースケースに必要なものを追加してください。
 
-2. 環境変数を設定する
+<div id="prerequisites">
+  ### 前提条件
+</div>
 
-ルートディレクトリに `.env` を作成し、`apps/api/.env.example` のテンプレートをコピーします
+開始前に、以下をインストールしてください。
 
-最初は、認証や任意のサブサービス（PDF 解析、JS ブロック機能、AI 機能）は設定しません
+* [Git](https://git-scm.com/downloads)
+* [Docker Engine](https://docs.docker.com/engine/install/) または Docker Desktop
+* `docker compose` として実行する Docker Compose v2
+* 確認リクエストに使用する `curl`
 
-```
-# .env
+ポート `3002` が使用可能であり、Docker が複数のサービスをビルド・実行できる十分なリソースを備えていることを確認してください。Firecrawl は、このスタックに必要な最小ホスト要件を検証・公開していません。
 
-# ===== Required ENVS ======
-PORT=3002
-HOST=0.0.0.0
+<div id="clone-the-verified-release">
+  ### 検証済みのリリースをクローンする
+</div>
 
-# Note: PORT is used by both the main API server and worker liveness check endpoint
-
-# To turn on DB authentication, you need to set up Supabase.
-USE_DB_AUTHENTICATION=false
-
-# ===== Optional ENVS ======
-
-## === AI features (JSON format on scrape, /extract API) ===
-# Provide your OpenAI API key here to enable AI features
-# OPENAI_API_KEY=
-
-# Experimental: Use Ollama
-# OLLAMA_BASE_URL=http://localhost:11434/api
-# MODEL_NAME=deepseek-r1:7b
-# MODEL_EMBEDDING_NAME=nomic-embed-text
-
-# Experimental: Use any OpenAI-compatible API
-# OPENAI_BASE_URL=https://example.com/v1
-# OPENAI_API_KEY=
-
-## === Proxy ===
-# PROXY_SERVER can be a full URL (e.g. http://0.1.2.3:1234) or just an IP and port combo (e.g. 0.1.2.3:1234)
-# Do not uncomment PROXY_USERNAME and PROXY_PASSWORD if your proxy is unauthenticated
-# PROXY_SERVER=
-# PROXY_USERNAME=
-# PROXY_PASSWORD=
-
-## === /search API ===
-
-# Googleの代わりにSearXNGを使用する場合は、JSON形式が有効なSearXNGサーバーを指定できます。
-# You can also customize the engines and categories parameters, but the defaults should also work just fine.
-# SEARXNG_ENDPOINT=http://your.searxng.server
-# SEARXNG_ENGINES=
-# SEARXNG_CATEGORIES=
-
-## === Other ===
-
-# Supabase Setup (used to support DB authentication, advanced logging, etc.)
-# SUPABASE_ANON_TOKEN=
-# SUPABASE_URL=
-# SUPABASE_SERVICE_TOKEN=
-
-# Use if you've set up authentication and want to test with a real API key
-# TEST_API_KEY=
-
-# This key lets you access the queue admin panel. Change this if your deployment is publicly accessible.
-BULL_AUTH_KEY=CHANGEME
-
-# This is now autoconfigured by the docker-compose.yaml. You shouldn't need to set it.
-# PLAYWRIGHT_MICROSERVICE_URL=http://playwright-service:3000/scrape
-# REDIS_URL=redis://redis:6379
-# REDIS_RATE_LIMIT_URL=redis://redis:6379
-
-# Set if you have a llamaparse key you'd like to use to parse pdfs
-# LLAMAPARSE_API_KEY=
-
-# Set if you'd like to send server health status messages to Slack
-# SLACK_WEBHOOK_URL=
-
-# Set if you'd like to send posthog events like job logs
-# POSTHOG_API_KEY=
-# POSTHOG_HOST=
-
-## === System Resource Configuration ===
-# Maximum CPU usage threshold (0.0-1.0). Worker will reject new jobs when CPU usage exceeds this value.
-# Default: 0.8 (80%)
-# MAX_CPU=0.8
-
-# Maximum RAM usage threshold (0.0-1.0). Worker will reject new jobs when memory usage exceeds this value.
-# Default: 0.8 (80%)
-# MAX_RAM=0.8
-
-# Set if you'd like to allow local webhooks to be sent to your self-hosted instance
-# ALLOW_LOCAL_WEBHOOKS=true
-```
-
-<Note>
-  以下の AI 機能を使用するには、LLM プロバイダーの設定が必要です（例: `OPENAI_API_KEY` または上記の AI 機能セクションに記載の代替プロバイダー用キー）:
-
-  * スクレイプ時の JSON 形式
-  * `/extract` API
-  * 要約形式
-  * ブランディング形式
-  * 変更追跡形式
-</Note>
-
-3. *(オプション) TypeScript Playwright Service で実行する*
-
-   * `docker-compose.yml` を更新して、Playwright サービスを次のように変更します:
-
-     ```plaintext
-         build: apps/playwright-service
-     ```
-
-     を
-
-     ```plaintext
-         build: apps/playwright-service-ts
-     ```
-
-     に変更
-
-   * `.env` ファイルで `PLAYWRIGHT_MICROSERVICE_URL` を設定します:
-
-     ```plaintext
-     PLAYWRIGHT_MICROSERVICE_URL=http://localhost:3000/scrape
-     ```
-
-   * 必要に応じて、`.env` ファイルでプロキシサーバーも設定してください。
-
-4. Docker コンテナをビルドして起動します:
-
-   ```bash
-   docker compose build
-   docker compose up
-   ```
-
-これにより、`http://localhost:3002` でアクセス可能なローカルの Firecrawl インスタンスが起動します。
-
-`http://localhost:3002/admin/{BULL_AUTH_KEY}/queues` で Bull Queue Manager の UI を確認できます。
-
-5. *(オプション)* API をテストする
-
-クロールエンドポイントをテストしたい場合は、次を実行してください：
+このガイドは Firecrawl `v2.11.162` で検証されています。コード、コマンド、構成の整合性を保つため、該当するリリースをチェックアウトしてください。
 
 ```bash
-  curl -X POST http://localhost:3002/v2/crawl \
-      -H 'Content-Type: application/json' \
-      -d '{
-        "url": "https://docs.firecrawl.dev"
-      }'
+git clone https://github.com/firecrawl/firecrawl.git
+cd firecrawl
+git checkout v2.11.162
 ```
 
+別のリリースを使用する場合は、これらの値を再利用する前に、そのリリースの `docker-compose.yaml` とセルフホスティングに関する注意事項を確認してください。
+
+<div id="configure-the-evaluation-deployment">
+  ### 評価環境のデプロイを設定する
+</div>
+
+リポジトリのルートに、動作に必要な最小限の `.env` ファイルを作成します。
+
+```bash
+cat > .env <<'EOF'
+USE_DB_AUTHENTICATION=false
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=replace-with-at-least-32-random-characters
+POSTGRES_DB=postgres
+EOF
+```
+
+スタックを起動する前にPostgreSQLのパスワードを変更し、`.env`はコミットしないでください。バンドルされている`pg_cron`の構成がそのデータベースを対象としているため、`v2.11.162`では`POSTGRES_DB=postgres`のままにしてください。Composeはこれらの値をAPIサービスとPostgreSQLサービスの両方に渡します。
+
+<Note>
+  `apps/api/.env.example`はAPI開発用であり、Composeファイルとしてそのまま使用するものではありません。
+  初回の実行ではデータベース認証が無効になるため、リクエストに
+  APIキーや`Authorization`ヘッダーは必要ありません。
+</Note>
+
+`NUQ_BACKEND`と`BULL_AUTH_KEY`は未設定のままにしてください。キュー管理UIを起動せずにPostgreSQLキューを使用します。初回のスクレイピングでは、構成要素を減らせます。
+
+<div id="build-and-start-firecrawl">
+  ### Firecrawl をビルドして起動する
+</div>
+
+チェックアウトしたソースをビルドし、すべてのサービスをバックグラウンドで起動します。
+
+```bash
+docker compose up --build -d
+docker compose ps --all
+```
+
+このベースラインでは、未設定の任意変数に関する警告が表示されるのは想定どおりです。`docker compose ps --all` では、API と関連サービスが実行中で、1 回限りの初期化サービスが完了していることを確認できます。サービスがまだ起動中の場合は、スタックが立ち上がるまで少し待ってください。
+
+<div id="check-api-reachability">
+  ### API に到達できることを確認する
+</div>
+
+まず、API が HTTP リクエストに応答できることを確認します。
+
+```bash
+curl \
+  --fail \
+  --silent \
+  --show-error \
+  --max-time 5 \
+  http://localhost:3002/v0/health/readiness
+```
+
+想定されるレスポンス：
+
+```json
+{"status":"ok"}
+```
+
+<Warning>
+  これは死活確認であり、エンドツーエンドテストではありません。Redis、
+  PostgreSQL、RabbitMQ、Playwright、ワーカー、外部ネットワークへのアクセスは確認されません。デプロイが使用可能と判断する前に、
+  以下のスクレイピングを実行してください。
+</Warning>
+
+<div id="run-a-functional-smoke-test">
+  ### 機能スモークテストを実行する
+</div>
+
+次に、重要なパスである実際のスクレイピングを1回テストします。リクエストのタイムアウトはミリ秒単位です。curl&#39;sのクライアントタイムアウトは秒単位で、少し長めに設定されています：
+
+```bash
+curl \
+  --fail-with-body \
+  --silent \
+  --show-error \
+  --max-time 75 \
+  -X POST \
+  http://localhost:3002/v2/scrape \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "url": "https://example.com",
+    "formats": ["markdown"],
+    "timeout": 60000
+  }'
+```
+
+正常なレスポンスは次の形式です。
+
+```json
+{
+  "success": true,
+  "data": {
+    "markdown": "...",
+    "metadata": {
+      "statusCode": 200
+    }
+  }
+}
+```
+
+これにより、API、スクレイピングパイプライン、スクレイピングエンジンの一つの経路、外部へのアクセスをまとめて確認できます。メタデータの詳細は、対象からのレスポンスによって異なる場合があります。
+
+これらの成功フィールドが返れば、Firecrawl はお客様のインフラ上でエンドツーエンドで動作しています。このベースラインを保持し、次に追加する機能を選択してください。
+
+<div id="self-hosted-feature-support">
+  ## セルフホスト環境での機能サポート
+</div>
+
+最初のスクレイピングは動作します。機能があるから追加するのではなく、必要になった時点で追加してください。
+
+| 必要なもの                                                       | 判断                                                                       |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 基本的なスクレイピング、クロール、マップ、検索ルート                                  | デフォルトのスタックを使用します。Fetch と Playwright による処理が含まれます。                         |
+| LLM を利用した抽出またはフォーマット                                        | OpenAI 互換プロバイダーまたは Ollama に接続し、その経路を個別にテストしてください。                        |
+| Fire-engine または高度なアンチボット機能                                  | そのサービスを個別に実行・構成してください。デフォルトでは含まれません。                                     |
+| スクリーンショットまたはページアクション                                        | デフォルトのスタックでは利用できません。Fetch と Playwright はどちらも非対応で、いずれも Fire-engine が必要です。 |
+| Agent、Browser、Interact、フィードバック、または製品、メニュー、音声、動画向けの特殊なフォーマット | Firecrawl Cloud を使用するか、対象機能に必要な外部サービスの要件を確認してください。                       |
+
+より広範な製品比較については、[Open Source vs Cloud](/ja/contributing/open-source-or-cloud) を参照してください。リリース固有の構成については、固定バージョンの [`docker-compose.yaml`](https://github.com/firecrawl/firecrawl/blob/v2.11.162/docker-compose.yaml) を参照してください。
+
+<div id="before-production">
+  ## 本番環境に移行する前に
+</div>
+
+Compose を使えば、まずは動作させるところまで到達できます。本番環境では、API を信頼されたネットワークの外部に公開する前に、いくつかの明確な判断が必要です。
+
+* **サービスの置き換え後もデータを保持する必要がある場合は、** PostgreSQL、Redis、RabbitMQ 用の永続ストレージを追加し、バックアップと復元の手順を定義してテストしてください。提供されている Compose ファイルには、これらのボリュームは含まれていません。
+* **ユーザーや信頼できないネットワークから API にアクセスできる場合は、** サポート対象の認証方式、ネットワークアクセス制御、リバースプロキシまたは Ingress での TLS を導入してください。この認証されていないベースラインをインターネット上に公開しないでください。
+* **可用性や容量に関する要件がある場合は、** 稼働率の目標、監視、リソースのサイジング、スケーリングのトリガー、アップグレードおよびロールバックの手順を設定してください。Compose の制限値は、検証済みの最小要件ではありません。
+* **データのロケーションやコンプライアンスが重要な場合は、** 有効化する前に、対象 Web サイトへのリクエストと、任意の AI、プロキシ、解析プロバイダーをすべて対応付けてください。
+* **シークレットを一元管理する必要がある場合は、** データベースのパスワードを `.env` からプラットフォームのシークレット管理システムへ移行してください。
+
+これらはインフラストラクチャに関する判断です。単一の `.env` 設定だけで、スタックが本番環境対応になるわけではありません。
+
+<div id="where-to-go-next">
+  ## 次のステップ
+</div>
+
+* **まだ評価中ですか？** API は信頼されたネットワーク内で運用し、完了したら `docker compose down` を実行してください。
+* **オープンソース機能を追加しますか？** [セルフホスト環境での機能サポート](#self-hosted-feature-support) で必要なプロバイダーまたはサービスを確認し、その構成を単独でテストしてください。
+* **Firecrawl のコードを変更しますか？** 開発環境については、[コントリビューター向けセットアップ](/ja/contributing/guide) を参照してください。
+* **クライアントを接続しますか？** [Firecrawl CLI](/ja/sdks/cli#connect-the-cli-to-self-hosted-firecrawl) または [ローカル MCP サーバー](/ja/mcp-server/local#connect-mcp-to-self-hosted-firecrawl) の接続先に、検証済みの API URL を指定してください。
+* **Kubernetes に移行しますか？** まず [`SELF_HOST.md`](https://github.com/firecrawl/firecrawl/blob/main/SELF_HOST.md) からリンクされているバージョン対応の Kubernetes または Helm リファレンスを確認し、次に上記の本番環境向けの判断をプラットフォームに合わせて明確にしてください。
+* **マネージドインフラストラクチャまたは Cloud 専用機能が必要ですか？** [Open Source vs Cloud](/ja/contributing/open-source-or-cloud) を確認してください。
+* **本番環境に移行しますか？** API を公開する前に、[本番環境に移行する前に](#before-production) のすべての項目を決定してください。
 
 <div id="troubleshooting">
   ## トラブルシューティング
 </div>
 
-このセクションでは、セルフホストした Firecrawl インスタンスをセットアップまたは実行する際によく発生する問題と、その解決方法を説明します。
-
-<div id="supabase-client-is-not-configured">
-  ### Supabase クライアントが構成されていません
-</div>
-
-**症状:**
-
-```bash
-[YYYY-MM-DDTHH:MM:SS.SSSz]ERROR - 設定されていない Supabase クライアントにアクセスしようとしました。
-[YYYY-MM-DDTHH:MM:SS.SSSz]ERROR - スクレイプイベントの挿入中にエラーが発生しました: エラー: Supabase クライアントが設定されていません。
-```
-
-**説明:**
-このエラーは、Supabase クライアントのセットアップが完了していないために発生します。スクレイプやクロールは問題なく実行できるはずです。現在、セルフホスト環境では Supabase の設定はできません。
-
 <div id="youre-bypassing-authentication">
-  ### 認証をバイパスしている
+  ### 認証をバイパスしています
 </div>
 
-**症状：**
-
-```bash
-[YYYY-MM-DDTHH:MM:SS.SSSz]WARN - You're bypassing authentication
-```
-
-**説明:**
-このエラーは、Supabase クライアントのセットアップが完了していないために発生します。スクレイピングやクローリング自体は問題なく行えるはずです。現在のところ、セルフホスト環境では Supabase を設定することはできません。
-
+`USE_DB_AUTHENTICATION=false` でこの警告が表示される場合、想定された初回実行時の動作です。リクエストにはセルフホストのIDが使用されるため、APIキーは不要です。信頼できないネットワークからAPIにアクセスできる場合は、停止して[本番環境に移行する前に](#before-production)の対策を追加してください。
 
 <div id="docker-containers-fail-to-start">
   ### Docker コンテナが起動しない
 </div>
 
-**症状:**
-Docker コンテナが予期せず終了する、または起動しない。
-
-**解決策:**
-次のコマンドを使用して Docker のログを確認し、エラーメッセージが出力されていないか確認します。
+長時間稼働するサービスが終了した場合は、コンテナの状態と直近のログを確認してください。
 
 ```bash
-docker logs [container_name]
+docker compose ps --all
+docker compose logs --tail=200
 ```
 
-* 必要な環境変数がすべて .env ファイルで正しく設定されていることを確認してください。
-* docker-compose.yml で定義されているすべての Docker サービスが正しく構成され、必要なイメージが利用可能になっていることを確認してください。
-
+* ソースのリビジョンが異なる場合は、`v2.11.162` をチェックアウトするか、そのリリースの構成を使用してください。
+* ビルドまたはコンテナのリソースが不足している場合は、Docker の CPU、メモリ、またはディスク容量を増やしてください。
+* PostgreSQL が失敗する場合は、`.env` の構文を確認し、`POSTGRES_DB=postgres` を維持したうえで、ユーザー名とパスワードの値が一致していることを確認してください。
 
 <div id="connection-issues-with-redis">
-  ### Redis への接続問題
+  ### Redis への接続に関する問題
 </div>
 
-**症状:**
-タイムアウトや「Connection refused」など、Redis への接続に関するエラーが発生する。
+コンテナから Redis に接続できない場合は、Compose サービスのアドレスを `redis://redis:6379` のままにしてください。`localhost` は Redis サービスではなく、そのコンテナ自身を指します。
 
-**解決策:**
+```bash
+docker compose ps redis
+docker compose logs --tail=100 redis
+```
 
-- Docker 環境内で Redis サービスが起動しており、正常に動作していることを確認する。
-- `.env` ファイル内の `REDIS_URL` および `REDIS_RATE_LIMIT_URL` が正しい Redis インスタンスを指していることを確認する。
-- Redis のポートへの接続をブロックしている可能性のあるネットワーク設定やファイアウォールのルールを確認する。
+`REDIS_URL` または `REDIS_RATE_LIMIT_URL` を追加した場合は、オーバーライドを削除してデフォルト設定に戻すか、Compose ネットワーク内から名前解決できるアドレスを使用してください。
 
 <div id="api-endpoint-does-not-respond">
   ### API エンドポイントが応答しない
 </div>
 
-**症状:**
-Firecrawl インスタンスへの API リクエストがタイムアウトする、または応答がない。
+ポート `3002` が応答しない場合は、API コンテナとそのログを確認してください。
 
-**解決策:**
+```bash
+docker compose ps api
+docker compose logs --tail=200 api
+```
 
-- Docker コンテナのステータスを確認し、Firecrawl サービスが稼働していることを確認する。
-- .env ファイルの PORT と HOST の設定が正しいこと、また同じポートを他のサービスが使用していないことを確認する。
-- API リクエストを送信するクライアントからホストへアクセス可能であることを確認するため、ネットワーク構成を確認する。
+別のプロセスがポート `3002` を使用している場合は、そのプロセスを停止するか、公開ポートを適宜変更してください。初回起動時は、API コンテナが実行中になったことを確認してから再試行してください。
 
-これらの一般的な問題に対処することで、セルフホストの Firecrawl インスタンスのセットアップと運用をよりスムーズにできます。
+`/v0/health/readiness` が成功しても `/v2/scrape` が失敗する場合は、到達可能性エンドポイントではこれらの依存関係を検証しないため、API と Playwright のログを確認してください。
 
-<div id="install-firecrawl-on-a-kubernetes-cluster-simple-version">
-  ## Kubernetes クラスターに Firecrawl をインストールする（簡易版）
+```bash
+docker compose logs --tail=200 api playwright-service
+```
+
+<div id="scrape-request-times-out">
+  ### スクレイピングリクエストがタイムアウトする
 </div>
 
-Kubernetes クラスターへの Firecrawl のインストール手順は、[examples/kubernetes-cluster-install/README.md](https://github.com/firecrawl/firecrawl/tree/main/examples/kubernetes/cluster-install#readme) を参照してください。
+スクレイピングがタイムアウトする場合は、デプロイ環境から `https://example.com` にアクセスできること、および API と Playwright サービスが稼働していることを確認してください。API が独自のタイムアウトレスポンスを返せるよう、curl の `--max-time` はリクエストボディの `timeout` より長く設定してください。

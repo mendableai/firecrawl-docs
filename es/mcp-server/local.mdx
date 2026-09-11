@@ -1,8 +1,10 @@
 ---
 title: Ejecutar Firecrawl MCP localmente
-description: Instala y configura el MCP Server local de Firecrawl.
-sidebarTitle: Ejecutar localmente
+description: Inicia y configura el servidor Firecrawl MCP de código abierto mediante stdio o Streamable HTTP.
+sidebarTitle: Ejecutar MCP localmente
 ---
+
+Ejecuta Firecrawl MCP localmente cuando un cliente necesite iniciar un proceso local, cuando necesites un transporte HTTP local o cuando el MCP Server deba conectarse a una API de Firecrawl autogestionada. Para el servicio gestionado, comienza con [Primeros pasos](/es/mcp-server).
 
 <div id="prerequisites">
   ## Requisitos previos
@@ -18,128 +20,108 @@ Confirma la versión de Node.js instalada:
 node --version
 ```
 
-<div id="run-over-stdio">
-  ## Ejecutar mediante stdio
+<div id="start-the-server">
+  ## Inicia el servidor
 </div>
 
-```bash
-env FIRECRAWL_API_KEY=fc-YOUR_API_KEY npx -y firecrawl-mcp@3.23.0
-```
+<Tabs>
+  <Tab title="stdio">
+    Usa stdio cuando el cliente MCP inicie Firecrawl como proceso local:
 
-Este es el transporte predeterminado para los clientes que ejecutan el MCP Server como proceso local.
+    ```bash
+    env FIRECRAWL_API_KEY=fc-YOUR-API-KEY \
+      npx -y firecrawl-mcp@3.23.7
+    ```
 
-<div id="run-with-streamable-http">
-  ## Ejecutar con Streamable HTTP
+    Configura el cliente para ejecutar `npx -y firecrawl-mcp@3.23.7` y proporciona `FIRECRAWL_API_KEY` mediante el entorno protegido o el mecanismo de secretos del cliente.
+  </Tab>
+
+  <Tab title="Streamable HTTP">
+    Usa HTTP cuando un cliente como n8n se conecte a un servidor que ya está en ejecución:
+
+    ```bash
+    env HTTP_STREAMABLE_SERVER=true \
+      FIRECRAWL_API_KEY=fc-YOUR-API-KEY \
+      npx -y firecrawl-mcp@3.23.7
+    ```
+
+    Conecta el cliente a:
+
+    ```text
+    http://localhost:3000/mcp
+    ```
+
+    Confirma que el servidor esté listo:
+
+    ```bash
+    curl http://localhost:3000/health
+    ```
+
+    La comprobación de estado devuelve `ok`. La ruta local es `/mcp`; `/v2/mcp` corresponde al servicio alojado de Firecrawl.
+  </Tab>
+</Tabs>
+
+<div id="configure-the-firecrawl-api">
+  ## Configura la API de Firecrawl
 </div>
 
-Usa el transporte HTTP para clientes como n8n que se conectan a un MCP Server que ya está en ejecución:
+| Variable de entorno      | Finalidad                                                                                                          |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `FIRECRAWL_API_KEY`      | Autentica en la API en la nube de Firecrawl. Solo es opcional si una API autogestionada no requiere autenticación. |
+| `FIRECRAWL_API_URL`      | Envía solicitudes a una API de Firecrawl autogestionada en lugar de a la API en la nube.                           |
+| `HTTP_STREAMABLE_SERVER` | Establécela en `true` para iniciar el transporte HTTP Streamable local en lugar de stdio.                          |
 
-```bash
-env HTTP_STREAMABLE_SERVER=true \
-  FIRECRAWL_API_KEY=fc-YOUR_API_KEY \
-  npx -y firecrawl-mcp@3.23.0
-```
+<CodeGroup>
+  ```bash API en la nube
+  export FIRECRAWL_API_KEY=fc-YOUR-API-KEY
+  npx -y firecrawl-mcp@3.23.7
+  ```
 
-Conecta el cliente a:
+  ```bash API autogestionada
+  export FIRECRAWL_API_URL=https://firecrawl.your-domain.com
+  export FIRECRAWL_API_KEY=your-api-key # Omite esta línea si la instancia no requiere autenticación
+  npx -y firecrawl-mcp@3.23.7
+  ```
+</CodeGroup>
 
-```text
-http://localhost:3000/mcp
-```
-
-Confirma que el servidor esté listo:
-
-```bash
-curl http://localhost:3000/health
-```
-
-La comprobación de estado devuelve `ok`. La ruta local es `/mcp`; `/v2/mcp` es la ruta alojada de Firecrawl.
+<Note>
+  El procesamiento directo de archivos locales con `firecrawl_parse` requiere que `FIRECRAWL_API_URL` apunte a una API de Firecrawl autogestionada. Un MCP Server local conectado únicamente a la API en la nube no puede cargar un archivo local mediante esa herramienta; en su lugar, el [servidor alojado usa una transferencia de carga firmada](/es/mcp-server/tools#important-behavior).
+</Note>
 
 <div id="install-globally">
   ## Instalar globalmente
 </div>
 
+Usa `npx` para una configuración más rápida. Para instalar globalmente la misma versión revisada:
+
 ```bash
-npm install -g firecrawl-mcp@3.23.0
+npm install -g firecrawl-mcp@3.23.7
 ```
 
 A continuación, ejecuta:
 
 ```bash
-env FIRECRAWL_API_KEY=fc-YOUR_API_KEY firecrawl-mcp
+env FIRECRAWL_API_KEY=fc-YOUR-API-KEY firecrawl-mcp
 ```
 
-<div id="configuration">
-  ## Configuración
+<div id="troubleshooting">
+  ## Solución de problemas
 </div>
 
-<div id="environment-variables">
-  ### Variables de entorno
-</div>
+<AccordionGroup>
+  <Accordion title="El cliente muestra el error spawn npx ENOENT">
+    Instala Node.js 22 o una versión posterior, confirma que `npx` esté en el `PATH` del cliente y reinícialo por completo. En Windows, ejecuta `where npx` en el símbolo del sistema y configura el cliente para que use la ruta devuelta de `npx.cmd`.
+  </Accordion>
 
-<div id="cloud-and-self-hosted-api">
-  #### API en la nube y autogestionada
-</div>
+  <Accordion title="El cliente HTTP no puede conectarse">
+    Confirma que `HTTP_STREAMABLE_SERVER=true` y, a continuación, llama a `http://localhost:3000/health`. Usa `http://localhost:3000/mcp` como endpoint del cliente, no la ruta alojada `/v2/mcp`.
+  </Accordion>
 
-* `FIRECRAWL_API_KEY`: Tu clave de API de Firecrawl
-  * Obligatoria al utilizar la API en la nube (predeterminada)
-  * Opcional al utilizar una instancia autogestionada con `FIRECRAWL_API_URL`
-* `FIRECRAWL_API_URL` (Opcional): Endpoint de API personalizado para instancias autogestionadas
-  * Ejemplo: `https://firecrawl.your-domain.com`
-  * Si no se proporciona, se utilizará la API en la nube (requiere una clave de API)
+  <Accordion title="Una herramienta no está disponible">
+    La disponibilidad de las herramientas depende de los servicios de Firecrawl habilitados en la implementación de destino. Compara la conexión en [Herramientas](/es/mcp-server/tools) y revisa la salida del proceso local en busca de errores de registro o autenticación.
+  </Accordion>
 
-<div id="configuration-examples">
-  ### Ejemplos de configuración
-</div>
-
-Para usar la API en la nube:
-
-```bash
-export FIRECRAWL_API_KEY=your-api-key
-```
-
-Para instancias autogestionadas:
-
-```bash
-export FIRECRAWL_API_URL=https://firecrawl.your-domain.com
-export FIRECRAWL_API_KEY=your-api-key  # Si tu instancia requiere autenticación
-```
-
-<div id="custom-configuration-with-claude-desktop">
-  ### Configuración personalizada con Claude Desktop
-</div>
-
-Añade lo siguiente a tu `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "mcp-server-firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "YOUR_API_KEY_HERE"
-      }
-    }
-  }
-}
-```
-
-<div id="hosted-mcp-vs-local-mcp">
-  ### MCP alojado frente a MCP local
-</div>
-
-El MCP Server alojado está optimizado para un uso remoto seguro. Algunas opciones disponibles al ejecutar el MCP Server localmente son más limitadas o no están disponibles de forma remota:
-
-* El modo alojado sin clave expone únicamente Search, Scrape y Parse y está sujeto a límites de tasa por IP.
-* La lectura de archivos locales solo está disponible al ejecutar el MCP Server localmente.
-* Los Webhooks y las rutas de archivos locales deben configurarse desde un MCP Server local o autogestionado cuando el agent necesite acceder a recursos locales.
-
-<Note>
-  El procesamiento directo de archivos locales con `firecrawl_parse` requiere que `FIRECRAWL_API_URL` apunte a una API de Firecrawl autogestionada. Un MCP Server local configurado únicamente con una clave de API en la nube no puede cargar un archivo local mediante esa herramienta.
-</Note>
-
-<div id="rate-limiting">
-  ### Límites de tasa
-</div>
-
-Firecrawl aplica límites de tasa. Usa una clave de API para obtener límites más altos y acceder al conjunto completo de herramientas.
+  <Accordion title="El servidor está sujeto a límites de tasa">
+    Los límites de tasa los aplica la API de Firecrawl conectada. Revisa los [límites de tasa](/es/rate-limits) actuales y los límites configurados para una implementación autogestionada.
+  </Accordion>
+</AccordionGroup>

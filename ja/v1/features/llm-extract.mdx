@@ -38,17 +38,17 @@ FirecrawlはAIを用いて、3つの手順でウェブページから構造化�
 </div>
 
 <div id="scrape-with-json-endpoint">
-  ### /scrape（json 利用）エンドポイント
+  ### /scrape (json 利用) エンドポイント
 </div>
 
 スクレイプしたページから構造化データを抽出するために使用します。
 
 <CodeGroup>
+  <ExtractPython />
 
-<ExtractPython />
-<ExtractNode />
-<ExtractCURL />
+  <ExtractNode />
 
+  <ExtractCURL />
 </CodeGroup>
 
 出力:
@@ -56,15 +56,13 @@ FirecrawlはAIを用いて、3つの手順でウェブページから構造化�
 <ExtractOutput />
 
 <div id="extracting-without-schema-new">
-  ### スキーマなしでの抽出（新機能）
+  ### スキーマなしでの抽出 (新機能) 
 </div>
 
 エンドポイントに `prompt` を渡すだけで、スキーマを指定せずに抽出できます。LLM がデータの構造を決定します。
 
 <CodeGroup>
-
-<ExtractNoSchemaCURL />
-
+  <ExtractNoSchemaCURL />
 </CodeGroup>
 
 出力:
@@ -77,6 +75,7 @@ FirecrawlはAIを用いて、3つの手順でウェブページから構造化�
 
 `jsonOptions` オブジェクトでは、次のパラメータを指定できます:
 
-- `schema`: 抽出に使用するスキーマ。
-- `systemPrompt`: 抽出に使用するシステムプロンプト。
-- `prompt`: スキーマを用いない抽出に使用するプロンプト。
+* `schema`: 抽出に使用するスキーマ。
+* `systemPrompt`: 抽出に使用するシステムプロンプト。
+* `prompt`: スキーマを用いない抽出に使用するプロンプト。
+* `checkPromptInjection`: 任意のブール値 (デフォルトは `false`) 。有効にすると、抽出を実行する前にスクレイピングしたページコンテンツでプロンプトインジェクションの試みをスキャンします。インジェクションが検出された場合、リクエストは403とエラーコード `SCRAPE_PROMPT_INJECTION_DETECTED` で失敗します。チェックの実行時に4クレジットが追加されます。[プロンプトインジェクションの検出](/ja/features/llm-extract#prompt-injection-detection)を参照してください。

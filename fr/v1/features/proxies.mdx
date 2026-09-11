@@ -50,12 +50,10 @@ Pour plus de détails, consultez la [référence de l’API pour `location.count
   ## Types de proxy
 </div>
 
-Firecrawl prend en charge trois types de proxy :
+<Warning>
+  Le paramètre `proxy` est obsolète. Nous recommandons `auto`, qui permet à Firecrawl de gérer la sélection du proxy pour vous.
+</Warning>
 
-* **basic** : Proxies pour le scraping de la plupart des sites. Rapides et généralement efficaces.
-* **enhanced** : Proxies améliorés pour le scraping de sites complexes tout en préservant la confidentialité. Plus lents, mais plus fiables sur certains sites. [En savoir plus sur le mode Enhanced →](/fr/features/enhanced-mode)
-* **auto** : Firecrawl réessaie automatiquement le scraping avec des proxies améliorés si le proxy basic échoue. Si le réessai avec enhanced réussit, 5 crédits seront facturés pour le scrape. Si la première tentative avec basic réussit, seul le coût standard sera facturé.
-
-***
-
-> **Remarque :** Pour des informations détaillées sur l’utilisation des proxies améliorés, y compris les coûts en crédits et les stratégies de réessai, consultez la [documentation du mode Enhanced](/fr/features/enhanced-mode).
+* **basic** : Proxies pour le scraping de la plupart des sites.
+* **enhanced** : Proxies améliorés pour le scraping de sites complexes tout en préservant la confidentialité. [En savoir plus sur le mode Enhanced →](/fr/features/enhanced-mode)
+* **auto** : Recommandé. Firecrawl réessaie automatiquement le scraping avec des proxies améliorés si le proxy basic échoue.

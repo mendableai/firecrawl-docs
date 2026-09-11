@@ -1,117 +1,40 @@
 ---
-title: "在 ChatGPT 中使用 MCP 进行网页搜索与抓取"
-description: "在 2 分钟内为 ChatGPT 添加网页抓取和搜索功能"
+title: "在 ChatGPT 中使用 Firecrawl MCP"
+description: "通过原生连接器将 Firecrawl 添加到 ChatGPT"
 ---
 
-<Note>
-  ChatGPT 中的 MCP 支持目前处于测试阶段。随着 OpenAI 持续开发，界面和可用性可能会发生变化。
-</Note>
+通过原生 Firecrawl 应用将 Firecrawl 添加到 ChatGPT。无需创建自定义 MCP 连接器或粘贴服务器 URL。
 
-<Warning>
-  **可用性：** 带 MCP 连接器的开发者模式在免费套餐中不可用，需要付费 ChatGPT 订阅。不同套餐和地区的可用性和功能各不相同。请参阅 [OpenAI 关于 Developer Mode 的文档](https://help.openai.com/en/articles/12584461-developer-mode-apps-and-full-mcp-connectors-in-chatgpt-beta)，了解当前的可用性和设置说明。
-</Warning>
-
-使用 Firecrawl MCP 为 ChatGPT 添加网页抓取和搜索功能。
-
-<div id="quick-setup">
-  ## 快速开始
+<div id="add-to-chatgpt">
+  ## 添加到 ChatGPT
 </div>
 
-<div id="1-enable-developer-mode">
-  ### 1. 启用开发者模式
+<Card title="添加到 ChatGPT" icon="/images/agent-clients/chatgpt.svg" href="https://chatgpt.com/plugins?q=firecrawl" cta="在 ChatGPT 中打开" arrow>
+  在 ChatGPT 中打开 Firecrawl 应用并进行连接。
+</Card>
+
+1. 打开 [ChatGPT 中的 Firecrawl 应用](https://chatgpt.com/plugins?q=firecrawl)。
+2. 选择 **Firecrawl** 并连接。ChatGPT 在浏览器中打开 Firecrawl 后，登录、选择团队并授权访问。
+3. 在聊天中发送 prompt 前，打开 **+** 菜单并启用 **Firecrawl**。必须将连接器添加到对话中。
+
+请勿在服务器 URL 中填入 Firecrawl API 密钥。如需稍后撤销访问权限，请前往 [MCP 设置](https://www.firecrawl.dev/app/settings?tab=mcp)。
+
+<div id="try">
+  ## 尝试
 </div>
 
-点击左下角的用户名打开 ChatGPT 设置，或者直接访问 [chatgpt.com/#settings](https://chatgpt.com/#settings)。
+启用 Firecrawl 后，试试：
 
-在设置弹窗中，滚动到页面底部并选择 **Advanced Settings (高级设置)&#x20;**。将 **Developer mode (开发者模式)&#x20;**&#x20;切换为开启。
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/enable-developer-mode.gif" alt="ChatGPT 设置中显示带有 Developer mode 开关的 Advanced Settings" />
-</Frame>
-
-<div id="2-create-the-connector">
-  ### 2. 创建 连接器
-</div>
-
-启用 开发者模式后，在同一个设置弹窗中打开 **Apps &amp; 连接器** 选项卡。
-
-点击页面右上角的 **Create** 按钮。
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/apps-connectors-create.png" alt="Apps & 连接器 选项卡中高亮显示的 Create 按钮" />
-</Frame>
-
-填写 连接器 详情：
-
-* **Name：** `Firecrawl MCP`
-* **Description：** `Web scraping, crawling, search, and content extraction` (可选)
-* **MCP Server URL：** `https://mcp.firecrawl.dev/v2/mcp-oauth`
-* **Authentication：** `OAuth`
-
-当 ChatGPT 在你的浏览器中打开 Firecrawl 时，请登录，选择要使用的团队并授权访问。请勿在服务器 URL 中填写 Firecrawl API 密钥。有关端点约定和其他支持的模式，请参见 [将 MCP 客户端连接到你的账户](/zh/developer-guides/mcp-setup-guides/oauth)。
-
-勾选 **&quot;I understand and want to continue&quot;** 复选框，然后点击 **Create**。
-
-<div id="3-verify-setup">
-  ### 3. 验证设置
-</div>
-
-返回 ChatGPT 主界面。你应该会看到显示 **开发者模式 (Developer mode)&#x20;**，这表示 MCP 连接器已启用。
-
-如果你没有看到开发者模式，请刷新页面。如果仍未出现，请再次打开设置，并在 高级设置 中确认开发者模式的开关已打开。
-
-<div id="4-access-firecrawl-tools">
-  ### 4. 使用 Firecrawl 工具
-</div>
-
-要在对话中使用 Firecrawl，点击聊天输入框中的 **+** 按钮，然后选择 **More**，再选择 **Firecrawl MCP**。
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/select-firecrawl-mcp.png" alt="ChatGPT 聊天输入框中展开的 + 菜单，显示 More 子菜单和 Firecrawl MCP 选项" />
-</Frame>
-
-<div id="quick-demo">
-  ## 快速演示
-</div>
-
-在选中 Firecrawl MCP 后，尝试使用以下提示词：
-
-**搜索：**
-
-```
-Search for the latest React Server Components updates
+```text
+进行网页搜索，查找最新的 Firecrawl 版本发布说明，并总结这些来源。
 ```
 
-**抓取：**
-
-```
+```text
 Scrape firecrawl.dev and tell me what it does
 ```
 
-**获取文档：**
-
-```
-抓取 Vercel 的 Edge Functions 文档并进行总结
-```
-
-<div id="tool-confirmation">
-  ## 工具确认
+<div id="more">
+  ## 更多
 </div>
 
-当 ChatGPT 使用 Firecrawl MCP 工具时，你可能会看到一个确认提示，要求你批准。某些 ChatGPT Desktop 版本会自动批准工具调用，而不显示此对话框。如果没有出现提示，你可以通过检查响应中是否有 “Called tool” 部分，或在 [firecrawl.dev/app/usage](https://www.firecrawl.dev/app/usage) 查看你的使用情况，来确认该工具是否已被调用。
-
-<Tip>
-  **没有出现确认提示？** 如果 ChatGPT 在没有显示确认对话框的情况下就回答了你的问题，Firecrawl MCP 连接器很可能没有附加到当前对话中。请返回[步骤 4](#4-access-firecrawl-tools)，并确保在发送 prompt 之前点击 **+** 按钮、选择 **More**，然后选择 **Firecrawl MCP**。每个新对话都必须附加该连接器。
-</Tip>
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/tool-confirmation.png" alt="ChatGPT 工具确认对话框，显示 Firecrawl MCP 请求" />
-</Frame>
-
-你可以勾选 **“Remember for this conversation”**，以避免在同一聊天会话中重复确认。这个安全措施由 OpenAI 实施，以确保 MCP 工具不会执行非预期的 actions。
-
-确认后，ChatGPT 会执行请求并返回结果。
-
-<Frame>
-  <img src="/images/integrations/mcp/chatgpt/search-results-example.png" alt="在 ChatGPT 中显示的 Firecrawl 搜索结果示例" />
-</Frame>
+如需了解如何在其他客户端中设置登录，请参见 [For Humans](/zh/mcp-server/oauth)；如需开始使用免密钥模式，请参见 [For Agents](/zh/mcp-server/keyless)。

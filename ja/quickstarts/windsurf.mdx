@@ -3,68 +3,43 @@ title: "Windsurf での MCP Web 検索とスクレイピング"
 description: "2 分で Windsurf に Web スクレイピングと検索を追加"
 ---
 
-Firecrawl MCP を使って、Windsurf に Web スクレイピングと検索機能を追加します。
+ホスト型 MCP サーバーを通じて、Firecrawl のキーレス Search、スクレイピング、Parse ツールを Windsurf に追加します。
 
 <div id="quick-setup">
-  ## かんたんセットアップ
+  ## クイックセットアップ
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. APIキーを取得する
-</div>
-
-[firecrawl.dev/app](https://firecrawl.dev/app) に登録し、APIキーをコピーします。
-
-<div id="2-add-to-windsurf">
-  ### 2. Windsurf に追加
-</div>
-
-次を `./codeium/windsurf/model_config.json` に追加してください:
+**設定 → ツール → Windsurf 設定 → サーバーを追加**を開くか、`~/.codeium/windsurf/mcp_config.json`を編集します。
 
 ```json
 {
   "mcpServers": {
     "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "YOUR_API_KEY"
-      }
+      "url": "https://mcp.firecrawl.dev/v2/mcp"
     }
   }
 }
 ```
 
-`YOUR_API_KEY` を実際の Firecrawl API キーに置き換えてください。
+Windsurf を再起動し、`firecrawl_search`、`firecrawl_scrape`、`firecrawl_parse` が利用可能であることを確認します。
 
-<div id="3-restart-windsurf">
-  ### 3. Windsurf を再起動する
+キーレスアクセスには、同じパブリック IP を使用するユーザー間で共有される利用制限があります。対話型クライアントからサインインするには [For Humans](/ja/mcp-server/oauth) を、ユーザー操作なしで利用するには [API キーを追加](/ja/mcp-server/keyless#add-an-api-key) してください。
+
+<div id="try-it">
+  ## 試す
 </div>
 
-完了です！これで Windsurf で Web の検索とスクレイピングができるようになりました。
+```text
+最新のTailwind CSSのリリースノートを検索して、ソースを要約してください。
+```
 
-<div id="quick-demo">
-  ## クイックデモ
+```text
+https://firecrawl.dev をスクレイピングして、その機能を説明する。
+```
+
+<div id="troubleshooting">
+  ## トラブルシューティング
 </div>
 
-Windsurf で試してみてください：
-
-**検索：**
-
-```
-最新のTailwind CSS機能を検索
-```
-
-**スクレイピング：**
-
-```
-firecrawl.dev をスクレイピングして、その機能を説明する
-```
-
-**ドキュメントを取得:**
-
-```
-Supabase認証ドキュメントを検索してスクレイピング
-```
-
-WindsurfのAIエージェントは、Firecrawlのツールを自動で利用します。
+* **サーバーに接続できない:** hosted URLを確認し、WindsurfのMCPステータスを確認してください。
+* **クロールや他のツールが見当たらない:** キーレスで利用できるのはSearch、スクレイピング、Parseのみです。より多くのツールを利用するには、OAuthまたはAPIキーで接続してください。

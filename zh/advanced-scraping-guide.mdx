@@ -52,10 +52,10 @@ og:description: "通过 Firecrawl 的完整 API 接口配置抓取选项、浏�
   ## 抓取 PDF
 </div>
 
-Firecrawl 支持 PDF。需要确保解析 PDF 时，请使用 `parsers` 选项（例如 `parsers: ["pdf"]`）。你可以通过 `mode` 选项来控制解析策略：
+Firecrawl 支持 PDF。需要确保解析 PDF 时，请使用 `parsers` 选项 (例如 `parsers: ["pdf"]`) 。你可以通过 `mode` 选项来控制解析策略：
 
-* **`auto`**（默认）— 先尝试基于文本的快速提取，如有需要再回退到 OCR。
-* **`fast`** — 仅进行基于文本（嵌入文本）的解析。速度最快，但会跳过扫描件或图片较多的页面。
+* **`auto`** (默认) — 先尝试基于文本的快速提取，如有需要再回退到 OCR。
+* **`fast`** — 仅进行基于文本 (嵌入文本) 的解析。速度最快，但会跳过扫描件或图片较多的页面。
 * **`ocr`** — 对每一页强制使用 OCR 解析。适用于扫描文档，或在 `auto` 误判页面类型时使用。
 
 `{ type: "pdf" }` 和 `"pdf"` 都默认使用 `mode: "auto"`。
@@ -76,25 +76,26 @@ Firecrawl 支持 PDF。需要确保解析 PDF 时，请使用 `parsers` 选项�
 
 `formats` 数组控制抓取器返回哪些输出类型。默认值：`["markdown"]`。
 
-**字符串 formats**：直接传入名称 (例如 `"markdown"`) 。
+**字符串格式**：直接传入名称 (例如 `"markdown"`) 。
 
-| Format     | Description                                  |
-| ---------- | -------------------------------------------- |
-| `markdown` | 页面内容转换为干净的 Markdown。                         |
-| `html`     | 处理后的 HTML，已移除不必要的元素。                         |
-| `rawHtml`  | 服务器返回的原始 HTML，保持原样。                          |
-| `links`    | 页面上发现的所有链接。                                  |
-| `images`   | 页面上发现的所有图片。                                  |
-| `summary`  | 由 LLM 生成的页面内容摘要。                             |
-| `branding` | 提取品牌标识信息 (颜色、字体、版式、间距、UI 组件) 。               |
-| `product`  | 通过多源结构化数据从产品页面提取结构化产品信息 (标题、价格、库存状态、图片、变体) 。 |
+| 格式      | 描述                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------- |
+| `markdown`  | 页面内容转换为干净的 Markdown。                                                                          |
+| `html`      | 处理后的 HTML，已移除不必要的元素。                                                                          |
+| `rawHtml`   | 服务器返回的原始 HTML，保持原样。                                                                           |
+| `rawBase64` | 经 Base64 编码的原始 HTTP 响应正文，以纯 Base64 字符串形式返回。必须是请求中唯一的 格式。MIME 类型位于 `metadata.contentType`。 |
+| `links`     | 页面上发现的所有链接。                                                                                   |
+| `images`    | 页面上发现的所有图片。                                                                                   |
+| `summary`   | 由 LLM 生成的页面内容摘要。                                                                              |
+| `branding`  | 提取品牌标识信息 (颜色、字体、版式、间距、UI 组件) 。                                                                |
+| `product`   | 通过多源结构化数据从产品页面提取结构化产品信息 (标题、价格、库存状态、图片、变体) 。                                                  |
 
-**对象 formats**：传入包含 `type` 和其他选项的对象。
+**对象格式**：传入包含 `type` 和其他选项的对象。
 
-| Format           | Options                                                                                  | Description                                                    |
+| 格式           | 选项                                                                                  | 描述                                                    |
 | ---------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | `json`           | `prompt?: string`, `schema?: object`                                                     | 使用 LLM 提取结构化数据。提供 JSON schema 和/或自然语言 prompt (最多 10,000 个字符) 。 |
-| `screenshot`     | `fullPage?: boolean`, `quality?: number`, `viewport?: { width, height }`                 | 捕获截图。每个请求最多一个。viewport 最大分辨率为 7680×4320。截图 URL 会在 24 小时后过期。    |
+| `screenshot`     | `fullPage?: boolean`, `quality?: number`, `viewport?: { width, height }`                 | 捕获截图。每个请求最多一个。视口 最大分辨率为 7680×4320。截图 URL 会在 24 小时后过期。    |
 | `changeTracking` | `modes?: ("json" \| "git-diff")[]`, `tag?: string`, `schema?: object`, `prompt?: string` | 跟踪不同抓取结果之间的变化。需要在 formats 数组中同时包含 `"markdown"`。                |
 | `attributes`     | `selectors: [{ selector: string, attribute: string }]`                                   | 从匹配 CSS 选择器的元素中提取指定的 HTML 属性。                                  |
 
@@ -203,19 +204,22 @@ Firecrawl 支持 PDF。需要确保解析 PDF 时，请使用 `parsers` 选项�
   ### PDF 解析
 </div>
 
-| 参数        | 类型      | 默认值       | 描述                                           |
-| --------- | ------- | --------- | -------------------------------------------- |
-| `parsers` | `array` | `["pdf"]` | 控制 PDF 处理。使用 `[]` 跳过解析并返回 base64（固定费用 1 积分）。 |
+| 参数        | 类型      | 默认值       | 描述                                             |
+| --------- | ------- | --------- | ---------------------------------------------- |
+| `parsers` | `array` | `["pdf"]` | 控制 PDF 处理。使用 `[]` 跳过解析并返回 base64 (固定费用 1 额度) 。 |
 
 ```json
-{ "type": "pdf", "mode": "fast" | "auto" | "ocr", "maxPages": 10 }
+{ "type": "pdf", "mode": "fast" | "auto" | "ocr", "maxPages": 10, "pages": true, "blocks": true, "pageMarkers": true }
 ```
 
-| 属性         | 类型                          | 默认值      | 描述                                                       |
-| ---------- | --------------------------- | -------- | -------------------------------------------------------- |
-| `type`     | `"pdf"`                     | *(必填)*   | 解析器类型。                                                   |
-| `mode`     | `"fast" \| "auto" \| "ocr"` | `"auto"` | `fast`：仅进行基于文本的抽取。`auto`：快速模式，必要时回退到 OCR。`ocr`：强制使用 OCR。 |
-| `maxPages` | `integer`                   | —        | 解析的最大页数上限。                                               |
+| 属性            | 类型                          | 默认值      | 描述                                                                                                                          |
+| ------------- | --------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `type`        | `"pdf"`                     | *(必填)*   | 解析器类型。                                                                                                                      |
+| `mode`        | `"fast" \| "auto" \| "ocr"` | `"auto"` | `fast`：仅进行基于文本的提取。`auto`：快速模式，必要时回退到 OCR。`ocr`：强制使用 OCR。                                                                    |
+| `maxPages`    | `integer`                   | —        | 解析的最大页数上限。                                                                                                                  |
+| `pages`       | `boolean`                   | `false`  | 同时在文档的 `pages` 字段中返回按物理页面划分的 Markdown。无需额外成本。                                                                               |
+| `blocks`      | `boolean`                   | `false`  | 同时在文档的 `blocks` 字段中返回每页带类型信息的布局块 (标准化边界框、块类型、阅读顺序、Markdown 字符跨度) 。无需额外成本。                                                   |
+| `pageMarkers` | `boolean`                   | `false`  | 使用 `<!-- page N -->` 标记在文档 Markdown 中标注分页 (仅位于页面之间；跨分页处合并的页面可能导致编号跳过 — 请参见 [解析](/zh/features/parse#page-markers-pdf)) 。无需额外成本。 |
 
 <div id="actions">
   ### Actions
@@ -302,11 +306,11 @@ Firecrawl 支持 PDF。需要确保解析 PDF 时，请使用 `parsers` 选项�
   #### actions 执行说明
 </div>
 
-- 在使用 **Write** 前，需要先执行一次 `click` 以聚焦目标元素。
-- **Scroll** 可以接受一个可选的 `selector`，用于滚动特定元素而不是整个页面。
-- **Wait** 接受 `milliseconds`（固定延迟）或 `selector`（等待元素可见）两种参数中的一种。
-- actions 按**顺序**执行：每一步都会在下一步开始前完成。
-- actions **不支持 PDF**。如果 URL 解析为 PDF 文档，请求将会失败。
+* 在使用 **Write** 前，需要先执行一次 `click` 以聚焦目标元素。
+* **Scroll** 可以接受一个可选的 `selector`，用于滚动特定元素而不是整个页面。
+* **Wait** 接受 `milliseconds` (固定延迟) 或 `selector` (等待元素可见) 两种参数中的一种。
+* actions 按**顺序**执行：每一步都会在下一步开始前完成。
+* actions **不支持 PDF**。如果 URL 解析为 PDF 文档，请求将会失败。
 
 <div id="advanced-action-examples">
   #### 高级操作示例
@@ -470,23 +474,26 @@ curl -X POST https://api.firecrawl.dev/v2/scrape \
 </CodeGroup>
 
 <div id="agent-endpoint">
-  ## Agent endpoint
+  ## 代理端点
 </div>
 
-使用 `/v2/agent` 端点进行自动化的多页面数据提取。Agent 以异步方式运行：你先创建一个任务，然后通过轮询获取结果。
+使用 `/v2/agent` 端点进行自动化的多页面数据提取。代理以异步方式运行：你先创建一个任务，然后通过轮询获取结果。
+
+[代理](/zh/features/agent) 是此端点的权威参考，包含执行追踪、Webhook 和完整参数列表。
 
 <div id="agent-options">
   ### 代理选项
 </div>
 
-| 参数                      | 类型        | 默认值              | 描述                                                                             |
-| ----------------------- | --------- | ---------------- | ------------------------------------------------------------------------------ |
-| `prompt`                | `string`  | *(required)*     | 自然语言说明，用于描述要提取哪些数据 (最多 10,000 个字符) 。                                           |
-| `urls`                  | `array`   | —                | 将代理的访问限制在这些 URL。                                                          |
-| `schema`                | `object`  | —                | 用于组织提取数据结构的 JSON 模式 (schema) 。                                                 |
-| `maxCredits`            | `number`  | `2500`           | 代理可消耗的最大额度。Dashboard 最多支持 2,500；如需更高上限，请通过 API 设置 (高于 2,500 的值始终按付费请求计费) 。 |
-| `strictConstrainToURLs` | `boolean` | `false`          | 为 `true` 时，代理只会访问提供的这些 URL。                                                |
-| `model`                 | `string`  | `"spark-1-mini"` | 要使用的 AI 模型。`"spark-1-mini"` (默认，成本降低 60%) 或 `"spark-1-pro"` (更高准确率) 。          |
+| 参数                      | 类型        | 默认值         | 描述                                                                                         |
+| ----------------------- | --------- | ----------- | ------------------------------------------------------------------------------------------ |
+| `prompt`                | `string`  | *(必填)*      | 自然语言说明，用于描述要提取哪些数据 (最多 10,000 个字符) 。                                                       |
+| `urls`                  | `array`   | —           | 将代理的访问限制在这些 URL。                                                                           |
+| `schema`                | `object`  | —           | 用于组织提取数据结构的 JSON schema。                                                                   |
+| `maxCredits`            | `number`  | `2500`      | 代理可消耗的最大额度。Dashboard 最多支持 2,500；如需更高上限，请通过 API 设置 (高于 2,500 的值始终按付费请求计费) 。                 |
+| `strictConstrainToURLs` | `boolean` | `false`     | 为 `true` 时，代理只会访问提供的这些 URL。                                                                |
+| `model`                 | `string`  | `"spark-2"` | 要使用的 AI 模型。Spark 1 模型已弃用，目前会路由到 `"spark-2"`。                                               |
+| `effort`                | `string`  | *(未设置)*     | 推理预算：`"low"`、`"medium"` 或 `"high"`。每次运行均在 `"spark-2"` 上执行，因此无论是否指定 `model`，都可以发送 `effort`。 |
 
 <CodeGroup>
   ```python Python
@@ -546,7 +553,7 @@ curl -X GET https://api.firecrawl.dev/v2/agent/YOUR-JOB-ID \
   -H 'Authorization: Bearer fc-YOUR-API-KEY'
 ```
 
-Python 和 Node SDK 还提供了一个便捷方法（`firecrawl.agent()`），用于启动任务并自动轮询，直到任务完成。
+Python 和 Node SDK 还提供了一个便捷方法 (`firecrawl.agent()`) ，用于启动任务并自动轮询，直到任务完成。
 
 <div id="crawling-multiple-pages">
   ## 爬取多个页面
@@ -614,12 +621,12 @@ curl -X POST https://api.firecrawl.dev/v2/crawl/params-preview \
 
 | 参数 | 类型 | 默认值 | 说明 |
 |-----------|------|---------|-------------|
-| `includePaths` | `array` | — | 要包含的 URL 的正则表达式模式（默认仅匹配路径名）。 |
-| `excludePaths` | `array` | — | 要排除的 URL 的正则表达式模式（默认仅匹配路径名）。 |
+| `includePaths` | `array` | — | 要包含的 URL 的正则表达式模式 (默认仅匹配路径名) 。 |
+| `excludePaths` | `array` | — | 要排除的 URL 的正则表达式模式 (默认仅匹配路径名) 。 |
 | `regexOnFullURL` | `boolean` | `false` | 在完整 URL 上进行模式匹配，而不仅仅是路径名。 |
 
 <Warning>
-起始 URL 也会与 `includePaths` 进行匹配。如果它不匹配任何模式，爬取结果可能会返回 0 个页面。
+  起始 URL 也会与 `includePaths` 进行匹配。如果它不匹配任何模式，爬取结果可能会返回 0 个页面。
 </Warning>
 
 <div id="crawl-scope">
@@ -642,8 +649,8 @@ curl -X POST https://api.firecrawl.dev/v2/crawl/params-preview \
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `sitemap` | `string` | `"include"` | `"include"`：使用 sitemap + 链接发现。`"skip"`：忽略 sitemap。`"only"`：仅抓取 sitemap 中的 URL。 |
-| `deduplicateSimilarURLs` | `boolean` | `true` | 将 URL 变体（`www.`、`https`、结尾斜杠、`index.html`）视为同一 URL 进行规范化去重。 |
-| `ignoreQueryParameters` | `boolean` | `false` | 在去重前移除查询字符串（例如将 `/page?a=1` 和 `/page?a=2` 视为同一个 URL）。 |
+| `deduplicateSimilarURLs` | `boolean` | `true` | 将 URL 变体 (`www.`、`https`、结尾斜杠、`index.html`) 视为同一 URL 进行规范化去重。 |
+| `ignoreQueryParameters` | `boolean` | `false` | 在去重前移除查询字符串 (例如将 `/page?a=1` 和 `/page?a=2` 视为同一个 URL) 。 |
 
 <div id="scrape-options-for-crawl">
   #### 爬取任务的抓取选项
@@ -706,15 +713,16 @@ curl -X POST https://api.firecrawl.dev/v2/map \
   ### 允许 Firecrawl 抓取你的网站
 </div>
 
-- **User Agent（用户代理）**：请在防火墙或安全规则中允许 `FirecrawlAgent`。
-- **IP addresses（IP 地址）**：Firecrawl 不使用固定的对外 IP 地址集合。
+* **robots.txt**：Firecrawl 在爬取站点前会读取 `robots.txt`，并同时应用针对 user-agent 令牌 `FirecrawlAgent` 编写的规则和针对 `*` 编写的规则。在 `robots.txt` 中使用 `FirecrawlAgent` 即可允许或禁止 Firecrawl。
+* **User agent**：`FirecrawlAgent` 是 Firecrawl 在应用 `robots.txt` 规则时所匹配的令牌，但不要假定实际抓取请求的 `User-Agent` 头也是这个值。请通过 `robots.txt` 指令将 Firecrawl 加入允许列表，而不要依赖匹配 `User-Agent` 字符串的防火墙或 WAF 规则。
+* **IP 地址**：Firecrawl 没有固定的出站 IP 范围。
 
 <div id="allowing-your-application-to-call-the-firecrawl-api">
   ### 允许你的应用调用 Firecrawl API
 </div>
 
-如果你的防火墙阻止应用向外部服务发出出站请求，你需要将 Firecrawl 的 API 服务器 IP 地址加入白名单，这样你的应用才能访问 Firecrawl API（`api.firecrawl.dev`）：
+如果你的防火墙阻止应用向外部服务发出出站请求，你需要将 Firecrawl 的 API 服务器 IP 地址加入白名单，这样你的应用才能访问 Firecrawl API (`api.firecrawl.dev`) ：
 
-- **IP Address**: `35.245.250.27`
+* **IP Address**: `35.245.250.27`
 
-将此 IP 添加到防火墙的出站允许列表中，这样你的后端就可以向 Firecrawl 发送抓取（scrape）、爬取（crawl）、映射（map）以及智能体（agent）请求。
+将此 IP 添加到防火墙的出站允许列表中，这样你的后端就可以向 Firecrawl 发送抓取 (scrape) 、爬取 (crawl) 、映射 (map) 以及智能体 (agent) 请求。

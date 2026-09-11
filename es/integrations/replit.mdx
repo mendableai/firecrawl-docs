@@ -1,0 +1,289 @@
+---
+title: "Replit"
+description: "Conector oficial de Replit para la búsqueda web, el scraping y la interacción con el navegador de Firecrawl"
+---
+
+<Note>
+  **Conector oficial de Replit:** [Abrir Integrations en Replit](https://replit.com/~?settings.show=true\&settings.tab=integrations)
+
+  Busca, realiza scraping e interactúa con la web • Diseñado para Replit Agent • Requiere un plan Core, Pro o Enterprise
+</Note>
+
+<div id="replit-connector-overview">
+  ## Descripción general del conector de Replit
+</div>
+
+Firecrawl está disponible como conector oficial de Replit. Una vez conectado en tu espacio de trabajo, Replit Agent puede usar Firecrawl al crear aplicaciones que necesitan datos web en tiempo real.
+
+<CardGroup cols={2}>
+  <Card title="Diseñado para Replit Agent" icon="robot">
+    Activa Firecrawl en Integrations para que Agent pueda buscar, hacer scraping e interactuar mientras crea aplicaciones
+  </Card>
+
+  <Card title="Empieza sin una clave de API" icon="bolt">
+    De forma predeterminada, se factura a tu cuenta de Replit. Configuración personalizada: usa una clave de Firecrawl o reclama la oferta de 10.000 créditos
+  </Card>
+</CardGroup>
+
+<div id="firecrawl-capabilities-in-replit">
+  ## Capacidades de Firecrawl en Replit
+</div>
+
+Replit Agent puede crear aplicaciones con los endpoints de **búsqueda**, **scraping**, **interacción**, **supervisión**, **rastreo** y **procesamiento** de Firecrawl. La configuración del conector determina qué cuenta proporciona la clave de API y paga por el uso de Firecrawl; no cambia las API de Firecrawl que puede usar una aplicación.
+
+<AccordionGroup>
+  <Accordion title="Búsqueda" icon="magnifying-glass">
+    Encuentra fuentes y extractos relevantes de la web en tiempo real para investigación, descubrimiento de competidores y enriquecimiento.
+
+    **Casos de uso:** Descubrimiento de competidores, asistentes de investigación, enriquecimiento de leads.
+  </Accordion>
+
+  <Accordion title="Scraping" icon="file-code">
+    Convierte cualquier URL en datos limpios listos para LLM, incluidos resúmenes, campos estructurados y contenido para aplicaciones.
+
+    **Casos de uso:** Extracción de datos de productos, scraping de artículos, enriquecimiento de páginas de empresas.
+  </Accordion>
+
+  <Accordion title="Interacción" icon="hand-pointer">
+    Haz clic, completa formularios y navega por flujos de varios pasos en sitios web dinámicos.
+
+    **Casos de uso:** Flujos de trabajo con formularios, páginas con sesión iniciada, recopilación de datos en varios pasos.
+  </Accordion>
+
+  <Accordion title="Supervisar" icon="bell">
+    Supervisa páginas, sitios o la web para detectar actualizaciones relevantes según una programación. Disponible mediante la API de Firecrawl en las aplicaciones que crees.
+
+    **Casos de uso:** Supervisión de palabras clave, alertas de registro de cambios, seguimiento de competidores.
+  </Accordion>
+
+  <Accordion title="Rastrear" icon="spider">
+    Descubre y extrae mediante scraping páginas accesibles de un sitio. Disponible mediante la API de Firecrawl en las aplicaciones que crees.
+
+    **Casos de uso:** Ingesta de documentación, extracción completa de sitios, investigación en varias páginas.
+  </Accordion>
+
+  <Accordion title="Procesar" icon="file-lines">
+    Convierte archivos PDF y documentos de Word en Markdown o JSON. Disponible mediante la API de Firecrawl en las aplicaciones que crees.
+
+    **Casos de uso:** Procesamiento de informes, bases de conocimiento documentales, flujos de archivos a datos estructurados.
+  </Accordion>
+</AccordionGroup>
+
+<div id="getting-started">
+  ## Primeros pasos
+</div>
+
+<Steps>
+  <Step title="Abrir Integrations">
+    En un espacio de trabajo de Replit con un plan **Core**, **Pro** o **Enterprise**, abre **Integrations**.
+  </Step>
+
+  <Step title="Conectar Firecrawl">
+    Selecciona **Enable new connector**, elige **Firecrawl**, usa la configuración predeterminada y selecciona **Submit**. En Core y Pro, un administrador de la cuenta gestiona el conector del espacio de trabajo colaborativo. En Enterprise, un administrador lo gestiona para la organización.
+  </Step>
+
+  <Step title="Elegir la facturación">
+    Mantén seleccionada **Use Replit default configurations** (no necesitas una cuenta de Firecrawl) o abre **Manage**, selecciona **Use custom configurations** y pega tu clave de API de Firecrawl o reclama la oferta de 10.000 créditos, que aprovisiona y guarda una nueva clave.
+  </Step>
+
+  <Step title="Verificar la conexión">
+    En una aplicación del espacio de trabajo conectado, pide a Agent que ejecute una prueba del conector en el servidor:
+
+    ```text
+    Ejecuta una prueba de Firecrawl en el servidor.
+    Usa el conector de Replit.
+    Haz scraping de https://example.com.
+    Usa la ruta /scrape relativa al conector.
+    Devuelve solo el título de la página y el primer párrafo.
+    No reveles ni me pidas una clave de API.
+    No publiques la aplicación.
+    ```
+
+    Confirma la integración de Firecrawl propuesta si se te solicita. La conexión funciona cuando la llamada del conector desde el servidor de la aplicación devuelve **Example Domain** con el primer párrafo de la página y no te pide una clave de API en el chat ni en el código de la aplicación.
+
+    <Note>
+      La URL base del conector de Firecrawl en Replit ya incluye `/v2`. Con `@replit/connectors-sdk`, usa la ruta relativa al conector `/scrape`, no `/v1/scrape`.
+    </Note>
+  </Step>
+</Steps>
+
+<div id="billing-and-credentials">
+  ## Facturación y credenciales
+</div>
+
+<AccordionGroup>
+  <Accordion title="Configuración predeterminada de Replit" icon="bolt">
+    * **Credencial y facturación:** Replit proporciona su clave de API. Las solicitudes a Firecrawl se facturan a través de Replit y se descuentan de los créditos de Replit.
+    * **Cuenta de Firecrawl:** No es necesaria.
+    * **Oferta de 10.000 créditos:** No incluida.
+  </Accordion>
+
+  <Accordion title="Reclamar créditos de socio" icon="gift">
+    * **Credencial y facturación:** Replit aprovisiona una nueva clave de Firecrawl. El uso de Firecrawl consume los créditos de socio reclamados.
+    * **Cuenta de Firecrawl:** Se aprovisionan una cuenta y una clave asociadas al socio.
+    * **Oferta de 10.000 créditos:** Se incluye una vez por usuario y socio, y vence 3 meses después de solicitarse.
+    * **Indicador de éxito:** La oferta aparece como **Claimed** y Replit indica que usa su clave de API en lugar de facturar el uso del conector a través de Replit.
+  </Accordion>
+
+  <Accordion title="Clave de Firecrawl existente" icon="key">
+    * **Credencial y facturación:** Usted proporciona la clave. El uso se rige por el plan, los créditos y los límites de esa cuenta de Firecrawl.
+    * **Cuenta de Firecrawl:** Necesaria.
+    * **Oferta de 10.000 créditos:** No se añade a la clave existente.
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+  Guarde las claves de API de Firecrawl en la configuración personalizada del conector. No pegue claves en los prompts de Agent, el código fuente de la aplicación, las capturas de pantalla, los registros ni las pull requests.
+</Warning>
+
+<Tip>
+  **Oferta de lanzamiento:** Abra **Manage**, seleccione **Use custom configurations** y reclame **10.000 créditos gratuitos de Firecrawl** para aprovisionar una clave **nueva**. La oferta se aplica una vez por usuario y socio, vence 3 meses después de aplicarse y utiliza los límites del plan Free de Firecrawl. Pegar una clave existente no añade la oferta a esa clave. La facturación predeterminada de Replit no la incluye. Consulte [Créditos de socio](/es/partner-credits) para conocer todos los términos.
+</Tip>
+
+<div id="usage-patterns">
+  ## Patrones de uso
+</div>
+
+<Tabs>
+  <Tab title="Análisis de la competencia">
+    **Buscar y hacer scraping de la competencia**
+
+    1. Pide a Agent que encuentre competidores con Firecrawl `/search`
+    2. Haz scraping de cada sitio de la competencia para obtener información clave
+    3. Muestra nombres, resúmenes y detalles en una interfaz de usuario sencilla
+
+    **Prompt de ejemplo:**
+
+    ```
+    Crea una aplicación de análisis de la competencia con Firecrawl. Busca competidores, haz scraping de sus sitios y muestra resúmenes.
+    ```
+  </Tab>
+
+  <Tab title="Monitoreo web">
+    **Aplicación de monitoreo de palabras clave con `/monitor`**
+
+    Utiliza la API de Firecrawl en la aplicación que crea tu Agent.
+
+    1. Pide a Agent que cree una aplicación que llame a Firecrawl `/monitor`
+    2. Permite que los usuarios añadan palabras clave y sitios objetivo
+    3. Ejecuta comprobaciones programadas y escaneos manuales, y muestra cambios significativos
+
+    **Prompt de ejemplo:**
+
+    ```
+    Crea una aplicación de monitoreo de palabras clave con Firecrawl que supervise los sitios seleccionados y alerte sobre cambios significativos.
+    ```
+  </Tab>
+</Tabs>
+
+<div id="industry-use-cases">
+  ## Casos de uso por sector
+</div>
+
+<AccordionGroup>
+  <Accordion title="Comercio electrónico" icon="cart-shopping">
+    * Seguimiento de precios y catálogo de la competencia
+    * Verificación de disponibilidad de productos
+    * Agregación de reseñas y listados
+  </Accordion>
+
+  <Accordion title="Marketing y SEO" icon="bullhorn">
+    * Supervisión del contenido de la competencia
+    * Auditorías SEO a partir de páginas actualizadas
+    * Generación de briefs de investigación
+  </Accordion>
+
+  <Accordion title="Ventas y generación de leads" icon="briefcase">
+    * Enriquecimiento de datos de empresas a partir de páginas web públicas
+    * Asistentes de investigación de leads
+    * Generación de briefs de cuentas para prospección
+  </Accordion>
+
+  <Accordion title="Soporte y conocimiento" icon="book">
+    * Asistentes de documentación siempre actualizados
+    * Supervisión del centro de ayuda y del registro de cambios
+    * Herramientas internas que responden con información de fuentes actualizadas
+  </Accordion>
+</AccordionGroup>
+
+<div id="official-blog-post">
+  ## Publicación oficial del blog
+</div>
+
+<Card title="Firecrawl ya es un conector oficial de Replit" icon="rocket" href="https://www.firecrawl.dev/blog/firecrawl-official-replit-connector">
+  Resumen del lanzamiento: conecta Firecrawl a tu espacio de trabajo de Replit y crea aplicaciones con datos web en tiempo real.
+</Card>
+
+<div id="troubleshooting">
+  ## Solución de problemas
+</div>
+
+<div id="firecrawl-is-missing-from-integrations">
+  ### Firecrawl no aparece en Integrations
+</div>
+
+* Confirma que el espacio de trabajo tenga el plan Core, Pro o Enterprise.
+* Pide al administrador del espacio de trabajo o de la organización que abra **Integrations → Habilitar nuevo conector** y habilite Firecrawl.
+* Confirma que la aplicación pertenezca al espacio de trabajo o a la organización donde se habilitó Firecrawl.
+
+<div id="agent-asks-for-an-api-key">
+  ### El Agent solicita una clave de API
+</div>
+
+* Confirma que Firecrawl esté habilitado en el espacio de trabajo o la organización actuales.
+* Pide al Agent que añada el **conector de Firecrawl** a la aplicación y use su vinculación de conector del lado del servidor.
+* Si quieres usar tu propia clave, abre **Manage**, selecciona **Use custom configurations** y añádela ahí en lugar de pegarla en el prompt.
+
+<div id="agent-reports-withheld-credentials">
+  ### El Agent informa de credenciales no disponibles
+</div>
+
+Una consulta inline de Agent puede devolver un resultado de credencial vacío incluso cuando Firecrawl está conectado. Pide a Agent que ejecute la prueba mediante la vinculación de `@replit/connectors-sdk` del lado del servidor de la aplicación. Para el scraping de Firecrawl v2, utiliza la ruta relativo al conector `/scrape`; usar `/v1/scrape` genera una solicitud incorrecta a `/v2/v1/scrape`.
+
+Si **Manage** muestra la configuración personalizada como **Claimed** e indica que Replit está usando tu clave de API, la reclamación de créditos de socio se realizó correctamente, aunque el sandbox inline de Agent no pueda leer la credencial directamente.
+
+<div id="the-credit-claim-option-is-unavailable">
+  ### La opción para reclamar créditos no está disponible
+</div>
+
+* Confirma que seleccionaste **Use custom configurations** en **Manage**.
+* Comprueba que el usuario no haya recibido ya la oferta del socio de Replit; solo se aplica una vez por usuario y por socio.
+* Pide al administrador del espacio de trabajo o de la organización que confirme que tienes acceso a la configuración del conector.
+
+El uso de Replit puede tardar hasta 30 minutos en aparecer en el panel de uso.
+
+<div id="faqs">
+  ## Preguntas frecuentes
+</div>
+
+<AccordionGroup>
+  <Accordion title="¿Necesito una clave de API de Firecrawl?">
+    No. De forma predeterminada, el conector usa la clave de API de Replit y el uso se factura a tu cuenta de Replit por solicitud. En **Manage**, selecciona **Use custom configurations** para pegar tu propia clave de API de Firecrawl o reclamar la oferta de 10.000 créditos, que te proporciona una nueva clave. La oferta se aplica una vez por usuario y socio, y vence después de 3 meses.
+  </Accordion>
+
+  <Accordion title="¿Qué planes de Replit incluyen el conector?">
+    Las integraciones de Replit están disponibles en los planes **Core**, **Pro** y **Enterprise**. Abre Integrations en tu espacio de trabajo y busca Firecrawl.
+  </Accordion>
+
+  <Accordion title="¿En qué se diferencia de que Replit use Firecrawl internamente?">
+    Replit Agent ha usado Firecrawl entre bastidores para obtener documentación y contenido web actualizados. El conector oficial pone Firecrawl a disposición de tus aplicaciones desde el catálogo de Integrations.
+  </Accordion>
+</AccordionGroup>
+
+<div id="related-resources">
+  ## Recursos relacionados
+</div>
+
+<CardGroup cols={2}>
+  <Card title="Gestionar conectores de Replit" icon="book" href="https://docs.replit.com/replitai/managing-connectors">
+    Disponibilidad de planes, configuración, acceso y administración de conectores
+  </Card>
+
+  <Card title="Integrations de Replit Agent" icon="plug" href="https://docs.replit.com/features/integrations/overview">
+    Cómo Agent encuentra y usa integraciones
+  </Card>
+
+  <Card title="Caso de cliente" icon="newspaper" href="https://www.firecrawl.dev/blog/how-replit-uses-firecrawl-to-power-ai-agents">
+    Cómo Replit potencia Agent con Firecrawl
+  </Card>
+</CardGroup>

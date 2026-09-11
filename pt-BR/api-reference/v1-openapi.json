@@ -272,6 +272,11 @@
           "jsonOptions": {
             "description": "Objeto JSON de opções",
             "properties": {
+              "checkPromptInjection": {
+                "default": false,
+                "description": "Quando ativado, verifica se há tentativas de injeção de prompt no conteúdo extraído da página antes de executar a extração. Se uma injeção for detectada, a solicitação falhará com o status 403 e o código de erro SCRAPE_PROMPT_INJECTION_DETECTED. Adiciona 4 créditos quando a verificação é executada. O padrão é false.",
+                "type": "boolean"
+              },
               "prompt": {
                 "description": "O prompt a ser usado para extração sem esquema (opcional)",
                 "type": "string"
@@ -328,7 +333,7 @@
             "type": "boolean"
           },
           "proxy": {
-            "description": "Especifica o tipo de proxy a ser usado.\n\n - **basic**: Proxies para scraping de sites sem ou com soluções anti-bot básicas. Rápido e geralmente funciona.\n - **enhanced**: Proxies avançados para scraping de sites com soluções anti-bot mais sofisticadas. Mais lento, mas mais confiável em certos sites. Custa até 5 créditos por requisição.\n - **auto**: O Firecrawl tentará automaticamente fazer o scraping novamente com proxies enhanced se o proxy basic falhar. Se a nova tentativa com enhanced for bem-sucedida, 5 créditos serão cobrados pelo scraping. Se a primeira tentativa com basic for bem-sucedida, apenas o custo normal será cobrado.\n\nSe você não especificar um proxy, o Firecrawl usará basic por padrão.",
+            "description": "Especifica o tipo de proxy a ser usado.\n\n - **basic**: Proxies para scraping de sites sem ou com soluções anti-bot básicas. Rápido e geralmente funciona.\n - **enhanced**: Proxies avançados para scraping de sites com soluções anti-bot mais sofisticadas. Mais lento, mas mais confiável em certos sites. Cobrado pelo mesmo custo em créditos que basic.\n - **auto**: O Firecrawl tentará automaticamente fazer o scraping novamente com proxies enhanced se o proxy basic falhar. Proxies enhanced não têm custo adicional em créditos, portanto, de qualquer forma, apenas o custo normal será cobrado.\n\nSe você não especificar um proxy, o Firecrawl usará basic por padrão.",
             "enum": [
               "basic",
               "enhanced",
@@ -3330,7 +3335,7 @@
                           "type": "string"
                         },
                         "plan_credits": {
-                          "description": "Número de créditos do plano. Isso não inclui créditos de cupons, pacotes de créditos ou créditos de recarga automática.",
+                          "description": "Número de créditos do plano. Isso não inclui créditos de cupons ou créditos adicionados por pagamento conforme o uso.",
                           "example": 500000,
                           "type": "number"
                         },

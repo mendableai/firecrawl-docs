@@ -139,10 +139,10 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   * Tipo: Lista de strings de categorias ou mapas
   * Use quando: você quer filtrar os resultados por categoria.
   * Valores confirmados:
-    * `"github"`: resultados focados em GitHub
-    * `"research"`: resultados de pesquisa e acadêmicos
+    * `"developer"`: resultados do índice para desenvolvedores
+    * `"research"`: resultados de research e acadêmicos
     * `"pdf"`: resultados focados em PDF
-    * `{type: "github" | "research" | "pdf"}`: formato de mapa de categoria tipado
+    * `{type: "developer" | "research" | "pdf"}`: formato de mapa de categoria tipado
 
 * `options.limit`
   * Tipo: Integer
@@ -166,7 +166,7 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
 
 * `options.scrapeOptions`
   * Tipo: `ScrapeOptions`
-  * Use quando: você quer fazer scraping de cada resultado de busca (veja os parâmetros de Scrape para os campos).
+  * Use quando: você quer fazer scraping de cada resultado de busca (veja os parâmetros de scraping para os campos).
 
 * `options.integration`
   * Tipo: String
@@ -176,26 +176,26 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   ## Scraping
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### Por que usar
 </div>
 
 Use scraping quando você já tiver uma URL e quiser conteúdo estruturado em um ou mais formatos.
 
-<div id="preferred-sdk-methods">
+<div id="preferred-sdk-methods-2">
   ### Métodos recomendados do SDK
 </div>
 
 * `client.scrape(url)`
 * `client.scrape(url, options)`
 
-<div id="return-value">
+<div id="return-value-2">
   ### Valor de retorno
 </div>
 
 `scrape` retorna `Document`. Os getters mais comuns incluem `getMarkdown()`, `getHtml()`, `getRawHtml()`, `getJson()`, `getMetadata()`, `getLinks()`, `getAudio()`, `getVideo()` e campos adicionais quando os formatos correspondentes são solicitados.
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Exemplo básico
 </div>
 
@@ -206,7 +206,7 @@ Document doc = client.scrape(
 );
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Exemplo complexo
 </div>
 
@@ -247,7 +247,7 @@ ScrapeOptions options = ScrapeOptions.builder()
 Document doc = client.scrape("https://example.com/pricing", options);
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### Parâmetros
 </div>
 
@@ -365,13 +365,13 @@ Document doc = client.scrape("https://example.com/pricing", options);
   ## Interagir
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### Por que usar
 </div>
 
 Use interagir quando uma página exigir ações no navegador ou execução de código após o início do scraping.
 
-<div id="preferred-sdk-methods">
+<div id="preferred-sdk-methods-3">
   ### Métodos recomendados do SDK
 </div>
 
@@ -379,7 +379,7 @@ Use interagir quando uma página exigir ações no navegador ou execução de c�
 * `client.interact(jobId, code, language, timeout)` — `timeout` é em segundos (1–300), ou null para omitir e usar o padrão da API (30 segundos)
 * `client.interact(jobId, code, language, timeout, origin)` — a string `origin` opcional é enviada apenas quando não é nula (atribuição da requisição)
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Exemplo básico
 </div>
 
@@ -394,7 +394,7 @@ BrowserExecuteResponse result = client.interact(
 );
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Exemplo complexo
 </div>
 
@@ -439,7 +439,7 @@ BrowserDeleteResponse stopped = client.stopInteractiveBrowser("<scrapeJobId>");
 * `getCreditsBilled()`: Integer (pode ser nulo)
 * `getError()`: String (pode ser nulo)
 
-<div id="parameters">
+<div id="parameters-3">
   ### Parâmetros
 </div>
 

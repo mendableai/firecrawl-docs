@@ -3,68 +3,43 @@ title: "Recherche web et scraping MCP dans Windsurf"
 description: "Ajoutez le scraping et la recherche web à Windsurf en 2 minutes"
 ---
 
-Ajoutez des fonctionnalités de scraping et de recherche web à Windsurf avec Firecrawl MCP.
+Ajoutez à Windsurf les outils de recherche, de scraping et de parsing sans clé de Firecrawl via le serveur MCP hébergé.
 
 <div id="quick-setup">
   ## Configuration rapide
 </div>
 
-<div id="1-get-your-api-key">
-  ### 1. Obtenez votre clé API
-</div>
-
-Inscrivez-vous sur [firecrawl.dev/app](https://firecrawl.dev/app) et copiez votre clé API.
-
-<div id="2-add-to-windsurf">
-  ### 2. Ajouter à Windsurf
-</div>
-
-Ajoutez ceci à votre `./codeium/windsurf/model_config.json` :
+Ouvrez **Paramètres → Outils → Paramètres de Windsurf → Ajouter un serveur** ou modifiez `~/.codeium/windsurf/mcp_config.json` :
 
 ```json
 {
   "mcpServers": {
     "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "VOTRE_CLE_API"
-      }
+      "url": "https://mcp.firecrawl.dev/v2/mcp"
     }
   }
 }
 ```
 
-Remplacez `YOUR_API_KEY` par votre clé API Firecrawl.
+Redémarrez Windsurf et vérifiez que `firecrawl_search`, `firecrawl_scrape` et `firecrawl_parse` sont disponibles.
 
-<div id="3-restart-windsurf">
-  ### 3. Redémarrez Windsurf
+L’accès sans clé est soumis à des limites partagées entre les utilisateurs d’une même adresse IP publique. Connectez-vous depuis un client interactif avec [For Humans](/fr/mcp-server/oauth), ou [ajoutez une clé API](/fr/mcp-server/keyless#add-an-api-key) pour une utilisation sans intervention.
+
+<div id="try-it">
+  ## Essayez
 </div>
 
-Terminé ! Windsurf peut maintenant rechercher et explorer le Web.
+```text
+Rechercher les dernières notes de version de Tailwind CSS et résumer les sources.
+```
 
-<div id="quick-demo">
-  ## Démonstration rapide
+```text
+Scraper https://firecrawl.dev et expliquer ce que c'est.
+```
+
+<div id="troubleshooting">
+  ## Dépannage
 </div>
 
-Essayez ceci dans Windsurf :
-
-**Recherche :**
-
-```
-Rechercher les dernières fonctionnalités de Tailwind CSS
-```
-
-**Extraction :**
-
-```
-Scraper firecrawl.dev et expliquer ce que c'est
-```
-
-**Accéder à la documentation :**
-
-```
-Trouver et scraper la documentation d'authentification Supabase
-```
-
-Les agents IA de Windsurf utiliseront automatiquement les outils de Firecrawl.
+* **Le serveur ne se connecte pas :** vérifiez l’URL hébergée et consultez l’état MCP de Windsurf.
+* **Crawl ou un autre outil est absent :** le mode sans clé expose uniquement recherche, scraping et parsing. Connectez-vous avec OAuth ou une clé API pour accéder à un ensemble d’outils plus complet.
