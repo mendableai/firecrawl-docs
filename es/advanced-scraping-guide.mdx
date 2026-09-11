@@ -619,15 +619,17 @@ Al usar el endpoint `/v2/crawl`, puedes personalizar el comportamiento del rastr
   #### Filtrado de rutas
 </div>
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `includePaths` | `array` | — | Patrones de expresiones regulares a incluir para las URL (solo pathname de forma predeterminada). |
-| `excludePaths` | `array` | — | Patrones de expresiones regulares a excluir para las URL (solo pathname de forma predeterminada). |
-| `regexOnFullURL` | `boolean` | `false` | Compara los patrones contra la URL completa en lugar de solo el pathname. |
+| Parameter        | Type      | Default | Description                                                                                       |
+| ---------------- | --------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `includePaths`   | `array`   | —       | Patrones de expresiones regulares a incluir para las URL (solo pathname de forma predeterminada). |
+| `excludePaths`   | `array`   | —       | Patrones de expresiones regulares a excluir para las URL (solo pathname de forma predeterminada). |
+| `regexOnFullURL` | `boolean` | `false` | Compara los patrones contra la URL completa en lugar de solo el pathname.                         |
 
 <Warning>
   La URL inicial también se valida contra `includePaths`. Si no coincide con ninguno de los patrones, el rastreo puede devolver 0 páginas.
 </Warning>
+
+Los patrones usan la sintaxis de expresiones regulares de Rust (estilo RE2), por lo que no se admiten look-around ni retrorreferencias; un patrón que no compila se rechaza con un `400`. Cada campo acepta como máximo 1000 patrones de hasta 2000 caracteres cada uno, y `includePaths` y `excludePaths` en conjunto pueden contener como máximo 1000 patrones y 100.000 caracteres. Para el filtrado basado en palabras clave, envía un patrón corto por término en lugar de combinar los términos en una única alternancia larga.
 
 <div id="crawl-scope">
   #### Alcance del rastreo

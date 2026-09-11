@@ -1611,10 +1611,12 @@
                     "type": "number"
                   },
                   "excludePaths": {
-                    "description": "クロール対象からURLを除外するための URL パス名の正規表現パターンです。たとえば、ベース URL が firecrawl.dev の場合に `\"excludePaths\": [\"blog/.*\"]` を設定すると、https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap のように、そのパターンに一致する結果はすべて除外されます。",
+                    "description": "クロール対象から一致するURLを除外するためのURLパス名の正規表現パターンです。たとえば、ベースURLが firecrawl.dev の場合に `\"excludePaths\": [\"blog/.*\"]` を設定すると、https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap のように、そのパターンに一致する結果はすべて除外されます。パターンにはRustの正規表現（RE2形式）構文を使用します。先読み・後読みと後方参照はサポートされず、コンパイルできないパターンは400エラーで拒否されます。各フィールドには、最大2,000文字のパターンを最大1,000個まで指定できます。また、includePaths と excludePaths を合わせて、パターンは最大1,000個、合計文字数は最大100,000文字までです。キーワード形式の絞り込みでは、複数の語を1つの長い選択パターンにまとめるのではなく、語ごとに短いパターンを1つ送信してください。",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "ignoreQueryParameters": {
@@ -1628,10 +1630,12 @@
                     "type": "boolean"
                   },
                   "includePaths": {
-                    "description": "クロールに含めるURLを指定するための、URLパス名に対する正規表現パターンです。指定したパターンに一致するパスのみがレスポンスに含まれます。たとえば、ベースURLが firecrawl.dev の場合に \"includePaths\": [\"blog/.*\"] を設定すると、そのパターンに一致する結果のみが含まれます（例: https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap）。",
+                    "description": "クロールに含めるURLを指定するための、URLパス名に対する正規表現パターンです。指定したパターンに一致するパスのみがレスポンスに含まれます。たとえば、ベースURLが firecrawl.dev の場合に \"includePaths\": [\"blog/.*\"] を設定すると、そのパターンに一致する結果のみが含まれます（例: https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap）。パターンにはRustの正規表現（RE2形式）構文を使用します。先読み・後読みと後方参照はサポートされておらず、コンパイルできないパターンは400エラーで拒否されます。各フィールドでは、1パターンあたり最大2000文字、最大1000パターンを指定できます。また、includePaths と excludePaths を合わせて、最大1000パターン、合計100,000文字まで指定できます。キーワード形式の絞り込みでは、複数の語を1つの長い選択パターンにまとめるのではなく、語ごとに短いパターンを1つ送信してください。",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "limit": {

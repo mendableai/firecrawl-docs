@@ -6625,10 +6625,12 @@
                     "type": "number"
                   },
                   "excludePaths": {
-                    "description": "用于将匹配的 URL 排除在爬取之外的 URL 路径名正则表达式模式。例如，如果你为基础 URL firecrawl.dev 设置 `\"excludePaths\": [\"blog/.*\"]`，那么所有匹配该模式的结果都会被排除，例如：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。",
+                    "description": "用于将匹配的 URL 排除在爬取之外的 URL 路径名正则表达式模式。例如，如果你为基础 URL firecrawl.dev 设置 `\"excludePaths\": [\"blog/.*\"]`，那么所有匹配该模式的结果都会被排除，例如：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。模式使用 Rust 正则表达式（RE2 风格）语法：不支持环视和反向引用，无法编译的模式会被拒绝并返回 400。每个字段最多接受 1000 个模式，每个模式最多 2000 个字符；includePaths 和 excludePaths 合计最多可包含 1000 个模式和 100,000 个字符。对于关键字式过滤，请为每个术语发送一个简短模式，而不要将多个术语合并为一个很长的交替模式。",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "ignoreQueryParameters": {
@@ -6642,10 +6644,12 @@
                     "type": "boolean"
                   },
                   "includePaths": {
-                    "description": "在抓取过程中用于匹配 URL 的 URL 路径正则表达式规则。只有路径满足这些规则的页面才会包含在响应中。注意：起始 URL 也会基于这些规则进行检查——如果起始 URL 不匹配，本次抓取可能返回 0 个页面。例如，如果你在基础 URL firecrawl.dev/blog 下设置 \"includePaths\": [\"blog/.*\"]，那么结果中只会包含 /blog/ 下的页面，比如：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。",
+                    "description": "在爬取中包含匹配 URL 的 URL 路径名正则表达式模式。只有与指定模式匹配的路径才会包含在响应中。注意：起始 URL 也会根据这些模式进行检查——如果不匹配，爬取可能返回 0 个页面。例如，如果你为基础 URL firecrawl.dev/blog 设置 \"includePaths\": [\"blog/.*\"]，结果中只会包含 /blog/ 下的页面，例如 https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。模式使用 Rust 正则表达式（RE2 风格）语法：不支持环视和反向引用，无法编译的模式会以 400 被拒绝。每个字段最多接受 1000 个模式，每个模式最多 2000 个字符；includePaths 和 excludePaths 合计最多可包含 1000 个模式和 100,000 个字符。对于关键词式过滤，请为每个术语发送一个简短模式，而不要将术语合并为单个很长的交替模式。",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "limit": {

@@ -6625,10 +6625,12 @@
                     "type": "number"
                   },
                   "excludePaths": {
-                    "description": "Motifs d’expressions régulières pour les chemins d’URL qui excluent du crawl les URL correspondantes. Par exemple, si vous définissez `\"excludePaths\": [\"blog/.*\"]` pour l’URL de base firecrawl.dev, tous les résultats correspondant à ce motif seront exclus, comme https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap.",
+                    "description": "Motifs d’expressions régulières pour les chemins d’URL qui excluent du crawl les URL correspondantes. Par exemple, si vous définissez `\"excludePaths\": [\"blog/.*\"]` pour l’URL de base firecrawl.dev, tous les résultats correspondant à ce motif seront exclus, comme https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap. Les motifs utilisent la syntaxe des expressions régulières Rust (de type RE2) : les assertions avant/arrière et les références arrière ne sont pas prises en charge, et un motif qui ne se compile pas est rejeté avec un code 400. Chaque champ accepte au maximum 1 000 motifs de 2 000 caractères maximum chacun, et includePaths et excludePaths ne peuvent contenir ensemble que 1 000 motifs et 100 000 caractères au total. Pour le filtrage de type mot-clé, envoyez un motif court par terme plutôt que de combiner les termes dans une seule longue alternance.",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "ignoreQueryParameters": {
@@ -6642,10 +6644,12 @@
                     "type": "boolean"
                   },
                   "includePaths": {
-                    "description": "Motifs d’expressions régulières appliqués aux chemins d’URL qui définissent les URL à inclure dans l’exploration. Seuls les chemins correspondant aux motifs spécifiés seront inclus dans la réponse. Remarque : l’URL de départ est également vérifiée par rapport à ces motifs — si elle ne correspond pas, l’exploration peut ne renvoyer aucune page. Par exemple, si vous définissez \"includePaths\" : [\"blog/.*\"] pour l’URL de base firecrawl.dev/blog, seules les pages sous /blog/ seront incluses dans les résultats, comme https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap.",
+                    "description": "Motifs d’expressions régulières appliqués aux chemins d’URL qui incluent les URL correspondantes dans le crawl. Seuls les chemins correspondant aux motifs spécifiés seront inclus dans la réponse. Remarque : l’URL de départ est également vérifiée par rapport à ces motifs — si elle ne correspond pas, le crawl peut renvoyer 0 page. Par exemple, si vous définissez \"includePaths\" : [\"blog/.*\"] pour l’URL de base firecrawl.dev/blog, seules les pages sous /blog/ seront incluses dans les résultats, comme https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap. Les motifs utilisent la syntaxe des expressions régulières Rust (style RE2) : les assertions avant/arrière et les références arrière ne sont pas prises en charge, et un motif qui ne se compile pas est rejeté avec une erreur 400. Chaque champ accepte au maximum 1 000 motifs de 2 000 caractères maximum chacun, et includePaths et excludePaths peuvent contenir ensemble au maximum 1 000 motifs et 100 000 caractères au total. Pour le filtrage par mots-clés, envoyez un motif court par terme plutôt que de combiner les termes dans une seule longue alternance.",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "limit": {
