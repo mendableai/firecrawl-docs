@@ -45,19 +45,16 @@ import ProfilePython from "/snippets/ja/v2/interact/profile/python.mdx";
 import ProfileJS from "/snippets/ja/v2/interact/profile/js.mdx";
 import ProfileCURL from "/snippets/ja/v2/interact/profile/curl.mdx";
 import ProfileCLI from "/snippets/ja/v2/interact/profile/cli.mdx";
-import InteractFeedbackCTA from "/snippets/ja/interact-feedback-cta.mdx";
 
 ページをスクレイピングしてクリーンなデータを取得し、その後 `/interact` を呼び出して、そのページ上でアクションを開始します: ボタンのクリック、フォームへの入力、動的コンテンツの抽出、さらに深いページへの移動が可能です。やりたいことを記述するだけでもよく、完全に制御したい場合はコードを書くこともできます。
 
 Interact は次のような場合に使用します:
 
-* **ログインが必要なページをスクレイピング** — 一度サインインすれば、authentication 後にのみ表示されるページを読み取れます。[Persistent Profiles with Scrape + Interact](#persistent-profiles-with-scrape-+-interact) を参照してください。
-* **Pagination をクリックして進む** — ページを送りながら各結果セットを取得し、1つの セッション を使い回します。[Interact via prompting](#interact-via-prompting) と [Session Lifecycle](#session-lifecycle) を参照してください。
-* **フォームの入力と送信** — prompt から、または Playwright のコードから、フィールドに入力して送信します。[Interact via prompting](#interact-via-prompting) と [Running Code](#running-code) を参照してください。
-* **authentication 済みの セッション を再利用** — browser の状態を名前付きプロファイルに保存し、以降のスクレイピングで読み込みます。[Persistent Profiles with Scrape + Interact](#persistent-profiles-with-scrape-+-interact) を参照してください。
+* **ログインが必要なページをスクレイピング** — 一度サインインすれば、authentication 後にのみ表示されるページを読み取れます。[Scrape + Interact での永続プロファイル](#persistent-profiles-with-scrape-+-interact) を参照してください。
+* **Pagination をクリックして進む** — ページを送りながら各結果セットを取得し、1つの セッション を使い回します。[プロンプトで操作する](#interact-via-prompting) と [セッションのライフサイクル](#session-lifecycle) を参照してください。
+* **フォームの入力と送信** — prompt から、または Playwright のコードから、フィールドに入力して送信します。[プロンプトで操作する](#interact-via-prompting) と [コードの実行](#running-code) を参照してください。
+* **authentication 済みの セッション を再利用** — ブラウザの状態を名前付きプロファイルに保存し、以降のスクレイピングで読み込みます。[Scrape + Interact での永続プロファイル](#persistent-profiles-with-scrape-+-interact) を参照してください。
 * **スクレイピングを介さずに セッション を開始** — 直接操作できる独立したブラウザを開きます。[Browser Sandbox](/ja/features/browser) を参照してください。
-
-<InteractFeedbackCTA src="docs-interact" />
 
 <div id="choose-the-right-interaction-model">
   ## 適切な操作モデルを選択
