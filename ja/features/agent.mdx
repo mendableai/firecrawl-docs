@@ -45,7 +45,6 @@ import AgentArtifactsJS from "/snippets/ja/v2/agent/artifacts/js.mdx";
 import AgentArtifactsCURL from "/snippets/ja/v2/agent/artifacts/curl.mdx";
 import PlaygroundCTA from "/snippets/ja/shared/playground-cta-agent.mdx";
 import ChooseDataExtractor from "/snippets/ja/shared/choose-data-extractor/from-agent.mdx";
-import AgentFeedbackCTA from "/snippets/ja/agent-feedback-cta.mdx";
 
 **適切なツールの選び方。** **URL がわからない**場合や、Web 全体を自律的に移動しながらデータを収集する必要がある場合は、Agent が適しています。
 
@@ -60,14 +59,12 @@ Firecrawl の `/agent` は、検索・ナビゲーション・データ収集を
   **Research Preview**: Agent はアーリーアクセス段階です。動作が荒削りな部分がありますが、今後大きく改善されていきます。
 </Info>
 
-<AgentFeedbackCTA src="docs-agent" />
-
 Agent は `/extract` の優れた点をすべて引き継ぎつつ、さらに強化しています:
 
-* **URL 不要**: 必要な内容を `prompt` パラメータで記述するだけでよく、URL は任意です
-* **ディープ Web 検索**: サイト内を自律的に検索・巡回し、必要なデータを深部まで探索
-* **高い信頼性と正確性**: 幅広い種類のクエリやユースケースで安定して動作
-* **高速**: 複数ソースを並列処理して結果を素早く取得
+* **URL 不要**: `prompt` パラメータで必要な内容を伝えるだけです。URL の指定は任意です
+* **Deep Web Search**: サイトの奥深くまで自律的に検索・移動して目的のデータを見つけ出します
+* **信頼性と正確性**: 幅広いクエリやユースケースに対応します
+* **高速**: 複数のソースを並列処理し、より早く結果を返します
 
 <PlaygroundCTA />
 

@@ -45,7 +45,6 @@ import ProfilePython from "/snippets/fr/v2/interact/profile/python.mdx";
 import ProfileJS from "/snippets/fr/v2/interact/profile/js.mdx";
 import ProfileCURL from "/snippets/fr/v2/interact/profile/curl.mdx";
 import ProfileCLI from "/snippets/fr/v2/interact/profile/cli.mdx";
-import InteractFeedbackCTA from "/snippets/fr/interact-feedback-cta.mdx";
 
 Scrapez une page pour obtenir des données propres, puis appelez `/interact` pour commencer à effectuer des actions sur cette page : cliquer sur des boutons, remplir des formulaires, extraire du contenu dynamique ou naviguer plus en profondeur. Décrivez simplement ce que vous voulez faire, ou écrivez du code si vous avez besoin d’un contrôle total.
 
@@ -54,10 +53,8 @@ Utilisez Interact lorsque vous avez besoin de :
 * **Scrape derrière un formulaire de connexion** — connectez-vous une fois, puis lisez les pages qui n&#39;apparaissent qu&#39;après authentification. See [Profils persistants avec Scrape + Interact](#persistent-profiles-with-scrape-+-interact).
 * **Parcourir la pagination par clics** — passez à la page suivante et récupérez chaque ensemble de résultats en réutilisant une seule session. See [Interagir par prompt](#interact-via-prompting) et [Cycle de vie d’une session](#session-lifecycle).
 * **Remplir et soumettre un formulaire** — saisissez du texte dans les champs et soumettez, depuis un prompt ou depuis du code Playwright. See [Interagir par prompt](#interact-via-prompting) et [Exécution de code](#running-code).
-* **Réutiliser une session authentifiée** — enregistrez l&#39;état du browser dans un profil nommé et chargez-le lors de scrapes ultérieurs. See [Profils persistants avec Scrape + Interact](#persistent-profiles-with-scrape-+-interact).
+* **Réutiliser une session authentifiée** — enregistrez l&#39;état du navigateur dans un profil nommé et chargez-le lors de scrapes ultérieurs. See [Profils persistants avec Scrape + Interact](#persistent-profiles-with-scrape-+-interact).
 * **Démarrer une session sans scraping préalable** — ouvrez un browser autonome que vous pilotez directement. See [Browser Sandbox](/fr/features/browser).
-
-<InteractFeedbackCTA src="docs-interact" />
 
 <div id="choose-the-right-interaction-model">
   ## Choisissez le bon modèle d’interaction

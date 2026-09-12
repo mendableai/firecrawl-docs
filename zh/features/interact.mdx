@@ -45,7 +45,6 @@ import ProfilePython from "/snippets/zh/v2/interact/profile/python.mdx";
 import ProfileJS from "/snippets/zh/v2/interact/profile/js.mdx";
 import ProfileCURL from "/snippets/zh/v2/interact/profile/curl.mdx";
 import ProfileCLI from "/snippets/zh/v2/interact/profile/cli.mdx";
-import InteractFeedbackCTA from "/snippets/zh/interact-feedback-cta.mdx";
 
 抓取页面以获取干净的数据，然后调用 `/interact` 在该页面中开始执行 actions：点击按钮、填写表单、提取动态内容，或进一步深入导航。只需描述你想做什么；如果需要完全控制，也可以编写代码。
 
@@ -56,8 +55,6 @@ import InteractFeedbackCTA from "/snippets/zh/interact-feedback-cta.mdx";
 * **填写并提交表单** —— 通过 prompt 或 Playwright 代码在输入框中填写内容并提交。请参见 [通过 prompt 交互](#interact-via-prompting) 和 [运行代码](#running-code)。
 * **复用已通过身份验证的 会话** —— 将浏览器状态保存到具名 profile，并在后续抓取 中加载。请参见 [使用 抓取 + 交互 的持久化配置文件](#persistent-profiles-with-scrape-+-interact)。
 * **无需先 抓取，直接 start 一个 会话** —— 打开一个由你直接操控的独立浏览器。请参见 [浏览器沙箱](/zh/features/browser)。
-
-<InteractFeedbackCTA src="docs-interact" />
 
 <div id="choose-the-right-interaction-model">
   ## 选择合适的交互模型
