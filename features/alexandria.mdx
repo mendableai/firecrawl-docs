@@ -347,4 +347,50 @@ if catalogue.items and catalogue.items[0].get("next"):
 
 An item's `next` reveals more detail. The catalogue's top-level `next` advances to the next page while preserving the filters. Supply `categories`, `groups`, or `capabilities` when you already know what to look for; `level` is inferred from those selectors.
 
-For contextual matches beside web results, add `skills: true` to a Search request. Semantic and domain matches share the `tools` array; `matchedBy` and `matchedUrls` explain why each tool appeared. Search still requires a query. After scraping a page, pass its URL to Find Tools to discover relevant tools.
+For contextual matches beside web results, add `domainTools: true` to a Search request. When `sources` includes `alexandria`, URL-based matching runs by default — set `domainTools: false` to turn it off. Without an `alexandria` source, `domainTools: true` on its own adds domain-matched tools alongside ordinary web results. Semantic and domain matches share the `tools` array in `data.tools`, up to `limit` results per discovery source (semantic and domain); each item includes `matchedBy` and `matchedUrls` explaining why it appeared. Search still requires a query. Tool discovery is free and is never counted in `creditsUsed`. After scraping a page, pass its URL to Find Tools to discover relevant tools.
+
+## Domain tools on scrape
+
+An ordinary scrape can also request domain-matched tools. Add `domainTools: true` (default off) to a `/v2/scrape` request; if the team has Exchange access, the response includes `data.tools` — tools matched to the scraped page's domain, in the same shape as the tools returned by search.
+
+```bash cURL
+curl https://api.firecrawl.dev/v2/scrape \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "url": "https://podcasts.apple.com",
+  "domainTools": true
+}'
+```
+
+`data.tools` lists the matched tools, each with `matchedBy` and `matchedUrls`, the same as the `tools` array returned from search.
+
+## Execution idempotency and errors
+
+Executing a tool through `POST /v2/scrape` with `exchange` is idempotent per request ID. Send `x-request-id` as the idempotency key — 1 to 128 characters of letters, digits, `.`, `_`, `:`, or `-` — and the response echoes it back. Replaying the same id for a request that already completed returns the original response and the same `scrape_id`, without re-executing the tool.
+
+Errors use a consistent envelope:
+
+```json
+{
+  "success": false,
+  "error": "string",
+  "code": "string (optional)",
+  "chargeId": "string (optional)"
+}
+```
+
+| Status | `code` | Meaning | Retry |
+| --- | --- | --- | --- |
+| 409 | `duplicate_request` | This request ID already belongs to a different payload. | Use a new request ID for the new payload. |
+| 409 | `request_in_flight` | A request with this ID is still running. | Retry with the same ID once it finishes. |
+| 503 | `request_unresolved` | The outcome is uncertain. | Keep the same ID for reconciliation; never start a new request for the same work. |
+| 404 | `unknown_provider` | Nothing was executed. | Safe to retry with the same ID once the cause is fixed. |
+| 402 | `insufficient_credits` | Nothing was executed. | Safe to retry with the same ID once the cause is fixed. |
+| 503 | `billing_unavailable` | Nothing was executed. | Safe to retry with the same ID once the cause is fixed. |
+
+Other Exchange refusals are relayed as-is, with the provider's status and `code` (for example, 402 `credit_budget_exceeded`), and nothing was executed.
+
+A 403 with `code: "THIRD_PARTY_DATA_TERMS_REQUIRED"` includes `requiresAction.url`: an org admin must accept the provider's terms at that URL before the request can proceed.
+
+`/exchange/retrieve` single-call requests return errors the same way, relaying the Exchange's status with `{ "success": false, "code": "...", "error": "..." }`.
