@@ -241,7 +241,7 @@ async function play(scene, mine){
   var t2 = toolLine('firecrawl.scrape', scene.calls, mine);
   var q2 = el('row ind g', mine);
   q2.innerHTML = '<span class="d mk">⎿</span>';
-  await stream(q2, [['exchange: { ' + scene.callQ + ' }', 'd']], 11, mine);
+  await stream(q2, [['alexandria: { ' + scene.callQ + ' }', 'd']], 11, mine);
   await wait(3000); if (run !== mine) return;
   toolDone(t2);
 

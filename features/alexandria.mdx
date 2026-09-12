@@ -148,9 +148,9 @@ curl https://api.firecrawl.dev/v2/search \
         "paginated": true
       },
       "examples": {
-        "javascript": "const requestId = \"<unique-request-id>\";\nconst response = await fetch(\"https://api.firecrawl.dev/v2/scrape\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer \" + process.env.FIRECRAWL_API_KEY,\n    \"Content-Type\": \"application/json\",\n    \"x-request-id\": requestId\n  },\n  body: JSON.stringify({\n  \"exchange\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n})\n});\nconst result = await response.json();\nif (!response.ok) throw new Error(result.error ?? \"Request failed\");",
-        "python": "import os\nimport requests\n\nrequest_id = \"<unique-request-id>\"\nresponse = requests.post(\n  \"https://api.firecrawl.dev/v2/scrape\",\n  headers={\n    \"Authorization\": \"Bearer \" + os.environ[\"FIRECRAWL_API_KEY\"],\n    \"x-request-id\": request_id\n  },\n  json={\n  \"exchange\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n},\n  timeout=120\n)\nresponse.raise_for_status()\nresult = response.json()",
-        "curl": "curl https://api.firecrawl.dev/v2/scrape \\\n  -H \"Authorization: Bearer $FIRECRAWL_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-request-id: <unique-request-id>\" \\\n  --data '{\n  \"exchange\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n}'"
+        "javascript": "const requestId = \"<unique-request-id>\";\nconst response = await fetch(\"https://api.firecrawl.dev/v2/scrape\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer \" + process.env.FIRECRAWL_API_KEY,\n    \"Content-Type\": \"application/json\",\n    \"x-request-id\": requestId\n  },\n  body: JSON.stringify({\n  \"alexandria\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n})\n});\nconst result = await response.json();\nif (!response.ok) throw new Error(result.error ?? \"Request failed\");",
+        "python": "import os\nimport requests\n\nrequest_id = \"<unique-request-id>\"\nresponse = requests.post(\n  \"https://api.firecrawl.dev/v2/scrape\",\n  headers={\n    \"Authorization\": \"Bearer \" + os.environ[\"FIRECRAWL_API_KEY\"],\n    \"x-request-id\": request_id\n  },\n  json={\n  \"alexandria\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n},\n  timeout=120\n)\nresponse.raise_for_status()\nresult = response.json()",
+        "curl": "curl https://api.firecrawl.dev/v2/scrape \\\n  -H \"Authorization: Bearer $FIRECRAWL_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-request-id: <unique-request-id>\" \\\n  --data '{\n  \"alexandria\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n}'"
       },
       "concept": "podcasts",
       "cohorts": [
@@ -194,12 +194,12 @@ print("Python request example:", tool.examples["python"])
   </Step>
 
   <Step title="Get the data">
-    Use `scrape` to call the tool with the inputs from its contract. Supply the provider and capability under `exchange`; no page URL is needed.
+    Use `scrape` to call the tool with the inputs from its contract. Supply the provider and capability under `alexandria`; no page URL is needed.
 
 <CodeGroup>
 ```javascript JavaScript
 const episodes = await firecrawl.scrape({
-  exchange: {
+  alexandria: {
     provider: "particle",
     capability: "podcasts/episodes/search",
     options: {
@@ -209,12 +209,12 @@ const episodes = await firecrawl.scrape({
   },
 });
 
-console.log(episodes.exchange[0].data);
+console.log(episodes.alexandria[0].data);
 ```
 
 ```python Python
 episodes = firecrawl.scrape(
-    exchange={
+    alexandria={
         "provider": "particle",
         "capability": "podcasts/episodes/search",
         "options": {
@@ -224,7 +224,7 @@ episodes = firecrawl.scrape(
     },
 )
 
-print(episodes.exchange[0].data)
+print(episodes.alexandria[0].data)
 ```
 
 ```bash cURL
@@ -235,7 +235,7 @@ curl https://api.firecrawl.dev/v2/scrape \
   -H "Content-Type: application/json" \
   -H "x-request-id: $REQUEST_ID" \
   -d '{
-  "exchange": {
+  "alexandria": {
     "provider": "particle",
     "capability": "podcasts/episodes/search",
     "options": {
@@ -250,7 +250,7 @@ curl https://api.firecrawl.dev/v2/scrape \
     <Accordion title="Response: matching episodes">
 ```json SDK result (shortened, illustrative)
 {
-  "exchange": [
+  "alexandria": [
     {
       "provider": "particle",
       "capability": "podcasts/episodes/search",
@@ -274,7 +274,7 @@ curl https://api.firecrawl.dev/v2/scrape \
   "creditsCost": 15
 }
 ```
-      `episodes.exchange[0]` contains the first tool result and its execution price. Its `data` follows Particle's response contract. Raw `/v2/scrape` responses wrap this SDK result in `data`.
+      `episodes.alexandria[0]` contains the first tool result and its execution price. Its `data` follows Particle's response contract. Raw `/v2/scrape` responses wrap this SDK result in `data`.
     </Accordion>
   </Step>
 </Steps>
@@ -302,7 +302,7 @@ firecrawl find-tools --providers particle --capabilities podcasts/episodes/searc
 
 firecrawl find-tools https://podcasts.apple.com --limit 2
 ```
-    Use `search` for semantic discovery and `find-tools` for contextual lookup or progressive disclosure. Pass a returned `next` request to `firecrawl find-tools --request '<json>'` to continue. Execution uses `firecrawl scrape --exchange <provider/capability> --options '<json>'`.
+    Use `search` for semantic discovery and `find-tools` for contextual lookup or progressive disclosure. Pass a returned `next` request to `firecrawl find-tools --request '<json>'` to continue. Execution uses `firecrawl scrape --alexandria <provider/capability> --options '<json>'`.
   </Tab>
   <Tab title="MCP">
     Connect the [Firecrawl MCP server](/mcp-server) to your agent. With Alexandria support enabled, the agent can discover relevant tools, inspect their inputs and price, and retrieve data through the same workflow.
@@ -331,8 +331,8 @@ const catalogue = await firecrawl.findTools({
 // Each next request reveals another part of the catalogue.
 const next = catalogue.items[0]?.next;
 if (next) {
-  const details = await firecrawl.scrape({ exchange: next });
-  console.log(details.exchange[0].data);
+  const details = await firecrawl.scrape({ alexandria: next });
+  console.log(details.alexandria[0].data);
 }
 ```
 
@@ -340,8 +340,8 @@ if (next) {
 catalogue = firecrawl.find_tools(providers=["particle"], limit=2)
 
 if catalogue.items and catalogue.items[0].get("next"):
-    details = firecrawl.scrape(exchange=catalogue.items[0]["next"])
-    print(details.exchange[0].data)
+    details = firecrawl.scrape(alexandria=catalogue.items[0]["next"])
+    print(details.alexandria[0].data)
 ```
 </CodeGroup>
 
@@ -351,7 +351,7 @@ For contextual matches beside web results, add `domainTools: true` to a Search r
 
 ## Domain tools on scrape
 
-An ordinary scrape can also request domain-matched tools. Add `domainTools: true` (default off) to a `/v2/scrape` request; if the team has Exchange access, the response includes `data.tools` — tools matched to the scraped page's domain, in the same shape as the tools returned by search.
+An ordinary scrape can also request domain-matched tools. Add `domainTools: true` (default off) to a `/v2/scrape` request; if the team has Alexandria access, the response includes `data.tools` — tools matched to the scraped page's domain, in the same shape as the tools returned by search.
 
 ```bash cURL
 curl https://api.firecrawl.dev/v2/scrape \
@@ -367,7 +367,7 @@ curl https://api.firecrawl.dev/v2/scrape \
 
 ## Execution idempotency and errors
 
-Executing a tool through `POST /v2/scrape` with `exchange` is idempotent per request ID. Send `x-request-id` as the idempotency key — 1 to 128 characters of letters, digits, `.`, `_`, `:`, or `-` — and the response echoes it back. Replaying the same id for a request that already completed returns the original response and the same `scrape_id`, without re-executing the tool.
+Executing a tool through `POST /v2/scrape` with `alexandria` is idempotent per request ID. Send `x-request-id` as the idempotency key — 1 to 128 characters of letters, digits, `.`, `_`, `:`, or `-` — and the response echoes it back. Replaying the same id for a request that already completed returns the original response and the same `scrape_id`, without re-executing the tool.
 
 Errors use a consistent envelope:
 
@@ -389,7 +389,7 @@ Errors use a consistent envelope:
 | 402 | `insufficient_credits` | Nothing was executed. | Safe to retry with the same ID once the cause is fixed. |
 | 503 | `billing_unavailable` | Nothing was executed. | Safe to retry with the same ID once the cause is fixed. |
 
-Other Exchange refusals are relayed as-is, with the provider's status and `code` (for example, 402 `credit_budget_exceeded`), and nothing was executed.
+Other Alexandria refusals are relayed as-is, with the provider's status and `code` (for example, 402 `credit_budget_exceeded`), and nothing was executed.
 
 A 403 with `code: "THIRD_PARTY_DATA_TERMS_REQUIRED"` includes `requiresAction.url`: an org admin must accept the provider's terms at that URL before the request can proceed.
 
