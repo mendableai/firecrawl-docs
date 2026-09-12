@@ -1,6 +1,6 @@
 ---
 title: "CLI"
-description: "Firecrawl skills are an easy way for AI agents such as Claude Code, Antigravity and OpenCode to use Firecrawl through the CLI."
+description: "Firecrawl skills are an easy way for AI agents such as Codex, Claude Code, Cursor, and OpenCode to use Firecrawl through the CLI."
 og:title: "CLI | Firecrawl"
 og:description: "Firecrawl skills are an easy way for AI agents to use Firecrawl through the CLI. AI agents can get web data through a better and more context efficient interface"
 ---
@@ -24,17 +24,17 @@ import AgentBasic from "/snippets/v2/cli/agent/basic.mdx";
 import AgentOptions from "/snippets/v2/cli/agent/options.mdx";
 import InteractCLI from "/snippets/v2/interact/quickstart/cli.mdx";
 
-Search, scrape, interact, crawl, map, and run agent jobs directly from the terminal. The Firecrawl CLI works standalone or with skills that AI coding agents like Claude Code, Antigravity, and OpenCode can discover and use automatically.
+Search, scrape, interact, crawl, map, and run agent jobs directly from the terminal. The Firecrawl CLI works standalone or with skills that AI coding agents like Codex, Claude Code, Cursor, and OpenCode can discover and use automatically.
 
 ## Installation
 
-If you are using an AI agent like Claude Code, you can install the Firecrawl skills below and the agent will set them up for you.
+If you are using an AI agent like Codex, Claude Code, Cursor, or OpenCode, you can install the Firecrawl skills below and the agent will set them up for you.
 
 ```bash
 npx -y firecrawl-cli@latest init --all --browser
 ```
 
-- `--all` installs every Firecrawl skill segment (CLI, build, workflows) to every detected AI coding agent
+- `--all` skips agent selection and initializes every detected agent
 - `--browser` opens the browser for Firecrawl authentication automatically
 
 <Note>
@@ -171,7 +171,7 @@ Search the web and optionally scrape the results.
 | ---------------------------- | ------------------------------------------------------------------------------------------- |
 | `--limit <number>`           | Maximum results (default: 5, max: 100)                                                      |
 | `--sources <sources>`        | Sources to search: `web`, `images`, `news` (comma-separated)                                |
-| `--categories <categories>`  | Filter by category: `github`, `research`, `pdf`, `developer` (comma-separated)                           |
+| `--categories <categories>`  | Filter by category: `research`, `pdf`, `developer` (comma-separated)                           |
 | `--tbs <value>`              | Time filter: `qdr:h` (hour), `qdr:d` (day), `qdr:w` (week), `qdr:m` (month), `qdr:y` (year) |
 | `--location <location>`      | Geo-targeting (e.g., "Berlin,Germany")                                                      |
 | `--country <code>`           | ISO country code (default: US)                                                              |
@@ -356,7 +356,7 @@ Search and gather data from the web using natural language prompts.
 | Option                      | Description                                                                            |
 | --------------------------- | -------------------------------------------------------------------------------------- |
 | `--urls <urls>`             | Optional list of URLs to focus the agent on (comma-separated)                          |
-| `--model <model>`           | Model to use: `spark-1-pro` (default, higher accuracy), `spark-1-mini` (60% cheaper than Pro) or `spark-2` (cheapest and fastest) |
+| `--model <model>`           | Model to use. Defaults to `spark-2`, the model every run executes on. Spark 1 models are deprecated and route to `spark-2` |
 | `--schema <json>`           | JSON schema for structured output (inline JSON string)                                 |
 | `--schema-file <path>`      | Path to JSON schema file for structured output                                         |
 | `--max-credits <number>`    | Maximum credits to spend (job fails if limit reached)                                  |
@@ -406,6 +406,8 @@ These options are available for all commands:
 | `--api-url <url>` |       | Use custom API URL (for self-hosted/local development) |
 | `--help`          | `-h`  | Show help for a command                                |
 | `--version`       | `-V`  | Show CLI version                                       |
+
+`init` also accepts `--skip-auth`, `--skip-install`, `--skip-skills`, and `--agent <name>`. See `firecrawl init --help`.
 
 ## Output Handling
 

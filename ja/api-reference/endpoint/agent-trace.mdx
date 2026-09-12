@@ -1,0 +1,30 @@
+---
+title: 'Agent Traceを取得'
+openapi: '/ja/api-reference/v2-openapi.json GET /agent/{jobId}/trace'
+noindex: true
+---
+
+各エージェント runでは、正規の**実行トレース**が記録されます。これは、呼び出したツールとその戻り値、推論の要約、進捗アップデート、ブラウザセッション、出力アーティファクトへの変更など、実行中に行われたすべての操作を記録した時系列のイベントストリームです。これは、[Agent playground](https://www.firecrawl.dev/app/agent)のライブActivityビューを支えるイベントストリームと同じものです。
+
+<div id="what-its-for">
+  ## 用途
+</div>
+
+* **実行のデバッグ** — エージェントが実行した検索、スクレイピング、抽出の内容、各ツールの入力 (`tool_call.started`) と結果 (`tool_call.finished`) 、実行中に問題が発生した箇所 (`error.occurred`、および最後の`run.finished`イベントの`outcome`と構造化された`error`) を確認できます。
+* **ライブ進捗UI** — ジョブが`processing`中にトレースをポーリングして、エージェントの処理内容をリアルタイムで表示します。`progress.reported`イベントには、人間が読めるメッセージとともに実行のフェーズ (`planning`、`working`、`finalizing`) が含まれ、`reasoning.summary`イベントではエージェントの思考過程を確認できます。
+* **ライブブラウザビュー** — 実行中に`?liveView=true`を渡すと、実行中のアクティブなブラウザセッションである`activeBrowserSessions`を取得できます。各セッションには、エージェントのブラウジングを監視 (またはデモ表示) するために埋め込める`liveViewUrl`が含まれます。
+* **コスト追跡** — `creditsUsed`は、これまでに消費したクレジットを報告します。`maxCredits`が設定されている場合は、その値が上限になります。
+
+<div id="how-it-works">
+  ## 仕組み
+</div>
+
+イベントは、実行内のエージェント (`orchestrator` とその `subagent`) によって発行され、各イベントは `agent` フィールドで発行元を示します。ブラウザ操作は各エージェントのブラウザセッション内で行われ、個別のブラウザエージェントではなく `browser.session.*` イベントを通じて報告されます。イベントは `producerSequence` (発行元エージェントごと) で並べ替えてください。`type` フィールドは13種類のイベントバリアントを区別します。全一覧と各バリアントのフィールドについては、以下のレスポンススキーマを参照してください。
+
+`artifact.updated` イベントにはアーティファクトのコンテンツ自体は含まれません。`snapshotId` によって参照されるため、[snapshot endpoint](/ja/api-reference/endpoint/agent-snapshot) から取得してください。
+
+`run.finished` の到着後もしばらくはイベントが届くことがあります。そのため、実行中のライブ実行をポーリングしている場合は、最終状態をレンダリングする前に短いテールウィンドウを設けてください。
+
+<Note>トレースは Spark 2 の実行 (すべての新規実行) で記録されます。廃止前に Spark 1 モデルで開始されたジョブにはトレースがなく、`400` が返されます。</Note>
+
+> Firecrawl APIキーが必要なAIエージェントですか？自動オンボーディングの手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) を参照してください。

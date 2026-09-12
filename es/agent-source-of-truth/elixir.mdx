@@ -39,7 +39,9 @@ config :firecrawl, api_key: System.get_env("FIRECRAWL_API_KEY")
   ## Búsqueda
 </div>
 
-### Por qué usarlo
+<div id="why-use-it">
+  ### Por qué usarlo
+</div>
 
 Usa search para descubrir páginas relevantes a partir de una consulta y luego elegir las URL que quieras para hacer scraping o interactuar con ellas. Puedes limitar los resultados a un sitio con `site:`, por ejemplo `site:docs.firecrawl.dev crawl webhooks`.
 
@@ -108,10 +110,10 @@ Usa search para descubrir páginas relevantes a partir de una consulta y luego e
   * Tipo: lista de átomos, strings o mapas
   * Úsalo cuando: quieras filtrar los resultados por categoría.
   * Valores confirmados:
-    * `"github"` o `:github`
+    * `"developer"` o `:developer`
     * `"research"` o `:research`
     * `"pdf"` o `:pdf`
-    * `%{type: "github" | "research" | "pdf"}`
+    * `%{type: "developer" | "research" | "pdf"}`
 
 * `limit`
   * Tipo: integer
@@ -131,7 +133,7 @@ Usa search para descubrir páginas relevantes a partir de una consulta y luego e
 
 * `ignore_invalid_urls`
   * Tipo: boolean
-  * Úsalo cuando: quieras descartar las URL que otros endpoints no puedan extraer.
+  * Úsalo cuando: quieras descartar las URL que otros endpoints no puedan hacer scraping.
 
 * `timeout`
   * Tipo: integer
@@ -146,23 +148,25 @@ Usa search para descubrir páginas relevantes a partir de una consulta y luego e
 
 * `scrape_options`
   * Tipo: lista de keywords
-  * Úsalo cuando: quieras extraer cada resultado de búsqueda (consulta los parámetros de scraping para ver los campos).
+  * Úsalo cuando: quieras hacer scraping de cada resultado de búsqueda (consulta los parámetros de scraping para ver los campos).
 
 <div id="scrape">
   ## Scraping
 </div>
 
-### Por qué usarlo
+<div id="why-use-it-2">
+  ### Por qué usarlo
+</div>
 
 Usa `scrape` si ya tienes una URL y quieres contenido estructurado en uno o más formatos.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### Método recomendado del SDK
 </div>
 
 `Firecrawl.scrape_and_extract_from_url(params \\ [], opts \\ [])`
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Ejemplo simple
 </div>
 
@@ -173,7 +177,7 @@ Usa `scrape` si ya tienes una URL y quieres contenido estructurado en uno o más
 )
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Ejemplo complejo
 </div>
 
@@ -208,7 +212,7 @@ Usa `scrape` si ya tienes una URL y quieres contenido estructurado en uno o más
 )
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### Parámetros
 </div>
 
@@ -332,19 +336,19 @@ Usa `scrape` si ya tienes una URL y quieres contenido estructurado en uno o más
   ## Interact
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### Por qué usar interact
 </div>
 
 Usa interact cuando una página requiera acciones del navegador o la ejecución de código después de que se inicie el scraping.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### Método recomendado del SDK
 </div>
 
 `Firecrawl.interact_with_scrape_browser_session(job_id, params \\ [], opts \\ [])`
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Ejemplo simple
 </div>
 
@@ -357,7 +361,7 @@ Usa interact cuando una página requiera acciones del navegador o la ejecución 
 )
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Ejemplo complejo
 </div>
 
@@ -370,7 +374,7 @@ Usa interact cuando una página requiera acciones del navegador o la ejecución 
 )
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### Parámetros
 </div>
 

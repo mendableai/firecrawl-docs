@@ -1,0 +1,18 @@
+```js Node
+import { Firecrawl } from 'firecrawl';
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
+
+// 直近のエージェント実行を一覧表示
+const page = await firecrawl.listAgents();
+
+for (const run of page.agents ?? []) {
+  console.log(run.id, run.status, run.targetHint);
+}
+
+// `next` のカーソルを使って次のページを取得
+if (page.next) {
+  const before = Number(new URL(page.next).searchParams.get("before"));
+  const older = await firecrawl.listAgents({ before });
+}
+```

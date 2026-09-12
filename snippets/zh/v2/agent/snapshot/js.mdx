@@ -1,0 +1,10 @@
+```js Node
+import { Firecrawl } from 'firecrawl';
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
+
+// artifact.updated 跟踪事件通过 snapshotId 引用快照内容
+const snapshot = await firecrawl.getAgentSnapshot("JOB_ID", "SNAPSHOT_ID");
+
+console.log(snapshot.snapshot);
+```

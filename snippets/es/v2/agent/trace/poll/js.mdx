@@ -1,0 +1,43 @@
+```js Node
+import { Firecrawl } from 'firecrawl';
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
+
+const started = await firecrawl.startAgent({ prompt: "Find the founders of Firecrawl" });
+const seen = new Set();
+let finished = false;
+let quietPolls = 0;
+
+for (;;) {
+  const trace = await firecrawl.getAgentTrace(started.id);
+
+  // producerSequence es monótono por agente emisor, así que primero agrupamos.
+  const byAgent = new Map();
+  for (const event of trace.events ?? []) {
+    const bucket = byAgent.get(event.agent.id) ?? [];
+    bucket.push(event);
+    byAgent.set(event.agent.id, bucket);
+  }
+
+  let newEvents = 0;
+  for (const [agentId, events] of byAgent) {
+    for (const event of events.sort((a, b) => a.producerSequence - b.producerSequence)) {
+      if (seen.has(event.eventId)) continue;
+      seen.add(event.eventId);
+      newEvents++;
+      console.log(agentId, event.producerSequence, event.type);
+    }
+  }
+
+  if (!finished) {
+    finished = (await firecrawl.getAgentStatus(started.id)).status !== "processing";
+  } else if (newEvents) {
+    quietPolls = 0;
+  } else {
+    // Ventana final: aún pueden llegar eventos poco después de que termine la ejecución.
+    if (++quietPolls === 3) break;
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+}
+```

@@ -18,6 +18,8 @@ import MapNodeShort from '/snippets/zh/v2/map/short/js.mdx'
 import ExtractNodeShort from '/snippets/v2/extract/short/js.mdx'
 import CrawlWebSocketNodeBase from '/snippets/zh/v2/crawl-websocket/base/js.mdx'
 import PersistentJS from '/snippets/zh/v2/browser/persistent/js.mdx'
+import AgentWithSchemaNode from '/snippets/zh/v2/agent/with-schema/js.mdx'
+import AgentStatusNode from '/snippets/zh/v2/agent/status/js.mdx'
 
 从你的 Node.js 应用中抓取单个页面、爬取整个站点，并映射 URL。SDK 会处理分页、重试和异步任务轮询，让你能够专注于使用返回的数据。
 
@@ -127,6 +129,20 @@ console.log(parsed.markdown);
   要在带错误处理的情况下从网站提取结构化数据，请使用 `extractUrl` 方法。该方法接收起始 URL 作为参数，并以字典形式返回提取结果。
 
   <ExtractNodeShort /> */}
+
+<div id="running-an-agent">
+  ### 运行代理
+</div>
+
+使用 `agent` 方法将研究或提取任务交给代理。传入 `prompt`、用于定义输出结构的可选 `schema`，以及用于限制本次运行额度消耗的 `maxCredits`。
+
+<AgentWithSchemaNode />
+
+代理运行是异步的。使用 `startAgent` 可立即获取任务 ID，然后通过 `getAgentStatus` 轮询任务状态。
+
+<AgentStatusNode />
+
+每次运行还会记录执行追踪和输出快照，你可以使用 `getAgentTrace` 和 `getAgentSnapshot` 读取它们。事件 schema 和完整参数列表请参见 [Agent](/zh/features/agent)。
 
 <div id="crawling-a-website-with-websockets">
   ### 使用 WebSockets 爬取网站

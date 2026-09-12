@@ -1,0 +1,27 @@
+---
+title: 'Obtener instantánea del agente'
+openapi: '/es/api-reference/v2-openapi.json GET /agent/{jobId}/snapshots/{snapshotId}'
+noindex: true
+---
+
+Mientras se ejecuta un agente, se controlan las versiones de sus artefactos de salida: el resultado JSON estructurado a medida que toma forma, así como cualquier artefacto de markdown, HTML, texto o captura de pantalla que produzca. Cada cambio genera un [evento de traza](/es/api-reference/endpoint/agent-trace) `artifact.updated` que referencia la nueva versión mediante `snapshotId`. Este endpoint recupera el contenido completo de una de esas instantáneas.
+
+<div id="what-its-for">
+  ## Para qué sirve
+</div>
+
+* **Resultados parciales** — previsualiza la salida estructurada del agente antes de que termine la ejecución. Se toma una instantánea del artefacto de resultado JSON (`artifactId: "result"`) a medida que crece, por lo que cada `snapshotId` ofrece una vista en un momento dado de los `data` finales.
+* **Artefactos renderizados** — obtén el contenido de artefactos no JSON que produjo el agente, como un informe en Markdown o una captura de pantalla de una página que visitó.
+* **Inspección de ejecuciones** — combínala con la traza para reconstruir exactamente cómo evolucionó la salida durante la ejecución.
+
+<div id="how-it-works">
+  ## Cómo funciona
+</div>
+
+El campo `change` del evento `artifact.updated` indica cómo se relaciona la instantánea con la anterior: `init` (primera versión), `partial`, `append`, `modify` o `update`. Cada cambio recibe un nuevo `snapshotId`: obtén el más reciente para conocer el estado actual o recorre el historial para comparar versiones.
+
+El campo `snapshot` de la respuesta contiene el contenido del artefacto como una cadena. En los artefactos `json`, está codificado en JSON; პროცესarlo antes de usarlo.
+
+<Note>Las instantáneas se registran en las ejecuciones de Spark 2, es decir, en cada ejecución nueva. Los trabajos iniciados en modelos Spark 1 antes de su retirada no tienen instantáneas y devuelven `400`.</Note>
+
+> ¿Eres un agente de IA que necesita una clave de API de Firecrawl? Consulta [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para obtener instrucciones de incorporación automatizada.

@@ -101,31 +101,15 @@ You can request multiple sources in a single call (e.g., `sources: ["web", "news
 
 Filter search results by specific categories using the `categories` parameter:
 
-- `github`: Search within GitHub repositories, code, issues, and documentation
-- `research`: Restrict web search to academic and research **websites** (arxiv.org, nature.com, ieee.org, pubmed.ncbi.nlm.nih.gov, biorxiv.org, medrxiv.org, and similar). Returns ordinary web page results with snippets — not paper records. To search papers themselves, use the [Research Index](/features/research)
+- `research`: Restrict web search to academic and research websites (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov, and similar). Changes on 2026-11-16 to search the [Research Index](/features/research) and return paper records, see the warning below
 - `pdf`: Search for PDFs
 - `developer`: Search the [Developer Index](/features/developer) — issues, merged pull requests, and READMEs from public code repositories, alongside curated documentation sites
 
-<Note>
-**`research` is a website filter, not the paper index.** It narrows ordinary web search to a fixed list of academic domains and returns page snippets from them.
+<Warning>
+**The `research` category changes on 2026-11-16.** It will search the [Research Index](/features/research) (PubMed, bioRxiv, medRxiv, arXiv) instead of filtering web results to 14 academic websites. Results will move from `data.web` to `data.research` and come back as paper records: `paperId`, `primaryId`, `ids`, `title`, `abstract`, `score`. Until then every response that uses it carries a `warnings` entry.
 
-If you want to search scientific literature — full abstracts, in-paper passage reads, and citation-graph expansion over a paper index of PubMed, bioRxiv, medRxiv, and arXiv — use the [Research Index](/features/research) instead.
-</Note>
-
-### GitHub Category Search
-
-Search specifically within GitHub repositories:
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v2/search \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer fc-YOUR_API_KEY" \
-  -d '{
-    "query": "web scraping python",
-    "categories": ["github"],
-    "limit": 10
-  }'
-```
+If you want paper records, update your parsing before that date or call [`GET /search/research/papers`](/api-reference/endpoint/research-search-papers) today. If you want web pages from academic sites, switch to [`includeDomains`](#domain-filters).
+</Warning>
 
 ### Research Category Search
 
@@ -175,7 +159,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   -H "Authorization: Bearer fc-YOUR_API_KEY" \
   -d '{
     "query": "neural networks",
-    "categories": ["github", "research"],
+    "categories": ["research", "pdf"],
     "limit": 15
   }'
 ```
@@ -224,16 +208,16 @@ Each search result includes a `category` field indicating its source:
   "data": {
     "web": [
       {
-        "url": "https://github.com/example/neural-network",
-        "title": "Neural Network Implementation",
-        "description": "A PyTorch implementation of neural networks",
-        "category": "github"
-      },
-      {
         "url": "https://arxiv.org/abs/2024.12345",
         "title": "Advances in Neural Network Architecture",
         "description": "Research paper on neural network improvements",
         "category": "research"
+      },
+      {
+        "url": "https://example.com/neural-networks.pdf",
+        "title": "Neural Networks Survey",
+        "description": "A survey of neural network architectures",
+        "category": "pdf"
       }
     ]
   }
@@ -588,7 +572,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
 
 ### Combining Search ZDR with Scrape ZDR
 
-If you are using search with content scraping (`scrapeOptions`), the `enterprise` parameter covers the search portion while `zeroDataRetention` in `scrapeOptions` covers the scraping portion. To get full ZDR across both, set both:
+If you are using search with content scraping (`scrapeOptions`), the `enterprise` parameter automatically enforces ZDR for any resulting scrapes. The following example request enforces ZDR on both the search and scrape portions of the process:
 
 ```bash cURL
 curl -X POST https://api.firecrawl.dev/v2/search \
@@ -599,8 +583,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
     "limit": 5,
     "enterprise": ["zdr"],
     "scrapeOptions": {
-      "formats": ["markdown"],
-      "zeroDataRetention": true
+      "formats": ["markdown"]
     }
   }'
 ```
@@ -624,6 +607,18 @@ For more details about the scraping options, refer to the [Scrape Feature docume
 
 > Are you an AI agent that needs a Firecrawl API key? See [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) for automated onboarding instructions.
 
+
+## Measured Performance
+
+Independent evaluators have benchmarked Firecrawl Search against other search APIs. The figures below are pulled directly from each evaluator's published results as of the date shown.
+
+| Metric | Value | Source | Date | n / ± |
+| --- | --- | --- | --- | --- |
+| Agent Score (Mean Relevant × Quality) | 14.58, rank 2 of 8 (Mean Relevant 4.30/5, Quality 3.39/5) | [AIMultiple — Agentic Search Benchmark](https://aimultiple.com/agentic-search) | Dec 2025 (source updated May 25, 2026) | 95% CI 13.12–15.98, n=100 AI/LLM-domain queries drawn from AIMultiple's own organic search traffic (10,000 bootstrap resamples); the source notes results don't generalize to other domains |
+
+<Note>
+These are third-party measurements, each with its own harness, task set, and methodology — they are not directly comparable to one another or to Firecrawl's own benchmarks. Point-estimate rank 2 of 8; paired-bootstrap testing found no statistically significant gap versus Brave, Exa, or Parallel Search Pro. Firecrawl's own first-party benchmark pages, including the open-source Developer Index evaluation, live at [firecrawl.dev/benchmarks](https://www.firecrawl.dev/benchmarks).
+</Note>
 
 ## Search feedback
 

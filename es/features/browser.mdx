@@ -372,6 +372,8 @@ Cada sesión expone una URL de WebSocket de CDP. La API execute y la bandera `--
 
   ```bash agent-browser
   # Use the cdpUrl from the session response
+  CDP_URL=YOUR_SESSION_CDP_URL
+
   agent-browser open https://example.com --cdp "$CDP_URL"
   agent-browser snapshot --cdp "$CDP_URL"
   ```
@@ -401,7 +403,7 @@ Cada sesión expone una URL de WebSocket de CDP. La API execute y la bandera `--
   ## Precios
 </div>
 
-El precio depende de cómo controles la sesión: 7 créditos por minuto de navegador si la sesión usa un `prompt`, o 2 créditos por minuto de navegador si no lo usa (solo con `code` de Playwright). La facturación se calcula por minuto de navegador, con un mínimo de un minuto. Los usuarios Free reciben 5 horas de uso gratuito.
+El precio depende de cómo controles la sesión: 7 créditos por minuto de navegador si la sesión usa un `prompt`, o 2 créditos por minuto de navegador si no lo usa (solo con `code` de Playwright). La facturación se calcula por minuto de navegador, con un mínimo de un minuto.
 
 <div id="rate-limits">
   ## Límites de uso

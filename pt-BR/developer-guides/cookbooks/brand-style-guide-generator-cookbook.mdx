@@ -142,7 +142,9 @@ Uma aplicação Node.js que recebe a URL de qualquer site, extrai toda a identid
 
     Substitua `fc-YOUR-API-KEY` pela sua chave de API do Firecrawl obtida em [firecrawl.dev](https://firecrawl.dev).
 
-    ### Entendendo o código
+    <div id="understanding-the-code">
+      ### Entendendo o código
+    </div>
 
     **Componentes principais:**
 
@@ -227,7 +229,6 @@ O [formato de branding](https://docs.firecrawl.dev/features/scrape#%2Fscrape-wit
 }
 ```
 
-
 <div id="key-features">
   ## Principais funcionalidades
 </div>
@@ -292,7 +293,6 @@ if (b.components) {
 }
 ```
 
-
 <div id="export-multiple-formats">
   ### Exportar em vários formatos
 </div>
@@ -303,7 +303,6 @@ Adicione exportação em JSON além do PDF:
 // Adicionar antes de doc.end()
 fs.writeFileSync("brand-data.json", JSON.stringify(b, null, 2));
 ```
-
 
 <div id="batch-processing">
   ### Processamento em lote
@@ -324,7 +323,6 @@ for (const site of websites) {
 }
 ```
 
-
 <div id="custom-pdf-themes">
   ### Temas de PDF personalizados
 </div>
@@ -336,7 +334,6 @@ const isDarkMode = b.colorScheme === "dark";
 const headerBg = isDarkMode ? b.colors?.background : b.colors?.primary;
 const textColor = isDarkMode ? "#fff" : "#333";
 ```
-
 
 <div id="best-practices">
   ## Boas práticas

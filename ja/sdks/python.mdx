@@ -19,6 +19,8 @@ import ScrapeAndCrawlExamplePython from '/snippets/ja/v2/scrape-and-crawl/python
 import CrawlWebSocketPythonBase from '/snippets/ja/v2/crawl-websocket/base/python.mdx'
 import PersistentPython from '/snippets/ja/v2/browser/persistent/python.mdx'
 import AIOPython from '/snippets/ja/v2/async/base/python.mdx'
+import AgentWithSchemaPython from '/snippets/ja/v2/agent/with-schema/python.mdx'
+import AgentStatusPython from '/snippets/ja/v2/agent/status/python.mdx'
 
 <div id="installation">
   ## インストール
@@ -127,6 +129,20 @@ print(parsed.markdown)
   ウェブサイトから構造化データを抽出するには、`extract` メソッドを使用します。抽出対象の URL、プロンプト、スキーマを引数に取ります。スキーマは、抽出データの構造を定義する Pydantic モデルです。
 
   <ExtractPythonShort /> */}
+
+<div id="run-an-agent">
+  ### エージェントを実行する
+</div>
+
+`agent` メソッドを使用して、調査または抽出タスクをエージェントに渡します。このメソッドには、`prompt`、出力の形式を指定する任意の `schema`、実行で消費できるクレジットの上限を設定する `max_credits` を指定します。
+
+<AgentWithSchemaPython />
+
+エージェントの実行は非同期です。`start_agent` を使用するとジョブ ID がすぐに返され、その後 `get_agent_status` でポーリングできます。
+
+<AgentStatusPython />
+
+各実行では、実行トレースと出力スナップショットも記録されます。これらは `get_agent_trace` と `get_agent_snapshot` で取得できます。イベントスキーマとすべてのパラメータについては、[Agent](/ja/features/agent) を参照してください。
 
 <div id="crawling-a-website-with-websockets">
   ### WebSockets を使ったウェブサイトのクロール
@@ -253,7 +269,7 @@ while status.next:
 ```
 
 <div id="manual-batch-scrape-with-limits-auto-pagination-early-stop">
-  ##### 制限付きの手動バッチスクレイプ (自動ページネーション + 早期停止)
+  ##### 制限付きの手動バッチスクレイプ (自動ページネーション + 早期停止) 
 </div>
 
 自動ページネーションは有効にしたまま、`max_pages`、`max_results`、または `max_wait_time` で早期に停止します：

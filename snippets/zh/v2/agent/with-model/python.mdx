@@ -3,23 +3,13 @@ from firecrawl import Firecrawl
 
 app = Firecrawl(api_key="fc-YOUR_API_KEY")
 
-# 使用 Spark 2(非默认值,需显式设置)
+# Spark 2 是默认值 —— 每次运行都使用它
 result = app.agent(
     prompt="Find the pricing of Firecrawl",
     model="spark-2"
 )
 
-# 使用 Spark 1 Mini
-result = app.agent(
-    prompt="Find the pricing of Firecrawl",
-    model="spark-1-mini"
-)
-
-# 使用 Spark 1 Pro(默认值)处理复杂任务
-result = app.agent(
-    prompt="Compare all enterprise features and pricing across Firecrawl, Apify, and ScrapingBee",
-    model="spark-1-pro"
-)
+# 已弃用:仍可使用 Spark 1 的模型名称,但会被路由到 "spark-2"。
 
 print(result.data)
 ```

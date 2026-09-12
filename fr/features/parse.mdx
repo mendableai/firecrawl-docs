@@ -22,17 +22,22 @@ import ParseJsonNode from "/snippets/fr/v2/parse/json/js.mdx";
 import ParseJsonCURL from "/snippets/fr/v2/parse/json/curl.mdx";
 import ParseGroundingPython from "/snippets/fr/v2/parse/grounding/python.mdx";
 import ParseGroundingNode from "/snippets/fr/v2/parse/grounding/js.mdx";
+import VideoParseVsScrape from "/snippets/fr/shared/video-parse-vs-scrape.mdx";
 
 Parse convertit les documents en données propres, prêtes pour les LLM. Importez un fichier via
 [`/parse`](/fr/api-reference/endpoint/parse) — ou utilisez [`/scrape`](/fr/features/scrape)
 avec l’URL d’un document public — et obtenez du markdown, du contenu de chaque page, des
 blocs de mise en page typés ou du JSON structuré.
 
-* **Respect de la mise en page :** titres, paragraphes, tableaux et formules assemblés dans l’ordre de lecture
-* **Documents numérisés pris en charge :** extraction de texte natif avec OCR comme solution de repli pour les pages ne contenant que des images
-* **Structure ancrée dans le document :** blocs de mise en page typés avec boîtes englobantes et liens vers des plages de caractères du markdown (PDF)
-* **Tous les formats courants :** PDF, Word, Excel, PowerPoint, OpenDocument, EPUB, CSV, HTML
+* **Respect de la mise en page :** titres, paragraphes, tableaux et formules assemblés dans l’ordre de lecture
+* **Documents numérisés pris en charge :** extraction de texte natif avec OCR comme solution de repli pour les pages ne contenant que des images
+* **Structure ancrée dans le document :** blocs de mise en page typés avec boîtes englobantes et liens vers des plages de caractères du markdown (PDF)
+* **Tous les formats courants :** PDF, Word, Excel, PowerPoint, OpenDocument, EPUB, CSV, HTML
 * Prise en charge de **Zero Data Retention**
+
+Vous hésitez entre Parse et [Scrape](/fr/features/scrape) ? Cette vidéo détaille les différences :
+
+<VideoParseVsScrape />
 
 <div id="quickstart">
   ## Démarrage rapide

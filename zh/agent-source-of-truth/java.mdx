@@ -52,7 +52,9 @@ FirecrawlClient client = FirecrawlClient.builder()
   ## 搜索
 </div>
 
-### 为什么使用它
+<div id="why-use-it">
+  ### 为什么使用它
+</div>
 
 使用 search 根据查询词发现相关页面，然后选择要抓取或与之交互的 URL。你可以使用标准的 `site:` 运算符，将结果限制在某个域名下，例如 `site:docs.firecrawl.dev crawl webhooks`。
 
@@ -138,10 +140,10 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   * 类型：分类字符串或映射组成的列表
   * 使用时机：想按分类筛选结果时。
   * 已确认的值：
-    * `"github"`：GitHub 相关结果
+    * `"developer"`：Developer Index 结果
     * `"research"`：研究和学术结果
     * `"pdf"`：PDF 相关结果
-    * `{type: "github" | "research" | "pdf"}`：带类型的分类映射形式
+    * `{type: "developer" | "research" | "pdf"}`：带类型的分类映射形式
 
 * `options.limit`
   * 类型：整数
@@ -175,24 +177,26 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   ## 抓取
 </div>
 
-### 为什么要用它
+<div id="why-use-it-2">
+  ### 为什么要用它
+</div>
 
 如果你已经有了 URL，并希望获取一种或多种 formats 的结构化内容，请使用 `scrape`。
 
-<div id="preferred-sdk-methods">
+<div id="preferred-sdk-methods-2">
   ### 推荐的 SDK 方法
 </div>
 
 * `client.scrape(url)`
 * `client.scrape(url, options)`
 
-<div id="return-value">
+<div id="return-value-2">
   ### 返回值
 </div>
 
 `scrape` 返回 `Document`。常见的 getter 包括 `getMarkdown()`、`getHtml()`、`getRawHtml()`、`getJson()`、`getMetadata()`、`getLinks()`、`getAudio()` 和 `getVideo()`，以及在请求相应 `formats` 时返回的其他字段。
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### 简单示例
 </div>
 
@@ -203,7 +207,7 @@ Document doc = client.scrape(
 );
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### 复杂示例
 </div>
 
@@ -244,7 +248,7 @@ ScrapeOptions options = ScrapeOptions.builder()
 Document doc = client.scrape("https://example.com/pricing", options);
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### 参数
 </div>
 
@@ -362,13 +366,13 @@ Document doc = client.scrape("https://example.com/pricing", options);
   ## 交互
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### 为什么要使用它
 </div>
 
 当页面在开始抓取后还需要执行浏览器 actions 或运行代码时，请使用 interact。
 
-<div id="preferred-sdk-methods">
+<div id="preferred-sdk-methods-3">
   ### 推荐的 SDK 方法
 </div>
 
@@ -376,7 +380,7 @@ Document doc = client.scrape("https://example.com/pricing", options);
 * `client.interact(jobId, code, language, timeout)` — `timeout` 的单位为秒 (1–300) ；也可设为 null，以省略该参数并使用 API 默认值 (30 秒) 
 * `client.interact(jobId, code, language, timeout, origin)` — 可选的 `origin` 字符串仅在非 null 时发送 (用于请求归因)
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### 简单示例
 </div>
 
@@ -391,7 +395,7 @@ BrowserExecuteResponse result = client.interact(
 );
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### 复杂示例
 </div>
 
@@ -436,7 +440,7 @@ BrowserDeleteResponse stopped = client.stopInteractiveBrowser("<scrapeJobId>");
 * `getCreditsBilled()`: Integer (可能为 null) 
 * `getError()`: String (可能为 null)
 
-<div id="parameters">
+<div id="parameters-3">
   ### 参数
 </div>
 

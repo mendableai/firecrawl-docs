@@ -4,20 +4,28 @@ description: "Firecrawl peut explorer de façon récursive les sous-domaines d�
 icon: "spider"
 og:title: "Crawl | Firecrawl"
 og:description: "Firecrawl peut explorer de façon récursive les sous-domaines d’une URL et en extraire le contenu"
+canonical: "https://docs.firecrawl.dev/features/crawl"
 ---
 
-Firecrawl explore en profondeur les sites web, assurant une extraction de données complète tout en gérant des infrastructures web complexes. Voici comment cela fonctionne :
+<Warning>
+  **Cette page documente l’API v0, dépréciée le 1er avril 2025.** Elle est conservée à
+  titre de référence historique et ne décrit pas le fonctionnement actuel de Firecrawl. Documentation
+  actuelle : [Crawl](/fr/features/crawl). Pour migrer une intégration v0 existante, consultez
+  [Migration depuis la v0](/fr/migrating-from-v0).
+</Warning>
 
-1. **Analyse de l’URL :**
-   Démarre avec une URL donnée, identifie les liens en examinant le sitemap puis en explorant le site. Si aucun sitemap n’est trouvé, il parcourt le site en suivant les liens.
+Firecrawl crawl en profondeur les sites web, assurant une extraction de données complète tout en gérant des infrastructures web complexes. Voici comment cela fonctionne :
 
-2. **Parcours récursif :**
-   Suit chaque lien de manière récursive pour découvrir toutes les sous-pages.
+1. **Analyse de l’URL :**
+   Démarre avec une URL donnée, identifie les liens en examinant le sitemap puis en crawlant le site. Si aucun sitemap n’est trouvé, il crawl le site en suivant les liens.
 
-3. **Scraping du contenu :**
+2. **Parcours récursif :**
+   Suit chaque lien de manière récursive pour découvrir toutes les sous-pages. Ceci décrit uniquement le modèle de crawl v0. Pour savoir comment le crawl découvre et couvre les URL aujourd’hui, consultez [Crawl](/fr/features/crawl).
+
+3. **Scraping du contenu :**
    Récupère le contenu de chaque page visitée tout en gérant les complexités telles que le rendu JavaScript ou les limites de débit.
 
-4. **Compilation des résultats :**
+4. **Compilation des résultats :**
    Convertit les données collectées en markdown propre ou en sortie structurée, idéale pour le traitement par des LLM ou toute autre tâche.
 
 Cette méthode garantit un crawl exhaustif et une collecte de données complète à partir de n’importe quelle URL de départ.
@@ -173,40 +181,38 @@ Avec cURL, /crawl renverra toujours un jobId que vous pourrez utiliser pour vér
   ### Vérifier un job de crawl
 </div>
 
-Permet de vérifier l'état d'un job de crawl et de récupérer son résultat.
+Permet de vérifier l&#39;état d&#39;un job de crawl et de récupérer son résultat.
 
 <CodeGroup>
+  ```python Python
+  status = app.check_crawl_status(job_id)
+  ```
 
-```python Python
-status = app.check_crawl_status(job_id)
-```
+  ```js JavaScript
+  const status = await app.checkCrawlStatus(jobId);
+  ```
 
-```js JavaScript
-const status = await app.checkCrawlStatus(jobId);
-```
+  ```go Go
+  status, err := app.CheckCrawlStatus(jobId)
+  if err != nil {
+    log.Fatalf("Failed to check crawl status: %v", err)
+  }
+  ```
 
-```go Go
-status, err := app.CheckCrawlStatus(jobId)
-if err != nil {
-  log.Fatalf("Failed to check crawl status: %v", err)
-}
-```
+  ```rust Rust
+  let status = match app.check_crawl_status(jobId).await {
+      Ok(status) => status,
+      Err(e) => panic!("Failed to check crawl status: {:?}", e),
+  };
 
-```rust Rust
-let status = match app.check_crawl_status(jobId).await {
-    Ok(status) => status,
-    Err(e) => panic!("Failed to check crawl status: {:?}", e),
-};
+  println!("Crawl Status: {:?}", status);
+  ```
 
-println!("Crawl Status: {:?}", status);
-```
-
-```bash cURL
-curl -X GET https://api.firecrawl.dev/v0/crawl/status/1234-5678-9101 \
-  -H 'Content-Type: application/json' \
-  -H 'Authorization: Bearer YOUR_API_KEY'
-```
-
+  ```bash cURL
+  curl -X GET https://api.firecrawl.dev/v0/crawl/status/1234-5678-9101 \
+    -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer YOUR_API_KEY'
+  ```
 </CodeGroup>
 
 <div id="response">

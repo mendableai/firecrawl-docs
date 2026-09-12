@@ -1,0 +1,41 @@
+```python Python
+import time
+from collections import defaultdict
+
+from firecrawl import Firecrawl
+
+app = Firecrawl(api_key="fc-YOUR_API_KEY")
+
+agent_job = app.start_agent(prompt="Find the founders of Firecrawl")
+seen = set()
+finished = False
+quiet_polls = 0
+
+while True:
+    trace = app.get_agent_trace(agent_job.id)
+
+    # producer_sequence は発行元の agent ごとに単調増加するため、先にグループ化する。
+    by_agent = defaultdict(list)
+    for event in trace.events or []:
+        by_agent[event.agent.id].append(event)
+
+    new_events = 0
+    for agent_id, events in by_agent.items():
+        for event in sorted(events, key=lambda e: e.producer_sequence):
+            if event.event_id not in seen:
+                seen.add(event.event_id)
+                new_events += 1
+                print(agent_id, event.producer_sequence, event.type)
+
+    if not finished:
+        finished = app.get_agent_status(agent_job.id).status != "processing"
+    elif new_events:
+        quiet_polls = 0
+    else:
+        # 終了後の猶予期間: 実行完了後もしばらくイベントが届くことがある。
+        quiet_polls += 1
+        if quiet_polls == 3:
+            break
+
+    time.sleep(5)
+```

@@ -3009,7 +3009,7 @@
                           "type": "string"
                         },
                         "plan_credits": {
-                          "description": "套餐中自带的额度数量。不包括优惠券额度、额度包或自动充值获得的额度。",
+                          "description": "套餐中自带的额度数量。不包括优惠券额度或通过按量付费添加的额度。",
                           "example": 500000,
                           "type": "number"
                         },

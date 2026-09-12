@@ -3,7 +3,15 @@ title: Guía rápida
 description: "Firecrawl te permite convertir sitios web completos en markdown listo para LLM"
 og:title: "Guía rápida | Firecrawl"
 og:description: "Firecrawl te permite convertir sitios web completos en markdown listo para LLM"
+canonical: "https://docs.firecrawl.dev/quickstart"
 ---
+
+<Warning>
+  **Esta página documenta la API v0, obsoleta desde el 1 de abril de 2025.** Se mantiene como
+  referencia histórica y no describe cómo funciona Firecrawl actualmente. Documentación
+  actual: [Guía rápida](/es/quickstart). Para migrar una integración existente en v0, consulta
+  [Migrar desde v0](/es/migrating-from-v0).
+</Warning>
 
 <img className="block" src="/images/turn-websites-into-llm-ready-data--firecrawl.jpg" alt="Hero Light" />
 
@@ -324,7 +332,9 @@ Para extraer una única URL, usa el método `scrape_url`. Recibe la URL como par
   ```
 </CodeGroup>
 
-### Respuesta
+<div id="response-2">
+  ### Respuesta
+</div>
 
 ```json
 {

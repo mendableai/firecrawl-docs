@@ -1,4 +1,6 @@
 ```bash cURL
+# SCRAPE_ID es el scrapeId devuelto por tu llamada anterior a POST /v2/scrape,
+# por ejemplo: SCRAPE_ID=$(echo $RESPONSE | jq -r '.data.metadata.scrapeId')
 # No se necesita API key para comenzar — agrega -H "Authorization: Bearer $FIRECRAWL_API_KEY" para límites de tasa más altos:
 curl -s -X DELETE "https://api.firecrawl.dev/v2/scrape/$SCRAPE_ID/interact"
 ```

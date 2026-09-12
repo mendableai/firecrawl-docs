@@ -3,7 +3,15 @@ title: "Guide de scraping avancé"
 description: "Apprenez à optimiser votre scraping Firecrawl grâce aux options avancées."
 og:title: "Guide de scraping avancé | Firecrawl"
 og:description: "Apprenez à optimiser votre scraping Firecrawl grâce aux options avancées."
+canonical: "https://docs.firecrawl.dev/advanced-scraping-guide"
 ---
+
+<Warning>
+  **Cette page documente l’API v0, dépréciée le 1er avril 2025.** Elle est conservée à
+  titre de référence historique et ne décrit pas le fonctionnement actuel de Firecrawl. Documentation
+  à jour : [Guide de scraping avancé](/fr/advanced-scraping-guide). Pour migrer une intégration v0 existante, consultez
+  [Migrer depuis la v0](/fr/migrating-from-v0).
+</Warning>
 
 Ce guide présente les différents points de terminaison de Firecrawl et explique comment les exploiter pleinement avec l’ensemble de leurs paramètres.
 
@@ -19,7 +27,7 @@ Pour extraire le contenu propre d’une page unique au format Markdown, utilisez
 
   from firecrawl import FirecrawlApp
 
-  app = FirecrawlApp(api_key="YOUR_API_KEY")
+  app = FirecrawlApp(api_key="VOTRE_CLÉ_API")
 
   content = app.scrape_url("https://docs.firecrawl.dev")
   ```
@@ -29,7 +37,7 @@ Pour extraire le contenu propre d’une page unique au format Markdown, utilisez
 
   import { FirecrawlApp } from 'firecrawl-js';
 
-  const app = new FirecrawlApp({ apiKey: 'YOUR_API_KEY' });
+  const app = new FirecrawlApp({ apiKey: 'VOTRE_CLÉ_API' });
 
   const content = await app.scrapeUrl('https://docs.firecrawl.dev');
   ```
@@ -45,14 +53,14 @@ Pour extraire le contenu propre d’une page unique au format Markdown, utilisez
   )
 
   func main() {
-    app, err := firecrawl.NewFirecrawlApp("YOUR_API_KEY")
+    app, err := firecrawl.NewFirecrawlApp("VOTRE_CLÉ_API")
     if err != nil {
       log.Fatalf("Failed to initialize FirecrawlApp: %v", err)
     }
 
     content, err := app.ScrapeURL("docs.firecrawl.dev", nil)
     if err != nil {
-      log.Fatalf("Failed")
+      log.Fatalf("Failed to scrape URL: %v", err)
     }
   }
   ```
@@ -64,7 +72,7 @@ Pour extraire le contenu propre d’une page unique au format Markdown, utilisez
   #[tokio::main]
   async fn main() {
     // Initialisez FirecrawlApp avec la clé API
-    let api_key = "YOUR_API_KEY";
+    let api_key = "VOTRE_CLÉ_API";
     let api_url = "https://api.firecrawl.dev";
     let app = FirecrawlApp::new(api_key, api_url).expect("Failed to initialize FirecrawlApp");
 
@@ -79,7 +87,7 @@ Pour extraire le contenu propre d’une page unique au format Markdown, utilisez
   ```bash cURL
   curl -X POST https://api.firecrawl.dev/v0/scrape \
       -H 'Content-Type: application/json' \
-      -H 'Authorization: Bearer YOUR_API_KEY' \
+      -H 'Authorization: Bearer VOTRE_CLÉ_API' \
       -d '{
         "url": "https://docs.firecrawl.dev"
       }'
@@ -102,41 +110,41 @@ Lors de l’utilisation du point de terminaison `/scrape`, vous pouvez personnal
   ### Obtenir un contenu plus propre avec `onlyMainContent`
 </div>
 
-- **Type**: `boolean`
-- **Description**: Renvoie uniquement le contenu principal de la page, en excluant les en-têtes, les barres de navigation, les pieds de page, etc.
-- **Valeur par défaut**: `false`
+* **Type**: `boolean`
+* **Description**: Renvoie uniquement le contenu principal de la page, en excluant les en-têtes, les barres de navigation, les pieds de page, etc.
+* **Valeur par défaut**: `false`
 
 <div id="getting-the-html-with-includehtml">
   ### Obtenir le HTML avec `includeHtml`
 </div>
 
-- **Type**: `boolean`
-- **Description**: Inclut la version HTML du contenu de la page. Cela ajoutera une clé `html` dans la réponse.
-- **Valeur par défaut**: `false`
+* **Type**: `boolean`
+* **Description**: Inclut la version HTML du contenu de la page. Cela ajoutera une clé `html` dans la réponse.
+* **Valeur par défaut**: `false`
 
 <div id="getting-the-raw-html-with-includerawhtml">
   ### Récupérer le HTML brut avec `includeRawHtml`
 </div>
 
-- **Type**: `boolean`
-- **Description**: Inclut le contenu HTML brut de la page. Cela ajoutera une clé `rawHtml` dans la réponse.
-- **Valeur par défaut**: `false`
+* **Type**: `boolean`
+* **Description**: Inclut le contenu HTML brut de la page. Cela ajoutera une clé `rawHtml` dans la réponse.
+* **Valeur par défaut**: `false`
 
 <div id="getting-a-screenshot-of-the-page-with-screenshot">
   ### Obtenir une capture d’écran de la page avec `screenshot`
 </div>
 
-- **Type**: `boolean`
-- **Description**: Inclut une capture de la partie supérieure de la page que vous êtes en train de scraper.
-- **Par défaut**: `false`
+* **Type**: `boolean`
+* **Description**: Inclut une capture de la partie supérieure de la page que vous êtes en train de scraper.
+* **Par défaut**: `false`
 
 <div id="waiting-for-the-page-to-load-with-waitfor">
   ### Attendre le chargement de la page avec `waitFor`
 </div>
 
-- **Type**: `integer`
-- **Description**: À n’utiliser qu’en dernier recours. Attend un nombre de millisecondes donné avant de récupérer le contenu, le temps que la page se charge.
-- **Default**: `0`
+* **Type**: `integer`
+* **Description**: À n’utiliser qu’en dernier recours. Attend un nombre de millisecondes donné avant de récupérer le contenu, le temps que la page se charge.
+* **Default**: `0`
 
 <div id="example-usage">
   ### Exemple d’utilisation
@@ -173,26 +181,33 @@ Voici la référence API correspondante : [Documentation du point de terminaiso
 
 Lorsque vous utilisez le point de terminaison `/scrape`, vous pouvez spécifier des options pour **extraire des informations structurées** à partir du contenu de la page à l’aide du paramètre `extractorOptions`. Voici les options disponibles :
 
-### mode
+<div id="mode">
+  ### mode
+</div>
 
-- **Type**: `string`
-- **Enum**: `["llm-extraction", "llm-extraction-from-raw-html"]`
-- **Description**: Le mode d’extraction à utiliser.
+* **Type**: `string`
 
-  - `llm-extraction` : Extrait des informations à partir du contenu nettoyé et parsé.
-  - `llm-extraction-from-raw-html` : Extrait des informations directement à partir du HTML brut.
+* **Enum**: `["llm-extraction", "llm-extraction-from-raw-html"]`
 
-- **Type**: `string`
-- **Description**: Un prompt décrivant les informations à extraire de la page.
+* **Description**: Le mode d’extraction à utiliser.
+
+  * `llm-extraction` : Extrait des informations à partir du contenu nettoyé et parsé.
+  * `llm-extraction-from-raw-html` : Extrait des informations directement à partir du HTML brut.
+
+* **Type**: `string`
+
+* **Description**: Un prompt décrivant les informations à extraire de la page.
 
 <div id="extractionschema">
   ### extractionSchema
 </div>
 
-- **Type**: `object`
-- **Description**: Schéma des données à extraire, définissant la structure des données extraites.
+* **Type**: `object`
+* **Description**: Schéma des données à extraire, définissant la structure des données extraites.
 
-### Exemple d’usage
+<div id="example-usage-2">
+  ### Exemple d’usage
+</div>
 
 ```bash
 curl -X POST https://api.firecrawl.dev/v0/scrape \
@@ -263,7 +278,7 @@ curl -X POST https://api.firecrawl.dev/v0/scrape \
 
 Vous pouvez régler le délai d’expiration du processus de scraping à l’aide du paramètre `timeout`, en millisecondes.
 
-<div id="example-usage">
+<div id="example-usage-3">
   ### Exemple d’utilisation
 </div>
 
@@ -321,52 +336,54 @@ Lorsque vous utilisez le point de terminaison `/crawl`, vous pouvez personnalise
   #### `includes`
 </div>
 
-- **Type**: `array`
-- **Description**: Modèles d’URL à inclure dans l’exploration. Seules les URL correspondant à ces modèles seront explorées.
-- **Example**: `["/blog/*", "/products/*"]`
+* **Type**: `array`
+* **Description**: Modèles d’URL à inclure dans l’exploration. Seules les URL correspondant à ces modèles seront explorées.
+* **Example**: `["/blog/*", "/products/*"]`
 
 <div id="excludes">
   #### `excludes`
 </div>
 
-- **Type**: `array`
-- **Description**: Modèles d’URL à exclure du crawl. Les URL correspondant à ces modèles seront ignorées.
-- **Example**: `["/admin/*", "/login/*"]`
+* **Type**: `array`
+* **Description**: Modèles d’URL à exclure du crawl. Les URL correspondant à ces modèles seront ignorées.
+* **Example**: `["/admin/*", "/login/*"]`
 
 <div id="returnonlyurls">
   #### `returnOnlyUrls`
 </div>
 
-- **Type**: `boolean`
-- **Description**: Si la valeur est `true`, la réponse contiendra uniquement une liste d’URL, au lieu des données complètes du document.
-- **Default**: `false`
+* **Type**: `boolean`
+* **Description**: Si la valeur est `true`, la réponse contiendra uniquement une liste d’URL, au lieu des données complètes du document.
+* **Default**: `false`
 
 <div id="maxdepth">
   #### `maxDepth`
 </div>
 
-- **Type**: `integer`
-- **Description**: Profondeur maximale d’exploration par rapport à l’URL fournie. Un maxDepth de 0 ne traite que l’URL fournie. Un maxDepth de 1 traite l’URL fournie et toutes les pages à un niveau de profondeur. Un maxDepth de 2 traite l’URL fournie et toutes les pages jusqu’à deux niveaux de profondeur. Des valeurs plus élevées suivent le même principe.
-- **Example**: `2`
+* **Type**: `integer`
+* **Description**: Profondeur maximale d’exploration par rapport à l’URL fournie. Un maxDepth de 0 ne traite que l’URL fournie. Un maxDepth de 1 traite l’URL fournie et toutes les pages à un niveau de profondeur. Un maxDepth de 2 traite l’URL fournie et toutes les pages jusqu’à deux niveaux de profondeur. Des valeurs plus élevées suivent le même principe.
+* **Example**: `2`
 
-<div id="mode">
+<div id="mode-2">
   #### `mode`
 </div>
 
-- **Type**: `string`
-- **Enum**: `["default", "fast"]`
-- **Description**: Le mode de crawl à utiliser. Le mode `fast` explore les sites sans sitemap jusqu’à 4× plus vite, mais peut être moins précis et n’est pas recommandé pour les sites fortement rendus côté JavaScript.
-- **Default**: `default`
+* **Type**: `string`
+* **Enum**: `["default", "fast"]`
+* **Description**: Le mode de crawl à utiliser. Le mode `fast` explore les sites sans sitemap jusqu’à 4× plus vite, mais peut être moins précis et n’est pas recommandé pour les sites fortement rendus côté JavaScript.
+* **Default**: `default`
 
 <div id="limit">
   #### `limit`
 </div>
 
-- **Type**: `integer`
-- **Description**: Nombre maximal de pages à explorer.
-- **Default**: `10000`
+* **Type**: `integer`
+* **Description**: Nombre maximal de pages à explorer.
+* **Default**: `10000`
 
-### Exemple d’usage
+<div id="example-usage-4">
+  ### Exemple d’usage
+</div>
 
 ```bash
 curl -X POST https://api.firecrawl.dev/v0/crawl \
@@ -400,7 +417,7 @@ Dans cet exemple, le crawler va :
 
 Vous pouvez combiner les paramètres `pageOptions` et `crawlerOptions` pour personnaliser à la fois les options de page et le comportement global du crawl.
 
-<div id="example-usage">
+<div id="example-usage-5">
   ### Exemple d’utilisation
 </div>
 

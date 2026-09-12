@@ -6,10 +6,10 @@ og:description: "AIエージェントをFirecrawlに接続するために必要�
 sidebarTitle: "AIで開発"
 ---
 
-AIを活用して開発しているなら、Firecrawlは開発体験を向上させるためのさまざまなリソースを提供します。Firecrawlには**スキル**が用意されています。これは、AIコーディングエージェントが自動的に見つけて使う自己完結型のナレッジパックです。インストールコマンドを1つ実行するだけで、エージェントは3つの完全なスキル群を利用できるようになります。ライブWeb作業向けCLIスキル、Firecrawlをアプリケーションコードに統合するためのBuild スキル、そして反復可能な成果物を生み出すためのワークフロースキルです。Firecrawlユーザーは、2つの方法でAPIキーを取得できます。下の[認証情報を取得する](#get-credentials)を参照してください。
+AIを活用して開発しているなら、Firecrawlは開発体験を向上させるためのさまざまなリソースを提供します。Firecrawlには**スキル**が用意されています。これは、AIコーディングエージェントが自動的に見つけて使う自己完結型のナレッジパックです。インストールコマンドを1つ実行するだけで、エージェントはライブWeb作業向けCLIスキルと、反復可能な成果物を生み出すためのWorkflowスキルを利用できるようになります。Firecrawlをアプリケーションコードに統合するためのBuild スキルは別の手順 (`firecrawl setup build`) になります。Firecrawlユーザーは、2つの方法でAPIキーを取得できます。下の[認証情報を取得する](#get-credentials)を参照してください。
 
 * [認証情報を取得する](#get-credentials)
-* [CLIとエージェントスキル](#cli)
+* [CLI and agent skills](#cli)
 * [Firecrawlをツールとして使う](#using-firecrawl-as-a-tool)
 * [エージェント型デバッグ](#agentic-debugging)
 * [Firecrawl MCP Server](#firecrawl-mcp-server)
@@ -49,19 +49,20 @@ APIキーを取得したら、以下の [CLI and agent skills](#cli) に進ん�
 <span id="cli" />
 
 <div id="cli-and-agent-skills">
-  ## CLI とエージェントスキル
+  ## CLI and agent skills
 </div>
 
 [Firecrawl CLI](/ja/sdks/cli) を使うと、エージェントはターミナルから検索、スクレイピング、Interact、クロール、Map、抽出、エージェントジョブの実行を行えます。人間、AI エージェント、CI/CD パイプライン向けに設計されています。
 
-Firecrawl **スキル** は、Claude Code、Antigravity、OpenCode のような AI コーディングエージェントが自動的に見つけて利用できる、自己完結型のナレッジパックです。1 つのインストールコマンドで必要なものがすべてセットアップされます — ライブWeb作業向けの CLI ツール、Firecrawl をアプリケーションコードに統合するためのBuild スキル、そして反復可能な成果物を作成するためのワークフロースキルです：
+Firecrawl **スキル** は、Codex、Claude Code、Cursor、OpenCode のような AI コーディングエージェントが自動的に見つけて利用できる、自己完結型のナレッジパックです。1 つのインストールコマンドで、ライブWeb作業向けの CLI ツールと、反復可能な成果物を作成するためのWorkflowスキルがセットアップされます。Firecrawl をアプリケーションコードに統合するためのBuild スキルは `firecrawl setup build` でインストールします：
 
 ```bash
 npx -y firecrawl-cli@latest init --all --browser
 ```
 
-* `--all` は、このマシンで検出されたすべての AI コーディングエージェントに、Firecrawl の全スキルセグメント (CLI、Build、ワークフロー) をインストールします
+* `--all` はエージェントの選択をスキップし、検出されたすべてのエージェントを初期化します
 * `--browser` は Firecrawl の認証のためにブラウザを自動的に開きます
+* `--skip-auth`、`--skip-install`、`--skip-skills`、`--agent <name>` も利用できます。`firecrawl init --help` を参照してください。
 
 インストール後、すべてが正しく動作していることを確認します：
 
@@ -73,7 +74,8 @@ firecrawl scrape "https://firecrawl.dev"
 後で再インストールする、または特定のエージェントのみに適用するには：
 
 ```bash
-firecrawl setup skills      # CLI + Build スキル
+firecrawl setup skills      # CLI / コアスキル
+firecrawl setup build       # Build スキル
 firecrawl setup workflows   # ワークフロースキル
 ```
 
@@ -81,35 +83,28 @@ firecrawl setup workflows   # ワークフロースキル
   ### インストールで利用できるもの
 </div>
 
-このインストールでは、エージェントが Firecrawl を使うあらゆる方法をカバーする 3 種類のスキルがセットアップされます。各セグメントはそれぞれ独自のリポジトリにあり、個別に進化できるようになっています:
+Firecrawl のスキルは 3 つのカテゴリに分かれています。`init` は CLI スキルとWorkflowスキルをインストールします。Build スキルを入れるには `firecrawl setup build` を実行してください。各セグメントはそれぞれ独自のリポジトリにあり、個別に進化できるようになっています:
 
 * [`firecrawl/cli`](https://github.com/firecrawl/cli) — ライブWeb作業向けの CLI スキル
 * [`firecrawl/skills`](https://github.com/firecrawl/skills) — アプリ連携のための Build スキル
-* [`firecrawl/firecrawl-workflows`](https://github.com/firecrawl/firecrawl-workflows) — 反復可能な成果物向けのワークフロー スキル
+* [`firecrawl/firecrawl-workflows`](https://github.com/firecrawl/firecrawl-workflows) — 反復可能な成果物向けのWorkflowスキル
 
 **CLI スキル** — エージェントのセッション中にライブWeb作業を行うためのもの:
 
-| Skill                | Purpose                          |
-| -------------------- | -------------------------------- |
-| `firecrawl/cli`      | CLI コマンド全体のワークフロー                |
-| `firecrawl-search`   | ウェブを検索してページを見つける                 |
-| `firecrawl-scrape`   | 既知の URL からクリーンなコンテンツを抽出する        |
-| `firecrawl-interact` | プロンプトまたはコードを使ってスクレイピングしたページを操作する |
-| `firecrawl-crawl`    | サイト全体からコンテンツを一括抽出する              |
-| `firecrawl-map`      | ドメイン上のすべての URL を見つける             |
-| `firecrawl-agent`    | ジョブを使って自律的にウェブデータを収集する           |
-
-**Build スキル** — Firecrawl をアプリケーションコードに統合するためのもの:
-
-| Skill                        | Purpose                                  |
-| ---------------------------- | ---------------------------------------- |
-| `firecrawl-build`            | プロダクトに適した Firecrawl エンドポイントを選ぶ           |
-| `firecrawl-build-onboarding` | 認証とプロジェクト設定                              |
-| `firecrawl-build-scrape`     | アプリコードにスクレイピングを実装する                      |
-| `firecrawl-build-search`     | アプリコードに検索を実装する                           |
-| `firecrawl-build-interact`   | アプリコードにページ操作を実装する                        |
-| `firecrawl-research-index`   | アプリコードで論文を検索し、本文箇所を読み、引用をたどる             |
-| `firecrawl-developer-index`  | アプリコードで issue、プルリクエスト、README、ドキュメントを検索する |
+| Skill                       | Purpose                          |
+| --------------------------- | -------------------------------- |
+| `firecrawl`                 | CLI コマンド全体のワークフロー                |
+| `firecrawl-search`          | ウェブを検索してページを見つける                 |
+| `firecrawl-scrape`          | 既知の URL からクリーンなコンテンツを抽出する        |
+| `firecrawl-interact`        | プロンプトまたはコードを使ってスクレイピングしたページを操作する |
+| `firecrawl-crawl`           | サイト全体からコンテンツを一括抽出する              |
+| `firecrawl-map`             | ドメイン上のすべての URL を見つける             |
+| `firecrawl-agent`           | ジョブを使って自律的にウェブデータを収集する           |
+| `firecrawl-monitor`         | サイトの変更を検知して通知を受け取る               |
+| `firecrawl-parse`           | ローカルのドキュメントを markdown に解析する      |
+| `firecrawl-download`        | サイトをローカルファイルとしてダウンロードする          |
+| `firecrawl-research-index`  | 論文を検索し、本文箇所を読み、引用をたどる            |
+| `firecrawl-developer-index` | issue、プルリクエスト、README、ドキュメントを検索する |
 
 上記のインストールには両方のインデックススキルが含まれます。既存のセットアップに論文検索用のスキルだけを追加するには — 生物医学または科学文献を扱う場合に推奨します — 次を実行します:
 
@@ -117,7 +112,17 @@ firecrawl setup workflows   # ワークフロースキル
 npx skills add firecrawl/skills@firecrawl-research-index
 ```
 
-**ワークフロー スキル** — Firecrawl のウェブデータから具体的な成果物を生み出す、成果重視のスキル:
+**Build スキル** — Firecrawl をアプリケーションコードに統合するためのもの:
+
+| Skill                        | Purpose                        |
+| ---------------------------- | ------------------------------ |
+| `firecrawl-build`            | プロダクトに適した Firecrawl エンドポイントを選ぶ |
+| `firecrawl-build-onboarding` | 認証とプロジェクト設定                    |
+| `firecrawl-build-scrape`     | アプリコードにスクレイピングを実装する            |
+| `firecrawl-build-search`     | アプリコードに検索を実装する                 |
+| `firecrawl-build-interact`   | アプリコードにページ操作を実装する              |
+
+**Workflowスキル** — Firecrawl のウェブデータから具体的な成果物を生み出す、成果重視のスキル:
 
 | Skill                            | Outcome                                         |
 | -------------------------------- | ----------------------------------------------- |
@@ -142,11 +147,11 @@ npx skills add firecrawl/skills@firecrawl-research-index
   ### 進む先を選ぶ
 </div>
 
-3 つすべてのスキルカテゴリで、インストール方法は同じです。違うのは、その次に何をするかです。
+CLIスキルとWorkflowスキルは上記のインストールで導入されます。Buildスキルは別のステップです: `firecrawl setup build`。違うのは、その次に何をするかです。
 
 <Steps>
   <Step title="ライブWebツール（CLIスキル）">
-    現在のセッション中にWebデータが必要な場合に使います。たとえば、Web検索、既知のURLのスクレイピング、スクレイピング済みページのInteract、ドキュメントのクロール、サイトのMap、エージェントジョブの実行などです。
+    現在のセッション中にウェブデータが必要な場合に使います。たとえば、Web検索、既知のURLのスクレイピング、スクレイピング済みページのInteract、ドキュメントのクロール、サイトのMap、エージェントジョブの実行などです。
 
     デフォルトの流れ:
 
@@ -169,13 +174,13 @@ npx skills add firecrawl/skills@firecrawl-research-index
   </Step>
 
   <Step title="アプリ連携（Buildスキル）">
-    コードから Firecrawl API を呼び出すアプリケーション、エージェント、またはワークフローを構築している場合に使います。Buildスキルは、適切なエンドポイントの選定、SDK の組み込み、スモークテストの実行を支援します。
+    コードから Firecrawl API を呼び出すアプリケーション、エージェント、またはワークフローを構築している場合に使います。Buildスキルは `firecrawl setup build` でインストールします。これらは、適切なエンドポイントの選定、SDK の組み込み、スモークテストの実行を支援します。
 
     エージェントは 1 つの重要な問い、*プロダクト内で Firecrawl に何をさせるべきか？*、に答え、Buildスキルはそれに応じて `/search`、`/scrape`、`/interact`、`/parse`、`/crawl`、`/map`、`/agent` に振り分けます。
   </Step>
 
   <Step title="反復可能な成果物（Workflowスキル）">
-    生のWebデータやプロダクトコードではなく、完成した成果物—調査レポート、SEO監査、QAレポート、リードリスト、ナレッジベース、競合インテリジェンスの要約、または複製されたデザインシステム—を目標とする場合に使います。
+    生のウェブデータやプロダクトコードではなく、完成した成果物—調査レポート、SEO監査、QAレポート、リードリスト、ナレッジベース、競合インテリジェンスの要約、または複製されたデザインシステム—を目標とする場合に使います。
 
     Workflowスキルは、まずコンテキストから推測し、入力が作業を妨げる場合にのみ短い確認質問を行います。また、独立して並列化できる単位も明示するため、サブエージェントが競合、ページ、またはソースごとに並列展開できます。
 
@@ -204,7 +209,7 @@ npx skills add firecrawl/skills@firecrawl-research-index
     * `POST https://api.firecrawl.dev/v2/scrape/{scrapeId}/interact` — スクレイピング済みページをInteractする
     * `POST https://api.firecrawl.dev/v2/crawl` — サイト全体を一括抽出する
     * `POST https://api.firecrawl.dev/v2/map` — ドメイン上のURLをMapする
-    * `POST https://api.firecrawl.dev/v2/agent` — 自律的なWebデータ収集を実行する
+    * `POST https://api.firecrawl.dev/v2/agent` — 自律的なウェブデータ収集を実行する
 
     認証ヘッダー: `Authorization: Bearer fc-YOUR_API_KEY`
   </Step>

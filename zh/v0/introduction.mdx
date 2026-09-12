@@ -3,7 +3,14 @@ title: 快速开始
 description: "Firecrawl 可将整个网站转换为适配 LLM 的 Markdown"
 og:title: "快速开始 | Firecrawl"
 og:description: "Firecrawl 可将整个网站转换为适配 LLM 的 Markdown"
+canonical: "https://docs.firecrawl.dev/quickstart"
 ---
+
+<Warning>
+  **本页介绍的是 v0 API，已于 2025 年 4 月 1 日弃用。** 此页面仅作历史参考，
+  并不代表 Firecrawl 当前的工作方式。最新文档请参见：[快速开始](/zh/quickstart)。
+  如需迁移现有的 v0 集成，请参见 [从 v0 迁移](/zh/migrating-from-v0)。
+</Warning>
 
 <img className="block" src="/images/turn-websites-into-llm-ready-data--firecrawl.jpg" alt="浅色主视觉" />
 
@@ -23,7 +30,7 @@ og:description: "Firecrawl 可将整个网站转换为适配 LLM 的 Markdown"
 
 * [x] **API**： [文档](https://docs.firecrawl.dev/api-reference/introduction)
 * [x] **SDKs**： [Python](https://docs.firecrawl.dev/sdks/python)、[Node](https://docs.firecrawl.dev/sdks/node)、[Go](https://docs.firecrawl.dev/sdks/go)、[Rust](https://docs.firecrawl.dev/sdks/rust)
-* [x] **LLM 框架**： [LangChain（Python）](https://python.langchain.com/docs/integrations/document_loaders/firecrawl/)、[LangChain（JS）](https://js.langchain.com/docs/integrations/document_loaders/web_loaders/firecrawl)、[LlamaIndex](https://docs.llamaindex.ai/en/latest/examples/data_connectors/WebPageDemo/#using-firecrawl-reader)、[Crew.ai](https://docs.crewai.com/)、[Composio](https://composio.dev/tools/firecrawl/all)、[PraisonAI](https://docs.praison.ai/firecrawl/)、[Superinterface](https://superinterface.ai/docs/assistants/functions/firecrawl)、[Vectorize](https://docs.vectorize.io/integrations/source-connectors/firecrawl)
+* [x] **LLM 框架**： [LangChain (Python) ](https://python.langchain.com/docs/integrations/document_loaders/firecrawl/)、[LangChain (JS) ](https://js.langchain.com/docs/integrations/document_loaders/web_loaders/firecrawl)、[LlamaIndex](https://docs.llamaindex.ai/en/latest/examples/data_connectors/WebPageDemo/#using-firecrawl-reader)、[Crew.ai](https://docs.crewai.com/)、[Composio](https://composio.dev/tools/firecrawl/all)、[PraisonAI](https://docs.praison.ai/firecrawl/)、[Superinterface](https://superinterface.ai/docs/assistants/functions/firecrawl)、[Vectorize](https://docs.vectorize.io/integrations/source-connectors/firecrawl)
 * [x] **低代码框架**： [Dify](https://dify.ai/blog/dify-ai-blog-integrated-with-firecrawl)、[Langflow](https://docs.langflow.org/)、[Flowise AI](https://docs.flowiseai.com/integrations/langchain/document-loaders/firecrawl)、[Cargo](https://docs.getcargo.io/integration/firecrawl)、[Pipedream](https://pipedream.com/apps/firecrawl/)
 * [x] **其他**： [Zapier](https://zapier.com/apps/firecrawl/integrations)、[Pabbly Connect](https://www.pabbly.com/connect/integrations/firecrawl/)
 * [ ] 需要某个 SDK 或集成？欢迎提交 issue 告诉我们。
@@ -324,7 +331,9 @@ og:description: "Firecrawl 可将整个网站转换为适配 LLM 的 Markdown"
   ```
 </CodeGroup>
 
-### 返回
+<div id="response-2">
+  ### 返回
+</div>
 
 ```json
 {

@@ -8,7 +8,7 @@ og:description: "了解如何通过高级选项提升 Firecrawl 的抓取能力�
 本指南将介绍 Firecrawl 的各个端点，并讲解如何结合所有参数充分发挥其功能。
 
 <div id="basic-scraping-with-firecrawl-scrape">
-  ## 使用 Firecrawl 进行基础抓取 (/scrape)
+  ## 使用 Firecrawl 进行基础抓取 (/scrape) 
 </div>
 
 要抓取单个页面并获取干净的 Markdown 内容，可以使用 `/scrape` 端点。
@@ -228,7 +228,9 @@ curl -X POST https://api.firecrawl.dev/v1/scrape \
 - **描述**: 提示 LLM 按正确的结构提取数据。
 - **示例**: `"Extract the features of the product"`
 
-### 示例用法
+<div id="example-usage-2">
+  ### 示例用法
+</div>
 
 ```bash
 curl -X POST https://api.firecrawl.dev/v1/scrape \
@@ -589,7 +591,7 @@ curl -X GET https://api.firecrawl.dev/v1/crawl/1234-5678-9101 \
 - **默认值**: `{ "formats": ["markdown"] }`
 - **参见**: [抓取选项](#setting-the-content-formats-on-response-with-formats)
 
-<div id="example-usage">
+<div id="example-usage-3">
   ### 使用示例
 </div>
 
@@ -670,7 +672,7 @@ curl -X POST https://api.firecrawl.dev/v1/map \
 - **描述**: 搜索包含指定文本的链接。
 - **示例**: `"blog"`
 
-<div id="limit">
+<div id="limit-2">
   #### `limit`
 </div>
 

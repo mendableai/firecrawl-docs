@@ -77,6 +77,7 @@ The `formats` array controls which output types the scraper returns. Default: `[
 | `markdown` | Page content converted to clean Markdown. |
 | `html` | Processed HTML with unnecessary elements removed. |
 | `rawHtml` | Original HTML exactly as returned by the server. |
+| `rawBase64` | Base64-encoded original HTTP response body, as a bare Base64 string. Must be the only format in the request. The MIME type is in `metadata.contentType`. |
 | `links` | All links found on the page. |
 | `images` | All images found on the page. |
 | `summary` | An LLM-generated summary of the page content. |
@@ -458,6 +459,8 @@ curl -X POST https://api.firecrawl.dev/v2/scrape \
 
 Use the `/v2/agent` endpoint for autonomous, multi-page data extraction. The agent runs asynchronously: you start a job, then poll for results.
 
+[Agent](/features/agent) is the canonical reference for this endpoint, including execution traces, webhooks, and the full parameter list.
+
 ### Agent options
 
 | Parameter | Type | Default | Description |
@@ -467,7 +470,8 @@ Use the `/v2/agent` endpoint for autonomous, multi-page data extraction. The age
 | `schema` | `object` | — | JSON schema to structure the extracted data. |
 | `maxCredits` | `number` | `2500` | Maximum credits the agent can spend. The dashboard supports up to 2,500; for higher limits, set this via the API (values above 2,500 are always billed as paid requests). |
 | `strictConstrainToURLs` | `boolean` | `false` | When `true`, the agent only visits the provided URLs. |
-| `model` | `string` | `"spark-1-pro"` | AI model to use. `"spark-1-pro"` (default, higher accuracy), `"spark-1-mini"` (60% cheaper than Pro) or `"spark-2"` (cheapest and fastest). |
+| `model` | `string` | `"spark-2"` | AI model to use. Spark 1 models are deprecated and currently route to `"spark-2"`. |
+| `effort` | `string` | _(unset)_ | Reasoning budget: `"low"`, `"medium"`, or `"high"`. Every run executes on `"spark-2"`, so you can send `effort` with or without `model`. |
 
 <CodeGroup>
 
@@ -592,6 +596,8 @@ When using the `/v2/crawl` endpoint, you can customize crawling behavior with th
 The starting URL is also checked against `includePaths`. If it does not match any of the patterns, the crawl may return 0 pages.
 </Warning>
 
+Patterns use Rust regex (RE2-style) syntax, so look-around and backreferences are not supported; a pattern that does not compile is rejected with a `400`. Each field accepts at most 1000 patterns of at most 2000 characters each, and `includePaths` and `excludePaths` together may contain at most 1000 patterns and 100,000 characters. For keyword-based filtering, send one short pattern per term instead of combining terms into a single long alternation.
+
 #### Crawl scope
 
 | Parameter | Type | Default | Description |
@@ -660,7 +666,8 @@ Here is the API Reference for it: [Map Endpoint Documentation](https://docs.fire
 
 ### Allowing Firecrawl to scrape your website
 
-- **User Agent**: Allow `FirecrawlAgent` in your firewall or security rules.
+- **robots.txt**: Firecrawl reads `robots.txt` before it crawls a site, and applies the rules written for the user-agent token `FirecrawlAgent` as well as the rules written for `*`. Use `FirecrawlAgent` to allow or disallow Firecrawl in `robots.txt`.
+- **User agent**: `FirecrawlAgent` is the token Firecrawl matches against when it applies `robots.txt` rules. Do not assume it is also the `User-Agent` header on the fetch itself. Allow-list Firecrawl with a `robots.txt` directive rather than with a firewall or WAF rule that matches a `User-Agent` string.
 - **IP addresses**: Firecrawl does not use a fixed set of outbound IPs.
 
 ### Allowing your application to call the Firecrawl API

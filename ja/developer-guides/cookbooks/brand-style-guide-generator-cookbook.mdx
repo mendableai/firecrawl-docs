@@ -142,7 +142,9 @@ description: "Firecrawl の branding format を使って任意のウェブサイ
 
     `fc-YOUR-API-KEY` を、[firecrawl.dev](https://firecrawl.dev) から取得した Firecrawl の API キーに置き換えてください。
 
-    ### コードの解説
+    <div id="understanding-the-code">
+      ### コードの解説
+    </div>
 
     **主要コンポーネント:**
 
@@ -227,7 +229,6 @@ description: "Firecrawl の branding format を使って任意のウェブサイ
 }
 ```
 
-
 <div id="key-features">
   ## 主な機能
 </div>
@@ -292,7 +293,6 @@ if (b.components) {
 }
 ```
 
-
 <div id="export-multiple-formats">
   ### 複数フォーマットでエクスポート
 </div>
@@ -303,7 +303,6 @@ PDFに加えて、JSON形式でのエクスポートも追加します:
 // doc.end() の前に追加
 fs.writeFileSync("brand-data.json", JSON.stringify(b, null, 2));
 ```
-
 
 <div id="batch-processing">
   ### バッチ処理
@@ -324,7 +323,6 @@ for (const site of websites) {
 }
 ```
 
-
 <div id="custom-pdf-themes">
   ### カスタム PDF テーマ
 </div>
@@ -336,7 +334,6 @@ const isDarkMode = b.colorScheme === "dark";
 const headerBg = isDarkMode ? b.colors?.background : b.colors?.primary;
 const textColor = isDarkMode ? "#fff" : "#333";
 ```
-
 
 <div id="best-practices">
   ## ベストプラクティス

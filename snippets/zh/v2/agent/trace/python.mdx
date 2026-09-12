@@ -1,0 +1,16 @@
+```python Python
+from firecrawl import Firecrawl
+
+app = Firecrawl(api_key="fc-YOUR_API_KEY")
+
+# 单次运行的执行轨迹：有序事件（tool calls、推理、产物）
+trace = app.get_agent_trace("JOB_ID")
+
+for event in trace.events or []:
+    print(event.type)
+
+# 运行进行中时，一并返回当前活跃的浏览器会话
+live = app.get_agent_trace("JOB_ID", live_view=True)
+for session in live.active_browser_sessions or []:
+    print(session.live_view_url)
+```

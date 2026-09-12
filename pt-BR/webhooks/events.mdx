@@ -79,7 +79,6 @@ Enviado quando a operação de rastreamento começa a ser processada.
 }
 ```
 
-
 <div id="crawlpage">
   ### `crawl.page`
 </div>
@@ -113,7 +112,6 @@ Enviado para cada página extraída. O array `data` contém o conteúdo da pági
 }
 ```
 
-
 <div id="crawlcompleted">
   ### `crawl.completed`
 </div>
@@ -129,7 +127,6 @@ Enviado quando toda a operação de rastreamento é concluída e todas as págin
   "metadata": {}
 }
 ```
-
 
 <div id="batch-scrape-events">
   ## Eventos de Scrape em Lote
@@ -150,7 +147,6 @@ Enviado quando a tarefa de raspagem em lote começa a ser processada.
   "metadata": {}
 }
 ```
-
 
 <div id="batch_scrapepage">
   ### `batch_scrape.page`
@@ -185,7 +181,6 @@ Enviado para cada URL processada na raspagem. O array `data` contém o conteúdo
 }
 ```
 
-
 <div id="batch_scrapecompleted">
   ### `batch_scrape.completed`
 </div>
@@ -201,7 +196,6 @@ Enviado quando todas as URLs do lote tiverem sido processadas.
   "metadata": {}
 }
 ```
-
 
 <div id="monitor-events">
   ## Eventos do Monitor
@@ -245,7 +239,6 @@ Enviado quando a tarefa de extração começa a ser processada.
 }
 ```
 
-
 <div id="extractcompleted">
   ### `extract.completed`
 </div>
@@ -274,7 +267,6 @@ Enviado quando uma operação de extração é concluída com sucesso. O array `
 }
 ```
 
-
 <div id="extractfailed">
   ### `extract.failed`
 </div>
@@ -292,10 +284,11 @@ Enviado quando a extração falha. O campo `error` contém o motivo do erro.
 }
 ```
 
-
 <div id="agent-events">
-  ## Eventos de agente
+  ## Eventos do agente
 </div>
+
+Enviado para jobs iniciados com um `webhook` em [`/v2/agent`](/pt-BR/features/agent).
 
 <div id="agentstarted">
   ### `agent.started`
@@ -312,7 +305,6 @@ Enviado quando a tarefa do agente começa a ser processada.
   "metadata": {}
 }
 ```
-
 
 <div id="agentaction">
   ### `agent.action`
@@ -344,7 +336,6 @@ Enviado após cada execução de uma ferramenta (scrape, search, etc.).
   disponível nos eventos `completed`, `failed` ou `cancelled`.
 </Note>
 
-
 <div id="agentcompleted">
   ### `agent.completed`
 </div>
@@ -370,7 +361,6 @@ Enviado quando o agente conclui a execução com sucesso. O array `data` contém
 }
 ```
 
-
 <div id="agentfailed">
   ### `agent.failed`
 </div>
@@ -392,7 +382,6 @@ Enviado quando o agente encontra um erro. O campo `error` contém o motivo da fa
 }
 ```
 
-
 <div id="agentcancelled">
   ### `agent.cancelled`
 </div>
@@ -412,7 +401,6 @@ Enviado quando a tarefa do agente é cancelada pelo usuário.
   "metadata": {}
 }
 ```
-
 
 <div id="event-filtering">
   ## Filtragem de eventos

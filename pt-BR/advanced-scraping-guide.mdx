@@ -78,16 +78,17 @@ O array `formats` controla quais tipos de saída o scraper retorna. Padrão: `["
 
 **Formatos em string**: passe o nome diretamente (por exemplo, `"markdown"`).
 
-| Formato    | Descrição                                                                                                                                                     |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `markdown` | Conteúdo da página convertido para Markdown limpo.                                                                                                            |
-| `html`     | HTML processado com elementos desnecessários removidos.                                                                                                       |
-| `rawHtml`  | HTML original exatamente como retornado pelo servidor.                                                                                                        |
-| `links`    | Todos os links encontrados na página.                                                                                                                         |
-| `images`   | Todas as imagens encontradas na página.                                                                                                                       |
-| `summary`  | Um resumo gerado por um LLM do conteúdo da página.                                                                                                            |
-| `branding` | Extrai a identidade de marca (cores, fontes, tipografia, espaçamento, componentes de UI).                                                                     |
-| `product`  | Extrai um produto estruturado (título, preço, disponibilidade, imagens e variantes) de páginas de produto por meio de dados estruturados de múltiplas fontes. |
+| Formato     | Descrição                                                                                                                                                                 |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `markdown`  | Conteúdo da página convertido para Markdown limpo.                                                                                                                        |
+| `html`      | HTML processado com elementos desnecessários removidos.                                                                                                                   |
+| `rawHtml`   | HTML original exatamente como retornado pelo servidor.                                                                                                                    |
+| `rawBase64` | Corpo da resposta HTTP original codificado em Base64, como uma string Base64 simples. Deve ser o único formato na requisição. O tipo MIME está em `metadata.contentType`. |
+| `links`     | Todos os links encontrados na página.                                                                                                                                     |
+| `images`    | Todas as imagens encontradas na página.                                                                                                                                   |
+| `summary`   | Um resumo gerado por um LLM do conteúdo da página.                                                                                                                        |
+| `branding`  | Extrai a identidade de marca (cores, fontes, tipografia, espaçamento, componentes de UI).                                                                                 |
+| `product`   | Extrai um produto estruturado (título, preço, disponibilidade, imagens e variantes) de páginas de produto por meio de dados estruturados de múltiplas fontes.             |
 
 **Formatos em objeto**: passe um objeto com `type` e opções adicionais.
 
@@ -476,20 +477,23 @@ Use o objeto de formato JSON em `formats` para extrair dados estruturados de uma
   ## Endpoint do agente
 </div>
 
-Use o endpoint `/v2/agent` para extração autônoma de dados em várias páginas. O agente é executado de forma assíncrona: você inicia uma tarefa e depois faz polling dos resultados.
+Use o endpoint `/v2/agent` para extração autônoma de dados em várias páginas. O agente é executado de forma assíncrona: você inicia um job e depois consulta os resultados.
+
+[Agent](/pt-BR/features/agent) é a referência canônica para este endpoint, incluindo rastros de execução, webhooks e a lista completa de parâmetros.
 
 <div id="agent-options">
   ### Opções do agente
 </div>
 
-| Parâmetro               | Tipo      | Padrão          | Descrição                                                                                                                                                                                 |
-| ----------------------- | --------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `prompt`                | `string`  | *(obrigatório)* | Instruções em linguagem natural descrevendo quais dados extrair (máx. 10.000 caracteres).                                                                                                 |
-| `urls`                  | `array`   | —               | URLs às quais o agente estará limitado.                                                                                                                                                   |
-| `schema`                | `object`  | —               | Schema JSON para estruturar os dados extraídos.                                                                                                                                           |
-| `maxCredits`            | `number`  | `2500`          | Créditos máximos que o agente pode gastar. O dashboard suporta até 2.500; para limites maiores, defina isso pela API (valores acima de 2.500 são sempre cobrados como requisições pagas). |
-| `strictConstrainToURLs` | `boolean` | `false`         | Quando `true`, o agente visita apenas as URLs fornecidas.                                                                                                                                 |
-| `model`                 | `string`  | `"spark-1-pro"` | Modelo de IA a ser usado: `"spark-1-pro"` (padrão, maior precisão), `"spark-1-mini"` (60% mais barato que o Pro) ou `"spark-2"` (mais barato e mais rápido).                              |
+| Parâmetro               | Tipo      | Padrão           | Descrição                                                                                                                                                                                 |
+| ----------------------- | --------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prompt`                | `string`  | *(obrigatório)*  | Instruções em linguagem natural descrevendo quais dados extrair (máx. 10.000 caracteres).                                                                                                 |
+| `urls`                  | `array`   | —                | URLs às quais o agente estará limitado.                                                                                                                                                   |
+| `schema`                | `object`  | —                | Schema JSON para estruturar os dados extraídos.                                                                                                                                           |
+| `maxCredits`            | `number`  | `2500`           | Créditos máximos que o agente pode gastar. O dashboard suporta até 2.500; para limites maiores, defina isso pela API (valores acima de 2.500 são sempre cobrados como requisições pagas). |
+| `strictConstrainToURLs` | `boolean` | `false`          | Quando `true`, o agente visita apenas as URLs fornecidas.                                                                                                                                 |
+| `model`                 | `string`  | `"spark-2"`      | Modelo de IA a ser usado. Os modelos Spark 1 estão descontinuados e atualmente são direcionados para `"spark-2"`.                                                                         |
+| `effort`                | `string`  | *(não definido)* | Orçamento de raciocínio: `"low"`, `"medium"` ou `"high"`. Cada execução é realizada em `"spark-2"`, portanto você pode enviar `effort` com ou sem `model`.                                |
 
 <CodeGroup>
   ```python Python
@@ -615,15 +619,17 @@ Ao usar o endpoint `/v2/crawl`, você pode configurar o comportamento do crawler
   #### Filtragem de caminhos
 </div>
 
-| Parâmetro | Tipo | Padrão | Descrição |
-|-----------|------|--------|-----------|
-| `includePaths` | `array` | — | Padrões regex para URLs a serem incluídas (apenas o pathname por padrão). |
-| `excludePaths` | `array` | — | Padrões regex para URLs a serem excluídas (apenas o pathname por padrão). |
-| `regexOnFullURL` | `boolean` | `false` | Aplica os padrões à URL completa em vez de apenas ao pathname. |
+| Parâmetro        | Tipo      | Padrão  | Descrição                                                                 |
+| ---------------- | --------- | ------- | ------------------------------------------------------------------------- |
+| `includePaths`   | `array`   | —       | Padrões regex para URLs a serem incluídas (apenas o pathname por padrão). |
+| `excludePaths`   | `array`   | —       | Padrões regex para URLs a serem excluídas (apenas o pathname por padrão). |
+| `regexOnFullURL` | `boolean` | `false` | Aplica os padrões à URL completa em vez de apenas ao pathname.            |
 
 <Warning>
   A URL inicial também é verificada em relação a `includePaths`. Se ela não corresponder a nenhum dos padrões, o rastreamento poderá retornar 0 páginas.
 </Warning>
+
+Os padrões usam a sintaxe de regex do Rust (estilo RE2), portanto look-around e retrorreferências não são suportados; um padrão que não compila é rejeitado com um `400`. Cada campo aceita no máximo 1000 padrões de até 2000 caracteres cada, e `includePaths` e `excludePaths` juntos podem conter no máximo 1000 padrões e 100.000 caracteres. Para filtragem baseada em palavras-chave, envie um padrão curto por termo em vez de combinar os termos em uma única alternância longa.
 
 <div id="crawl-scope">
   #### Escopo do rastreamento
@@ -706,11 +712,12 @@ Aqui está a referência da API: [Documentação do endpoint Map](https://docs.f
 </div>
 
 <div id="allowing-firecrawl-to-scrape-your-website">
-  ### Como permitir que o Firecrawl faça scraping do seu site
+  ### Permitindo que o Firecrawl faça scraping do seu site
 </div>
 
-* **User Agent**: permita `FirecrawlAgent` no seu firewall ou nas suas regras de segurança.
-* **Endereços IP**: o Firecrawl não usa um conjunto fixo de IPs de saída.
+* **robots.txt**: o Firecrawl lê o `robots.txt` antes de rastrear um site e aplica as regras definidas para o token de user-agent `FirecrawlAgent`, além das definidas para `*`. Use `FirecrawlAgent` para permitir ou bloquear o Firecrawl no `robots.txt`.
+* **User agent**: `FirecrawlAgent` é o token que o Firecrawl usa como referência ao aplicar as regras do `robots.txt`. Não presuma que ele seja também o header `User-Agent` da requisição em si. Libere o Firecrawl com uma diretiva no `robots.txt`, e não com uma regra de firewall ou WAF que faça correspondência com uma string de `User-Agent`.
+* **Endereços IP**: o Firecrawl não utiliza um conjunto fixo de IPs de saída.
 
 <div id="allowing-your-application-to-call-the-firecrawl-api">
   ### Permitindo que sua aplicação faça chamadas à API do Firecrawl

@@ -22,6 +22,7 @@ import ParseJsonNode from "/snippets/zh/v2/parse/json/js.mdx";
 import ParseJsonCURL from "/snippets/zh/v2/parse/json/curl.mdx";
 import ParseGroundingPython from "/snippets/zh/v2/parse/grounding/python.mdx";
 import ParseGroundingNode from "/snippets/zh/v2/parse/grounding/js.mdx";
+import VideoParseVsScrape from "/snippets/zh/shared/video-parse-vs-scrape.mdx";
 
 解析可将文档转换为整洁、可供 LLM 使用的数据。将文件上传至
 [`/parse`](/zh/api-reference/endpoint/parse)，或使用 [`/scrape`](/zh/features/scrape)
@@ -32,6 +33,10 @@ import ParseGroundingNode from "/snippets/zh/v2/parse/grounding/js.mdx";
 * **结构可追溯**：逐页类型化布局块，包含边界框以及指向 Markdown 中字符范围的链接 (PDF)
 * **支持常见格式**：PDF、Word、Excel、PowerPoint、OpenDocument、EPUB、CSV、HTML
 * 支持 **零数据保留**
+
+不确定该用 Parse 还是 [Scrape](/zh/features/scrape)？下面的视频讲解了两者的区别：
+
+<VideoParseVsScrape />
 
 <div id="quickstart">
   ## 快速入门

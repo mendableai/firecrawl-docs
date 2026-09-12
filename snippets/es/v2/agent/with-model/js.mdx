@@ -3,23 +3,13 @@ import { Firecrawl } from 'firecrawl';
 
 const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
 
-// Usando Spark 2 (no es el predeterminado - especifícalo explícitamente)
-const resultSpark2 = await firecrawl.agent({
+// Spark 2 es el predeterminado — todas las ejecuciones se realizan con él
+const result = await firecrawl.agent({
   prompt: "Find the pricing of Firecrawl",
   model: "spark-2"
 });
 
-// Usando Spark 1 Mini
-const result = await firecrawl.agent({
-  prompt: "Find the pricing of Firecrawl",
-  model: "spark-1-mini"
-});
-
-// Usando Spark 1 Pro (el predeterminado) para tareas complejas
-const resultPro = await firecrawl.agent({
-  prompt: "Compare all enterprise features and pricing across Firecrawl, Apify, and ScrapingBee",
-  model: "spark-1-pro"
-});
+// Obsoleto: los nombres de modelo de Spark 1 aún se aceptan, pero se redirigen a "spark-2".
 
 console.log(result.data);
 ```

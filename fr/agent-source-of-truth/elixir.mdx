@@ -93,12 +93,12 @@ Utilisez la recherche pour découvrir des pages pertinentes à partir d’une re
 </div>
 
 * `query`
-  * Type : chaîne
+  * Type : string
   * À utiliser lorsque : vous avez besoin d&#39;une requête de recherche.
   * Remarques : utilisez `site:example.com` pour limiter les résultats à un domaine.
 
 * `sources`
-  * Type : liste d&#39;atomes, de chaînes ou de maps
+  * Type : liste d&#39;atomes, de strings ou de maps
   * À utiliser lorsque : vous souhaitez contrôler les sources dans lesquelles effectuer la recherche.
   * Valeurs confirmées :
     * `"web"` ou `:web`
@@ -107,44 +107,44 @@ Utilisez la recherche pour découvrir des pages pertinentes à partir d’une re
     * `%{type: "web" | "news" | "images"}`
 
 * `categories`
-  * Type : liste d&#39;atomes, de chaînes ou de maps
+  * Type : liste d&#39;atomes, de strings ou de maps
   * À utiliser lorsque : vous souhaitez filtrer les résultats par catégorie.
   * Valeurs confirmées :
-    * `"github"` ou `:github`
+    * `"developer"` ou `:developer`
     * `"research"` ou `:research`
     * `"pdf"` ou `:pdf`
-    * `%{type: "github" | "research" | "pdf"}`
+    * `%{type: "developer" | "research" | "pdf"}`
 
 * `limit`
-  * Type : entier
+  * Type : integer
   * À utiliser lorsque : vous souhaitez limiter le nombre de résultats.
 
 * `tbs`
-  * Type : chaîne
+  * Type : string
   * À utiliser lorsque : vous avez besoin d&#39;un filtre temporel (par exemple `qdr:d`, `qdr:w`, `sbd:1,qdr:m`).
 
 * `location`
-  * Type : chaîne
+  * Type : string
   * À utiliser lorsque : vous souhaitez obtenir des résultats localisés.
 
 * `country`
-  * Type : chaîne
+  * Type : string
   * À utiliser lorsque : vous souhaitez un ciblage ISO 3166-1 alpha-2 (par exemple `"US"`).
 
 * `ignore_invalid_urls`
-  * Type : booléen
+  * Type : boolean
   * À utiliser lorsque : vous souhaitez ignorer les URL qui ne peuvent pas être scrapées par d&#39;autres points de terminaison.
 
 * `timeout`
-  * Type : entier
+  * Type : integer
   * À utiliser lorsque : vous avez besoin d&#39;un délai d&#39;expiration de requête en millisecondes.
 
 * `enterprise`
-  * Type : liste de chaînes
+  * Type : liste de strings
   * À utiliser lorsque : vous avez besoin de contrôles de recherche Enterprise.
   * Valeurs confirmées :
-    * `"zdr"`: rétention nulle des données de bout en bout
-    * `"anon"`: rétention nulle des données anonymisée
+    * `"zdr"`: conservation nulle des données de bout en bout
+    * `"anon"`: conservation nulle des données anonymisées
 
 * `scrape_options`
   * Type : liste de mots-clés
@@ -154,19 +154,19 @@ Utilisez la recherche pour découvrir des pages pertinentes à partir d’une re
   ## Scrape
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### Pourquoi l’utiliser
 </div>
 
 Utilisez `scrape` lorsque vous avez déjà une URL et que vous souhaitez du contenu structuré dans un ou plusieurs formats.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### Méthode recommandée du SDK
 </div>
 
 `Firecrawl.scrape_and_extract_from_url(params \\ [], opts \\ [])`
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Exemple simple
 </div>
 
@@ -177,7 +177,7 @@ Utilisez `scrape` lorsque vous avez déjà une URL et que vous souhaitez du cont
 )
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Exemple complexe
 </div>
 
@@ -212,7 +212,7 @@ Utilisez `scrape` lorsque vous avez déjà une URL et que vous souhaitez du cont
 )
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### Paramètres
 </div>
 
@@ -336,19 +336,19 @@ Utilisez `scrape` lorsque vous avez déjà une URL et que vous souhaitez du cont
   ## Interact
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### Pourquoi l’utiliser
 </div>
 
 Utilisez Interact lorsqu’une page nécessite des actions dans le navigateur ou l’exécution de code une fois le scrape lancé.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### Méthode recommandée du SDK
 </div>
 
 `Firecrawl.interact_with_scrape_browser_session(job_id, params \\ [], opts \\ [])`
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Exemple simple
 </div>
 
@@ -361,7 +361,7 @@ Utilisez Interact lorsqu’une page nécessite des actions dans le navigateur ou
 )
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Exemple complexe
 </div>
 
@@ -374,7 +374,7 @@ Utilisez Interact lorsqu’une page nécessite des actions dans le navigateur ou
 )
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### Paramètres
 </div>
 

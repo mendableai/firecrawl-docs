@@ -103,7 +103,7 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
 </div>
 
 * `query`
-  * 型: string (必須、最大長 500) 
+  * 型: string (必須、最大長 500)
   * 使用する場合: 検索クエリが必要な場合。
   * 注記: 結果を特定のドメインに限定するには、`site:example.com` を使用します。
 
@@ -111,7 +111,7 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
   * 型: 型付きソースオブジェクトの配列
   * 使用する場合: 検索対象のソースを制御したい場合。
   * 確認済みのオブジェクト形式:
-    * `{ "type": "web" }` (ソースごとの `tbs` と `location` は任意) 
+    * `{ "type": "web" }` (ソースごとの `tbs` と `location` は任意)
     * `{ "type": "news" }`
     * `{ "type": "images" }`
 
@@ -119,12 +119,12 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
   * 型: 型付きカテゴリオブジェクトの配列
   * 使用する場合: カテゴリで結果を絞り込みたい場合。
   * 確認済みのオブジェクト形式:
-    * `{ "type": "github" }`
+    * `{ "type": "developer" }`
     * `{ "type": "research" }`
     * `{ "type": "pdf" }`
 
 * `limit`
-  * 型: integer (最小 1、最大 100、デフォルト 5) 
+  * 型: integer (最小 1、最大 100、デフォルト 5)
   * 使用する場合: 結果数に上限を設定したい場合。
 
 * `tbs`
@@ -136,19 +136,19 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
   * 使用する場合: ローカライズされた結果を取得したい場合。
 
 * `country`
-  * 型: string (デフォルト `"US"`) 
+  * 型: string (デフォルト `"US"`)
   * 使用する場合: ISO 3166-1 alpha-2 で対象国を指定したい場合 (例: `"US"`) 。
 
 * `ignoreInvalidURLs`
-  * 型: boolean (デフォルト false) 
+  * 型: boolean (デフォルト false)
   * 使用する場合: 他のエンドポイントでスクレイピングできない URL を除外したい場合。
 
 * `timeout`
-  * 型: integer (ミリ秒、デフォルト 60000) 
+  * 型: integer (ミリ秒、デフォルト 60000)
   * 使用する場合: ミリ秒単位のリクエストタイムアウトが必要な場合。
 
 * `enterprise`
-  * 型: 文字列の配列 (各項目は `"anon"` または `"zdr"`) 
+  * 型: 文字列の配列 (各項目は `"anon"` または `"zdr"`)
   * 使用する場合: エンタープライズ検索の制御が必要な場合。
   * 値:
     * `"zdr"`: エンドツーエンドのゼロデータ保持
@@ -156,23 +156,25 @@ curl -X POST "https://api.firecrawl.dev/v2/search" \
 
 * `scrapeOptions`
   * 型: object
-  * 使用する場合: 各検索結果をスクレイピングしたい場合 (フィールドについては Scrape パラメータを参照) 。
+  * 使用する場合: 各検索結果をスクレイピングしたい場合 (フィールドについては スクレイピング パラメータを参照) 。
 
 <div id="scrape">
   ## スクレイピング
 </div>
 
-### 使う理由
+<div id="why-use-it-2">
+  ### 使う理由
+</div>
 
 URL がすでにあり、1 つ以上のフォーマットで構造化されたコンテンツを取得したい場合は、スクレイピングを使用します。
 
-<div id="endpoint">
+<div id="endpoint-2">
   ### エンドポイント
 </div>
 
 `POST /scrape`
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### シンプルな例
 </div>
 
@@ -186,7 +188,9 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
   }'
 ```
 
-### 高度な例
+<div id="complex-example-2">
+  ### 高度な例
+</div>
 
 ```bash
 curl -X POST "https://api.firecrawl.dev/v2/scrape" \
@@ -222,7 +226,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
   }'
 ```
 
-<div id="response">
+<div id="response-2">
   ### レスポンス
 </div>
 
@@ -234,7 +238,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
 * `warning`: 抽出またはフォーマットに関する任意の通知
 * `changeTracking`: `changeTracking` フォーマットがリクエストされた場合に含まれます
 
-<div id="parameters">
+<div id="parameters-2">
   ### パラメータ
 </div>
 
@@ -356,17 +360,21 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape" \
   ## Interact
 </div>
 
-### なぜ使うのか
+<div id="why-use-it-3">
+  ### なぜ使うのか
+</div>
 
 ページで、スクレイピングの開始後にブラウザのアクションやコードの実行が必要な場合は、Interact を使用します。
 
-<div id="endpoint">
+<div id="endpoint-3">
   ### エンドポイント
 </div>
 
 `POST /scrape/{jobId}/interact`
 
-### 簡単な例
+<div id="simple-example-3">
+  ### 簡単な例
+</div>
 
 ```bash
 curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
@@ -377,7 +385,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   }'
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### 複雑な例
 </div>
 
@@ -392,7 +400,7 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   }'
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### パラメータ
 </div>
 
@@ -413,13 +421,15 @@ curl -X POST "https://api.firecrawl.dev/v2/scrape/<jobId>/interact" \
   * Type: integer (秒。最小 1、最大 300、デフォルト 30)
   * 使用する場合: 実行タイムアウトを指定する必要がある場合。
 
-<div id="response">
+<div id="response-3">
   ### レスポンス
 </div>
 
 成功時のレスポンスには、`success` に加えて、`stdout`、`result` (`stdout` の別名) 、`stderr`、`exitCode`、`killed`、`error` (null 許容) などの実行フィールドが含まれます。
 
-### DELETE /scrape/{jobId}/interact
+<div id="delete-scrapeinteract">
+  ### DELETE /scrape/{jobId}/interact
+</div>
 
 <div id="example">
   ### 例
@@ -436,19 +446,21 @@ JSONボディはありません。成功時のレスポンスには `success` �
   ## Ask (エージェント型デバッグ)
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-4">
   ### 使用する理由
 </div>
 
 Firecrawl API の呼び出しが失敗した場合や、想定外の結果が返された場合は、`ask` を使用します。AI サポートエージェントが問題を診断し、修正用のパラメータを提案し、必要に応じてその修正を実際の API に対して検証します。通常のレイテンシ: 15〜30 秒。
 
-<div id="endpoint">
+<div id="endpoint-4">
   ### エンドポイント
 </div>
 
 `POST /support/ask`
 
-### 基本的な例
+<div id="simple-example-4">
+  ### 基本的な例
+</div>
 
 ```bash
 curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
@@ -459,7 +471,9 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
   }'
 ```
 
-### 高度な例
+<div id="complex-example-4">
+  ### 高度な例
+</div>
 
 ```bash
 curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
@@ -472,7 +486,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
   }'
 ```
 
-<div id="response">
+<div id="response-4">
   ### レスポンス
 </div>
 
@@ -485,7 +499,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
 * `validation.result`: `success`、`failure`、または `skipped`。
 * `feedback`: エージェントが行き詰まった場合に含まれ、成功時は null。
 
-<div id="parameters">
+<div id="parameters-4">
   ### パラメータ
 </div>
 
@@ -505,17 +519,19 @@ curl -X POST "https://api.firecrawl.dev/v2/support/ask" \
   ## ドキュメント検索
 </div>
 
-### なぜ使うのか
+<div id="why-use-it-5">
+  ### なぜ使うのか
+</div>
 
 docs-search を使うと、Firecrawl のドキュメントを検索できます。
 
-<div id="endpoint">
+<div id="endpoint-5">
   ### エンドポイント
 </div>
 
 `POST /support/docs-search`
 
-<div id="example">
+<div id="example-2">
   ### 例
 </div>
 
@@ -528,7 +544,7 @@ curl -X POST "https://api.firecrawl.dev/v2/support/docs-search" \
   }'
 ```
 
-<div id="parameters">
+<div id="parameters-5">
   ### パラメータ
 </div>
 

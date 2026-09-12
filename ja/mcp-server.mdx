@@ -26,11 +26,20 @@ sidebarTitle: 'はじめに'
   ## APIキーを追加する
 </div>
 
-[Firecrawl APIキーを作成](https://www.firecrawl.dev/app/api-keys)し、Bearerトークンとして送信します。
+[Firecrawl APIキーを作成](https://www.firecrawl.dev/app/api-keys)し、クライアント設定にBearerトークンとして追加します。
 
-```text
-URL: https://mcp.firecrawl.dev/v2/mcp
-Authorization: Bearer <FIRECRAWL_API_KEY>
+```json
+{
+  "mcpServers": {
+    "firecrawl": {
+      "type": "http",
+      "url": "https://mcp.firecrawl.dev/v2/mcp",
+      "headers": {
+        "Authorization": "Bearer <FIRECRAWL_API_KEY>"
+      }
+    }
+  }
+}
 ```
 
 キーは MCP URL ではなく、環境変数またはクライアントのシークレットストレージで設定してください。

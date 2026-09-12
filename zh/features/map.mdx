@@ -137,7 +137,9 @@ curl -X POST https://api.firecrawl.dev/v2/map \
 
 当你指定位置设置时，Firecrawl 会在可用时使用合适的代理，并模拟相应的语言和时区设置。默认情况下，若未指定，位置将设为“US”。
 
-### 用法
+<div id="usage-2">
+  ### 用法
+</div>
 
 要配置位置和语言，请在请求体中包含 `location` 对象，并设置以下属性：
 
@@ -159,5 +161,7 @@ curl -X POST https://api.firecrawl.dev/v2/map \
 </div>
 
 该端点优先考虑速度，因此可能无法捕获所有网站链接。它主要依赖网站的 sitemap，并结合缓存的爬取数据和搜索引擎结果。若需要更全面且最新的 URL 列表，请考虑改用 [/crawl](/zh/features/crawl) 端点。
+
+如果你需要更彻底的递归发现，并希望获得可审计的结果与错误记录，而非快速的近似结果，请使用 [/crawl](/zh/features/crawl)：它通过递归链接遍历以及 sitemap 来发现页面，并报告返回了哪些内容、哪些抓取失败 —— 请参见[执行与结果统计](/zh/features/crawl#execution-and-result-accounting)。若只需要某个特定页面上的链接，请在 [/scrape](/zh/features/scrape) 中请求 [`links` 格式](/zh/features/scrape#scrape-formats)。
 
 > 你是需要 Firecrawl API 密钥的 AI 代理吗？请参见 [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) 获取自动化接入说明。

@@ -3,7 +3,14 @@ title: "高度なスクレイピングガイド"
 description: "高度なオプションで Firecrawl のスクレイピングを強化する方法を学びます。"
 og:title: "高度なスクレイピングガイド | Firecrawl"
 og:description: "高度なオプションで Firecrawl のスクレイピングを強化する方法を学びます。"
+canonical: "https://docs.firecrawl.dev/advanced-scraping-guide"
 ---
+
+<Warning>
+  **このページは 2025 年 4 月 1 日に廃止された v0 API のドキュメントです。** 過去の参照用として残されているもので、現在の Firecrawl の動作を説明するものではありません。最新のドキュメントは
+  [高度なスクレイピングガイド](/ja/advanced-scraping-guide) をご覧ください。既存の v0 インテグレーションを移行する場合は、
+  [v0 からの移行](/ja/migrating-from-v0) を参照してください。
+</Warning>
 
 このガイドでは、Firecrawl の各種エンドポイントと、全パラメータを活用した使い方を順を追って解説します。
 
@@ -52,7 +59,7 @@ og:description: "高度なオプションで Firecrawl のスクレイピング�
 
     content, err := app.ScrapeURL("docs.firecrawl.dev", nil)
     if err != nil {
-      log.Fatalf("Failed)
+      log.Fatalf("Failed to scrape URL: %v", err)
     }
   }
   ```
@@ -102,43 +109,45 @@ og:description: "高度なオプションで Firecrawl のスクレイピング�
   ### `onlyMainContent` でコンテンツをよりクリーンに取得する
 </div>
 
-- **Type**: `boolean`
-- **Description**: ヘッダー、ナビゲーションバー、フッターなどを除外し、ページの主要コンテンツのみを返します。
-- **Default**: `false`
+* **Type**: `boolean`
+* **Description**: ヘッダー、ナビゲーションバー、フッターなどを除外し、ページの主要コンテンツのみを返します。
+* **Default**: `false`
 
 <div id="getting-the-html-with-includehtml">
   ### `includeHtml` で HTML を取得する
 </div>
 
-- **Type**: `boolean`
-- **Description**: ページの HTML 版の内容を含めます。レスポンスに `html` キーが追加されます。
-- **Default**: `false`
+* **Type**: `boolean`
+* **Description**: ページの HTML 版の内容を含めます。レスポンスに `html` キーが追加されます。
+* **Default**: `false`
 
 <div id="getting-the-raw-html-with-includerawhtml">
   ### `includeRawHtml` で生のHTMLを取得する
 </div>
 
-- **Type**: `boolean`
-- **Description**: ページの生のHTMLコンテンツを含めます。これにより、レスポンスに `rawHtml` というキーが追加されます。
-- **Default**: `false`
+* **Type**: `boolean`
+* **Description**: ページの生のHTMLコンテンツを含めます。これにより、レスポンスに `rawHtml` というキーが追加されます。
+* **Default**: `false`
 
 <div id="getting-a-screenshot-of-the-page-with-screenshot">
   ### `screenshot` を使ってページのスクリーンショットを取得する
 </div>
 
-- **Type**: `boolean`
-- **Description**: スクレイピング対象ページの先頭部分のスクリーンショットを含めます。
-- **Default**: `false`
+* **Type**: `boolean`
+* **Description**: スクレイピング対象ページの先頭部分のスクリーンショットを含めます。
+* **Default**: `false`
 
 <div id="waiting-for-the-page-to-load-with-waitfor">
   ### `waitFor` を使ったページ読み込みの待機
 </div>
 
-- **Type**: `integer`
-- **Description**: 最終手段としてのみ使用します。コンテンツ取得前に、ページの読み込み完了まで指定ミリ秒だけ待機します。
-- **Default**: `0`
+* **Type**: `integer`
+* **Description**: 最終手段としてのみ使用します。コンテンツ取得前に、ページの読み込み完了まで指定ミリ秒だけ待機します。
+* **Default**: `0`
 
-### 使用例
+<div id="example-usage">
+  ### 使用例
+</div>
 
 ```bash
 curl -X POST https://api.firecrawl.dev/v0/scrape \
@@ -161,7 +170,7 @@ curl -X POST https://api.firecrawl.dev/v0/scrape \
 
 * ページのメインコンテンツのみを返します。
 * レスポンスの`html`キーに生のHTMLコンテンツを含めます。
-* コンテンツの取得前に、ページの読み込み完了まで5000ミリ秒（5秒）待機します。
+* コンテンツの取得前に、ページの読み込み完了まで5000ミリ秒 (5秒) 待機します。
 
 APIリファレンスはこちら: [Scrape Endpoint Documentation](https://docs.firecrawl.dev/api-reference/endpoint/scrape)
 
@@ -171,26 +180,33 @@ APIリファレンスはこちら: [Scrape Endpoint Documentation](https://docs.
 
 `/scrape` エンドポイントを使用する際、`extractorOptions` パラメータで、ページコンテンツから**構造化された情報を抽出する**ためのオプションを指定できます。使用できるオプションは次のとおりです：
 
-### mode
+<div id="mode">
+  ### mode
+</div>
 
-- **Type**: `string`
-- **Enum**: `["llm-extraction", "llm-extraction-from-raw-html"]`
-- **Description**: 使用する抽出モード。
+* **Type**: `string`
 
-  - `llm-extraction`: 正規化・解析済みのコンテンツから情報を抽出します。
-  - `llm-extraction-from-raw-html`: 生の HTML から直接情報を抽出します。
+* **Enum**: `["llm-extraction", "llm-extraction-from-raw-html"]`
 
-- **Type**: `string`
-- **Description**: ページから抽出する情報を指示するプロンプト。
+* **Description**: 使用する抽出モード。
+
+  * `llm-extraction`: 正規化・解析済みのコンテンツから情報を抽出します。
+  * `llm-extraction-from-raw-html`: 生の HTML から直接情報を抽出します。
+
+* **Type**: `string`
+
+* **Description**: ページから抽出する情報を指示するプロンプト。
 
 <div id="extractionschema">
   ### extractionSchema
 </div>
 
-- **タイプ**: `object`
-- **説明**: 抽出対象データのスキーマ。抽出結果のデータ構造を定義します。
+* **タイプ**: `object`
+* **説明**: 抽出対象データのスキーマ。抽出結果のデータ構造を定義します。
 
-### 使用例
+<div id="example-usage-2">
+  ### 使用例
+</div>
 
 ```bash
 curl -X POST https://api.firecrawl.dev/v0/scrape \
@@ -261,7 +277,9 @@ curl -X POST https://api.firecrawl.dev/v0/scrape \
 
 スクレイピング処理のタイムアウトは、`timeout` パラメータでミリ秒単位に指定して調整できます。
 
-### 使用例
+<div id="example-usage-3">
+  ### 使用例
+</div>
 
 ```bash
 curl -X POST https://api.firecrawl.dev/v0/scrape \
@@ -317,52 +335,54 @@ curl -X GET https://api.firecrawl.dev/v0/crawl/status/1234-5678-9101 \
   #### `includes`
 </div>
 
-- **Type**: `array`
-- **Description**: クロールに含める URL パターン。これらのパターンに一致する URL のみをクロールします。
-- **Example**: `["/blog/*", "/products/*"]`
+* **Type**: `array`
+* **Description**: クロールに含める URL パターン。これらのパターンに一致する URL のみをクロールします。
+* **Example**: `["/blog/*", "/products/*"]`
 
 <div id="excludes">
   #### `excludes`
 </div>
 
-- **Type**: `array`
-- **Description**: クロール対象から除外するURLパターン。これらのパターンに一致するURLはスキップされます。
-- **Example**: `["/admin/*", "/login/*"]`
+* **Type**: `array`
+* **Description**: クロール対象から除外するURLパターン。これらのパターンに一致するURLはスキップされます。
+* **Example**: `["/admin/*", "/login/*"]`
 
 <div id="returnonlyurls">
   #### `returnOnlyUrls`
 </div>
 
-- **Type**: `boolean`
-- **Description**: `true` に設定すると、レスポンスには完全なドキュメントデータではなく、URL のリストのみが含まれます。
-- **Default**: `false`
+* **Type**: `boolean`
+* **Description**: `true` に設定すると、レスポンスには完全なドキュメントデータではなく、URL のリストのみが含まれます。
+* **Default**: `false`
 
 <div id="maxdepth">
   #### `maxDepth`
 </div>
 
-- **Type**: `integer`
-- **Description**: 入力したURLを基準にクロールする最大深度。maxDepth が 0 の場合は入力したURLのみをスクレイピングします。maxDepth が 1 の場合は入力したURLと、その1階層下のすべてのページをスクレイピングします。maxDepth が 2 の場合は入力したURLと、2階層下までのすべてのページをスクレイピングします。より大きい値でも同様のパターンに従います。
-- **Example**: `2`
+* **Type**: `integer`
+* **Description**: 入力したURLを基準にクロールする最大深度。maxDepth が 0 の場合は入力したURLのみをスクレイピングします。maxDepth が 1 の場合は入力したURLと、その1階層下のすべてのページをスクレイピングします。maxDepth が 2 の場合は入力したURLと、2階層下までのすべてのページをスクレイピングします。より大きい値でも同様のパターンに従います。
+* **Example**: `2`
 
-<div id="mode">
+<div id="mode-2">
   #### `mode`
 </div>
 
-- **タイプ**: `string`
-- **列挙**: `["default", "fast"]`
-- **説明**: 使用するクロールモード。`fast` モードはサイトマップのないウェブサイトを通常の4倍でクロールしますが、精度が低下する場合があり、JavaScriptレンダリングが重いウェブサイトには推奨されません。
-- **デフォルト**: `default`
+* **タイプ**: `string`
+* **列挙**: `["default", "fast"]`
+* **説明**: 使用するクロールモード。`fast` モードはサイトマップのないウェブサイトを通常の4倍でクロールしますが、精度が低下する場合があり、JavaScriptレンダリングが重いウェブサイトには推奨されません。
+* **デフォルト**: `default`
 
 <div id="limit">
   #### `limit`
 </div>
 
-- **タイプ**: `integer`
-- **説明**: クロールするページ数の上限。
-- **デフォルト**: `10000`
+* **タイプ**: `integer`
+* **説明**: クロールするページ数の上限。
+* **デフォルト**: `10000`
 
-### 使い方例
+<div id="example-usage-4">
+  ### 使い方例
+</div>
 
 ```bash
 curl -X POST https://api.firecrawl.dev/v0/crawl \
@@ -396,7 +416,7 @@ curl -X POST https://api.firecrawl.dev/v0/crawl \
 
 `pageOptions` と `crawlerOptions` パラメータを組み合わせることで、クロール全体の挙動をカスタマイズできます。
 
-<div id="example-usage">
+<div id="example-usage-5">
   ### 使い方の例
 </div>
 

@@ -1,9 +1,9 @@
 ---
 title: 'Node'
-description: 'Faça scraping, rastreamento e extração de dados estruturados em sites usando o Firecrawl Node SDK.'
+description: 'Faça scraping, rastreamento e extração de dados estruturados em sites usando o Firecrawl SDK de Node.'
 icon: 'node'
-og:title: "Node SDK | Firecrawl"
-og:description: "Faça scraping, rastreamento e extração de dados estruturados em sites usando o Firecrawl Node SDK."
+og:title: "SDK de Node | Firecrawl"
+og:description: "Faça scraping, rastreamento e extração de dados estruturados em sites usando o Firecrawl SDK de Node."
 ---
 
 import InstallationNode from '/snippets/pt-BR/v2/installation/js.mdx'
@@ -18,6 +18,8 @@ import MapNodeShort from '/snippets/pt-BR/v2/map/short/js.mdx'
 import ExtractNodeShort from '/snippets/v2/extract/short/js.mdx'
 import CrawlWebSocketNodeBase from '/snippets/pt-BR/v2/crawl-websocket/base/js.mdx'
 import PersistentJS from '/snippets/pt-BR/v2/browser/persistent/js.mdx'
+import AgentWithSchemaNode from '/snippets/pt-BR/v2/agent/with-schema/js.mdx'
+import AgentStatusNode from '/snippets/pt-BR/v2/agent/status/js.mdx'
 
 Faça scraping de páginas individuais, rastreie sites inteiros e mapeie URLs no seu aplicativo Node.js. O SDK gerencia a paginação, as novas tentativas e a consulta assíncrona de jobs para que você possa se concentrar nos dados retornados.
 
@@ -127,6 +129,20 @@ Descubra todas as URLs de um site com o método `map`. Informe uma URL inicial e
   Para extrair dados estruturados de sites com tratamento de erros, use o método `extractUrl`. Ele recebe a URL inicial como parâmetro e retorna os dados extraídos como um dicionário.
 
   <ExtractNodeShort /> */}
+
+<div id="running-an-agent">
+  ### Executando um agente
+</div>
+
+Atribua uma tarefa de pesquisa ou extração a um agente usando o método `agent`. Forneça um `prompt`, um `schema` opcional para definir o formato do resultado e `maxCredits` para limitar o gasto da execução.
+
+<AgentWithSchemaNode />
+
+As execuções de agentes são assíncronas. Use `startAgent` para receber imediatamente um ID do job e depois consulte-o com `getAgentStatus`.
+
+<AgentStatusNode />
+
+Cada execução também registra um rastro de execução e snapshots do resultado, que você pode consultar com `getAgentTrace` e `getAgentSnapshot`. Consulte [Agent](/pt-BR/features/agent) para ver o schema de eventos e a lista completa de parâmetros.
 
 <div id="crawling-a-website-with-websockets">
   ### Rastreamento de um site com WebSockets

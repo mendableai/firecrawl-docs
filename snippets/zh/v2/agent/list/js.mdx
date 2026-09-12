@@ -1,0 +1,18 @@
+```js Node
+import { Firecrawl } from 'firecrawl';
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
+
+// 列出最近的代理运行记录
+const page = await firecrawl.listAgents();
+
+for (const run of page.agents ?? []) {
+  console.log(run.id, run.status, run.targetHint);
+}
+
+// 使用 `next` 中的游标获取下一页
+if (page.next) {
+  const before = Number(new URL(page.next).searchParams.get("before"));
+  const older = await firecrawl.listAgents({ before });
+}
+```

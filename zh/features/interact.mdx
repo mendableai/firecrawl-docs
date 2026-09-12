@@ -49,6 +49,14 @@ import InteractFeedbackCTA from "/snippets/zh/interact-feedback-cta.mdx";
 
 抓取页面以获取干净的数据，然后调用 `/interact` 在该页面中开始执行 actions：点击按钮、填写表单、提取动态内容，或进一步深入导航。只需描述你想做什么；如果需要完全控制，也可以编写代码。
 
+在以下场景中使用交互：
+
+* **抓取 登录后的内容** —— 只需登录一次，即可读取仅在身份验证后才出现的页面。请参见 [使用 抓取 + 交互 的持久化配置文件](#persistent-profiles-with-scrape-+-interact)。
+* **点击翻页** —— 逐页前进并抓取每一组结果，全程复用同一个会话。请参见 [通过 prompt 交互](#interact-via-prompting) 和 [会话生命周期](#session-lifecycle)。
+* **填写并提交表单** —— 通过 prompt 或 Playwright 代码在输入框中填写内容并提交。请参见 [通过 prompt 交互](#interact-via-prompting) 和 [运行代码](#running-code)。
+* **复用已通过身份验证的 会话** —— 将浏览器状态保存到具名 profile，并在后续抓取 中加载。请参见 [使用 抓取 + 交互 的持久化配置文件](#persistent-profiles-with-scrape-+-interact)。
+* **无需先 抓取，直接 start 一个 会话** —— 打开一个由你直接操控的独立浏览器。请参见 [浏览器沙箱](/zh/features/browser)。
+
 <InteractFeedbackCTA src="docs-interact" />
 
 <div id="choose-the-right-interaction-model">

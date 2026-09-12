@@ -39,13 +39,15 @@ Firecrawl propose trois approches pour extraire des données structurées à par
 
 Le endpoint `/agent` est l’offre la plus avancée de Firecrawl, le successeur de `/extract`. Il utilise des agents IA pour rechercher, naviguer et collecter de manière autonome des données sur l’ensemble du web.
 
-### Caractéristiques clés
+<div id="key-characteristics">
+  ### Caractéristiques clés
+</div>
 
 * **URL facultatives** : décrivez simplement ce dont vous avez besoin via `prompt` ; les URL sont entièrement facultatives
 * **Navigation autonome** : l’agent explore et navigue en profondeur dans les sites pour trouver vos données
 * **Recherche web approfondie** : découvre de manière autonome des informations sur plusieurs domaines et pages
 * **Traitement parallèle** : traite plusieurs sources simultanément pour des résultats plus rapides
-* **Modèles disponibles** : `spark-1-pro` (par défaut, précision plus élevée), `spark-1-mini` (60 % moins cher que Pro) et `spark-2` (le moins cher et le plus rapide)
+* **Modèle** : chaque exécution utilise `spark-2` (par défaut). Les modèles Spark 1 sont obsolètes et sont redirigés vers `spark-2`
 
 <div id="example">
   ### Exemple
@@ -81,7 +83,9 @@ Pour plus de détails, consultez la [documentation de l’agent](/fr/features/ag
 
 L’endpoint `/extract` collecte des données structurées à partir d’URL spécifiées ou de domaines entiers grâce à une extraction pilotée par des modèles de langage (LLM).
 
-### Caractéristiques clés
+<div id="key-characteristics-2">
+  ### Caractéristiques clés
+</div>
 
 * **URL généralement requises** : fournissez au moins une URL (prend en charge les caractères génériques comme `example.com/*`)
 * **Exploration de domaine** : peut explorer et analyser toutes les URL découvertes dans un domaine
@@ -99,7 +103,7 @@ Le défi fondamental avec `/extract` est que vous devez généralement connaîtr
 2. **Recherche sur le web peu fluide** : même si `enableWebSearch` existe, il se limite à démarrer à partir des URL que vous fournissez — un workflow peu adapté aux tâches de découverte.
 3. **Pourquoi `/agent` a été créé** : `/extract` est efficace pour extraire à partir d&#39;emplacements connus, mais moins performant pour découvrir où se trouvent les données.
 
-<div id="example">
+<div id="example-2">
   ### Exemple
 </div>
 
@@ -129,7 +133,7 @@ Pour plus de détails, consultez la [documentation Extract](/fr/features/extract
 
 L’endpoint `/scrape` en mode JSON est l’approche la plus contrôlée : il extrait des données structurées à partir d’une seule URL connue en utilisant un LLM pour analyser le contenu de la page selon le schéma que vous avez spécifié.
 
-<div id="key-characteristics">
+<div id="key-characteristics-3">
   ### Caractéristiques principales
 </div>
 
@@ -139,7 +143,7 @@ L’endpoint `/scrape` en mode JSON est l’approche la plus contrôlée : il e
 * **Synchrone** : Retourne les données immédiatement (aucune interrogation de tâche nécessaire)
 * **Formats supplémentaires** : Peut combiner l’extraction JSON avec du markdown, du HTML et des captures d’écran dans une seule requête
 
-<div id="example">
+<div id="example-3">
   ### Exemple
 </div>
 
@@ -238,7 +242,7 @@ result = app.agent(
     urls=["https://example.com"],  # Optionnel - peut être omis entièrement
     prompt="Extract product information from example.com",
     schema=schema,
-    model="spark-2"  # "spark-1-pro" est la valeur par défaut ; "spark-1-mini" est également disponible
+    model="spark-2"  # la valeur par défaut ; les modèles Spark 1 sont dépréciés et redirigés vers "spark-2"
 )
 ```
 

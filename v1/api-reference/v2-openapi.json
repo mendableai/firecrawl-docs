@@ -1426,7 +1426,7 @@
                         },
                         "planCredits": {
                           "type": "number",
-                          "description": "Number of credits in the plan. This does not include coupon credits, credit packs, or auto recharge credits.",
+                          "description": "Number of credits in the plan. This does not include coupon credits or credits added by pay-as-you-go.",
                           "example": 500000
                         },
                         "billingPeriodStart": {

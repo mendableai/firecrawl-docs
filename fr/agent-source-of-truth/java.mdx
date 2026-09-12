@@ -51,7 +51,9 @@ FirecrawlClient client = FirecrawlClient.builder()
   ## Recherche
 </div>
 
-### Pourquoi l’utiliser
+<div id="why-use-it">
+  ### Pourquoi l’utiliser
+</div>
 
 Utilisez la recherche pour découvrir des pages pertinentes à partir d’une requête, puis choisir des URL à scraper ou avec lesquelles interagir. Vous pouvez limiter les résultats à un site avec `site:`, par exemple `site:docs.firecrawl.dev crawl webhooks`.
 
@@ -137,10 +139,10 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   * Type : liste de chaînes de caractères de catégorie ou de cartographies
   * À utiliser lorsque : vous souhaitez filtrer les résultats par catégorie.
   * Valeurs confirmées :
-    * `"github"` : résultats axés sur GitHub
+    * `"developer"` : résultats de l’index des développeurs
     * `"research"` : résultats de recherche et académiques
     * `"pdf"` : résultats axés sur les PDF
-    * `{type: "github" | "research" | "pdf"}` : forme de cartographie de catégorie typée
+    * `{type: "developer" | "research" | "pdf"}` : forme de cartographie de catégorie typée
 
 * `options.limit`
   * Type : Integer
@@ -164,7 +166,7 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
 
 * `options.scrapeOptions`
   * Type : `ScrapeOptions`
-  * À utiliser lorsque : vous souhaitez extraire chaque résultat de recherche (voir les paramètres de Scrape pour les champs).
+  * À utiliser lorsque : vous souhaitez scraper chaque résultat de recherche (voir les paramètres de Scrape pour les champs).
 
 * `options.integration`
   * Type : String
@@ -174,26 +176,26 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   ## Scrape
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### Pourquoi l&#39;utiliser
 </div>
 
 Utilisez scrape si vous avez déjà une URL et souhaitez du contenu structuré dans un ou plusieurs formats.
 
-<div id="preferred-sdk-methods">
+<div id="preferred-sdk-methods-2">
   ### Méthodes recommandées du SDK
 </div>
 
 * `client.scrape(url)`
 * `client.scrape(url, options)`
 
-<div id="return-value">
+<div id="return-value-2">
   ### Valeur de retour
 </div>
 
 `scrape` renvoie un `Document`. Les getters les plus courants incluent `getMarkdown()`, `getHtml()`, `getRawHtml()`, `getJson()`, `getMetadata()`, `getLinks()`, ainsi que des champs supplémentaires lorsque les formats correspondants sont demandés.
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Exemple simple
 </div>
 
@@ -204,7 +206,7 @@ Document doc = client.scrape(
 );
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Exemple complexe
 </div>
 
@@ -245,7 +247,7 @@ ScrapeOptions options = ScrapeOptions.builder()
 Document doc = client.scrape("https://example.com/pricing", options);
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### Paramètres
 </div>
 
@@ -363,11 +365,13 @@ Document doc = client.scrape("https://example.com/pricing", options);
   ## Interact
 </div>
 
-### Pourquoi l’utiliser
+<div id="why-use-it-3">
+  ### Pourquoi l’utiliser
+</div>
 
 Utilisez interact lorsqu’une page nécessite des actions du navigateur ou l’exécution de code une fois le scrape lancé.
 
-<div id="preferred-sdk-methods">
+<div id="preferred-sdk-methods-3">
   ### Méthodes recommandées du SDK
 </div>
 
@@ -375,7 +379,7 @@ Utilisez interact lorsqu’une page nécessite des actions du navigateur ou l’
 * `client.interact(jobId, code, language, timeout)` — `timeout` est exprimé en secondes (1–300), ou `null` pour l’omettre et utiliser la valeur par défaut de l’API (30 secondes)
 * `client.interact(jobId, code, language, timeout, origin)` — la chaîne `origin`, facultative, n’est envoyée que si elle n’est pas nulle (attribution de la requête)
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Exemple simple
 </div>
 
@@ -390,7 +394,7 @@ BrowserExecuteResponse result = client.interact(
 );
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Exemple complexe
 </div>
 
@@ -435,7 +439,7 @@ BrowserDeleteResponse stopped = client.stopInteractiveBrowser("<scrapeJobId>");
 * `getCreditsBilled()`: Integer (peut être `null`)
 * `getError()`: String (peut être `null`)
 
-<div id="parameters">
+<div id="parameters-3">
   ### Paramètres
 </div>
 

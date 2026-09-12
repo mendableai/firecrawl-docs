@@ -1,4 +1,9 @@
 ```bash cURL
+# El id del monitor proviene de Create monitor o List monitors, y el id del check,
+# de List checks.
+MONITOR_ID=YOUR_MONITOR_ID
+CHECK_ID=YOUR_CHECK_ID
+
 curl "https://api.firecrawl.dev/v2/monitor/$MONITOR_ID/checks/$CHECK_ID?limit=25&status=changed" \
   -H "Authorization: Bearer $FIRECRAWL_API_KEY"
 ```

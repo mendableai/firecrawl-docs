@@ -13,6 +13,889 @@
       }
     },
     "schemas": {
+      "AgentTraceAgent": {
+        "description": "Identité de l’agent ayant émis l’événement.",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "description": "ID de l’agent parent (présent pour les sous-agents).",
+            "format": "uuid",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "orchestrator",
+              "subagent",
+              "system"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "role",
+          "name"
+        ],
+        "type": "object"
+      },
+      "AgentTraceArtifact": {
+        "description": "Descripteur d’une modification apportée à un artefact de sortie.",
+        "properties": {
+          "artifactId": {
+            "type": "string"
+          },
+          "change": {
+            "enum": [
+              "init",
+              "partial",
+              "append",
+              "modify",
+              "update"
+            ],
+            "type": "string"
+          },
+          "changedFields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "itemCount": {
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "json",
+              "markdown",
+              "html",
+              "screenshot",
+              "text"
+            ],
+            "type": "string"
+          },
+          "path": {
+            "description": "Chemin de l’artefact dans l’espace de travail, par ex. /workspace/data.json.",
+            "type": "string"
+          },
+          "snapshotId": {
+            "description": "Utilisez GET /agent/{jobId}/snapshots/{snapshotId} pour récupérer le contenu de cet instantané.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "sourceToolCallId": {
+            "description": "L’appel d’outil ayant produit cette modification, le cas échéant.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "artifactId",
+          "snapshotId",
+          "change"
+        ],
+        "type": "object"
+      },
+      "AgentTraceError": {
+        "description": "Erreur structurée associée aux événements terminaux et d’erreur.",
+        "properties": {
+          "code": {
+            "enum": [
+              "cancelled",
+              "credit_limit_reached",
+              "parent_finished",
+              "refused",
+              "internal"
+            ],
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "source": {
+            "enum": [
+              "agent",
+              "tool",
+              "billing",
+              "system"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "source",
+          "retryable",
+          "message"
+        ],
+        "type": "object"
+      },
+      "AgentTraceEvent": {
+        "description": "Événement d’exécution canonique issu d’une exécution d’agent. Chaque événement contient les champs d’enveloppe schemaVersion, eventId, runId, occurredAt, producerSequence et agent ; le champ type distingue la variante. Les événements usage.recorded sont internes et ne sont jamais exposés, et les événements agent.started omettent le champ model.",
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "Émis au démarrage de l’exécution.",
+                "enum": [
+                  "run.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type"
+            ],
+            "title": "run.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "reason": {
+                "enum": [
+                  "user"
+                ],
+                "type": "string"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "Émis lorsqu’une annulation est demandée (via DELETE /agent/{jobId}).",
+                "enum": [
+                  "run.cancel_requested"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "reason"
+            ],
+            "title": "run.cancel_requested",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AgentTraceError"
+                  }
+                ],
+                "description": "null lorsque le résultat est succeeded ; sinon, l’erreur structurée.",
+                "nullable": true
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "succeeded",
+                  "failed",
+                  "cancelled",
+                  "refused",
+                  "credit_limit_reached"
+                ],
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "Événement terminal de l’exécution.",
+                "enum": [
+                  "run.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "outcome",
+              "error"
+            ],
+            "title": "run.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "Émis lorsqu’un agent (orchestrateur ou sous-agent) démarre.",
+                "enum": [
+                  "agent.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type"
+            ],
+            "title": "agent.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "durationMs": {
+                "type": "integer"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AgentTraceError"
+                  }
+                ],
+                "description": "null lorsque le résultat est succeeded ; sinon, l’erreur structurée.",
+                "nullable": true
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "succeeded",
+                  "failed",
+                  "cancelled",
+                  "refused"
+                ],
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "Émis lorsqu’un agent termine son exécution.",
+                "enum": [
+                  "agent.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "outcome",
+              "durationMs",
+              "error"
+            ],
+            "title": "agent.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "sessionId": {
+                "type": "string"
+              },
+              "type": {
+                "description": "Émis au démarrage d’une session de navigateur.",
+                "enum": [
+                  "browser.session.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "sessionId"
+            ],
+            "title": "browser.session.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "durationMs": {
+                "type": "integer"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "sessionId": {
+                "type": "string"
+              },
+              "type": {
+                "description": "Émis lorsqu’une session de navigateur se termine.",
+                "enum": [
+                  "browser.session.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "sessionId",
+              "durationMs"
+            ],
+            "title": "browser.session.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "phase": {
+                "enum": [
+                  "planning",
+                  "working",
+                  "finalizing"
+                ],
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "Émis lorsque l’orchestrateur signale une progression.",
+                "enum": [
+                  "progress.reported"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "phase",
+              "message"
+            ],
+            "title": "progress.reported",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "text": {
+                "type": "string"
+              },
+              "type": {
+                "description": "Résumé du raisonnement de l’agent.",
+                "enum": [
+                  "reasoning.summary"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "text"
+            ],
+            "title": "reasoning.summary",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "parameters": {
+                "description": "L’entrée transmise à l’outil (JSON arbitraire)."
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "toolCallId": {
+                "type": "string"
+              },
+              "toolName": {
+                "type": "string"
+              },
+              "type": {
+                "description": "Émis au démarrage d’un appel d’outil.",
+                "enum": [
+                  "tool_call.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "toolCallId",
+              "toolName",
+              "parameters"
+            ],
+            "title": "tool_call.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "result": {
+                "description": "Le résultat renvoyé par l’outil (JSON arbitraire)."
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "toolCallId": {
+                "type": "string"
+              },
+              "toolName": {
+                "type": "string"
+              },
+              "type": {
+                "description": "Émis lorsqu’un appel d’outil se termine.",
+                "enum": [
+                  "tool_call.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "toolCallId",
+              "toolName",
+              "result"
+            ],
+            "title": "tool_call.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "artifact": {
+                "$ref": "#/components/schemas/AgentTraceArtifact"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "Émis lorsqu’un artefact de sortie est modifié.",
+                "enum": [
+                  "artifact.updated"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "artifact"
+            ],
+            "title": "artifact.updated",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "error": {
+                "$ref": "#/components/schemas/AgentTraceError"
+              },
+              "eventId": {
+                "description": "ID unique de cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "Numéro de séquence monotone de l’agent émetteur ; utilisez-le pour ordonner les événements.",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "L’ID de la tâche d’agent à laquelle appartient cet événement.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "Émis lorsqu’une erreur non fatale survient durant l’exécution.",
+                "enum": [
+                  "error.occurred"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "error"
+            ],
+            "title": "error.occurred",
+            "type": "object"
+          }
+        ]
+      },
       "AuditMetadata": {
         "additionalProperties": false,
         "description": "Informations d’attribution de l’utilisateur incluses dans les événements de journalisation SIEM lorsque SIEM Logging est activé pour l’organisation.",
@@ -309,6 +1192,11 @@
                   },
                   "nullable": true,
                   "type": "array"
+                },
+                "rawBase64": {
+                  "description": "Le corps de la réponse HTTP d’origine, encodé en Base64 si `rawBase64` est inclus dans `formats`. Une chaîne Base64 brute, et non un URI de données. Le type MIME se trouve dans `metadata.contentType`.",
+                  "nullable": true,
+                  "type": "string"
                 },
                 "rawHtml": {
                   "description": "Contenu HTML brut de la page si `includeRawHtml` vaut true",
@@ -660,6 +1548,11 @@
                   },
                   "nullable": true,
                   "type": "array"
+                },
+                "rawBase64": {
+                  "description": "Le corps de la réponse HTTP d’origine, encodé en Base64 si `rawBase64` est inclus dans `formats`. Une chaîne Base64 brute, et non un URI de données. Le type MIME se trouve dans `metadata.contentType`.",
+                  "nullable": true,
+                  "type": "string"
                 },
                 "rawHtml": {
                   "description": "Contenu HTML brut de la page si `includeRawHtml` vaut true",
@@ -1137,6 +2030,21 @@
               "properties": {
                 "type": {
                   "enum": [
+                    "rawBase64"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Raw Base64",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "type": {
+                  "enum": [
                     "links"
                   ],
                   "type": "string"
@@ -1167,11 +2075,11 @@
               "properties": {
                 "fullPage": {
                   "default": false,
-                  "description": "Indique s’il faut prendre une capture d’écran de la page entière (en ignorant viewport.height) ou seulement de la zone actuellement visible (viewport).",
+                  "description": "Indique s’il faut effectuer une capture d’écran de toute la page (ignore viewport.height) ou se limiter au viewport actuel.",
                   "type": "boolean"
                 },
                 "quality": {
-                  "description": "La qualité de la capture d’écran, sur une échelle de 1 à 100. 100 correspond à la qualité maximale.",
+                  "description": "La qualité de la capture d’écran, de 1 à 100. 100 correspond à la qualité la plus élevée.",
                   "type": "integer"
                 },
                 "type": {
@@ -1187,7 +2095,7 @@
                       "type": "integer"
                     },
                     "width": {
-                      "description": "Largeur du viewport en pixels",
+                      "description": "La largeur du viewport en pixels",
                       "type": "integer"
                     }
                   },
@@ -1206,8 +2114,13 @@
             },
             {
               "properties": {
+                "checkPromptInjection": {
+                  "default": false,
+                  "description": "Lorsqu’elle est activée, analyse le contenu de la page récupérée pour détecter les tentatives d’injection de prompt avant d’exécuter l’extraction. Si une injection est détectée, la requête échoue avec le statut 403 et le code d’erreur SCRAPE_PROMPT_INJECTION_DETECTED. Ajoute 4 crédits lorsque la vérification est exécutée. La valeur par défaut est false.",
+                  "type": "boolean"
+                },
                 "prompt": {
-                  "description": "L’invite à utiliser pour la sortie au format JSON",
+                  "description": "Invite (prompt) à utiliser pour la sortie JSON",
                   "type": "string"
                 },
                 "schema": {
@@ -1230,7 +2143,7 @@
             {
               "properties": {
                 "modes": {
-                  "description": "Le mode de suivi des modifications à utiliser. « git-diff » fournit un diff détaillé, tandis que « json » compare les données JSON extraites.",
+                  "description": "Le mode à utiliser pour le suivi des modifications. « git-diff » fournit un diff détaillé, tandis que « json » compare les données JSON extraites.",
                   "items": {
                     "enum": [
                       "git-diff",
@@ -1250,7 +2163,7 @@
                 },
                 "tag": {
                   "default": null,
-                  "description": "Tag à utiliser pour le suivi des modifications. Les tags peuvent séparer l’historique du suivi des modifications en « branches » distinctes, où le suivi avec un tag spécifique ne sera comparé qu’aux extractions effectuées avec ce même tag. S’il n’est pas fourni, le tag par défaut (null) sera utilisé.",
+                  "description": "Balise à utiliser pour le suivi des modifications. Les balises permettent de séparer l’historique du suivi des modifications en « branches » distinctes : le suivi des modifications avec une balise donnée ne compare alors qu’aux opérations de scraping effectuées avec la même balise. Si elle n’est pas fournie, la balise par défaut (null) sera utilisée.",
                   "nullable": true,
                   "type": "string"
                 },
@@ -1348,7 +2261,7 @@
               "description": "Pose une question en langage naturel sur la page. Renvoie la réponse dans le champ `answer` de la réponse.",
               "properties": {
                 "question": {
-                  "description": "La question à laquelle répondre sur la page. Maximum 10 000 caractères.",
+                  "description": "La question à laquelle répondre concernant la page. 10 000 caractères maximum.",
                   "maxLength": 10000,
                   "type": "string"
                 },
@@ -1370,7 +2283,7 @@
               "description": "Trouve le texte source pertinent sur la page. Renvoie le texte sélectionné dans le champ `highlights` de la réponse.",
               "properties": {
                 "query": {
-                  "description": "La requête de sélection de texte à exécuter sur la page. Maximum 10 000 caractères.",
+                  "description": "La requête de sélection de texte à exécuter sur la page. 10 000 caractères maximum.",
                   "maxLength": 10000,
                   "type": "string"
                 },
@@ -1568,7 +2481,8 @@
               "completed",
               "failed",
               "partial",
-              "skipped_overlap"
+              "skipped_overlap",
+              "skipped_no_credits"
             ],
             "type": "string"
           },
@@ -4173,6 +5087,11 @@
                 ],
                 "type": "object"
               },
+              "rawBase64": {
+                "description": "Le corps de la réponse HTTP d’origine, encodé en Base64 si `rawBase64` est inclus dans `formats`. Une chaîne Base64 brute, et non un URI de données. Le type MIME se trouve dans `metadata.contentType`.",
+                "nullable": true,
+                "type": "string"
+              },
               "rawHtml": {
                 "description": "Le code HTML brut, exactement tel qu’il est reçu depuis la page lorsque `rawHtml` est inclus dans `formats`. Aucun nettoyage ni filtrage n’est appliqué.",
                 "nullable": true,
@@ -4482,6 +5401,154 @@
   "openapi": "3.0.0",
   "paths": {
     "/agent": {
+      "get": {
+        "operationId": "listAgents",
+        "parameters": [
+          {
+            "description": "Renvoyer uniquement les exécutions d’agent créées avant cet horodatage Unix en millisecondes. Les pages comptent toujours 20 exécutions ; utilisez la valeur `before` de l’URL `next` de la page précédente pour récupérer la page suivante.",
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "agents": {
+                      "items": {
+                        "properties": {
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "id": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "integration": {
+                            "description": "Identifiant d’intégration, si l’exécution a été démarrée avec celui-ci",
+                            "type": "string"
+                          },
+                          "options": {
+                            "description": "Options avec lesquelles l’exécution a été démarrée",
+                            "properties": {
+                              "effort": {
+                                "description": "Budget de raisonnement utilisé pour l’exécution d’agent (présent uniquement pour les exécutions définissant un effort)",
+                                "enum": [
+                                  "low",
+                                  "medium",
+                                  "high"
+                                ],
+                                "type": "string"
+                              },
+                              "model": {
+                                "description": "Préréglage de modèle utilisé pour l’exécution d’agent. Chaque nouvelle exécution utilise spark-2 ; les noms de Spark 1 n’apparaissent que dans les exécutions héritées.",
+                                "enum": [
+                                  "spark-2",
+                                  "spark-1-pro",
+                                  "spark-1-mini"
+                                ],
+                                "type": "string"
+                              },
+                              "prompt": {
+                                "type": "string"
+                              },
+                              "schema": {
+                                "type": "object"
+                              },
+                              "urls": {
+                                "items": {
+                                  "format": "uri",
+                                  "type": "string"
+                                },
+                                "type": "array"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "origin": {
+                            "description": "Origine de l’exécution (par ex. « api »)",
+                            "type": "string"
+                          },
+                          "settings": {
+                            "properties": {
+                              "hidden": {
+                                "type": "boolean"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "starred": {
+                                "type": "boolean"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "status": {
+                            "enum": [
+                              "processing",
+                              "completed",
+                              "failed"
+                            ],
+                            "type": "string"
+                          },
+                          "targetHint": {
+                            "description": "Brève indication décrivant la cible de l’exécution (première URL ou prompt)",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "next": {
+                      "description": "URL absolue de la page suivante. Présente uniquement lorsqu’il reste d’autres pages.",
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Liste des exécutions d’agent, de la plus récente à la plus ancienne"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid before timestamp.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Requête incorrecte — l’horodatage `before` n’est pas valide."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Lister les exécutions d’agent",
+        "tags": [
+          "Agent"
+        ]
+      },
       "post": {
         "operationId": "startAgent",
         "requestBody": {
@@ -4492,13 +5559,22 @@
                   "auditMetadata": {
                     "$ref": "#/components/schemas/AuditMetadata"
                   },
+                  "effort": {
+                    "description": "Budget de raisonnement pour la tâche d’agent. Chaque exécution utilise spark-2, donc le paramètre effort peut être envoyé avec ou sans modèle.",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ],
+                    "type": "string"
+                  },
                   "maxCredits": {
                     "description": "<[\n  {\n    \"key\": \"0\",\n    \"translation\": \"Nombre maximal de crédits à utiliser pour cette tâche d’agent. La valeur par défaut est de 2500 si elle n’est pas spécifiée. Les valeurs supérieures à 2 500 sont toujours facturées comme des requêtes payantes.\"\n  }\n]</>",
                     "type": "number"
                   },
                   "model": {
-                    "default": "spark-1-pro",
-                    "description": "Le modèle à utiliser pour les tâches d’agent. spark-1-pro (par défaut) offre une meilleure précision pour les tâches complexes. spark-1-mini coûte 60 % de moins que spark-1-pro. spark-2 est moins cher et plus rapide que les deux modèles Spark 1, à précision comparable",
+                    "default": "spark-2",
+                    "description": "Le modèle à utiliser pour les tâches d’agent. spark-2 est le modèle par défaut et celui sur lequel chaque exécution est effectuée. Les noms de modèles Spark 1 restent acceptés pour assurer la rétrocompatibilité, mais sont obsolètes et redirigent vers spark-2.",
                     "enum": [
                       "spark-2",
                       "spark-1-mini",
@@ -4529,6 +5605,55 @@
                       "type": "string"
                     },
                     "type": "array"
+                  },
+                  "webhook": {
+                    "description": "Objet de spécification de webhook. S’abonne aux événements du cycle de vie de l’agent (agent.started, agent.action, agent.completed, agent.failed, agent.cancelled).",
+                    "properties": {
+                      "events": {
+                        "default": [
+                          "started",
+                          "action",
+                          "completed",
+                          "failed",
+                          "cancelled"
+                        ],
+                        "description": "Les événements à envoyer à l’URL du webhook. Par défaut, tous les événements sont envoyés.",
+                        "items": {
+                          "enum": [
+                            "started",
+                            "action",
+                            "completed",
+                            "failed",
+                            "cancelled"
+                          ],
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "headers": {
+                        "additionalProperties": {
+                          "type": "string"
+                        },
+                        "description": "En-têtes à envoyer à l’URL du webhook.",
+                        "type": "object"
+                      },
+                      "metadata": {
+                        "additionalProperties": {
+                          "type": "string"
+                        },
+                        "description": "Métadonnées personnalisées incluses dans toutes les charges utiles de webhook de cette tâche d’agent.",
+                        "type": "object"
+                      },
+                      "url": {
+                        "description": "L’URL à laquelle envoyer les événements webhook.",
+                        "format": "uri",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ],
+                    "type": "object"
                   }
                 },
                 "required": [
@@ -4560,6 +5685,22 @@
             },
             "description": "La tâche de l’agent a démarré avec succès"
           },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid JSON schema: ...",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Requête incorrecte — le corps de la requête n’a pas passé la validation (par exemple, un schéma JSON non valide)."
+          },
           "402": {
             "content": {
               "application/json": {
@@ -4576,6 +5717,22 @@
             },
             "description": "Paiement requis"
           },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "This URL (https://example.com) is blocked by your organization's threat protection policy (rule: blocklist). If you believe this is a mistake, contact your organization administrator to adjust the policy (e.g. whitelist the domain).",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Interdit — une URL fournie est bloquée par la politique de protection contre les menaces de l’équipe."
+          },
           "429": {
             "content": {
               "application/json": {
@@ -4591,6 +5748,22 @@
               }
             },
             "description": "Trop de requêtes"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Failed to passthrough agent request.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Erreur interne du serveur — le service d’agent n’a pas pu être joint."
           }
         },
         "security": [
@@ -4622,6 +5795,54 @@
               }
             },
             "description": "Tâche de l’agent annulée avec succès"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid job ID format. Job ID must be a valid UUID.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Requête incorrecte — l’ID de tâche n’est pas un UUID valide."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Tâche d’agent introuvable"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent already finished",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Conflit — la tâche d’agent est déjà terminée ou a déjà été annulée."
           }
         },
         "security": [
@@ -4649,6 +5870,15 @@
                       "description": "Les données extraites (uniquement présentes lorsque le statut est « completed »)",
                       "type": "object"
                     },
+                    "effort": {
+                      "description": "Budget de raisonnement utilisé pour l’exécution d’agent (présent uniquement pour les exécutions ayant défini le paramètre effort)",
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high"
+                      ],
+                      "type": "string"
+                    },
                     "error": {
                       "description": "Message d’erreur (présent uniquement lorsque le statut est « failed »)",
                       "type": "string"
@@ -4658,8 +5888,8 @@
                       "type": "string"
                     },
                     "model": {
-                      "default": "spark-1-pro",
-                      "description": "Préréglage du modèle utilisé lors de l’exécution de l’agent",
+                      "default": "spark-2",
+                      "description": "Préréglage du modèle utilisé lors de l’exécution de l’agent. Chaque nouvelle exécution utilise spark-2 ; les noms Spark 1 n’apparaissent que dans les exécutions héritées.",
                       "enum": [
                         "spark-2",
                         "spark-1-pro",
@@ -4684,6 +5914,38 @@
               }
             },
             "description": "Réponse réussie"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid job ID format. Job ID must be a valid UUID.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Requête incorrecte — l’ID de tâche n’est pas un UUID valide."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Tâche d’agent introuvable"
           }
         },
         "security": [
@@ -4699,6 +5961,234 @@
       "parameters": [
         {
           "description": "L’ID de la tâche de l’agent",
+          "in": "path",
+          "name": "jobId",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/agent/{jobId}/snapshots/{snapshotId}": {
+      "get": {
+        "operationId": "getAgentSnapshot",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "snapshot": {
+                      "description": "Le contenu de l’instantané sous forme de chaîne encodée en JSON — l’artefact de sortie de travail de l’agent à ce stade de l’exécution.",
+                      "type": "string"
+                    },
+                    "snapshotId": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Réponse réussie"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Snapshots are only available for Spark 2 extracts",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Requête incorrecte — l’ID de tâche ou l’ID d’instantané n’est pas un UUID valide, ou la tâche ne s’est pas exécutée sur spark-2 (les instantanés sont disponibles uniquement pour les tâches d’agent spark-2)."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Tâche d’agent introuvable"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Obtenir un instantané de sortie d’une tâche d’agent",
+        "tags": [
+          "Agent"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "L’ID de la tâche d’agent",
+          "in": "path",
+          "name": "jobId",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        {
+          "description": "L’ID de l’instantané, issu d’un événement de trace artifact.updated",
+          "in": "path",
+          "name": "snapshotId",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/agent/{jobId}/trace": {
+      "get": {
+        "operationId": "getAgentTrace",
+        "parameters": [
+          {
+            "description": "Si « true », inclure les sessions de navigateur actuellement actives avec les URL de vue en direct.",
+            "in": "query",
+            "name": "liveView",
+            "required": false,
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "activeBrowserSessions": {
+                      "description": "Sessions de navigateur actuellement actives (présentes uniquement lorsque liveView=true).",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "liveViewUrl": {
+                            "type": "string"
+                          },
+                          "viewport": {
+                            "properties": {
+                              "height": {
+                                "type": "number"
+                              },
+                              "width": {
+                                "type": "number"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "creditsUsed": {
+                      "description": "Crédits consommés jusqu’à présent, plafonnés à maxCredits si cette valeur a été définie.",
+                      "type": "number"
+                    },
+                    "events": {
+                      "description": "Événements d’exécution canoniques pour l’exécution ; regroupés par agent.id, puis chaque groupe est classé selon producerSequence, qui est monotone pour chaque agent émetteur. Les événements artifact.updated contiennent les valeurs snapshotId utilisées par le point de terminaison des instantanés.",
+                      "items": {
+                        "$ref": "#/components/schemas/AgentTraceEvent"
+                      },
+                      "type": "array"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Réponse réussie"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Trace is only available for Spark 2 extracts",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Requête incorrecte — l’ID de tâche n’est pas un UUID valide ou la tâche ne s’est pas exécutée sur spark-2 (les traces sont disponibles uniquement pour les tâches d’agent spark-2)."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Tâche d’agent introuvable"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Obtenir la trace d’exécution d’une tâche d’agent",
+        "tags": [
+          "Agent"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "L’ID de la tâche d’agent",
           "in": "path",
           "name": "jobId",
           "required": true,
@@ -5135,10 +6625,12 @@
                     "type": "number"
                   },
                   "excludePaths": {
-                    "description": "Motifs d’expressions régulières pour les chemins d’URL qui excluent du crawl les URL correspondantes. Par exemple, si vous définissez `\"excludePaths\": [\"blog/.*\"]` pour l’URL de base firecrawl.dev, tous les résultats correspondant à ce motif seront exclus, comme https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap.",
+                    "description": "Motifs d’expressions régulières pour les chemins d’URL qui excluent du crawl les URL correspondantes. Par exemple, si vous définissez `\"excludePaths\": [\"blog/.*\"]` pour l’URL de base firecrawl.dev, tous les résultats correspondant à ce motif seront exclus, comme https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap. Les motifs utilisent la syntaxe des expressions régulières Rust (de type RE2) : les assertions avant/arrière et les références arrière ne sont pas prises en charge, et un motif qui ne se compile pas est rejeté avec un code 400. Chaque champ accepte au maximum 1 000 motifs de 2 000 caractères maximum chacun, et includePaths et excludePaths ne peuvent contenir ensemble que 1 000 motifs et 100 000 caractères au total. Pour le filtrage de type mot-clé, envoyez un motif court par terme plutôt que de combiner les termes dans une seule longue alternance.",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "ignoreQueryParameters": {
@@ -5152,10 +6644,12 @@
                     "type": "boolean"
                   },
                   "includePaths": {
-                    "description": "Motifs d’expressions régulières appliqués aux chemins d’URL qui définissent les URL à inclure dans l’exploration. Seuls les chemins correspondant aux motifs spécifiés seront inclus dans la réponse. Remarque : l’URL de départ est également vérifiée par rapport à ces motifs — si elle ne correspond pas, l’exploration peut ne renvoyer aucune page. Par exemple, si vous définissez \"includePaths\" : [\"blog/.*\"] pour l’URL de base firecrawl.dev/blog, seules les pages sous /blog/ seront incluses dans les résultats, comme https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap.",
+                    "description": "Motifs d’expressions régulières appliqués aux chemins d’URL qui incluent les URL correspondantes dans le crawl. Seuls les chemins correspondant aux motifs spécifiés seront inclus dans la réponse. Remarque : l’URL de départ est également vérifiée par rapport à ces motifs — si elle ne correspond pas, le crawl peut renvoyer 0 page. Par exemple, si vous définissez \"includePaths\" : [\"blog/.*\"] pour l’URL de base firecrawl.dev/blog, seules les pages sous /blog/ seront incluses dans les résultats, comme https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap. Les motifs utilisent la syntaxe des expressions régulières Rust (style RE2) : les assertions avant/arrière et les références arrière ne sont pas prises en charge, et un motif qui ne se compile pas est rejeté avec une erreur 400. Chaque champ accepte au maximum 1 000 motifs de 2 000 caractères maximum chacun, et includePaths et excludePaths peuvent contenir ensemble au maximum 1 000 motifs et 100 000 caractères au total. Pour le filtrage par mots-clés, envoyez un motif court par terme plutôt que de combiner les termes dans une seule longue alternance.",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "limit": {
@@ -7014,7 +8508,8 @@
                 "completed",
                 "failed",
                 "partial",
-                "skipped_overlap"
+                "skipped_overlap",
+                "skipped_no_credits"
               ],
               "type": "string"
             }
@@ -7894,7 +9389,7 @@
                           "properties": {
                             "type": {
                               "enum": [
-                                "github"
+                                "developer"
                               ],
                               "type": "string"
                             }
@@ -7902,7 +9397,7 @@
                           "required": [
                             "type"
                           ],
-                          "title": "GitHub",
+                          "title": "Developer",
                           "type": "object"
                         },
                         {
@@ -9555,7 +11050,7 @@
                           "type": "string"
                         },
                         "planCredits": {
-                          "description": "Nombre de crédits inclus dans le forfait. Les crédits issus de coupons, de packs de crédits ou de recharges automatiques ne sont pas inclus.",
+                          "description": "Nombre de crédits inclus dans le forfait. Les crédits issus de coupons ou ajoutés selon un paiement à l’utilisation ne sont pas inclus.",
                           "example": 500000,
                           "type": "number"
                         },

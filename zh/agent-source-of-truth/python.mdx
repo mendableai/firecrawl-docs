@@ -40,7 +40,9 @@ client = Firecrawl(api_key=os.environ.get("FIRECRAWL_API_KEY"))
   ## Search
 </div>
 
-### 使用场景
+<div id="why-use-it">
+  ### 使用场景
+</div>
 
 使用 search 通过查询发现相关页面，然后选择 URL 进行抓取或交互。你可以使用 `site:` 将结果限定在某个网站范围内，例如 `site:docs.firecrawl.dev crawl webhooks`。
 
@@ -131,10 +133,10 @@ results = client.search(
   * 类型：类别名称列表或 `Category` 对象
   * 使用时机：想按类别筛选结果时。
   * 已确认的值：
-    * `"github"`：偏向 GitHub 的结果
+    * `"developer"`：Developer Index 结果
     * `"research"`：研究和学术结果
     * `"pdf"`：偏向 PDF 的结果
-    * `Category(type="github" | "research" | "pdf")`：带类型的类别对象形式
+    * `Category(type="developer" | "research" | "pdf")`：带类型的类别对象形式
 
 * `limit`
   * 类型：int
@@ -160,23 +162,25 @@ results = client.search(
 
 * `scrape_options`
   * 类型：`ScrapeOptions`
-  * 使用时机：想抓取每个搜索结果时 (字段请参见 Scrape 参数) 。
+  * 使用时机：想抓取每个搜索结果时 (字段请参见 抓取 参数) 。
 
 <div id="scrape">
   ## 抓取
 </div>
 
-### 为什么使用
+<div id="why-use-it-2">
+  ### 为什么使用
+</div>
 
 当你已经有一个 URL，并希望获取一种或多种 formats 的结构化内容时，请使用 抓取。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### 首选 SDK 方法
 </div>
 
 `client.scrape(url, **options)` → `Document` (`firecrawl.v2.types`)
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### 简单示例
 </div>
 
@@ -184,7 +188,7 @@ results = client.search(
 doc = client.scrape("https://docs.firecrawl.dev", formats=["markdown"])
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### 复杂示例
 </div>
 
@@ -219,7 +223,7 @@ doc = client.scrape(
 )
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### 参数
 </div>
 
@@ -353,11 +357,13 @@ doc = client.scrape(
   ## 交互
 </div>
 
-### 为什么使用
+<div id="why-use-it-3">
+  ### 为什么使用
+</div>
 
 当页面在抓取开始后需要执行浏览器 actions 或运行代码时，请使用 交互。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### 首选 SDK 方法
 </div>
 
@@ -365,7 +371,7 @@ doc = client.scrape(
 
 `prompt` 是仅限关键字参数：请调用 `client.interact(job_id, prompt="...")` 或 `client.interact(job_id, code="...")`。`code` 和 `prompt` 至少有一个必须为非空 (在 `firecrawl/v2/methods/scrape.py` 中校验) 。
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### 简单示例
 </div>
 
@@ -378,7 +384,7 @@ if not job_id:
 result = client.interact(job_id, prompt="Click the pricing tab and summarize the plans.")
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### 复杂示例
 </div>
 
@@ -397,7 +403,7 @@ result = client.interact(
 
 `client.stop_interaction(job_id)` 会结束与抓取任务绑定的浏览器会话。返回 `BrowserDeleteResponse` (`success`、可选的 `session_duration_ms`、`credits_billed`、`error`) 。
 
-<div id="parameters">
+<div id="parameters-3">
   ### 参数
 </div>
 
@@ -423,7 +429,7 @@ result = client.interact(
   * 类型: int
   * 使用场景：当你需要以秒为单位设置执行超时时间时使用。
 
-<div id="return-value">
+<div id="return-value-2">
   ### 返回值
 </div>
 
@@ -433,19 +439,19 @@ result = client.interact(
   ## Ask (代理调试)
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-4">
   ### 为什么要使用它
 </div>
 
 当 Firecrawl API 调用失败或返回了非预期结果时，请使用 `ask`。AI 支持代理会诊断问题、提出修复参数，并可选择通过实时 API 验证修复效果。典型延迟：15–30 秒。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-4">
   ### 首选 SDK 方法
 </div>
 
 Python SDK 中暂未提供该方法。请直接使用 `requests` 或 `httpx`。
 
-<div id="simple-example">
+<div id="simple-example-4">
   ### 简单示例
 </div>
 
@@ -465,7 +471,7 @@ print(result["answer"])
 print(result["fixParameters"])
 ```
 
-<div id="complex-example">
+<div id="complex-example-4">
   ### 复杂示例
 </div>
 
@@ -519,7 +525,7 @@ if not doc.markdown or len(doc.markdown) < 100:
         )
 ```
 
-<div id="parameters">
+<div id="parameters-4">
   ### 参数
 </div>
 
@@ -539,13 +545,13 @@ if not doc.markdown or len(doc.markdown) < 100:
   ## 文档搜索
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-5">
   ### 为什么要使用它
 </div>
 
 使用 docs-search 查询 Firecrawl 文档。
 
-<div id="simple-example">
+<div id="simple-example-5">
   ### 简单示例
 </div>
 
@@ -562,7 +568,7 @@ response = requests.post(
 print(response.json()["answer"])
 ```
 
-<div id="parameters">
+<div id="parameters-5">
   ### 参数
 </div>
 

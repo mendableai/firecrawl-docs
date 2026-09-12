@@ -60,6 +60,7 @@ import ScrapeHighlightsPython from "/snippets/pt-BR/v2/scrape/highlights/python.
 import ScrapeHighlightsNode from "/snippets/pt-BR/v2/scrape/highlights/js.mdx";
 import ScrapeHighlightsCURL from "/snippets/pt-BR/v2/scrape/highlights/curl.mdx";
 import PlaygroundCTA from "/snippets/pt-BR/shared/playground-cta-scrape.mdx";
+import VideoParseVsScrape from "/snippets/pt-BR/shared/video-parse-vs-scrape.mdx";
 
 Firecrawl converte páginas da web em markdown, ideal para aplicações com LLMs.
 
@@ -67,9 +68,13 @@ Firecrawl converte páginas da web em markdown, ideal para aplicações com LLMs
 * Lida com conteúdo dinâmico: websites dinâmicos, sites renderizados por JS, PDFs, imagens
 * Gera markdown limpo, dados estruturados, capturas de tela ou HTML.
 
-Para mais detalhes, consulte a [Referência da API do endpoint Scraping](https://docs.firecrawl.dev/api-reference/endpoint/scrape).
+Para mais detalhes, consulte a [Referência da API do endpoint /scrape](https://docs.firecrawl.dev/api-reference/endpoint/scrape).
 
 <PlaygroundCTA />
+
+Fazendo scraping de um documento em uma URL ou analisando um arquivo do disco? Veja aqui quando usar o Scrape e quando usar o [Parse](/pt-BR/features/parse):
+
+<VideoParseVsScrape />
 
 <Note>Se uma solicitação falhar, consulte [Erros](/pt-BR/api-reference/errors) para ver o catálogo completo de códigos de erro, causas, soluções e orientações para tentar novamente.</Note>
 
@@ -95,7 +100,9 @@ Usado para extrair o conteúdo de uma URL.
   <InstallationCLI />
 </CodeGroup>
 
-### Uso
+<div id="usage">
+  ### Uso
+</div>
 
 <CodeGroup>
   <ScrapePython />
@@ -130,6 +137,17 @@ Os SDKs retornarão o objeto de dados diretamente. O cURL retornará o payload e
 
 <ScrapeResponse />
 
+<div id="response-metadata-and-status-codes">
+  ### Metadados da resposta e códigos de status
+</div>
+
+Há duas camadas distintas de status em uma resposta de scraping, e é importante diferenciá-las:
+
+* **Status da solicitação de API**: o status HTTP da própria chamada à API do Firecrawl, juntamente com o booleano `success` no corpo da resposta. Uma solicitação aceita e processada retorna HTTP `200` com `success: true`, mesmo que a página de destino tenha retornado um código diferente de 2xx.
+* **Status da página** (`data.metadata.statusCode`): o status HTTP retornado pelo website de destino para essa página (por exemplo, `200`, `301`, `404`, `403`, `500`). É isso que indica como a própria página respondeu.
+
+O padrão confiável é: primeiro, confirme que a solicitação foi bem-sucedida (HTTP `200` + `success: true`); depois, verifique `data.metadata.statusCode` para saber o resultado real da página. O Firecrawl considera um `statusCode` de 2xx ou `304` como um carregamento de página bem-sucedido; qualquer outro valor significa que a página não foi carregada corretamente. Quando uma página retorna um status de erro, `data.metadata.error` pode incluir detalhes adicionais.
+
 <div id="scrape-formats">
   ## Formatos de Scraping
 </div>
@@ -140,9 +158,10 @@ Agora você pode escolher em quais formatos deseja sua saída. Você pode especi
 * Resumo (`summary`)
 * HTML (`html`) - versão limpa do HTML da página
 * HTML bruto (`rawHtml`) - HTML não modificado conforme recebido da página
+* Base64 bruto (`rawBase64`) - corpo da resposta HTTP original codificado em Base64; deve ser o único formato na solicitação
 * Captura de tela (`screenshot`, com opções como `fullPage`, `quality`, `viewport`) — as URLs das capturas de tela expiram após 24 horas
 * Links (`links`)
-* JSON (`json`) - saída estruturada
+* JSON (`json`) - resultado estruturado
 * Imagens (`images`) - extrair todas as URLs de imagens da página
 * Branding (`branding`) - extrair identidade da marca e sistema de design
 * Produto (`product`) - extrair um produto estruturado (título, preço, disponibilidade, variantes) de páginas de produto
@@ -151,6 +170,8 @@ Agora você pode escolher em quais formatos deseja sua saída. Você pode especi
 * Query (`query`, com `prompt` e `mode` opcional) - faça uma pergunta em linguagem natural sobre a página; a resposta é retornada no campo `answer`
 
 As chaves de saída corresponderão ao formato que você escolher.
+
+O formato `rawBase64` retorna o corpo da resposta HTTP original codificado em Base64. O campo `rawBase64` contém uma string Base64 simples, não uma URI de dados. Leia o tipo MIME em `metadata.contentType`. Solicite somente `rawBase64`, pois a API o rejeita junto com qualquer outro formato. A resposta não tem campos `markdown`, `html` ou `rawHtml` e contém apenas o arquivo único dessa URL, sem CSS, imagens ou outros sub-recursos.
 
 <div id="extract-structured-data">
   ## Extraia dados estruturados
@@ -223,7 +244,9 @@ O formato de branding extrai informações completas sobre a identidade de marca
   <ScrapeBrandingCURL />
 </CodeGroup>
 
-### Resposta
+<div id="response-2">
+  ### Resposta
+</div>
 
 O formato de branding retorna um objeto `BrandingProfile` completo com a seguinte estrutura:
 
@@ -294,7 +317,9 @@ Ele retorna um objeto `product` com title, brand, category, description e varian
   <ScrapeProductCURL />
 </CodeGroup>
 
-### Resposta
+<div id="response-3">
+  ### Resposta
+</div>
 
 O formato `product` retorna um objeto `product` com a seguinte estrutura:
 
@@ -339,7 +364,9 @@ O formato de produto extrai o produto de forma determinística a partir de dados
   **Hospedagem própria:** o formato `product` depende de um serviço dedicado de extração de produtos. No Firecrawl Cloud, ele funciona imediatamente. Se você fizer hospedagem própria, defina `PRODUCT_EXTRACTION_SERVICE_URL` para apontar para esse serviço — quando ela não estiver definida, solicitar o formato `product` retorna um aviso e nenhum produto (o mesmo padrão que os formatos de áudio/vídeo usam para esse serviço).
 </Note>
 
-### Combinando com outros formatos
+<div id="combining-with-other-formats-2">
+  ### Combinando com outros formatos
+</div>
 
 Você pode combinar o formato de produto com outros formatos para obter dados completos da página:
 
@@ -506,7 +533,9 @@ Especifique o país e os idiomas preferidos para obter conteúdo relevante com b
 
 Quando você define as configurações de localização, o Firecrawl usará um proxy apropriado, se disponível, e emulará as configurações correspondentes de idioma e fuso horário. Por padrão, a localização é definida como “US” se não for especificada.
 
-### Uso
+<div id="usage-2">
+  ### Uso
+</div>
 
 Para usar as configurações de localização e idioma, inclua o objeto `location` no corpo da sua requisição com as seguintes propriedades:
 
@@ -614,7 +643,7 @@ Consulte [Como verificar o frescor e a disponibilidade](/pt-BR/developer-guides/
 
 Agora é possível fazer scraping em lote de várias URLs ao mesmo tempo. A função recebe as URLs iniciais e parâmetros opcionais como argumentos. O parâmetro params permite definir opções adicionais para a tarefa de scraping em lote, como os formatos de saída.
 
-<div id="how-it-works">
+<div id="how-it-works-2">
   ### Como funciona
 </div>
 
@@ -622,7 +651,7 @@ Funciona de forma muito semelhante ao endpoint `/crawl`. Ele cria um job de rasp
 
 O SDK oferece 2 métodos: síncrono e assíncrono. O método síncrono retorna os resultados do job de raspagem em lote, enquanto o método assíncrono retorna um ID do job que você pode usar para verificar o status da raspagem em lote.
 
-<div id="usage">
+<div id="usage-3">
   ### Como usar
 </div>
 
@@ -634,7 +663,7 @@ O SDK oferece 2 métodos: síncrono e assíncrono. O método síncrono retorna o
   <BatchScrapeCURL />
 </CodeGroup>
 
-<div id="response">
+<div id="response-4">
   ### Resposta
 </div>
 

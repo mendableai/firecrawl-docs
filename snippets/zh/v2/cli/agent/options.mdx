@@ -1,9 +1,8 @@
 ```bash CLI
-# 使用 Spark 2（非默认值 - 需显式设置）
+# Spark 2 为默认值 — 每次运行均使用该模型
 firecrawl agent "Competitive analysis across multiple domains" --model spark-2 --wait
 
-# 使用 Spark 1 Pro（默认值）提高准确性
-firecrawl agent "Competitive analysis across multiple domains" --model spark-1-pro --wait
+# 已弃用：仍接受 Spark 1 的模型名称，但会路由到 spark-2。
 
 # Set max credits to limit costs
 firecrawl agent "Gather contact information from company websites" --max-credits 100 --wait

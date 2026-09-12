@@ -192,7 +192,14 @@
                           "features/monitoring-web-scale"
                         ]
                       },
-                      "features/interact"
+                      {
+                        "group": "Interact / Browser Sandbox",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "features/interact",
+                          "features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -201,13 +208,7 @@
                       "features/parse",
                       "features/map",
                       "features/crawl",
-                      "features/agent",
-                      {
-                        "group": "Agent (Research Preview)",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "features/agent"
                     ]
                   },
                   {
@@ -451,7 +452,7 @@
                     ]
                   },
                   {
-                    "group": "Interact Endpoints",
+                    "group": "Interact / Browser Sandbox Endpoints",
                     "pages": [
                       "api-reference/endpoint/browser-create",
                       "api-reference/endpoint/browser-execute",
@@ -515,7 +516,10 @@
                     "group": "Agent Endpoints",
                     "pages": [
                       "api-reference/endpoint/agent",
+                      "api-reference/endpoint/agent-list",
                       "api-reference/endpoint/agent-get",
+                      "api-reference/endpoint/agent-trace",
+                      "api-reference/endpoint/agent-snapshot",
                       "api-reference/endpoint/agent-delete"
                     ]
                   },
@@ -698,7 +702,6 @@
                     "pages": [
                       "introduction",
                       "mcp-server",
-                      "migrate-to-v2",
                       "advanced-scraping-guide",
                       {
                         "group": "Plans and Billing",
@@ -984,7 +987,14 @@
                           "es/features/monitoring-web-scale"
                         ]
                       },
-                      "es/features/interact"
+                      {
+                        "group": "Interacción / sandbox del navegador",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "es/features/interact",
+                          "es/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -993,13 +1003,7 @@
                       "es/features/parse",
                       "es/features/map",
                       "es/features/crawl",
-                      "es/features/agent",
-                      {
-                        "group": "Agent (Research Preview)",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "es/features/agent"
                     ]
                   },
                   {
@@ -1243,7 +1247,7 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de interacción",
+                    "group": "Endpoints de interacción / sandbox del navegador",
                     "pages": [
                       "es/api-reference/endpoint/browser-create",
                       "es/api-reference/endpoint/browser-execute",
@@ -1307,7 +1311,10 @@
                     "group": "Endpoints de agentes",
                     "pages": [
                       "es/api-reference/endpoint/agent",
+                      "es/api-reference/endpoint/agent-list",
                       "es/api-reference/endpoint/agent-get",
+                      "es/api-reference/endpoint/agent-trace",
+                      "es/api-reference/endpoint/agent-snapshot",
                       "es/api-reference/endpoint/agent-delete"
                     ]
                   },
@@ -1490,7 +1497,6 @@
                     "pages": [
                       "es/introduction",
                       "es/mcp-server",
-                      "es/migrate-to-v2",
                       "es/advanced-scraping-guide",
                       {
                         "group": "Planes y facturación",
@@ -1501,7 +1507,7 @@
                         ]
                       },
                       {
-                        "group": "Enterprise",
+                        "group": "Empresa",
                         "pages": [
                           "es/enterprise",
                           "es/features/ip-restrictions",
@@ -1776,7 +1782,14 @@
                           "fr/features/monitoring-web-scale"
                         ]
                       },
-                      "fr/features/interact"
+                      {
+                        "group": "Interact / Browser Sandbox",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "fr/features/interact",
+                          "fr/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -1785,13 +1798,7 @@
                       "fr/features/parse",
                       "fr/features/map",
                       "fr/features/crawl",
-                      "fr/features/agent",
-                      {
-                        "group": "Agent (Research Preview)",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "fr/features/agent"
                     ]
                   },
                   {
@@ -2035,7 +2042,7 @@
                     ]
                   },
                   {
-                    "group": "Points de terminaison Interact",
+                    "group": "Points de terminaison Interact / Browser Sandbox",
                     "pages": [
                       "fr/api-reference/endpoint/browser-create",
                       "fr/api-reference/endpoint/browser-execute",
@@ -2099,7 +2106,10 @@
                     "group": "Points de terminaison Agent",
                     "pages": [
                       "fr/api-reference/endpoint/agent",
+                      "fr/api-reference/endpoint/agent-list",
                       "fr/api-reference/endpoint/agent-get",
+                      "fr/api-reference/endpoint/agent-trace",
+                      "fr/api-reference/endpoint/agent-snapshot",
                       "fr/api-reference/endpoint/agent-delete"
                     ]
                   },
@@ -2282,7 +2292,6 @@
                     "pages": [
                       "fr/introduction",
                       "fr/mcp-server",
-                      "fr/migrate-to-v2",
                       "fr/advanced-scraping-guide",
                       {
                         "group": "Offres et facturation",
@@ -2568,7 +2577,14 @@
                           "ja/features/monitoring-web-scale"
                         ]
                       },
-                      "ja/features/interact"
+                      {
+                        "group": "Interact / ブラウザサンドボックス",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "ja/features/interact",
+                          "ja/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -2577,13 +2593,7 @@
                       "ja/features/parse",
                       "ja/features/map",
                       "ja/features/crawl",
-                      "ja/features/agent",
-                      {
-                        "group": "Agent (Research Preview)",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "ja/features/agent"
                     ]
                   },
                   {
@@ -2827,7 +2837,7 @@
                     ]
                   },
                   {
-                    "group": "Interact エンドポイント",
+                    "group": "Interact / ブラウザサンドボックス エンドポイント",
                     "pages": [
                       "ja/api-reference/endpoint/browser-create",
                       "ja/api-reference/endpoint/browser-execute",
@@ -2891,7 +2901,10 @@
                     "group": "エージェントエンドポイント",
                     "pages": [
                       "ja/api-reference/endpoint/agent",
+                      "ja/api-reference/endpoint/agent-list",
                       "ja/api-reference/endpoint/agent-get",
+                      "ja/api-reference/endpoint/agent-trace",
+                      "ja/api-reference/endpoint/agent-snapshot",
                       "ja/api-reference/endpoint/agent-delete"
                     ]
                   },
@@ -3074,7 +3087,6 @@
                     "pages": [
                       "ja/introduction",
                       "ja/mcp-server",
-                      "ja/migrate-to-v2",
                       "ja/advanced-scraping-guide",
                       {
                         "group": "プランと課金",
@@ -3085,7 +3097,7 @@
                         ]
                       },
                       {
-                        "group": "エンタープライズ",
+                        "group": "Enterprise",
                         "pages": [
                           "ja/enterprise",
                           "ja/features/ip-restrictions",
@@ -3360,7 +3372,14 @@
                           "pt-BR/features/monitoring-web-scale"
                         ]
                       },
-                      "pt-BR/features/interact"
+                      {
+                        "group": "Interagir / Browser Sandbox",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "pt-BR/features/interact",
+                          "pt-BR/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -3369,13 +3388,7 @@
                       "pt-BR/features/parse",
                       "pt-BR/features/map",
                       "pt-BR/features/crawl",
-                      "pt-BR/features/agent",
-                      {
-                        "group": "Agente (Research Preview)",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "pt-BR/features/agent"
                     ]
                   },
                   {
@@ -3619,7 +3632,7 @@
                     ]
                   },
                   {
-                    "group": "Endpoints de interação",
+                    "group": "Endpoints para interagir / Browser Sandbox",
                     "pages": [
                       "pt-BR/api-reference/endpoint/browser-create",
                       "pt-BR/api-reference/endpoint/browser-execute",
@@ -3683,7 +3696,10 @@
                     "group": "Endpoints de agente",
                     "pages": [
                       "pt-BR/api-reference/endpoint/agent",
+                      "pt-BR/api-reference/endpoint/agent-list",
                       "pt-BR/api-reference/endpoint/agent-get",
+                      "pt-BR/api-reference/endpoint/agent-trace",
+                      "pt-BR/api-reference/endpoint/agent-snapshot",
                       "pt-BR/api-reference/endpoint/agent-delete"
                     ]
                   },
@@ -3866,7 +3882,6 @@
                     "pages": [
                       "pt-BR/introduction",
                       "pt-BR/mcp-server",
-                      "pt-BR/migrate-to-v2",
                       "pt-BR/advanced-scraping-guide",
                       {
                         "group": "Planos e cobrança",
@@ -3877,7 +3892,7 @@
                         ]
                       },
                       {
-                        "group": "Enterprise",
+                        "group": "Empresarial",
                         "pages": [
                           "pt-BR/enterprise",
                           "pt-BR/features/ip-restrictions",
@@ -4152,7 +4167,14 @@
                           "zh/features/monitoring-web-scale"
                         ]
                       },
-                      "zh/features/interact"
+                      {
+                        "group": "交互 / 浏览器沙箱",
+                        "icon": "hand-pointer",
+                        "pages": [
+                          "zh/features/interact",
+                          "zh/features/browser"
+                        ]
+                      }
                     ]
                   },
                   {
@@ -4161,13 +4183,7 @@
                       "zh/features/parse",
                       "zh/features/map",
                       "zh/features/crawl",
-                      "zh/features/agent",
-                      {
-                        "group": "代理（研究预览）",
-                        "hidden": true,
-                        "icon": "robot",
-                        "pages": []
-                      }
+                      "zh/features/agent"
                     ]
                   },
                   {
@@ -4411,7 +4427,7 @@
                     ]
                   },
                   {
-                    "group": "交互端点",
+                    "group": "交互 / 浏览器沙箱端点",
                     "pages": [
                       "zh/api-reference/endpoint/browser-create",
                       "zh/api-reference/endpoint/browser-execute",
@@ -4475,7 +4491,10 @@
                     "group": "代理端点",
                     "pages": [
                       "zh/api-reference/endpoint/agent",
+                      "zh/api-reference/endpoint/agent-list",
                       "zh/api-reference/endpoint/agent-get",
+                      "zh/api-reference/endpoint/agent-trace",
+                      "zh/api-reference/endpoint/agent-snapshot",
                       "zh/api-reference/endpoint/agent-delete"
                     ]
                   },
@@ -4658,7 +4677,6 @@
                     "pages": [
                       "zh/introduction",
                       "zh/mcp-server",
-                      "zh/migrate-to-v2",
                       "zh/advanced-scraping-guide",
                       {
                         "group": "套餐与计费",
@@ -5372,6 +5390,34 @@
     {
       "destination": "/integrations/dify",
       "source": "/developer-guides/workflow-automation/dify"
+    },
+    {
+      "destination": "/introduction",
+      "source": "/migrate-to-v2"
+    },
+    {
+      "destination": "/introduction",
+      "source": "/migrate-to-v2.md"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/amazon"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/etsy"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/github"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites/wikipedia"
+    },
+    {
+      "destination": "/features/scrape",
+      "source": "/developer-guides/common-sites"
     }
   ],
   "seo": {

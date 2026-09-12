@@ -38,7 +38,7 @@ import ExtractWithoutURLsCURL from "/snippets/v2/extract/without-urls/curl.mdx";
 
 The `/extract` endpoint simplifies collecting structured data from any number of URLs or entire domains. Provide a list of URLs, optionally with wildcards (e.g., `example.com/*`), and a prompt or schema describing the information you want. Firecrawl handles the details of crawling, parsing, and collating large or small datasets.
 
-<Info>We've simplified billing so that Extract now uses credits, just like all of the other endpoints. Each credit is worth 15 tokens.</Info>
+<Info>We've simplified billing so that Extract now uses credits, just like all of the other endpoints. Each credit is worth 15 tokens. See [Billing](/billing) for how credits map to plan pricing; scrape and crawl are billed at 1 credit per page ([Scrape cost](/features/scrape#scraping-a-url-with-firecrawl)).</Info>
 
 ## Using `/extract`
 
@@ -218,7 +218,7 @@ curl -X POST https://api.firecrawl.dev/v2/extract \
 
 ## Billing and Usage Tracking
 
-We've simplified billing so that Extract now uses credits, just like all of the other endpoints. Each credit is worth 15 tokens.
+We've simplified billing so that Extract now uses credits, just like all of the other endpoints. Each credit is worth 15 tokens. See [Billing](/billing) for how credits map to plan pricing; scrape and crawl are billed at 1 credit per page ([Scrape cost](/features/scrape#scraping-a-url-with-firecrawl)).
 
 You can monitor Extract usage via the [dashboard](https://www.firecrawl.dev/app/extract).
 

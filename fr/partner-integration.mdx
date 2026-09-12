@@ -132,7 +132,7 @@ POST /partner/v1/api-keys/validate
 * Les clés API peuvent être supprimées manuellement par les utilisateurs à tout moment.
 * Les clés API supprimées ne font pas l’objet d’une suppression logique. Firecrawl ne peut pas distinguer une clé supprimée d’une clé qui n’a jamais existé.
 
-<div id="request">
+<div id="request-2">
   #### Requête
 </div>
 
@@ -149,7 +149,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/validate" \
 | -------- | ------ | ----------- | -------------------- |
 | `apiKey` | string | Oui         | La clé API à valider |
 
-<div id="response">
+<div id="response-2">
   #### Réponse
 </div>
 
@@ -167,7 +167,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/validate" \
 | `teamName` | string | Le nom de l’équipe associée à cette clé API               |
 | `email`    | string | L’adresse e-mail de l’utilisateur associé à cette clé API |
 
-<div id="errors">
+<div id="errors-2">
   #### Erreurs
 </div>
 
@@ -189,7 +189,7 @@ Supprime une clé API Firecrawl existante et en génère une nouvelle pour le m�
 POST /partner/v1/api-keys/rotate
 ```
 
-<div id="request">
+<div id="request-3">
   #### Requête
 </div>
 
@@ -206,7 +206,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/rotate" \
 | -------- | ------ | ------ | ------------------------------------- |
 | `apiKey` | string | Oui    | La clé API à supprimer et à remplacer |
 
-<div id="response">
+<div id="response-3">
   #### Réponse
 </div>
 
@@ -222,7 +222,7 @@ curl -X POST "https://integrations.firecrawl.dev/partner/v1/api-keys/rotate" \
 | -------- | ------ | ------------------- |
 | `apiKey` | string | La nouvelle clé API |
 
-<div id="errors">
+<div id="errors-3">
   #### Erreurs
 </div>
 

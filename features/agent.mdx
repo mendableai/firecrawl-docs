@@ -23,11 +23,26 @@ import AgentWithURLsCURL from "/snippets/v2/agent/with-urls/curl.mdx";
 import AgentStatusPython from "/snippets/v2/agent/status/python.mdx";
 import AgentStatusJS from "/snippets/v2/agent/status/js.mdx";
 import AgentStatusCURL from "/snippets/v2/agent/status/curl.mdx";
+import AgentListPython from "/snippets/v2/agent/list/python.mdx";
+import AgentListJS from "/snippets/v2/agent/list/js.mdx";
+import AgentListCURL from "/snippets/v2/agent/list/curl.mdx";
 import AgentStatusPending from "/snippets/v2/agent/status/pending.mdx";
 import AgentStatusCompleted from "/snippets/v2/agent/status/completed.mdx";
 import AgentWithModelPython from "/snippets/v2/agent/with-model/python.mdx";
 import AgentWithModelJS from "/snippets/v2/agent/with-model/js.mdx";
 import AgentWithModelCURL from "/snippets/v2/agent/with-model/curl.mdx";
+import AgentTracePython from "/snippets/v2/agent/trace/python.mdx";
+import AgentTraceJS from "/snippets/v2/agent/trace/js.mdx";
+import AgentTraceCURL from "/snippets/v2/agent/trace/curl.mdx";
+import AgentSnapshotPython from "/snippets/v2/agent/snapshot/python.mdx";
+import AgentSnapshotJS from "/snippets/v2/agent/snapshot/js.mdx";
+import AgentSnapshotCURL from "/snippets/v2/agent/snapshot/curl.mdx";
+import AgentTracePollPython from "/snippets/v2/agent/trace/poll/python.mdx";
+import AgentTracePollJS from "/snippets/v2/agent/trace/poll/js.mdx";
+import AgentTracePollCURL from "/snippets/v2/agent/trace/poll/curl.mdx";
+import AgentArtifactsPython from "/snippets/v2/agent/artifacts/python.mdx";
+import AgentArtifactsJS from "/snippets/v2/agent/artifacts/js.mdx";
+import AgentArtifactsCURL from "/snippets/v2/agent/artifacts/curl.mdx";
 import PlaygroundCTA from "/snippets/shared/playground-cta-agent.mdx";
 import ChooseDataExtractor from "/snippets/shared/choose-data-extractor/from-agent.mdx";
 import AgentFeedbackCTA from "/snippets/agent-feedback-cta.mdx";
@@ -93,6 +108,7 @@ Agent jobs run asynchronously. When you submit a job, you'll receive a Job ID th
 
 - **Default method**: `agent()` waits and returns final results
 - **Start then poll**: Use `start_agent` (Python) or `startAgent` (Node) to get a Job ID immediately, then poll with `get_agent_status` / `getAgentStatus`
+- **Push instead of poll**: Pass a `webhook` when you start the job to receive [agent events](/webhooks/events#agent-events) as the run progresses and finishes
 
 <Note>Job results are available via the API for 24 hours after completion. After this period, you can still view your agent history and results in the [activity logs](https://www.firecrawl.dev/app/logs).</Note>
 
@@ -110,11 +126,10 @@ Agent jobs run asynchronously. When you submit a job, you'll receive a Job ID th
 |--------|-------------|
 | `processing` | The agent is still working on your request |
 | `completed` | Extraction finished successfully |
-| `failed` | An error occurred during extraction |
-| `cancelled` | The job was cancelled by the user |
+| `failed` | An error occurred during extraction, or the job was cancelled (cancelled jobs report `failed` with a cancellation error message) |
 
 <Note>
-**Cancellation is cooperative.** When you call the cancel endpoint, the request is registered immediately, but any step already in flight (an LLM reasoning step, a tool call, or a browser action) runs to a clean stopping point before the job transitions to `cancelled`. Credits can continue to accrue during that short window, so the final `creditsUsed` may be higher than the value reported at the moment you clicked cancel.
+**Cancellation is cooperative.** When you call the cancel endpoint, the request is registered immediately, but any step already in flight (an LLM reasoning step, a tool call, or a browser action) runs to a clean stopping point before the job stops. Credits can continue to accrue during that short window, so the final `creditsUsed` may be higher than the value reported at the moment you clicked cancel. A cancelled job reports status `failed` when polled and emits an `agent.cancelled` webhook event.
 </Note>
 
 #### Pending Example
@@ -125,56 +140,108 @@ Agent jobs run asynchronously. When you submit a job, you'll receive a Job ID th
 
 <AgentStatusCompleted />
 
+## Listing agent runs
+
+`GET /agent` lists every agent run your team has made, most recent first — including runs started from the playground or the API. Each entry carries the run's ID, creation time, status, a short target hint, and the options it was started with.
+
+Results are paginated in fixed pages of 20 runs. When more pages exist, the response includes a `next` URL; pass its `before` timestamp to fetch the next page. The SDK methods do not auto-paginate, so you stay in control of how far back to go.
+
+<CodeGroup>
+
+<AgentListPython />
+<AgentListJS />
+<AgentListCURL />
+
+</CodeGroup>
+
+## Following a run in progress
+
+Agent doesn't hold a streamed connection open. There's no server-sent event stream and no websocket, so you follow a run either by polling its trace or by receiving webhooks.
+
+| Surface | What you get | Best for |
+|---------|--------------|----------|
+| Trace polling | Full detail: every event the run has emitted so far, including tool calls, reasoning summaries, progress phases, and artifact changes | Building your own progress UI, or debugging what a run actually did |
+| Webhooks | Push delivery, coarse-grained: the five agent lifecycle events (`agent.started`, `agent.action`, `agent.completed`, `agent.failed`, `agent.cancelled`). See [webhook events](/webhooks/events) | Reacting to a run finishing without holding a poll loop open |
+| Live view | A human-watchable view of the agent's browser. Request the trace with `?liveView=true` and each entry in `activeBrowserSessions` carries a `liveViewUrl` | Watching a run navigate in real time |
+
+When you order trace events yourself, group them by `agent.id` first: `producerSequence` is monotonic per emitting agent, so a single global sort interleaves an orchestrator's events with its subagents' incorrectly. Events can also land for a moment after the terminal `run.finished` event, so keep polling through a short tail window before you render the final state.
+
+<CodeGroup>
+
+<AgentTracePollPython />
+<AgentTracePollJS />
+<AgentTracePollCURL />
+
+</CodeGroup>
+
+## Execution Traces and Snapshots
+
+Every run records a canonical execution trace — ordered events covering tool calls, reasoning summaries, progress updates, browser sessions, and output artifact changes. Fetch it to debug a run or power a live progress UI:
+
+<CodeGroup>
+
+<AgentTracePython />
+<AgentTraceJS />
+<AgentTraceCURL />
+
+</CodeGroup>
+
+`artifact.updated` trace events reference the agent's working output by `snapshotId`. Fetch the full content of a snapshot with the snapshots endpoint:
+
+<CodeGroup>
+
+<AgentSnapshotPython />
+<AgentSnapshotJS />
+<AgentSnapshotCURL />
+
+</CodeGroup>
+
+<Note>Traces and snapshots are recorded on Spark 2 runs, which is every new run; jobs started on Spark 1 models before their retirement do not have them. See the [trace](/api-reference/endpoint/agent-trace) and [snapshot](/api-reference/endpoint/agent-snapshot) API references for the full event schema, and the [Agent errors](/api-reference/errors#agent) catalog for the failures these endpoints return.</Note>
+
+## Getting the agent's source data
+
+A run writes its working output to artifacts as it goes, and you can retrieve them once you have the run's trace. Every `artifact.updated` event describes one change to one artifact: `artifact.kind` is `json`, `markdown`, `html`, `screenshot`, or `text`, `artifact.path` is where the run put it, and `artifact.snapshotId` is the handle you exchange for its content at `GET /agent/{jobId}/snapshots/{snapshotId}`. The snapshot endpoint returns that content in a `snapshot` field as a string: for `json` artifacts that string is JSON-encoded and needs decoding, while `markdown`, `html`, and `text` artifacts are the content itself.
+
+To pull the page content a run produced, fetch the trace, keep the `artifact.updated` events whose `kind` you want, then fetch each snapshot:
+
+<CodeGroup>
+
+<AgentArtifactsPython />
+<AgentArtifactsJS />
+<AgentArtifactsCURL />
+
+</CodeGroup>
+
+Two things worth knowing before you build on this:
+
+- **Artifacts are the run's output, not a page-by-page archive.** What a run writes to an artifact depends on how it works through your prompt, so treat the artifact set as what that particular run produced rather than a guaranteed record of every page it opened.
+- **Tool results carry the rest.** Each `tool_call.finished` event includes a `result` field holding what that tool returned, which is where content that never became an artifact shows up.
+
 ## Share agent runs
 
 You can share agent runs directly from the Agent playground. Shared links are public — anyone with the link can view the run output and activity — and you can revoke access at any time to disable the link. Shared pages are not indexed by search engines.
 
 ## Model Selection
 
-Firecrawl Agent offers three models. **Spark 1 Pro** is the default. **Spark 2** is cheaper and faster than either Spark 1 model, at comparable accuracy — set `model` to `spark-2` to use it.
+Firecrawl Agent runs on **Spark 2** — cheaper and faster than the earlier Spark 1 models, at comparable accuracy. It is the default: every run executes on `spark-2`, whether or not you set the `model` parameter.
 
-| Model | Cost | Accuracy | Best For |
-|-------|------|----------|----------|
-| `spark-2` | Lowest | Comparable to Pro | Low cost and short run time |
-| `spark-1-mini` | **60% cheaper** than Pro | Standard | Cost-sensitive Spark 1 workloads |
-| `spark-1-pro` | Standard | Higher | Complex research, critical extraction (default) |
-
-<Tip>
-**Spark 1 Pro is the default**, so a request without the `model` parameter uses `spark-1-pro`. Set `model` to `spark-2` to get a lower cost and a shorter run time at comparable accuracy. Set `model` to `spark-1-mini` for a 60% lower cost on simple Spark 1 tasks.
-</Tip>
+<Note>
+**Spark 1 models are deprecated.** The Spark 1 model names remain accepted for backwards compatibility, but requests that use them route to `spark-2`.
+</Note>
 
 ### Spark 2
 
-`spark-2` is our newest agent model. It handles the full range of tasks that previously called for a Mini-versus-Pro decision, so there is no accuracy-versus-cost trade-off to make. Set `model` to `spark-2` to use it.
+`spark-2` handles the full range of tasks that previously called for a Mini-versus-Pro decision, so there is no accuracy-versus-cost trade-off to make.
 
-**Use Spark 2 when:**
-- You want the lowest cost per run
-- Run time matters
-- You would otherwise reach for Spark 1 Pro's accuracy
-
-### Spark 1 Mini
-
-`spark-1-mini` is our efficient model, ideal for straightforward data extraction tasks.
-
-**Use Mini when:**
-- Extracting simple data points (contact info, pricing, etc.)
-- Working with well-structured websites
-- Cost efficiency is a priority
-- Running high-volume extraction jobs
-
-### Spark 1 Pro (Default)
-
-`spark-1-pro` is our flagship model, designed for maximum accuracy on complex extraction tasks. It is the default: a request that does not set `model` uses `spark-1-pro`.
-
-**Use Pro when:**
-- Performing complex competitive analysis
-- Extracting data that requires deep reasoning
-- Accuracy is critical for your use case
-- Dealing with ambiguous or hard-to-find data
+**Highlights:**
+- Lowest cost per run
+- Fastest run time
+- Accuracy comparable to the former Spark 1 flagship
+- The only model with a reasoning budget: pass `effort` (`low`, `medium`, or `high`) to control how hard it thinks
 
 ### Specifying a Model
 
-`spark-1-pro` is the default, so the `model` parameter is optional. Pass it to select a different model:
+The `model` parameter is optional — every request runs `spark-2`:
 
 <CodeGroup>
 
@@ -189,9 +256,12 @@ Firecrawl Agent offers three models. **Spark 1 Pro** is the default. **Spark 2**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `prompt` | string | **Yes** | Natural language description of the data you want to extract (max 10,000 characters) |
-| `model` | string | No | Model to use: `spark-1-pro` (default), `spark-1-mini`, or `spark-2` |
+| `model` | string | No | Defaults to `spark-2`, the model every run executes on. Spark 1 models are deprecated and route to `spark-2` |
+| `effort` | string | No | Reasoning budget: `low`, `medium`, or `high`. Every run executes on `spark-2`, so `effort` can be sent with or without `model` |
 | `urls` | array | No | Optional list of URLs to focus the extraction |
 | `schema` | object | No | Optional JSON schema for structured output |
+| `strictConstrainToURLs` | boolean | No | If `true`, the agent only visits the URLs provided in the `urls` array |
+| `webhook` | object | No | Webhook to receive agent lifecycle events (`agent.started`, `agent.action`, `agent.completed`, `agent.failed`, `agent.cancelled`). See the [webhook payloads](/api-reference/endpoint/webhook-agent-started) |
 | `maxCredits` | number | No | Maximum number of credits to spend on this agent task. Defaults to **2,500** if not set. The dashboard supports values up to **2,500**; for higher limits, set `maxCredits` via the API (values above 2,500 are always treated as paid requests). If the limit is reached, the job fails and **no data is returned**. Failed runs are not billed: credits used for AI reasoning are never charged on failure, any credits used for tool calls during the run (scraping, search, mapping, etc.) are refunded, and the response reports `creditsUsed: 0`. |
 
 ## Agent vs Extract: What's Improved
@@ -274,7 +344,7 @@ Agent can be expensive, but there are some ways to decrease the cost:
 * **Start with free runs**: Use your 5 daily free requests to understand pricing
 * **Set a `maxCredits` parameter**: Limit your spending by setting a maximum number of credits you're willing to spend. The dashboard caps this at 2,500 credits; to set a higher limit, use the `maxCredits` parameter directly via the API (note: values above 2,500 are always billed as paid requests)
 * **Optimize prompts**: More specific prompts often use fewer credits
-* **Break large tasks into smaller runs**: A single agent run has an output ceiling based on the underlying model's generation capacity (~150-200 rows of structured data). For large extraction jobs, split by category, region, or URL batch (3-5 URLs per run) and merge the results. This also keeps each run well under the `maxCredits` limit.
+* **Break large tasks into smaller runs**: A single agent run returns roughly 150-200 rows of structured data. For large extraction jobs, split by category, region, or URL batch (3-5 URLs per run) and merge the results. This also keeps each run well under the `maxCredits` limit.
 * **Monitor usage**: Track your consumption through the dashboard
 * **Set expectations**: Complex multi-domain research will use more credits than simple single-page extractions
 

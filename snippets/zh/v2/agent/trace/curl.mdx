@@ -1,0 +1,8 @@
+```bash cURL
+curl "https://api.firecrawl.dev/v2/agent/JOB_ID/trace" \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY"
+
+# 在运行进行中时，包含当前活跃的浏览器会话
+curl "https://api.firecrawl.dev/v2/agent/JOB_ID/trace?liveView=true" \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY"
+```

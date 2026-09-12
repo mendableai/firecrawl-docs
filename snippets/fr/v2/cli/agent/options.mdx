@@ -1,9 +1,8 @@
 ```bash CLI
-# Utiliser Spark 2 (pas la valeur par défaut - à définir explicitement)
+# Spark 2 est le modèle par défaut — toutes les exécutions l'utilisent
 firecrawl agent "Competitive analysis across multiple domains" --model spark-2 --wait
 
-# Use Spark 1 Pro (la valeur par défaut) for higher accuracy
-firecrawl agent "Competitive analysis across multiple domains" --model spark-1-pro --wait
+# Déprécié : les noms de modèles Spark 1 restent acceptés, mais sont redirigés vers spark-2.
 
 # Set max credits to limit costs
 firecrawl agent "Gather contact information from company websites" --max-credits 100 --wait

@@ -1,0 +1,19 @@
+```js Node
+import { Firecrawl } from 'firecrawl';
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR_API_KEY" });
+
+// List your most recent agent runs
+const page = await firecrawl.listAgents();
+
+for (const run of page.agents ?? []) {
+  console.log(run.id, run.status, run.targetHint);
+}
+
+// Fetch the next page using the cursor from `next`
+if (page.next) {
+  const before = Number(new URL(page.next).searchParams.get("before"));
+  const older = await firecrawl.listAgents({ before });
+}
+```
+

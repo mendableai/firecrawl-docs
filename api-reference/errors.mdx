@@ -32,8 +32,9 @@ All non-2xx responses return JSON with a top-level `success: false` and a string
 | 400  | `Bad Request` / validation message                 | Request body failed schema validation (missing or invalid fields). | Fix the request payload using the endpoint reference. Check `details` for fields.   | No               |
 | 400  | `Invalid URL`                                      | The `url` field is missing, malformed, or uses an unsupported scheme. | Pass an absolute `http(s)://` URL.                                                  | No               |
 | 401  | `Unauthorized: Invalid token`                      | API key is missing, malformed, or revoked.                         | Send `Authorization: Bearer fc-...` with a valid key from the [dashboard](https://www.firecrawl.dev/app/api-keys). | No               |
-| 402  | `Payment Required: Insufficient credits`           | Plan credits are exhausted or billing is not configured.           | Top up credits, enable auto-recharge, or upgrade your plan.                          | No               |
+| 402  | `Payment Required: Insufficient credits`           | Plan credits are exhausted or billing is not configured.           | Turn on pay-as-you-go, or upgrade your plan.                                        | No               |
 | 403  | `Forbidden`                                        | Key lacks permission for this endpoint or feature.                 | Use a key with the required scope, or upgrade the plan that gates this feature.     | No               |
+| 403  | `SCRAPE_PROMPT_INJECTION_DETECTED`                 | JSON mode with `checkPromptInjection: true` detected a prompt injection attempt in the scraped page content, so extraction was aborted. | Inspect the page content manually. If it is a false positive, retry without `checkPromptInjection`. See [Prompt injection detection](/features/llm-extract#prompt-injection-detection). | No               |
 | 404  | `Not Found`                                        | The job ID, resource, or endpoint path does not exist.             | Verify the resource ID and endpoint URL.                                            | No               |
 | 408  | `Request Timeout`                                  | The page took longer than the request `timeout` to load.           | Increase `timeout`, simplify actions, or use `fastMode`.                            | Yes, with backoff |
 | 409  | `Conflict`                                         | Resource is in a state that prevents the operation (e.g. already deleted). | Re-fetch state and reconcile before retrying.                                       | No               |
@@ -47,6 +48,37 @@ All non-2xx responses return JSON with a top-level `success: false` and a string
 | 504  | `Gateway Timeout`                                  | Request exceeded the gateway's timeout (typically long crawls).    | Use the async crawl/batch endpoints and poll status instead.                         | Yes, with backoff |
 
 For 429 responses, Firecrawl includes a `Retry-After` header (in seconds) when available — wait at least that long before retrying.
+
+## Agent
+
+Errors specific to [`/agent`](/features/agent) and its status, trace, snapshot, and cancel endpoints. The trace and snapshot endpoints relay their upstream error body unchanged, so those two can answer with a body that omits the `success` field described above; match on the HTTP status and the `error` string.
+
+| HTTP | `error` (typical message)                          | Cause                                                              | Remedy                                                                              | Retryable        |
+|------|----------------------------------------------------|--------------------------------------------------------------------|-------------------------------------------------------------------------------------|------------------|
+| 400  | `Invalid job ID format. Job ID must be a valid UUID.` | The `jobId` path segment is not a UUID.                            | Pass the `id` returned by `POST /v2/agent`.                                         | No               |
+| 400  | `Invalid snapshot ID`                              | The `snapshotId` path segment is malformed.                        | Use a `snapshotId` taken from an `artifact.updated` [trace event](/api-reference/endpoint/agent-trace). | No     |
+| 400  | `Trace is only available for Spark 2 extracts`     | The job predates Spark 2, which is what records traces.            | Nothing to do for that job. Every new run executes on `spark-2` and has a trace.    | No               |
+| 400  | `Snapshots are only available for Spark 2 extracts` | The job predates Spark 2, which is what records snapshots.         | Nothing to do for that job. Every new run executes on `spark-2` and has snapshots.  | No               |
+| 400  | `Your team has zero data retention enabled. This is not supported on extract.` | Agent runs cannot be served for a team with zero data retention forced on. | Contact [support@firecrawl.com](mailto:support@firecrawl.com) to unblock the feature for your team. | No |
+| 404  | `Agent job not found`                              | The job ID does not exist, or belongs to another team.             | Check the job ID, and use a key from the team that started the run.                 | No               |
+| 404  | `Snapshot not found`                               | No snapshot with that ID belongs to this job.                      | Re-fetch the trace and use a current `snapshotId` from an `artifact.updated` [trace event](/api-reference/endpoint/agent-trace). | No |
+| 409  | `Agent already finished`                           | Cancel was called on a run that had already reached a terminal state. | Poll `GET /v2/agent/{jobId}` for the outcome instead.                               | No               |
+| 409  | `Agent is already cancelled`                       | Cancel was called on a run that was already cancelling.            | Poll `GET /v2/agent/{jobId}`. A cancelled run reports `failed` with a cancellation message.  | No       |
+| 500  | `Failed to passthrough agent request.`             | The agent service rejected the job at submission.                  | Retry with backoff. If it persists, contact support with the request ID.            | Yes, with backoff |
+
+A run that hits its `maxCredits` limit does not return an HTTP error. It finishes as a failed job. Poll the status endpoint and you get `status: "failed"` with a credit-limit error message, no `data`, and `creditsUsed: 0`, since failed runs are not billed. In the trace, the same outcome appears as a `run.finished` event with `outcome: "credit_limit_reached"`.
+
+### Trace error codes
+
+Terminal and `error.occurred` trace events carry a structured `error` object whose `code` is one of five values. Each also carries a `retryable` boolean, which you should treat the same way as the **Retryable** column above.
+
+| `code` | Meaning and remedy |
+|--------|--------------------|
+| `cancelled` | You cancelled the run. Start a new one when you want the work redone. |
+| `credit_limit_reached` | The run hit its `maxCredits` ceiling. Raise `maxCredits`, or narrow the prompt so the run needs less work. |
+| `parent_finished` | A subagent stopped because the agent that spawned it finished first. Read the parent agent's own terminal event for the real cause. |
+| `refused` | The agent declined the task. Rephrase the prompt, or scope it to URLs you're authorized to collect from. |
+| `internal` | An unexpected failure inside the run. Retry the run; if it persists, contact support with the job ID. |
 
 ## Retry guidance
 

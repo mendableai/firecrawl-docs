@@ -13,6 +13,889 @@
       }
     },
     "schemas": {
+      "AgentTraceAgent": {
+        "description": "发出该事件的代理的标识。",
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "description": "父代理的 ID（仅子代理提供）。",
+            "format": "uuid",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "orchestrator",
+              "subagent",
+              "system"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "role",
+          "name"
+        ],
+        "type": "object"
+      },
+      "AgentTraceArtifact": {
+        "description": "输出工件变更的描述信息。",
+        "properties": {
+          "artifactId": {
+            "type": "string"
+          },
+          "change": {
+            "enum": [
+              "init",
+              "partial",
+              "append",
+              "modify",
+              "update"
+            ],
+            "type": "string"
+          },
+          "changedFields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "itemCount": {
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "json",
+              "markdown",
+              "html",
+              "screenshot",
+              "text"
+            ],
+            "type": "string"
+          },
+          "path": {
+            "description": "工件的工作区路径，例如 /workspace/data.json。",
+            "type": "string"
+          },
+          "snapshotId": {
+            "description": "传入 GET /agent/{jobId}/snapshots/{snapshotId} 以获取此快照的内容。",
+            "format": "uuid",
+            "type": "string"
+          },
+          "sourceToolCallId": {
+            "description": "产生此变更的工具调用（如适用）。",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "artifactId",
+          "snapshotId",
+          "change"
+        ],
+        "type": "object"
+      },
+      "AgentTraceError": {
+        "description": "附加到终止事件和错误事件的结构化错误。",
+        "properties": {
+          "code": {
+            "enum": [
+              "cancelled",
+              "credit_limit_reached",
+              "parent_finished",
+              "refused",
+              "internal"
+            ],
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "source": {
+            "enum": [
+              "agent",
+              "tool",
+              "billing",
+              "system"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "source",
+          "retryable",
+          "message"
+        ],
+        "type": "object"
+      },
+      "AgentTraceEvent": {
+        "description": "代理运行产生的规范执行事件。每个事件都包含封装字段 schemaVersion、eventId、runId、occurredAt、producerSequence 和 agent；type 字段用于区分变体。usage.recorded 事件为内部事件，绝不会公开；agent.started 事件不包含 model 字段。",
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "运行开始时发出。",
+                "enum": [
+                  "run.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type"
+            ],
+            "title": "run.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "reason": {
+                "enum": [
+                  "user"
+                ],
+                "type": "string"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "请求取消时发出（通过 DELETE /agent/{jobId}）。",
+                "enum": [
+                  "run.cancel_requested"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "reason"
+            ],
+            "title": "run.cancel_requested",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AgentTraceError"
+                  }
+                ],
+                "description": "当 outcome 为 succeeded 时为 null；否则为结构化错误。",
+                "nullable": true
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "succeeded",
+                  "failed",
+                  "cancelled",
+                  "refused",
+                  "credit_limit_reached"
+                ],
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "运行的终止事件。",
+                "enum": [
+                  "run.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "outcome",
+              "error"
+            ],
+            "title": "run.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "代理（编排器或子代理）启动时发出。",
+                "enum": [
+                  "agent.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type"
+            ],
+            "title": "agent.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "durationMs": {
+                "type": "integer"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AgentTraceError"
+                  }
+                ],
+                "description": "当 outcome 为 succeeded 时为 null；否则为结构化错误。",
+                "nullable": true
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "outcome": {
+                "enum": [
+                  "succeeded",
+                  "failed",
+                  "cancelled",
+                  "refused"
+                ],
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "代理完成时发出。",
+                "enum": [
+                  "agent.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "outcome",
+              "durationMs",
+              "error"
+            ],
+            "title": "agent.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "sessionId": {
+                "type": "string"
+              },
+              "type": {
+                "description": "浏览器会话启动时发出。",
+                "enum": [
+                  "browser.session.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "sessionId"
+            ],
+            "title": "browser.session.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "durationMs": {
+                "type": "integer"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "sessionId": {
+                "type": "string"
+              },
+              "type": {
+                "description": "浏览器会话结束时发出。",
+                "enum": [
+                  "browser.session.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "sessionId",
+              "durationMs"
+            ],
+            "title": "browser.session.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "phase": {
+                "enum": [
+                  "planning",
+                  "working",
+                  "finalizing"
+                ],
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "编排器报告进度时发出。",
+                "enum": [
+                  "progress.reported"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "phase",
+              "message"
+            ],
+            "title": "progress.reported",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "text": {
+                "type": "string"
+              },
+              "type": {
+                "description": "代理推理过程的摘要。",
+                "enum": [
+                  "reasoning.summary"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "text"
+            ],
+            "title": "reasoning.summary",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "parameters": {
+                "description": "传给工具的输入（任意 JSON）。"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "toolCallId": {
+                "type": "string"
+              },
+              "toolName": {
+                "type": "string"
+              },
+              "type": {
+                "description": "工具调用开始时发出。",
+                "enum": [
+                  "tool_call.started"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "toolCallId",
+              "toolName",
+              "parameters"
+            ],
+            "title": "tool_call.started",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "result": {
+                "description": "工具返回的结果（任意 JSON）。"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "toolCallId": {
+                "type": "string"
+              },
+              "toolName": {
+                "type": "string"
+              },
+              "type": {
+                "description": "工具调用完成时发出。",
+                "enum": [
+                  "tool_call.finished"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "toolCallId",
+              "toolName",
+              "result"
+            ],
+            "title": "tool_call.finished",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "artifact": {
+                "$ref": "#/components/schemas/AgentTraceArtifact"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "输出工件变更时发出。",
+                "enum": [
+                  "artifact.updated"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "artifact"
+            ],
+            "title": "artifact.updated",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "agent": {
+                "$ref": "#/components/schemas/AgentTraceAgent"
+              },
+              "error": {
+                "$ref": "#/components/schemas/AgentTraceError"
+              },
+              "eventId": {
+                "description": "此事件的唯一 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "occurredAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "producerSequence": {
+                "description": "发出事件的代理生成的单调递增序列号；请据此对事件排序。",
+                "type": "integer"
+              },
+              "runId": {
+                "description": "此事件所属的代理任务 ID。",
+                "format": "uuid",
+                "type": "string"
+              },
+              "schemaVersion": {
+                "enum": [
+                  1
+                ],
+                "type": "integer"
+              },
+              "type": {
+                "description": "运行期间发生非致命错误时发出。",
+                "enum": [
+                  "error.occurred"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "schemaVersion",
+              "eventId",
+              "runId",
+              "occurredAt",
+              "producerSequence",
+              "agent",
+              "type",
+              "error"
+            ],
+            "title": "error.occurred",
+            "type": "object"
+          }
+        ]
+      },
       "AuditMetadata": {
         "additionalProperties": false,
         "description": "为组织启用 SIEM Logging 后，SIEM 日志事件中会包含用户归属信息。",
@@ -309,6 +1192,11 @@
                   },
                   "nullable": true,
                   "type": "array"
+                },
+                "rawBase64": {
+                  "description": "如果 `formats` 包含 `rawBase64`，则为经过 Base64 编码的原始 HTTP 响应正文。仅为 Base64 字符串，不是数据 URI。MIME 类型见 `metadata.contentType`。",
+                  "nullable": true,
+                  "type": "string"
                 },
                 "rawHtml": {
                   "description": "当 `includeRawHtml` 为 true 时，页面的原始 HTML 内容",
@@ -660,6 +1548,11 @@
                   },
                   "nullable": true,
                   "type": "array"
+                },
+                "rawBase64": {
+                  "description": "如果 `formats` 包含 `rawBase64`，则为经过 Base64 编码的原始 HTTP 响应正文。仅为 Base64 字符串，不是数据 URI。MIME 类型见 `metadata.contentType`。",
+                  "nullable": true,
+                  "type": "string"
                 },
                 "rawHtml": {
                   "description": "如果 `includeRawHtml` 为 true，则为页面的原始 HTML 内容",
@@ -1137,6 +2030,21 @@
               "properties": {
                 "type": {
                   "enum": [
+                    "rawBase64"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Raw Base64",
+              "type": "object"
+            },
+            {
+              "properties": {
+                "type": {
+                  "enum": [
                     "links"
                   ],
                   "type": "string"
@@ -1167,11 +2075,11 @@
               "properties": {
                 "fullPage": {
                   "default": false,
-                  "description": "是否捕获整个页面的截图（忽略 viewport.height），还是仅截取当前视口区域。",
+                  "description": "是否截取整页截图（忽略 viewport.height），或仅截取当前视口。",
                   "type": "boolean"
                 },
                 "quality": {
-                  "description": "截图质量，范围为 1 到 100，100 为最高质量。",
+                  "description": "截图质量，范围为 1 到 100。100 为最高质量。",
                   "type": "integer"
                 },
                 "type": {
@@ -1206,12 +2114,17 @@
             },
             {
               "properties": {
+                "checkPromptInjection": {
+                  "default": false,
+                  "description": "启用后，会在运行提取前扫描抓取到的页面内容，以检测 prompt 注入尝试。如果检测到注入，请求将以 403 和错误代码 SCRAPE_PROMPT_INJECTION_DETECTED 失败。运行检查时会消耗 4 个额度。默认为 false。",
+                  "type": "boolean"
+                },
                 "prompt": {
-                  "description": "用于生成 JSON 输出的提示",
+                  "description": "用于 JSON 输出的 prompt",
                   "type": "string"
                 },
                 "schema": {
-                  "description": "用于 JSON 输出的 Schema，必须符合 [JSON Schema](https://json-schema.org/) 规范。",
+                  "description": "用于 JSON 输出的 schema。必须符合 [JSON Schema](https://json-schema.org/) 标准。",
                   "type": "object"
                 },
                 "type": {
@@ -1230,7 +2143,7 @@
             {
               "properties": {
                 "modes": {
-                  "description": "用于变更跟踪的模式。`git-diff` 提供详细的差异对比，而 `json` 则对比提取出的 JSON 数据。",
+                  "description": "用于变更追踪的模式。'git-diff' 提供详细的 diff，'json' 会比较提取的 JSON 数据。",
                   "items": {
                     "enum": [
                       "git-diff",
@@ -1241,7 +2154,7 @@
                   "type": "array"
                 },
                 "prompt": {
-                  "description": "在使用 `json` 模式进行变更跟踪时要使用的提示词。如果未提供，将使用默认提示词。",
+                  "description": "使用“json”模式进行变更追踪时要使用的 prompt。若未提供，将使用默认 prompt。",
                   "type": "string"
                 },
                 "schema": {
@@ -1250,7 +2163,7 @@
                 },
                 "tag": {
                   "default": null,
-                  "description": "用于变更跟踪的标签。标签可以将变更跟踪历史划分为不同的「分支」，带有特定标签的变更跟踪只会与同一标签下的抓取结果进行比较。如果未提供，则会使用默认标签（null）。",
+                  "description": "用于变更追踪的标签。标签可将变更追踪历史划分为不同的“分支”，使用特定标签的变更追踪仅会与在相同标签下执行的抓取进行比较。如果未提供，将使用默认标签 (null)。",
                   "nullable": true,
                   "type": "string"
                 },
@@ -1348,7 +2261,7 @@
               "description": "针对页面提出自然语言问题。答案会在响应的 `answer` 字段中返回。",
               "properties": {
                 "question": {
-                  "description": "要回答的页面相关问题。最大长度为 10,000 个字符。",
+                  "description": "要回答的页面相关问题。最多 10,000 个字符。",
                   "maxLength": 10000,
                   "type": "string"
                 },
@@ -1370,7 +2283,7 @@
               "description": "从页面中查找相关源文本。选中的文本会在响应的 `highlights` 字段中返回。",
               "properties": {
                 "query": {
-                  "description": "要对页面执行的文本选择查询。最大长度为 10,000 个字符。",
+                  "description": "要针对页面执行的文本选择查询。最多 10,000 个字符。",
                   "maxLength": 10000,
                   "type": "string"
                 },
@@ -1568,7 +2481,8 @@
               "completed",
               "failed",
               "partial",
-              "skipped_overlap"
+              "skipped_overlap",
+              "skipped_no_credits"
             ],
             "type": "string"
           },
@@ -4173,6 +5087,11 @@
                 ],
                 "type": "object"
               },
+              "rawBase64": {
+                "description": "如果 `formats` 包含 `rawBase64`，则为经过 Base64 编码的原始 HTTP 响应正文。仅为 Base64 字符串，不是数据 URI。MIME 类型见 `metadata.contentType`。",
+                "nullable": true,
+                "type": "string"
+              },
               "rawHtml": {
                 "description": "如果在 `formats` 中指定 `rawHtml`，则会返回页面的原始 HTML（未作任何修改）。不会执行任何清理或过滤操作。",
                 "nullable": true,
@@ -4482,6 +5401,154 @@
   "openapi": "3.0.0",
   "paths": {
     "/agent": {
+      "get": {
+        "operationId": "listAgents",
+        "parameters": [
+          {
+            "description": "仅返回在此 Unix 毫秒时间戳之前创建的代理运行。每页固定返回 20 条代理运行；使用上一页 `next` URL 中的 `before` 值获取下一页。",
+            "in": "query",
+            "name": "before",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "agents": {
+                      "items": {
+                        "properties": {
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "id": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "integration": {
+                            "description": "集成标识符（如果启动运行时指定）",
+                            "type": "string"
+                          },
+                          "options": {
+                            "description": "启动运行时使用的选项",
+                            "properties": {
+                              "effort": {
+                                "description": "代理运行使用的推理预算（仅适用于设置了 effort 的运行）",
+                                "enum": [
+                                  "low",
+                                  "medium",
+                                  "high"
+                                ],
+                                "type": "string"
+                              },
+                              "model": {
+                                "description": "代理运行所用的模型预设。所有新运行均使用 spark-2；Spark 1 名称仅会出现在旧版运行中。",
+                                "enum": [
+                                  "spark-2",
+                                  "spark-1-pro",
+                                  "spark-1-mini"
+                                ],
+                                "type": "string"
+                              },
+                              "prompt": {
+                                "type": "string"
+                              },
+                              "schema": {
+                                "type": "object"
+                              },
+                              "urls": {
+                                "items": {
+                                  "format": "uri",
+                                  "type": "string"
+                                },
+                                "type": "array"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "origin": {
+                            "description": "运行来源（例如 \"api\"）",
+                            "type": "string"
+                          },
+                          "settings": {
+                            "properties": {
+                              "hidden": {
+                                "type": "boolean"
+                              },
+                              "label": {
+                                "type": "string"
+                              },
+                              "starred": {
+                                "type": "boolean"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "status": {
+                            "enum": [
+                              "processing",
+                              "completed",
+                              "failed"
+                            ],
+                            "type": "string"
+                          },
+                          "targetHint": {
+                            "description": "简要说明运行目标（第一个 URL 或 prompt）",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "next": {
+                      "description": "下一页的绝对 URL，仅在有更多页面时提供。",
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "代理运行列表，按最新优先排序"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid before timestamp.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "请求错误 — before 时间戳无效。"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "列出代理运行",
+        "tags": [
+          "Agent"
+        ]
+      },
       "post": {
         "operationId": "startAgent",
         "requestBody": {
@@ -4492,13 +5559,22 @@
                   "auditMetadata": {
                     "$ref": "#/components/schemas/AuditMetadata"
                   },
+                  "effort": {
+                    "description": "代理任务的推理预算。每次运行均在 spark-2 上执行，因此无论是否指定模型，都可以传入 effort。",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ],
+                    "type": "string"
+                  },
                   "maxCredits": {
                     "description": "此代理任务可使用的最大额度。若未设置，默认值为 2500。高于 2,500 的值一律按付费请求计费。",
                     "type": "number"
                   },
                   "model": {
-                    "default": "spark-1-pro",
-                    "description": "适用于智能体任务的模型。spark-1-pro（默认）在处理复杂任务时能提供更高的准确率。spark-1-mini 比 spark-1-pro 便宜 60%。spark-2 与两种 Spark 1 模型的准确率相当，但成本更低、速度更快",
+                    "default": "spark-2",
+                    "description": "适用于代理任务的模型。spark-2 是默认值，也是每次运行所执行的模型。出于向后兼容性考虑，仍接受 Spark 1 模型名称，但已弃用，并会路由到 spark-2。",
                     "enum": [
                       "spark-2",
                       "spark-1-mini",
@@ -4529,6 +5605,55 @@
                       "type": "string"
                     },
                     "type": "array"
+                  },
+                  "webhook": {
+                    "description": "Webhook 规范对象。订阅代理生命周期事件（agent.started、agent.action、agent.completed、agent.failed、agent.cancelled）。",
+                    "properties": {
+                      "events": {
+                        "default": [
+                          "started",
+                          "action",
+                          "completed",
+                          "failed",
+                          "cancelled"
+                        ],
+                        "description": "发送到 webhook URL 的事件。默认值为所有事件。",
+                        "items": {
+                          "enum": [
+                            "started",
+                            "action",
+                            "completed",
+                            "failed",
+                            "cancelled"
+                          ],
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "headers": {
+                        "additionalProperties": {
+                          "type": "string"
+                        },
+                        "description": "发送到 webhook URL 的请求头。",
+                        "type": "object"
+                      },
+                      "metadata": {
+                        "additionalProperties": {
+                          "type": "string"
+                        },
+                        "description": "将包含在此代理任务所有 webhook 负载中的自定义元数据。",
+                        "type": "object"
+                      },
+                      "url": {
+                        "description": "用于接收 webhook 事件的 URL。",
+                        "format": "uri",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ],
+                    "type": "object"
                   }
                 },
                 "required": [
@@ -4560,6 +5685,22 @@
             },
             "description": "代理任务已成功启动"
           },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid JSON schema: ...",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "请求错误 — 请求正文未通过验证（例如 JSON schema 无效）。"
+          },
           "402": {
             "content": {
               "application/json": {
@@ -4576,6 +5717,22 @@
             },
             "description": "需要付款"
           },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "This URL (https://example.com) is blocked by your organization's threat protection policy (rule: blocklist). If you believe this is a mistake, contact your organization administrator to adjust the policy (e.g. whitelist the domain).",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "禁止访问 — 提供的 URL 被团队的威胁防护策略封禁。"
+          },
           "429": {
             "content": {
               "application/json": {
@@ -4591,6 +5748,22 @@
               }
             },
             "description": "请求次数过多"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Failed to passthrough agent request.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "内部服务器错误 — 无法访问代理服务。"
           }
         },
         "security": [
@@ -4622,6 +5795,54 @@
               }
             },
             "description": "代理任务已成功取消"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid job ID format. Job ID must be a valid UUID.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "请求错误 — 任务 ID 不是有效的 UUID。"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "未找到代理任务"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent already finished",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "冲突 — 代理任务已完成或已被取消。"
           }
         },
         "security": [
@@ -4649,6 +5870,15 @@
                       "description": "提取的数据（仅在状态为 completed 时可用）",
                       "type": "object"
                     },
+                    "effort": {
+                      "description": "代理运行使用的推理预算（仅存在于设置了 effort 的运行中）",
+                      "enum": [
+                        "low",
+                        "medium",
+                        "high"
+                      ],
+                      "type": "string"
+                    },
                     "error": {
                       "description": "错误信息（仅当状态为失败时出现）",
                       "type": "string"
@@ -4658,8 +5888,8 @@
                       "type": "string"
                     },
                     "model": {
-                      "default": "spark-1-pro",
-                      "description": "本次 Agent 运行所使用的模型预设",
+                      "default": "spark-2",
+                      "description": "本次代理运行所使用的模型预设。每次新运行均在 spark-2 上执行；Spark 1 名称仅会出现在旧版运行中。",
                       "enum": [
                         "spark-2",
                         "spark-1-pro",
@@ -4684,6 +5914,38 @@
               }
             },
             "description": "成功的响应"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Invalid job ID format. Job ID must be a valid UUID.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "请求错误 — 任务 ID 不是有效的 UUID。"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "未找到代理任务"
           }
         },
         "security": [
@@ -4699,6 +5961,234 @@
       "parameters": [
         {
           "description": "Agent 任务的 ID",
+          "in": "path",
+          "name": "jobId",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/agent/{jobId}/snapshots/{snapshotId}": {
+      "get": {
+        "operationId": "getAgentSnapshot",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "snapshot": {
+                      "description": "以 JSON 编码字符串形式表示的快照内容 — 代理在运行过程中该时点的工作输出工件。",
+                      "type": "string"
+                    },
+                    "snapshotId": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "成功响应"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Snapshots are only available for Spark 2 extracts",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "请求错误 — 任务 ID 或快照 ID 不是有效的 UUID，或任务并非在 spark-2 上运行（快照仅适用于 spark-2 代理任务）。"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "未找到代理任务"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "获取代理任务的输出快照",
+        "tags": [
+          "Agent"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "代理任务的 ID",
+          "in": "path",
+          "name": "jobId",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        {
+          "description": "来自 artifact.updated 追踪事件的快照 ID",
+          "in": "path",
+          "name": "snapshotId",
+          "required": true,
+          "schema": {
+            "format": "uuid",
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/agent/{jobId}/trace": {
+      "get": {
+        "operationId": "getAgentTrace",
+        "parameters": [
+          {
+            "description": "如果为 \"true\"，则包含带有实时视图 URL 的当前活跃浏览器会话。",
+            "in": "query",
+            "name": "liveView",
+            "required": false,
+            "schema": {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "activeBrowserSessions": {
+                      "description": "当前活跃的浏览器会话（仅当 liveView=true 时提供）。",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "liveViewUrl": {
+                            "type": "string"
+                          },
+                          "viewport": {
+                            "properties": {
+                              "height": {
+                                "type": "number"
+                              },
+                              "width": {
+                                "type": "number"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "creditsUsed": {
+                      "description": "截至目前已消耗的额度；如果设置了 maxCredits，则以该值为上限。",
+                      "type": "number"
+                    },
+                    "events": {
+                      "description": "运行的规范执行事件；按 agent.id 分组，然后按 producerSequence 对每个组排序，该序列对每个发出事件的代理单调递增。artifact.updated 事件包含快照端点使用的 snapshotId 值。",
+                      "items": {
+                        "$ref": "#/components/schemas/AgentTraceEvent"
+                      },
+                      "type": "array"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "成功响应"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Trace is only available for Spark 2 extracts",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "请求错误 — 任务 ID 不是有效的 UUID，或任务并非在 spark-2 上运行（追踪信息仅适用于 spark-2 代理任务）。"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "error": {
+                      "example": "Agent job not found",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "未找到代理任务"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "获取代理任务的执行追踪",
+        "tags": [
+          "Agent"
+        ]
+      },
+      "parameters": [
+        {
+          "description": "代理任务的 ID",
           "in": "path",
           "name": "jobId",
           "required": true,
@@ -5135,10 +6625,12 @@
                     "type": "number"
                   },
                   "excludePaths": {
-                    "description": "用于将匹配的 URL 排除在爬取之外的 URL 路径名正则表达式模式。例如，如果你为基础 URL firecrawl.dev 设置 `\"excludePaths\": [\"blog/.*\"]`，那么所有匹配该模式的结果都会被排除，例如：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。",
+                    "description": "用于将匹配的 URL 排除在爬取之外的 URL 路径名正则表达式模式。例如，如果你为基础 URL firecrawl.dev 设置 `\"excludePaths\": [\"blog/.*\"]`，那么所有匹配该模式的结果都会被排除，例如：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。模式使用 Rust 正则表达式（RE2 风格）语法：不支持环视和反向引用，无法编译的模式会被拒绝并返回 400。每个字段最多接受 1000 个模式，每个模式最多 2000 个字符；includePaths 和 excludePaths 合计最多可包含 1000 个模式和 100,000 个字符。对于关键字式过滤，请为每个术语发送一个简短模式，而不要将多个术语合并为一个很长的交替模式。",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "ignoreQueryParameters": {
@@ -5152,10 +6644,12 @@
                     "type": "boolean"
                   },
                   "includePaths": {
-                    "description": "在抓取过程中用于匹配 URL 的 URL 路径正则表达式规则。只有路径满足这些规则的页面才会包含在响应中。注意：起始 URL 也会基于这些规则进行检查——如果起始 URL 不匹配，本次抓取可能返回 0 个页面。例如，如果你在基础 URL firecrawl.dev/blog 下设置 \"includePaths\": [\"blog/.*\"]，那么结果中只会包含 /blog/ 下的页面，比如：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。",
+                    "description": "在爬取中包含匹配 URL 的 URL 路径名正则表达式模式。只有与指定模式匹配的路径才会包含在响应中。注意：起始 URL 也会根据这些模式进行检查——如果不匹配，爬取可能返回 0 个页面。例如，如果你为基础 URL firecrawl.dev/blog 设置 \"includePaths\": [\"blog/.*\"]，结果中只会包含 /blog/ 下的页面，例如 https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。模式使用 Rust 正则表达式（RE2 风格）语法：不支持环视和反向引用，无法编译的模式会以 400 被拒绝。每个字段最多接受 1000 个模式，每个模式最多 2000 个字符；includePaths 和 excludePaths 合计最多可包含 1000 个模式和 100,000 个字符。对于关键词式过滤，请为每个术语发送一个简短模式，而不要将术语合并为单个很长的交替模式。",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "limit": {
@@ -7014,7 +8508,8 @@
                 "completed",
                 "failed",
                 "partial",
-                "skipped_overlap"
+                "skipped_overlap",
+                "skipped_no_credits"
               ],
               "type": "string"
             }
@@ -7894,7 +9389,7 @@
                           "properties": {
                             "type": {
                               "enum": [
-                                "github"
+                                "developer"
                               ],
                               "type": "string"
                             }
@@ -7902,7 +9397,7 @@
                           "required": [
                             "type"
                           ],
-                          "title": "GitHub",
+                          "title": "Developer",
                           "type": "object"
                         },
                         {
@@ -9555,7 +11050,7 @@
                           "type": "string"
                         },
                         "planCredits": {
-                          "description": "套餐中自带的额度数量。不包括优惠券额度、额度包或自动充值获得的额度。",
+                          "description": "套餐中自带的额度数量。不包括优惠券额度或按量付费添加的额度。",
                           "example": 500000,
                           "type": "number"
                         },

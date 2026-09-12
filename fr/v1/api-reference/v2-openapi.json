@@ -2883,7 +2883,7 @@
                           "type": "string"
                         },
                         "planCredits": {
-                          "description": "Nombre de crédits inclus dans le forfait. Cela n’inclut pas les crédits de coupons, les packs de crédits ni les recharges automatiques.",
+                          "description": "Nombre de crédits inclus dans le forfait. Cela n’inclut pas les crédits de coupons ni les crédits ajoutés au paiement à l’utilisation.",
                           "example": 500000,
                           "type": "number"
                         },

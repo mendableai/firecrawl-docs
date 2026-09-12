@@ -132,10 +132,10 @@ results = client.search(
   * Tipo: lista de nombres de categorías u objetos `Category`
   * Usar cuando: quieras filtrar los resultados por categoría.
   * Valores confirmados:
-    * `"github"`: resultados centrados en GitHub
+    * `"developer"`: resultados del Developer Index
     * `"research"`: resultados de investigación y académicos
     * `"pdf"`: resultados centrados en PDF
-    * `Category(type="github" | "research" | "pdf")`: forma de objeto `Category` tipado
+    * `Category(type="developer" | "research" | "pdf")`: forma de objeto `Category` tipado
 
 * `limit`
   * Tipo: int
@@ -167,19 +167,19 @@ results = client.search(
   ## Scraping
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### Por qué usarlo
 </div>
 
 Usa el scraping cuando ya tengas una URL y quieras contenido estructurado en uno o más formatos.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### Método recomendado del SDK
 </div>
 
 `client.scrape(url, **options)` → `Document` (`firecrawl.v2.types`)
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### Ejemplo simple
 </div>
 
@@ -187,7 +187,7 @@ Usa el scraping cuando ya tengas una URL y quieras contenido estructurado en uno
 doc = client.scrape("https://docs.firecrawl.dev", formats=["markdown"])
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### Ejemplo complejo
 </div>
 
@@ -222,7 +222,7 @@ doc = client.scrape(
 )
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### Parámetros
 </div>
 
@@ -356,13 +356,13 @@ doc = client.scrape(
   ## Interact
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-3">
   ### Por qué usarlo
 </div>
 
 Usa interact cuando una página requiera acciones del navegador o ejecutar código una vez iniciado el scraping.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### Método recomendado del SDK
 </div>
 
@@ -370,7 +370,7 @@ Usa interact cuando una página requiera acciones del navegador o ejecutar códi
 
 `prompt` solo puede pasarse como argumento con nombre: llama a `client.interact(job_id, prompt="...")` o `client.interact(job_id, code="...")`. Al menos uno de `code` o `prompt` debe tener un valor no vacío (se valida en `firecrawl/v2/methods/scrape.py`).
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### Ejemplo simple
 </div>
 
@@ -383,7 +383,7 @@ if not job_id:
 result = client.interact(job_id, prompt="Click the pricing tab and summarize the plans.")
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### Ejemplo complejo
 </div>
 
@@ -402,7 +402,7 @@ result = client.interact(
 
 `client.stop_interaction(job_id)` finaliza la sesión del navegador asociada al scraping. Devuelve `BrowserDeleteResponse` (`success`, `session_duration_ms` opcional, `credits_billed`, `error`).
 
-<div id="parameters">
+<div id="parameters-3">
   ### Parámetros
 </div>
 
@@ -428,7 +428,7 @@ result = client.interact(
   * Tipo: int
   * Usar cuando: necesitas un límite de tiempo de ejecución en segundos.
 
-<div id="return-value">
+<div id="return-value-2">
   ### Valor devuelto
 </div>
 
@@ -438,19 +438,19 @@ Devuelve `BrowserExecuteResponse`: `success`, `live_view_url` (opcional), `inter
   ## Ask (Depuración con agentes)
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-4">
   ### Por qué usarlo
 </div>
 
 Usa `ask` cuando una llamada a la API de Firecrawl falle o devuelva resultados inesperados. El agente de soporte con IA diagnostica el problema, propone parámetros para corregirlo y, opcionalmente, valida la solución con la API real. Latencia típica: 15-30 segundos.
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-4">
   ### Método recomendado del SDK
 </div>
 
 Aún no está disponible en el SDK de Python. Usa `requests` o `httpx` directamente.
 
-<div id="simple-example">
+<div id="simple-example-4">
   ### Ejemplo simple
 </div>
 
@@ -470,7 +470,7 @@ print(result["answer"])
 print(result["fixParameters"])
 ```
 
-<div id="complex-example">
+<div id="complex-example-4">
   ### Ejemplo complejo
 </div>
 
@@ -524,7 +524,7 @@ if not doc.markdown or len(doc.markdown) < 100:
         )
 ```
 
-<div id="parameters">
+<div id="parameters-4">
   ### Parámetros
 </div>
 
@@ -544,13 +544,13 @@ if not doc.markdown or len(doc.markdown) < 100:
   ## Búsqueda en la documentación
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-5">
   ### Por qué usarlo
 </div>
 
 Usa `docs-search` para buscar en la documentación de Firecrawl.
 
-<div id="simple-example">
+<div id="simple-example-5">
   ### Ejemplo simple
 </div>
 
@@ -567,7 +567,7 @@ response = requests.post(
 print(response.json()["answer"])
 ```
 
-<div id="parameters">
+<div id="parameters-5">
   ### Parámetros
 </div>
 

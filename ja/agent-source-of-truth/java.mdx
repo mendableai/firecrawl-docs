@@ -51,7 +51,9 @@ FirecrawlClient client = FirecrawlClient.builder()
   ## 検索
 </div>
 
-### これを使う場面
+<div id="why-use-it">
+  ### これを使う場面
+</div>
 
 クエリから関連ページを見つけ、スクレイピングまたは Interact する URL を選びたい場合は、search を使います。たとえば、`site:` を使うと、結果を特定のサイトに絞り込めます。例: `site:docs.firecrawl.dev crawl webhooks`
 
@@ -137,10 +139,10 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   * Type: List of category strings or maps
   * 使用する場面: 結果をカテゴリで絞り込みたい場合。
   * 確認済みの値:
-    * `"github"`: GitHub に特化した結果
+    * `"developer"`: Developer Index の結果
     * `"research"`: 研究・学術関連の結果
     * `"pdf"`: PDF に特化した結果
-    * `{type: "github" | "research" | "pdf"}`: 型付きカテゴリマップ形式
+    * `{type: "developer" | "research" | "pdf"}`: 型付きカテゴリマップ形式
 
 * `options.limit`
   * Type: Integer
@@ -164,7 +166,7 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
 
 * `options.scrapeOptions`
   * Type: `ScrapeOptions`
-  * 使用する場面: 各検索結果をスクレイピングしたい場合 (フィールドについては Scrape パラメータを参照) 。
+  * 使用する場面: 各検索結果をスクレイピングしたい場合 (フィールドについては スクレイピング パラメータを参照) 。
 
 * `options.integration`
   * Type: String
@@ -174,26 +176,26 @@ SearchData results = client.search("site:docs.firecrawl.dev crawl webhooks", opt
   ## スクレイピング
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### どのような場合に使うか
 </div>
 
 URL がすでにわかっていて、1 つ以上のフォーマットで構造化されたコンテンツを取得したい場合は、scrape を使用します。
 
-<div id="preferred-sdk-methods">
+<div id="preferred-sdk-methods-2">
   ### 推奨SDKメソッド
 </div>
 
 * `client.scrape(url)`
 * `client.scrape(url, options)`
 
-<div id="return-value">
+<div id="return-value-2">
   ### 戻り値
 </div>
 
 `scrape` は `Document` を返します。一般的な getter には `getMarkdown()`, `getHtml()`, `getRawHtml()`, `getJson()`, `getMetadata()`, `getLinks()`, `getAudio()`, `getVideo()` があり、対応するフォーマットをリクエストした場合は追加のフィールドも含まれます。
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### シンプルな例
 </div>
 
@@ -204,7 +206,7 @@ Document doc = client.scrape(
 );
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### 複雑な例
 </div>
 
@@ -245,7 +247,7 @@ ScrapeOptions options = ScrapeOptions.builder()
 Document doc = client.scrape("https://example.com/pricing", options);
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### パラメータ
 </div>
 
@@ -363,11 +365,13 @@ Document doc = client.scrape("https://example.com/pricing", options);
   ## Interact
 </div>
 
-### 利用する理由
+<div id="why-use-it-3">
+  ### 利用する理由
+</div>
 
 ページで、スクレイピング開始後にブラウザアクションやコードの実行が必要な場合は、Interact を使用します。
 
-<div id="preferred-sdk-methods">
+<div id="preferred-sdk-methods-3">
   ### 推奨SDKメソッド
 </div>
 
@@ -375,7 +379,7 @@ Document doc = client.scrape("https://example.com/pricing", options);
 * `client.interact(jobId, code, language, timeout)` — `timeout` は秒単位 (1～300) です。null を指定すると省略され、APIの既定値 (30秒) が使用されます
 * `client.interact(jobId, code, language, timeout, origin)` — 任意の `origin` 文字列は、null でない場合にのみ送信されます (リクエスト元の識別)
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### シンプルな例
 </div>
 
@@ -390,7 +394,7 @@ BrowserExecuteResponse result = client.interact(
 );
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### 複雑な例
 </div>
 
@@ -435,7 +439,7 @@ BrowserDeleteResponse stopped = client.stopInteractiveBrowser("<scrapeJobId>");
 * `getCreditsBilled()`: Integer (null の場合があります) 
 * `getError()`: String (null の場合があります)
 
-<div id="parameters">
+<div id="parameters-3">
   ### パラメータ
 </div>
 

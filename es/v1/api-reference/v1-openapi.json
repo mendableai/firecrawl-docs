@@ -3009,7 +3009,7 @@
                           "type": "string"
                         },
                         "plan_credits": {
-                          "description": "Número de créditos del plan. Esto no incluye créditos de cupones, paquetes de créditos ni créditos de recarga automática.",
+                          "description": "Número de créditos del plan. Esto no incluye créditos de cupones ni créditos añadidos mediante pago por uso.",
                           "example": 500000,
                           "type": "number"
                         },

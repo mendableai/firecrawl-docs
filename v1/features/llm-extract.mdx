@@ -71,3 +71,4 @@ The `jsonOptions` object accepts the following parameters:
 - `schema`: The schema to use for the extraction.
 - `systemPrompt`: The system prompt to use for the extraction.
 - `prompt`: The prompt to use for the extraction without a schema.
+- `checkPromptInjection`: Optional boolean (default `false`). When enabled, scans the scraped page content for prompt injection attempts before running the extraction. If an injection is detected, the request fails with a 403 and error code `SCRAPE_PROMPT_INJECTION_DETECTED`. Adds 4 credits when the check runs. See [Prompt injection detection](/features/llm-extract#prompt-injection-detection).

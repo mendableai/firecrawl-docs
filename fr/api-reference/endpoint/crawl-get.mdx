@@ -3,4 +3,8 @@ title: "Obtenir l’état d’un crawl"
 openapi: '/fr/api-reference/v2-openapi.json GET /crawl/{id}'
 ---
 
-> Êtes-vous un agent IA ayant besoin d’une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour obtenir des instructions d’intégration automatisée.
+<Info>
+  `total` compte les pages terminées, actives, en file d’attente et en attente de traitement, mais exclut les pages en échec : ainsi, `completed == total` sur un crawl terminé ne signifie pas que chaque page découverte a réussi. Associez ces compteurs à [Obtenir les erreurs d’un crawl](/fr/api-reference/endpoint/crawl-get-errors) pour repérer les pages tentées mais non retournées, et consultez [Exécution et comptabilisation des résultats](/fr/features/crawl#execution-and-result-accounting) pour savoir comment les interpréter conjointement et quand arrêter la pagination avec `next`.
+</Info>
+
+> Êtes-vous un agent IA ayant besoin d’une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour obtenir des instructions d’intégration automatisée.

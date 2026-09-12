@@ -27,15 +27,19 @@ O índice abrange cerca de 43 milhões de resumos de artigos. A maior parte do c
   ## Relação com o `/search`
 </div>
 
+<Note>
+  A partir de 16/11/2026, `categories: ["research"]` no `/search` pesquisa este índice e retorna os mesmos registros de artigos em `data.research`. A tabela abaixo descreve o comportamento até essa data. Veja [categorias de busca](/pt-BR/features/search#search-categories).
+</Note>
+
 O Firecrawl tem dois recursos chamados &quot;research&quot;, mas eles não são o mesmo:
 
-|                                 | Índice de research (esta página)                                                                                      | `/search` com `categories: ["research"]`                                                              |
-| :------------------------------ | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| O que pesquisa                  | Um índice de artigos com ~43 milhões de resumos — PubMed, bioRxiv, medRxiv, arXiv                                  | A web aberta, restrita a ~14 **sites** acadêmicos (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov, …) |
-| O que retorna                   | Registros de artigos ranqueados: `paperId` canônico, `primaryId`, IDs de origem, título, resumo completo, pontuação | Resultados comuns da web: URL, título, snippet                                                        |
-| Pode ler o conteúdo de um artigo | Sim — leitura em nível de passagem via `GET /search/research/papers/{id}`                                         | Não                                                                                                   |
-| Pode expandir por citações      | Sim — `GET /search/research/papers/{id}/similar`                                                                  | Não                                                                                                   |
-| Endpoint                        | `GET /search/research/papers`                                                                                     | `POST /search`                                                                                        |
+|                                  | Índice de research (esta página)                                                                                    | `/search` com `categories: ["research"]`                                                              |
+| :------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| O que pesquisa                   | Um índice de artigos com ~43 milhões de resumos — PubMed, bioRxiv, medRxiv, arXiv                                   | A web aberta, restrita a ~14 **sites** acadêmicos (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov, …) |
+| O que retorna                    | Registros de artigos ranqueados: `paperId` canônico, `primaryId`, IDs de origem, título, resumo completo, pontuação | Resultados comuns da web: URL, título, snippet                                                        |
+| Pode ler o conteúdo de um artigo | Sim — leitura em nível de trecho via `GET /search/research/papers/{id}`                                           | Não                                                                                                   |
+| Pode expandir por citações       | Sim — `GET /search/research/papers/{id}/similar`                                                                    | Não                                                                                                   |
+| Endpoint                         | `GET /search/research/papers`                                                                                       | `POST /search`                                                                                        |
 
 Use o Índice de research para trabalhos de revisão de literatura: encontrar artigos, lê-los e acompanhar citações. Use [`categories: ["research"]`](/pt-BR/features/search#search-categories) quando quiser páginas comuns da web hospedadas em domínios acadêmicos.
 

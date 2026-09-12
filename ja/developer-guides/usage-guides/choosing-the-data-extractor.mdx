@@ -40,16 +40,18 @@ Firecrawl は、ウェブページから構造化データを抽出するため�
 `/agent` エンドポイントは、`/extract` の後継となる Firecrawl の最も高度な機能です。AI エージェントを使用して、自律的にウェブを横断して検索・ナビゲートし、データを収集します。
 
 <div id="key-characteristics">
-  ### 主な特長
+  ### 主な特徴
 </div>
 
 * **URL は任意**: `prompt` に必要な内容を記述するだけでよく、URL の指定は完全に任意です
 * **自律ナビゲーション**: エージェントがサイトを深く検索・巡回し、必要なデータを見つけます
 * **ディープウェブ検索**: 複数のドメインやページにまたがる情報を自律的に探索・発見します
 * **並列処理**: 複数のソースを同時に処理し、高速に結果を返します
-* **利用可能なモデル**: `spark-1-pro` (デフォルト、高精度) 、`spark-1-mini` (Pro より 60% 低コスト) と `spark-2` (最も低コストかつ最速)
+* **モデル**: すべての実行は `spark-2` (デフォルト) で行われます。Spark 1 モデルは非推奨で、`spark-2` にルーティングされます
 
-### 例
+<div id="example">
+  ### 例
+</div>
 
 <CodeGroup>
   <AgentWithSchemaPython />
@@ -81,7 +83,9 @@ Firecrawl は、ウェブページから構造化データを抽出するため�
 
 `/extract` エンドポイントは、LLM を用いた抽出機能により、指定した URL やドメイン全体から構造化データを収集します。
 
-### 主な特徴
+<div id="key-characteristics-2">
+  ### 主な特徴
+</div>
 
 * **通常は URL が必須**: 少なくとも 1 つの URL を指定する必要があります (`example.com/*` のようなワイルドカードに対応) 
 * **ドメインクロール**: ドメイン内で発見されたすべての URL をクロール・解析可能
@@ -99,7 +103,7 @@ Firecrawl は、ウェブページから構造化データを抽出するため�
 2. **扱いづらい Web 検索**: `enableWebSearch` は存在しますが、指定した URL からしか開始できず、探索タスクには不自然なワークフローになります。
 3. **`/agent` が作られた理由**: `/extract` は既知の場所からの抽出には向いていますが、データがどこに存在するかを見つける用途にはあまり向いていません。
 
-<div id="example">
+<div id="example-2">
   ### 使用例
 </div>
 
@@ -129,7 +133,7 @@ Firecrawl は、ウェブページから構造化データを抽出するため�
 
 JSONモード付きの `/scrape` エンドポイントは、最も制御しやすいアプローチです。特定の1つのURLから構造化データを抽出し、ページ内容をLLMでパースして、指定したスキーマに変換します。
 
-<div id="key-characteristics">
+<div id="key-characteristics-3">
   ### 主な特長
 </div>
 
@@ -139,7 +143,7 @@ JSONモード付きの `/scrape` エンドポイントは、最も制御しや�
 * **同期処理**: データを即時に返します (ジョブのポーリングは不要) 
 * **追加フォーマット**: 1つのリクエストでJSON抽出をmarkdown、HTML、スクリーンショットと組み合わせ可能です
 
-<div id="example">
+<div id="example-3">
   ### 使用例
 </div>
 
@@ -238,7 +242,7 @@ result = app.agent(
     urls=["https://example.com"],  # 任意 - 完全に省略可能
     prompt="Extract product information from example.com",
     schema=schema,
-    model="spark-2"  # "spark-1-pro" がデフォルト; "spark-1-mini" も利用可能
+    model="spark-2"  # デフォルト; Spark 1 モデルは非推奨で "spark-2" にルーティングされます
 )
 ```
 

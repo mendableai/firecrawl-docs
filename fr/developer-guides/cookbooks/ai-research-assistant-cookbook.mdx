@@ -37,11 +37,13 @@ Une interface de chat IA où les utilisateurs peuvent poser des questions sur n�
     * Tailwind CSS : Oui
     * App Router : Oui
     * Utiliser le répertoire `src/` : Non
-    * Alias d’importation : Oui (@/*)
+    * Alias d’importation : Oui (@/&#42;)
   </Step>
 
   <Step title="Installer les dépendances">
-    ### Installer les packages de l’AI SDK
+    <div id="install-ai-sdk-packages">
+      ### Installer les packages de l’AI SDK
+    </div>
 
     L’AI SDK est une boîte à outils TypeScript qui fournit une API unifiée pour interagir avec différents fournisseurs de LLM :
 
@@ -57,7 +59,9 @@ Une interface de chat IA où les utilisateurs peuvent poser des questions sur n�
 
     En savoir plus sur [ai-sdk.dev/docs](https://ai-sdk.dev/docs).
 
-    ### Installer AI Elements
+    <div id="install-ai-elements">
+      ### Installer AI Elements
+    </div>
 
     AI Elements propose des composants d’interface prêts à l’emploi pour les applications d’IA. Exécutez la commande suivante pour générer tous les composants nécessaires :
 
@@ -69,7 +73,9 @@ Une interface de chat IA où les utilisateurs peuvent poser des questions sur n�
 
     Documentation : [ai-sdk.dev/elements/overview](https://ai-sdk.dev/elements/overview).
 
-    ### Installer le fournisseur OpenAI
+    <div id="install-openai-provider">
+      ### Installer le fournisseur OpenAI
+    </div>
 
     Installez le fournisseur OpenAI pour vous connecter aux modèles d’OpenAI :
 
@@ -366,7 +372,9 @@ Une interface de chat IA où les utilisateurs peuvent poser des questions sur n�
       </Tab>
     </Tabs>
 
-    ### Comprendre le Frontend
+    <div id="understanding-the-frontend">
+      ### Comprendre le Frontend
+    </div>
 
     Le frontend utilise les composants AI Elements pour fournir une interface de chat complète :
 
@@ -468,7 +476,9 @@ Une interface de chat IA où les utilisateurs peuvent poser des questions sur n�
   <Step title="Ajouter des outils Firecrawl">
     Passons maintenant à l’amélioration de l’assistant en lui ajoutant des fonctionnalités de scraping et de recherche sur le web grâce à Firecrawl.
 
-    ### Installer le SDK Firecrawl
+    <div id="install-firecrawl-sdk">
+      ### Installer le SDK Firecrawl
+    </div>
 
     Firecrawl convertit les sites web en formats prêts pour les LLM, avec des fonctions de scraping et de recherche :
 
@@ -476,7 +486,9 @@ Une interface de chat IA où les utilisateurs peuvent poser des questions sur n�
     npm i firecrawl
     ```
 
-    ### Créer le fichier des outils
+    <div id="create-the-tools-file">
+      ### Créer le fichier des outils
+    </div>
 
     Créez un dossier `lib` et ajoutez-y un fichier `tools.ts` :
 
@@ -518,7 +530,7 @@ Une interface de chat IA où les utilisateurs peuvent poser des questions sur n�
         location: z.string().optional().describe('Location for localized results'),
         tbs: z.string().optional().describe('Time filter (qdr:h, qdr:d, qdr:w, qdr:m, qdr:y)'),
         sources: z.array(z.enum(['web', 'news', 'images'])).optional().describe('Result types'),
-        categories: z.array(z.enum(['github', 'research', 'pdf'])).optional().describe('Filter categories'),
+        categories: z.array(z.enum(['developer', 'research', 'pdf'])).optional().describe('Filter categories'),
       }),
       execute: async ({ query, limit, location, tbs, sources, categories }) => {
         console.log('Recherche :', query);
@@ -542,7 +554,9 @@ Une interface de chat IA où les utilisateurs peuvent poser des questions sur n�
     });
     ```
 
-    ### Comprendre les outils
+    <div id="understanding-the-tools">
+      ### Comprendre les outils
+    </div>
 
     **Outil d’extraction de site web :**
 

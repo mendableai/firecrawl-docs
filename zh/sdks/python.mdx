@@ -19,6 +19,8 @@ import ScrapeAndCrawlExamplePython from '/snippets/zh/v2/scrape-and-crawl/python
 import CrawlWebSocketPythonBase from '/snippets/zh/v2/crawl-websocket/base/python.mdx'
 import PersistentPython from '/snippets/zh/v2/browser/persistent/python.mdx'
 import AIOPython from '/snippets/zh/v2/async/base/python.mdx'
+import AgentWithSchemaPython from '/snippets/zh/v2/agent/with-schema/python.mdx'
+import AgentStatusPython from '/snippets/zh/v2/agent/status/python.mdx'
 
 <div id="installation">
   ## 安装
@@ -128,6 +130,20 @@ print(parsed.markdown)
 
   <ExtractPythonShort /> */}
 
+<div id="run-an-agent">
+  ### 运行代理
+</div>
+
+使用 `agent` 方法将研究或提取任务交给代理。该方法接受 `prompt`、用于定义输出结构的可选 `schema`，以及用于限制单次运行可消耗额度的 `max_credits`。
+
+<AgentWithSchemaPython />
+
+代理运行采用异步方式。使用 `start_agent` 可立即获取任务 ID，然后通过 `get_agent_status` 轮询其状态。
+
+<AgentStatusPython />
+
+每次运行还会记录执行追踪和输出快照，可通过 `get_agent_trace` 和 `get_agent_snapshot` 获取。有关事件 schema 和完整参数列表，请参见 [Agent](/zh/features/agent)。
+
 <div id="crawling-a-website-with-websockets">
   ### 使用 WebSockets 爬取网站
 </div>
@@ -205,7 +221,7 @@ while status.next:
 ```
 
 <div id="manual-crawl-with-limits-auto-pagination-early-stop">
-  ##### 手动抓取并设定限制 (自动分页 + 提前停止)
+  ##### 手动抓取并设定限制 (自动分页 + 提前停止) 
 </div>
 
 保持自动分页开启，但可通过 `max_pages`、`max_results` 或 `max_wait_time` 提前停止：
@@ -253,7 +269,7 @@ while status.next:
 ```
 
 <div id="manual-batch-scrape-with-limits-auto-pagination-early-stop">
-  ##### 受限的手动批量抓取 (自动分页 + 提前停止)
+  ##### 受限的手动批量抓取 (自动分页 + 提前停止) 
 </div>
 
 保持自动分页开启，但可通过 `max_pages`、`max_results` 或 `max_wait_time` 提前停止：

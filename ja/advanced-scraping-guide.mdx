@@ -78,16 +78,17 @@ FirecrawlはPDFに対応しています。PDFを確実に解析したい場合�
 
 **文字列フォーマット**: 名前をそのまま渡します (例: `"markdown"`)。
 
-| Format     | Description                                                     |
-| ---------- | --------------------------------------------------------------- |
-| `markdown` | ページコンテンツをクリーンな Markdown に変換したもの。                                |
-| `html`     | 不要な要素を削除して処理した HTML。                                            |
-| `rawHtml`  | サーバーから返されたオリジナルの HTML をそのまま返すもの。                                |
-| `links`    | ページ上で見つかったすべてのリンク。                                              |
-| `images`   | ページ上で見つかったすべての画像。                                               |
-| `summary`  | ページコンテンツの LLM 生成サマリー。                                           |
-| `branding` | ブランドアイデンティティ (色、フォント、タイポグラフィ、余白、UI コンポーネント) を抽出。                |
-| `product`  | 複数ソースの構造化データを使って、商品ページから構造化された商品情報 (タイトル、価格、在庫状況、画像、バリアント) を抽出。 |
+| Format      | Description                                                                                                           |
+| ----------- | --------------------------------------------------------------------------------------------------------------------- |
+| `markdown`  | ページコンテンツをクリーンな Markdown に変換したもの。                                                                                      |
+| `html`      | 不要な要素を削除して処理した HTML。                                                                                                  |
+| `rawHtml`   | サーバーから返されたオリジナルの HTML をそのまま返すもの。                                                                                      |
+| `rawBase64` | 元の HTTP レスポンスボディを Base64 エンコードした、プレーンな Base64 文字列。リクエスト内で唯一のフォーマットである必要があります。MIME タイプは `metadata.contentType` に含まれます。 |
+| `links`     | ページ上で見つかったすべてのリンク。                                                                                                    |
+| `images`    | ページ上で見つかったすべての画像。                                                                                                     |
+| `summary`   | ページコンテンツの LLM 生成サマリー。                                                                                                 |
+| `branding`  | ブランドアイデンティティ (色、フォント、タイポグラフィ、余白、UI コンポーネント) を抽出。                                                                      |
+| `product`   | 複数ソースの構造化データを使って、商品ページから構造化された商品情報 (タイトル、価格、在庫状況、画像、バリアント) を抽出。                                                       |
 
 **オブジェクトフォーマット**: `type` と追加オプションを含むオブジェクトを渡します。
 
@@ -473,23 +474,26 @@ curl -X POST https://api.firecrawl.dev/v2/scrape \
 </CodeGroup>
 
 <div id="agent-endpoint">
-  ## Agent endpoint
+  ## エージェントエンドポイント
 </div>
 
 自律的に複数ページにまたがるデータを抽出するには、`/v2/agent` エンドポイントを使用します。エージェントは非同期で動作します。まずジョブを開始し、その後、結果が返ってくるまでポーリングします。
+
+[Agent](/ja/features/agent) は、このエンドポイントの正規の参照先であり、実行トレース、webhook、完全なパラメータリストが含まれます。
 
 <div id="agent-options">
   ### エージェントオプション
 </div>
 
-| Parameter               | Type      | Default         | Description                                                                                                        |
-| ----------------------- | --------- | --------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `prompt`                | `string`  | *(required)*    | 抽出するデータを自然言語で記述した指示 (最大 10,000 文字) 。                                                                               |
-| `urls`                  | `array`   | —               | エージェントの処理対象を限定する URL。                                                                                              |
-| `schema`                | `object`  | —               | 抽出データの構造を定義する JSON スキーマ。                                                                                           |
-| `maxCredits`            | `number`  | `2500`          | エージェントが消費できる最大クレジット数。ダッシュボードでは最大 2,500 まで対応しています。より高い上限を設定する場合は、API 経由で設定してください (2,500 を超える値は常に有料リクエストとして課金されます) 。 |
-| `strictConstrainToURLs` | `boolean` | `false`         | `true` の場合、エージェントは指定された URL のみを巡回します。                                                                              |
-| `model`                 | `string`  | `"spark-1-pro"` | 使用する AI モデル。`"spark-1-pro"` (デフォルト、高精度)、`"spark-1-mini"` (Pro より 60% 低コスト) または `"spark-2"` (最も低コストかつ最速) 。          |
+| Parameter               | Type      | Default      | Description                                                                                                        |
+| ----------------------- | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `prompt`                | `string`  | *(required)* | 抽出するデータを自然言語で記述した指示 (最大 10,000 文字) 。                                                                               |
+| `urls`                  | `array`   | —            | エージェントの処理対象を限定する URL。                                                                                              |
+| `schema`                | `object`  | —            | 抽出データの構造を定義する JSON スキーマ。                                                                                           |
+| `maxCredits`            | `number`  | `2500`       | エージェントが消費できる最大クレジット数。ダッシュボードでは最大 2,500 まで対応しています。より高い上限を設定する場合は、API 経由で設定してください (2,500 を超える値は常に有料リクエストとして課金されます) 。 |
+| `strictConstrainToURLs` | `boolean` | `false`      | `true` の場合、エージェントは指定された URL のみを巡回します。                                                                              |
+| `model`                 | `string`  | `"spark-2"`  | 使用する AI モデル。Spark 1 モデルは非推奨であり、現在は `"spark-2"` にルーティングされます。                                                        |
+| `effort`                | `string`  | *(unset)*    | 推論予算: `"low"`、`"medium"`、または `"high"`。すべての実行は `"spark-2"` で行われるため、`model` の有無にかかわらず `effort` を送信できます。              |
 
 <CodeGroup>
   ```python Python
@@ -612,18 +616,20 @@ curl -X POST https://api.firecrawl.dev/v2/crawl/params-preview \
 `/v2/crawl` エンドポイントでは、次のオプションでクロールの挙動をカスタマイズできます。
 
 <div id="path-filtering">
-  #### パスフィルタリング
+  #### パスの絞り込み
 </div>
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `includePaths` | `array` | — | デフォルトでは URL のパス名のみに適用される、インクルード対象とする URL の正規表現パターン。 |
-| `excludePaths` | `array` | — | デフォルトでは URL のパス名のみに適用される、除外対象とする URL の正規表現パターン。 |
-| `regexOnFullURL` | `boolean` | `false` | パス名ではなく、完全な URL に対してパターンをマッチさせます。 |
+| Parameter        | Type      | Default | Description                                         |
+| ---------------- | --------- | ------- | --------------------------------------------------- |
+| `includePaths`   | `array`   | —       | デフォルトでは URL のパス名のみに適用される、インクルード対象とする URL の正規表現パターン。 |
+| `excludePaths`   | `array`   | —       | デフォルトでは URL のパス名のみに適用される、除外対象とする URL の正規表現パターン。     |
+| `regexOnFullURL` | `boolean` | `false` | パス名ではなく、完全な URL に対してパターンをマッチさせます。                   |
 
 <Warning>
   開始 URL も `includePaths` に対してチェックされます。いずれのパターンにもマッチしない場合、クロールの結果が 0 ページになる可能性があります。
 </Warning>
+
+パターンは Rust の正規表現 (RE2 形式) 構文を使用するため、先読み・後読みや後方参照はサポートされません。コンパイルできないパターンは `400` で拒否されます。各フィールドで指定できるのは最大 1000 パターン、1 パターンあたり最大 2000 文字までで、`includePaths` と `excludePaths` を合わせて最大 1000 パターン・100,000 文字までです。キーワードで絞り込む場合は、複数の語を 1 つの長い選択構文にまとめるのではなく、語ごとに短いパターンを 1 つずつ送信してください。
 
 <div id="crawl-scope">
   #### クロール範囲
@@ -706,11 +712,12 @@ API リファレンス: [Map Endpoint Documentation](https://docs.firecrawl.dev/
 </div>
 
 <div id="allowing-firecrawl-to-scrape-your-website">
-  ### 自分のウェブサイトのスクレイピングを Firecrawl に許可する
+  ### Firecrawl に Web サイトのスクレイピングを許可する
 </div>
 
-* **User Agent**: ファイアウォールやセキュリティルールで `FirecrawlAgent` を許可してください。
-* **IP addresses**: Firecrawl は、外向き通信に固定の送信元 IP アドレスを使用していません。
+* **robots.txt**: Firecrawl はサイトをクロールする前に `robots.txt` を読み取り、user-agent トークン `FirecrawlAgent` 向けのルールと `*` 向けのルールを適用します。`robots.txt` で Firecrawl を許可または拒否する場合は `FirecrawlAgent` を指定してください。
+* **User agent**: `FirecrawlAgent` は、Firecrawl が `robots.txt` のルールを適用する際に照合するトークンです。フェッチ時の `User-Agent` ヘッダーも同じ値であるとは考えないでください。Firecrawl を許可リストに追加する場合は、`User-Agent` 文字列で照合するファイアウォールや WAF のルールではなく、`robots.txt` のディレクティブを使用してください。
+* **IP アドレス**: Firecrawl は送信元 IP アドレスを固定していません。
 
 <div id="allowing-your-application-to-call-the-firecrawl-api">
   ### アプリケーションから Firecrawl API への呼び出しを許可する

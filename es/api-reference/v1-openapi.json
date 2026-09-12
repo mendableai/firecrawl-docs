@@ -272,6 +272,11 @@
           "jsonOptions": {
             "description": "Objeto de opciones JSON",
             "properties": {
+              "checkPromptInjection": {
+                "default": false,
+                "description": "Cuando está habilitado, analiza el contenido extraído de la página en busca de intentos de inyección de prompts antes de ejecutar la extracción. Si detecta una inyección, la solicitud falla con un 403 y el código de error SCRAPE_PROMPT_INJECTION_DETECTED. Añade 4 créditos cuando se ejecuta la comprobación. El valor predeterminado es false.",
+                "type": "boolean"
+              },
               "prompt": {
                 "description": "El prompt que se utilizará para la extracción sin esquema (opcional)",
                 "type": "string"
@@ -1606,10 +1611,12 @@
                     "type": "number"
                   },
                   "excludePaths": {
-                    "description": "Patrones de expresiones regulares para el pathname de la URL que excluyen del rastreo las URL que coincidan. Por ejemplo, si configuras `\"excludePaths\": [\"blog/.*\"]` para la URL base firecrawl.dev, se excluirán todos los resultados que coincidan con ese patrón, como https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap.",
+                    "description": "Patrones de expresiones regulares para el pathname de la URL que excluyen del rastreo las URL que coincidan. Por ejemplo, si configuras `\"excludePaths\": [\"blog/.*\"]` para la URL base firecrawl.dev, se excluirán todos los resultados que coincidan con ese patrón, como https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap. Los patrones usan sintaxis de expresiones regulares de Rust (estilo RE2): no se admiten las aserciones look-around ni las referencias inversas, y cualquier patrón que no compile se rechaza con un 400. Cada campo acepta como máximo 1000 patrones de hasta 2000 caracteres cada uno, y includePaths y excludePaths juntos pueden contener como máximo 1000 patrones y 100.000 caracteres en total. Para el filtrado por palabras clave, envía un patrón corto por término en lugar de combinar términos en una única alternancia larga.",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "ignoreQueryParameters": {
@@ -1623,10 +1630,12 @@
                     "type": "boolean"
                   },
                   "includePaths": {
-                    "description": "Patrones regex de rutas de URL que determinan qué URLs se incluyen en el rastreo. Solo las rutas que coincidan con los patrones especificados se incluirán en la respuesta. Por ejemplo, si configuras `\"includePaths\": [\"blog/.*\"]` para la URL base firecrawl.dev, solo se incluirán los resultados que coincidan con ese patrón, como https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap.",
+                    "description": "Patrones de expresiones regulares de rutas de URL que incluyen las URL coincidentes en el rastreo. Solo las rutas que coincidan con los patrones especificados se incluirán en la respuesta. Por ejemplo, si configuras \"includePaths\": [\"blog/.*\"] para la URL base firecrawl.dev, solo se incluirán los resultados que coincidan con ese patrón, como https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap. Los patrones usan sintaxis de expresiones regulares de Rust (estilo RE2): no se admiten aserciones look-around ni referencias inversas, y los patrones que no se compilen se rechazarán con un 400. Cada campo acepta como máximo 1000 patrones de hasta 2000 caracteres cada uno, y includePaths y excludePaths juntos pueden contener como máximo 1000 patrones y 100.000 caracteres en total. Para filtrar por palabras clave, envía un patrón corto por término en lugar de combinar términos en una única alternancia larga.",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "limit": {
@@ -3330,7 +3339,7 @@
                           "type": "string"
                         },
                         "plan_credits": {
-                          "description": "Número de créditos del plan. Esto no incluye créditos por cupones, paquetes de créditos ni créditos de recarga automática.",
+                          "description": "Número de créditos del plan. Esto no incluye créditos por cupones ni créditos añadidos mediante pago por uso.",
                           "example": 500000,
                           "type": "number"
                         },

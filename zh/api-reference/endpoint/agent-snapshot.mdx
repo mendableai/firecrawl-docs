@@ -1,0 +1,27 @@
+---
+title: '获取代理快照'
+openapi: '/zh/api-reference/v2-openapi.json GET /agent/{jobId}/snapshots/{snapshotId}'
+noindex: true
+---
+
+代理运行期间，会对其输出工件进行版本控制——包括逐步生成的结构化 JSON 结果，以及生成的任何 Markdown、HTML、文本或截图。每次变更都会触发一个 `artifact.updated` [跟踪事件](/zh/api-reference/endpoint/agent-trace)，并通过 `snapshotId` 引用新版本。此端点用于获取此类快照之一的完整内容。
+
+<div id="what-its-for">
+  ## 用途
+</div>
+
+* **部分结果** — 在运行完成前预览代理的结构化输出。JSON 结果工件 (`artifactId: "result"`) 会随着内容增加持续生成快照，因此每个 `snapshotId` 都反映了最终 `data` 在某一时刻的状态。
+* **渲染后的工件** — 获取代理生成的非 JSON 工件内容，例如 Markdown 报告或其访问页面的截图。
+* **运行检查** — 结合追踪记录，准确还原输出在整个运行过程中的变化。
+
+<div id="how-it-works">
+  ## 工作原理
+</div>
+
+`artifact.updated` 事件的 `change` 字段说明该快照相对于前一快照的变更类型：`init` (第一个版本) 、`partial`、`append`、`modify` 或 `update`。每次变更都会生成新的 `snapshotId`——获取最新快照以了解当前状态，或遍历历史记录以比较不同版本。
+
+响应中的 `snapshot` 字段是字符串形式的工件内容。对于 `json` 工件，该字段经过 JSON 编码——使用前请先解析。
+
+<Note>Spark 2 的运行会记录快照——也就是说，每次新运行都会记录快照。Spark 1 模型在退役前启动的任务没有快照，并会返回 `400`。</Note>
+
+> 你是需要 Firecrawl API 密钥的 AI 代理吗？请参见 [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md)，获取自动化入门指引。

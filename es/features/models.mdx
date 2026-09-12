@@ -2,7 +2,7 @@
 title: "Modelos"
 description: "Selecciona el modelo adecuado para las tareas de extracción de tu agente."
 og:title: "Modelos de agente | Firecrawl"
-og:description: "Selecciona entre Spark 2, Spark 1 Mini y Spark 1 Pro para las tareas de extracción de tu agente."
+og:description: "Usa Spark 2 para las tareas de extracción de tu agente."
 sidebarTitle: "Modelos"
 hidden: true
 noindex: true
@@ -13,85 +13,46 @@ import AgentWithModelPython from "/snippets/es/v2/agent/with-model/python.mdx";
 import AgentWithModelJS from "/snippets/es/v2/agent/with-model/js.mdx";
 import AgentWithModelCURL from "/snippets/es/v2/agent/with-model/curl.mdx";
 
-Firecrawl Agent ofrece tres modelos optimizados para distintos casos de uso. Elige el modelo adecuado en función de la complejidad de la extracción y tus requisitos de costos.
+Firecrawl Agent se ejecuta con **Spark 2**, el modelo predeterminado para cada ejecución. Elimina la disyuntiva entre precisión y costo que planteaban los modelos Spark 1: es más económico y rápido que ambos, iguala la precisión de Spark 1 Pro y completa una mayor proporción de ejecuciones.
 
 <div id="available-models">
   ## Modelos disponibles
 </div>
 
-| Modelo         | Costo                          | Precisión        | Ideal para                                                  |
-| -------------- | ------------------------------ | ---------------- | ----------------------------------------------------------- |
-| `spark-2`      | El más bajo                    | Comparable a Pro | Bajo costo y tiempo de ejecución corto                      |
-| `spark-1-mini` | **60 % más económico** que Pro | Estándar         | Cargas de trabajo de Spark 1 donde el costo es importante   |
-| `spark-1-pro`  | Estándar                       | Mayor            | Investigación compleja, extracción crítica (predeterminado) |
+| Modelo         | Estado             | Notas                                                                         |
+| -------------- | ------------------ | ----------------------------------------------------------------------------- |
+| `spark-2`      | **Predeterminado** | Menor costo, ejecución más rápida y precisión comparable a Spark 1 Pro        |
+| `spark-1-pro`  | Obsoleto           | Anterior modelo predeterminado para tareas complejas; se redirige a `spark-2` |
+| `spark-1-mini` | Obsoleto           | Anterior opción económica de Spark 1; se redirige a `spark-2`                 |
 
-<Tip>
-  **Spark 1 Pro es el modelo predeterminado**, por lo que una solicitud sin el parámetro `model` usa `spark-1-pro`. Establece `model` en `spark-2` para obtener un costo menor y un tiempo de ejecución más corto con una precisión comparable. Establece `model` en `spark-1-mini` para obtener un costo un 60 % menor en tareas simples de Spark 1.
-</Tip>
+<Note>
+  **Los modelos Spark 1 están obsoletos.** Los nombres `spark-1-pro` y `spark-1-mini` siguen siendo válidos por compatibilidad con versiones anteriores, pero todas las solicitudes —con o sin el parámetro `model`— se ejecutan en `spark-2`.
+</Note>
 
 <div id="spark-2">
   ## Spark 2
 </div>
 
-`spark-2` es nuestro modelo de agente más reciente. Elimina la disyuntiva entre precisión y costo: es más económico y rápido que ambos modelos Spark 1, iguala la precisión de Spark 1 Pro y completa una mayor proporción de ejecuciones. Configura `model` como `spark-2` para usarlo.
+`spark-2` es nuestro modelo de agente más reciente y potencia cada ejecución de agente.
 
-**Usa Spark 2 cuando:**
+**Aspectos destacados:**
 
-* Quieres el menor costo por ejecución
-* El tiempo de ejecución es importante
-* De otro modo optarías por la precisión de Spark 1 Pro
+* El menor costo por ejecución y el tiempo de ejecución más rápido
+* Precisión comparable a la del anterior modelo insignia Spark 1
+* Gestiona desde consultas simples hasta investigación multidominio
+* El único modelo con presupuesto de razonamiento: pasa `effort` (`low`, `medium` o `high`) para controlar cuánto razona
 
-**Casos de uso de ejemplo:**
-
-* Todo lo que hoy ejecutas con Spark 1 Mini o Spark 1 Pro
-* Extracción de alto volumen en la que el costo por ejecución determina el presupuesto
-* Investigación multidominio que necesita resultados rápidos
-
-<div id="spark-1-mini">
-  ## Spark 1 Mini
+<div id="spark-1-models-deprecated">
+  ## Modelos Spark 1 (obsoletos)
 </div>
 
-`spark-1-mini` es nuestro modelo eficiente, ideal para tareas sencillas de extracción de datos.
-
-**Usa Mini cuando:**
-
-* Necesites extraer datos simples (información de contacto, precios, etc.)
-* Trabajes con sitios web bien estructurados
-* El ahorro de costos sea una prioridad
-* Debas ejecutar trabajos de extracción de alto volumen
-
-**Ejemplos de casos de uso:**
-
-* Extraer precios de productos de sitios de comercio electrónico
-* Recopilar información de contacto de páginas de empresas
-* Extraer metadatos básicos de artículos
-* Realizar consultas sencillas de datos específicos
-
-<div id="spark-1-pro-default">
-  ## Spark 1 Pro (Predeterminado)
-</div>
-
-`spark-1-pro` es nuestro modelo insignia, diseñado para lograr la máxima precisión en tareas de extracción complejas. Es el predeterminado: una solicitud que no establece `model` usa `spark-1-pro`.
-
-**Usa Pro cuando:**
-
-* Realices análisis de la competencia complejos
-* Extraigas datos que requieran razonamiento profundo
-* La precisión sea crítica para tu caso de uso
-* Tengas que manejar datos ambiguos o difíciles de encontrar
-
-**Ejemplos de casos de uso:**
-
-* Análisis de la competencia multidominio
-* Tareas de investigación complejas que requieran razonamiento
-* Extracción de información detallada y matizada desde múltiples fuentes
-* Obtención de inteligencia empresarial crítica
+`spark-1-pro` y `spark-1-mini` están obsoletos. Sus nombres se siguen aceptando por compatibilidad con versiones anteriores, pero las solicitudes que los usan se dirigen a `spark-2`: el código heredado sigue funcionando, solo que ejecuta Spark 2. No hay nada que migrar.
 
 <div id="specifying-a-model">
   ## Especificar un modelo
 </div>
 
-`spark-1-pro` es el modelo predeterminado, por lo que el parámetro `model` es opcional. Pásalo para seleccionar otro modelo:
+El parámetro `model` es opcional: cada solicitud usa `spark-2`:
 
 <CodeGroup>
   <AgentWithModelPython />
@@ -101,19 +62,6 @@ Firecrawl Agent ofrece tres modelos optimizados para distintos casos de uso. Eli
   <AgentWithModelCURL />
 </CodeGroup>
 
-<div id="model-comparison">
-  ## Comparación de modelos
-</div>
-
-| Característica   | Spark 2             | Spark 1 Mini               | Spark 1 Pro      |
-| ---------------- | ------------------- | -------------------------- | ---------------- |
-| **Costo**        | El más bajo         | Un 60 % más barato que Pro | Standard         |
-| **Precisión**    | Comparable a Pro    | Estándar                   | Mayor            |
-| **Velocidad**    | El más rápido       | Rápido                     | Rápido           |
-| **Ideal para**   | Todo tipo de tareas | La mayoría de las tareas   | Tareas complejas |
-| **Razonamiento** | Avanzado            | Estándar                   | Avanzado         |
-| **Multidominio** | Excelente           | Bueno                      | Excelente        |
-
 <div id="pricing-by-model">
   ## Precios por modelo
 </div>
@@ -121,37 +69,11 @@ Firecrawl Agent ofrece tres modelos optimizados para distintos casos de uso. Eli
 Todos los modelos usan precios dinámicos basados en créditos que se adaptan a la complejidad de la tarea:
 
 * **Spark 2**: Usa considerablemente menos créditos que cualquiera de los modelos Spark 1 para tareas equivalentes
-* **Spark 1 Mini**: Usa aproximadamente un 60 % menos de créditos que Pro para tareas equivalentes
-* **Spark 1 Pro**: Consumo estándar de créditos para máxima precisión
+* **Modelos Spark 1 (obsoletos)**: Las solicitudes se dirigen a Spark 2 y se facturan en consecuencia
 
 <Info>
   El uso de créditos varía según la complejidad del prompt, los datos procesados y la estructura del resultado, independientemente del modelo seleccionado.
 </Info>
-
-<div id="choosing-the-right-model">
-  ## Seleccionar el modelo adecuado
-</div>
-
-Spark 2 abarca ambas ramas siguientes. El árbol se aplica al elegir entre los dos modelos de Spark 1:
-
-```
-                    ┌─────────────────────────────────┐
-                    │   What type of task?            │
-                    └─────────────────────────────────┘
-                                   │
-                    ┌──────────────┴──────────────┐
-                    ▼                             ▼
-          ┌─────────────────┐           ┌─────────────────┐
-          │  Simple/Directa │           │ Compleja/Investigación│
-          │  extracción     │           │ multidominio    │
-          └─────────────────┘           └─────────────────┘
-                    │                             │
-                    ▼                             ▼
-          ┌─────────────────┐           ┌─────────────────┐
-          │  spark-1-mini   │           │  spark-1-pro    │
-          │  (60% cheaper)  │           │  (higher acc.)  │
-          └─────────────────┘           └─────────────────┘
-```
 
 <div id="api-reference">
   ## Referencia de la API

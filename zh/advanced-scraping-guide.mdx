@@ -76,25 +76,26 @@ Firecrawl 支持 PDF。需要确保解析 PDF 时，请使用 `parsers` 选项 (
 
 `formats` 数组控制抓取器返回哪些输出类型。默认值：`["markdown"]`。
 
-**字符串 formats**：直接传入名称 (例如 `"markdown"`) 。
+**字符串格式**：直接传入名称 (例如 `"markdown"`) 。
 
-| Format     | Description                                  |
-| ---------- | -------------------------------------------- |
-| `markdown` | 页面内容转换为干净的 Markdown。                         |
-| `html`     | 处理后的 HTML，已移除不必要的元素。                         |
-| `rawHtml`  | 服务器返回的原始 HTML，保持原样。                          |
-| `links`    | 页面上发现的所有链接。                                  |
-| `images`   | 页面上发现的所有图片。                                  |
-| `summary`  | 由 LLM 生成的页面内容摘要。                             |
-| `branding` | 提取品牌标识信息 (颜色、字体、版式、间距、UI 组件) 。               |
-| `product`  | 通过多源结构化数据从产品页面提取结构化产品信息 (标题、价格、库存状态、图片、变体) 。 |
+| 格式      | 描述                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------- |
+| `markdown`  | 页面内容转换为干净的 Markdown。                                                                          |
+| `html`      | 处理后的 HTML，已移除不必要的元素。                                                                          |
+| `rawHtml`   | 服务器返回的原始 HTML，保持原样。                                                                           |
+| `rawBase64` | 经 Base64 编码的原始 HTTP 响应正文，以纯 Base64 字符串形式返回。必须是请求中唯一的 格式。MIME 类型位于 `metadata.contentType`。 |
+| `links`     | 页面上发现的所有链接。                                                                                   |
+| `images`    | 页面上发现的所有图片。                                                                                   |
+| `summary`   | 由 LLM 生成的页面内容摘要。                                                                              |
+| `branding`  | 提取品牌标识信息 (颜色、字体、版式、间距、UI 组件) 。                                                                |
+| `product`   | 通过多源结构化数据从产品页面提取结构化产品信息 (标题、价格、库存状态、图片、变体) 。                                                  |
 
-**对象 formats**：传入包含 `type` 和其他选项的对象。
+**对象格式**：传入包含 `type` 和其他选项的对象。
 
-| Format           | Options                                                                                  | Description                                                    |
+| 格式           | 选项                                                                                  | 描述                                                    |
 | ---------------- | ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | `json`           | `prompt?: string`, `schema?: object`                                                     | 使用 LLM 提取结构化数据。提供 JSON schema 和/或自然语言 prompt (最多 10,000 个字符) 。 |
-| `screenshot`     | `fullPage?: boolean`, `quality?: number`, `viewport?: { width, height }`                 | 捕获截图。每个请求最多一个。viewport 最大分辨率为 7680×4320。截图 URL 会在 24 小时后过期。    |
+| `screenshot`     | `fullPage?: boolean`, `quality?: number`, `viewport?: { width, height }`                 | 捕获截图。每个请求最多一个。视口 最大分辨率为 7680×4320。截图 URL 会在 24 小时后过期。    |
 | `changeTracking` | `modes?: ("json" \| "git-diff")[]`, `tag?: string`, `schema?: object`, `prompt?: string` | 跟踪不同抓取结果之间的变化。需要在 formats 数组中同时包含 `"markdown"`。                |
 | `attributes`     | `selectors: [{ selector: string, attribute: string }]`                                   | 从匹配 CSS 选择器的元素中提取指定的 HTML 属性。                                  |
 
@@ -473,23 +474,26 @@ curl -X POST https://api.firecrawl.dev/v2/scrape \
 </CodeGroup>
 
 <div id="agent-endpoint">
-  ## Agent endpoint
+  ## 代理端点
 </div>
 
-使用 `/v2/agent` 端点进行自动化的多页面数据提取。Agent 以异步方式运行：你先创建一个任务，然后通过轮询获取结果。
+使用 `/v2/agent` 端点进行自动化的多页面数据提取。代理以异步方式运行：你先创建一个任务，然后通过轮询获取结果。
+
+[代理](/zh/features/agent) 是此端点的权威参考，包含执行追踪、Webhook 和完整参数列表。
 
 <div id="agent-options">
   ### 代理选项
 </div>
 
-| 参数                      | 类型        | 默认值             | 描述                                                                                              |
-| ----------------------- | --------- | --------------- | ----------------------------------------------------------------------------------------------- |
-| `prompt`                | `string`  | *(必填)*          | 自然语言说明，用于描述要提取哪些数据 (最多 10,000 个字符) 。                                                            |
-| `urls`                  | `array`   | —               | 将代理的访问限制在这些 URL。                                                                                |
-| `schema`                | `object`  | —               | 用于组织提取数据结构的 JSON schema。                                                                        |
-| `maxCredits`            | `number`  | `2500`          | 代理可消耗的最大额度。Dashboard 最多支持 2,500；如需更高上限，请通过 API 设置 (高于 2,500 的值始终按付费请求计费) 。                      |
-| `strictConstrainToURLs` | `boolean` | `false`         | 为 `true` 时，代理只会访问提供的这些 URL。                                                                     |
-| `model`                 | `string`  | `"spark-1-pro"` | 要使用的 AI 模型。`"spark-1-pro"` (默认，更高准确率)、`"spark-1-mini"` (比 Pro 成本低 60%) 或 `"spark-2"` (最便宜且最快) 。 |
+| 参数                      | 类型        | 默认值         | 描述                                                                                         |
+| ----------------------- | --------- | ----------- | ------------------------------------------------------------------------------------------ |
+| `prompt`                | `string`  | *(必填)*      | 自然语言说明，用于描述要提取哪些数据 (最多 10,000 个字符) 。                                                       |
+| `urls`                  | `array`   | —           | 将代理的访问限制在这些 URL。                                                                           |
+| `schema`                | `object`  | —           | 用于组织提取数据结构的 JSON schema。                                                                   |
+| `maxCredits`            | `number`  | `2500`      | 代理可消耗的最大额度。Dashboard 最多支持 2,500；如需更高上限，请通过 API 设置 (高于 2,500 的值始终按付费请求计费) 。                 |
+| `strictConstrainToURLs` | `boolean` | `false`     | 为 `true` 时，代理只会访问提供的这些 URL。                                                                |
+| `model`                 | `string`  | `"spark-2"` | 要使用的 AI 模型。Spark 1 模型已弃用，目前会路由到 `"spark-2"`。                                               |
+| `effort`                | `string`  | *(未设置)*     | 推理预算：`"low"`、`"medium"` 或 `"high"`。每次运行均在 `"spark-2"` 上执行，因此无论是否指定 `model`，都可以发送 `effort`。 |
 
 <CodeGroup>
   ```python Python
@@ -615,15 +619,17 @@ curl -X POST https://api.firecrawl.dev/v2/crawl/params-preview \
   #### 路径过滤
 </div>
 
-| 参数 | 类型 | 默认值 | 说明 |
-|-----------|------|---------|-------------|
-| `includePaths` | `array` | — | 要包含的 URL 的正则表达式模式 (默认仅匹配路径名) 。 |
-| `excludePaths` | `array` | — | 要排除的 URL 的正则表达式模式 (默认仅匹配路径名) 。 |
-| `regexOnFullURL` | `boolean` | `false` | 在完整 URL 上进行模式匹配，而不仅仅是路径名。 |
+| 参数               | 类型        | 默认值     | 描述                             |
+| ---------------- | --------- | ------- | ------------------------------ |
+| `includePaths`   | `array`   | —       | 要包含的 URL 的正则表达式模式 (默认仅匹配路径名) 。 |
+| `excludePaths`   | `array`   | —       | 要排除的 URL 的正则表达式模式 (默认仅匹配路径名) 。 |
+| `regexOnFullURL` | `boolean` | `false` | 在完整 URL 上进行模式匹配，而不仅仅是路径名。      |
 
 <Warning>
   起始 URL 也会与 `includePaths` 进行匹配。如果它不匹配任何模式，爬取结果可能会返回 0 个页面。
 </Warning>
+
+模式采用 Rust 正则表达式 (RE2 风格) 语法，因此不支持环视和反向引用；无法编译的模式将返回 `400` 并被拒绝。每个字段最多接受 1000 个模式，每个模式最多 2000 个字符；`includePaths` 与 `excludePaths` 合计最多包含 1000 个模式、100,000 个字符。若要按关键词过滤，请为每个词分别发送一个简短模式，不要把多个词合并成一个冗长的选择分支。
 
 <div id="crawl-scope">
   #### 爬取范围
@@ -709,8 +715,9 @@ curl -X POST https://api.firecrawl.dev/v2/map \
   ### 允许 Firecrawl 抓取你的网站
 </div>
 
-* **User Agent (用户代理)&#x20;**：请在防火墙或安全规则中允许 `FirecrawlAgent`。
-* **IP addresses (IP 地址)&#x20;**：Firecrawl 不使用固定的对外 IP 地址集合。
+* **robots.txt**：Firecrawl 在爬取站点前会读取 `robots.txt`，并同时应用针对 user-agent 令牌 `FirecrawlAgent` 编写的规则和针对 `*` 编写的规则。在 `robots.txt` 中使用 `FirecrawlAgent` 即可允许或禁止 Firecrawl。
+* **User agent**：`FirecrawlAgent` 是 Firecrawl 在应用 `robots.txt` 规则时所匹配的令牌，但不要假定实际抓取请求的 `User-Agent` 头也是这个值。请通过 `robots.txt` 指令将 Firecrawl 加入允许列表，而不要依赖匹配 `User-Agent` 字符串的防火墙或 WAF 规则。
+* **IP 地址**：Firecrawl 没有固定的出站 IP 范围。
 
 <div id="allowing-your-application-to-call-the-firecrawl-api">
   ### 允许你的应用调用 Firecrawl API

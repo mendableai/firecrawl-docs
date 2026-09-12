@@ -1,7 +1,15 @@
 ---
 title: 'Obtener el estado del rastreo'
 openapi: '/es/v0/api-reference/v0-openapi.json GET /crawl/status/{jobId}'
+canonical: "https://docs.firecrawl.dev/api-reference/endpoint/crawl-get"
 ---
+
+<Warning>
+  **Esta página documenta la API v0, obsoleta desde el 1 de abril de 2025.** Se mantiene como
+  referencia histórica y no describe cómo funciona Firecrawl hoy. Documentación
+  actual: [Obtener el estado del rastreo](/es/api-reference/endpoint/crawl-get). Para migrar una integración v0 existente, consulta
+  [Migrar desde v0](/es/migrating-from-v0).
+</Warning>
 
 Este punto de conexión obtiene el estado de un trabajo de rastreo. Si el trabajo no está completo, la respuesta incluye contenido en `partial_data`. Una vez que el trabajo se completa, el contenido está disponible en `data`.
 

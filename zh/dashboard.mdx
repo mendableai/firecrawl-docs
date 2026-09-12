@@ -13,16 +13,16 @@ og:description: "Firecrawl Dashboard 及其主要功能概览"
 
 Playground 可让你在将 Firecrawl 端点集成到代码之前，直接在浏览器中进行试用。
 
-* **[Scrape](https://www.firecrawl.dev/app/playground?endpoint=scrape)** — 从单个页面提取内容。
-* **[Search](https://www.firecrawl.dev/app/playground?endpoint=search)** — 搜索网页并获取抓取结果。
-* **[Crawl](https://www.firecrawl.dev/app/playground?endpoint=crawl)** — 抓取整个网站，并从每个页面提取内容。
-* **[Map](https://www.firecrawl.dev/app/playground?endpoint=map)** — 发现网站上的所有 URL。
+* **[Scrape](https://www.firecrawl.dev/app/playground?endpoint=scrape)**: 从单个页面提取内容。
+* **[Search](https://www.firecrawl.dev/app/playground?endpoint=search)**: 搜索网页并获取抓取结果。
+* **[Crawl](https://www.firecrawl.dev/app/playground?endpoint=crawl)**: 抓取整个网站，并从每个页面提取内容。
+* **[Map](https://www.firecrawl.dev/app/playground?endpoint=map)**: 发现网站上的所有 URL。
 
 <div id="browser">
   ## 浏览器
 </div>
 
-通过实时浏览器会话[与网页交互](https://www.firecrawl.dev/app/browser)。你可以创建持久化配置文件、运行 actions，并进行截图——这对于需要身份验证或复杂交互的页面非常有用。
+通过实时浏览器会话[与网页交互](https://www.firecrawl.dev/app/browser)。你可以创建持久化配置文件、运行 actions，并进行截图。这对于需要身份验证或复杂交互的页面非常有用。
 
 <div id="agent">
   ## 代理
@@ -36,7 +36,7 @@ Playground 可让你在将 Firecrawl 端点集成到代码之前，直接在浏�
 
 [活动日志](https://www.firecrawl.dev/app/logs)会显示您最近的 API 请求记录，包括状态、耗时和已消耗的额度。
 
-失败或完成时出现错误的行，会在“操作”列中显示带闪光图标的 **调试问题** 按钮。点击后会针对该任务运行 Firecrawl 的支持代理，并返回诊断结果及可复制的修复建议——请参见[使用 Ask 调试](/zh/features/ask#debug-from-activity-logs)。
+失败或完成时出现错误的行，会在“操作”列中显示带闪光图标的 **调试问题** 按钮。点击后会针对该任务运行 Firecrawl 的支持代理，并返回诊断结果及可复制的修复建议。请参见[使用 Ask 调试](/zh/features/ask#debug-from-activity-logs)。
 
 <div id="usage">
   ## 使用方式
@@ -56,9 +56,9 @@ Playground 可让你在将 Firecrawl 端点集成到代码之前，直接在浏�
 
 [设置](https://www.firecrawl.dev/app/settings)页面有三个标签页：
 
-* **Team** — 邀请成员、分配角色并管理团队。请参阅下方的[团队管理与角色](#team-management--roles)。
-* **计费** — 查看当前的 plan、发票、auto-recharge 设置，并使用优惠券。另请参阅[计费](/zh/billing)。
-* **Advanced** — Webhook 签名密钥和删除团队。
+* **Team**: 邀请成员、分配角色并管理团队。请参阅下方的[团队管理与角色](#team-management--roles)。
+* **计费**: 查看当前的 plan 和发票，设置每月 pay-as-you-go 限额，并使用额度优惠券。另请参阅[计费](/zh/billing)。
+* **Advanced**: Webhook 签名密钥和删除团队。
 
 ***
 
@@ -87,12 +87,12 @@ Firecrawl 支持你邀请团队成员在共享账户下协作。你可以在设�
 | 撤销待处理的邀请          |   ✓   |    ✗   |
 | 编辑团队名称            |   ✓   |    ✗   |
 | **计费**            |       |        |
-| 查看发票和使用方式         |   ✓   |    ✓   |
-| 使用抵扣优惠券           |   ✓   |    ✓   |
+| 查看发票和使用方式         |   ✓   |    ✗   |
+| 使用额度优惠券           |   ✓   |    ✗   |
 | 管理订阅和计费门户         |   ✓   |    ✗   |
 | **设置**            |       |        |
 | 查看 Webhook 签名密钥   |   ✓   |    ✓   |
 | 重新生成 Webhook 签名密钥 |   ✓   |    ✗   |
 | 删除团队              |   ✓   |    ✗   |
 
-简而言之，**Admins** 对团队管理、计费和设置拥有完全控制权，而 **Members** 可以使用团队资源、查看使用方式并使用优惠券，但无法修改团队或订阅。
+简而言之，**Admins** 对团队管理、计费和设置拥有完全控制权，而 **Members** 可以使用团队资源并在“使用方式”页面查看使用方式，但无法访问“计费”选项卡或修改团队。

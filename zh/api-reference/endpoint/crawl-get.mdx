@@ -3,4 +3,8 @@ title: "获取抓取状态"
 openapi: '/zh/api-reference/v2-openapi.json GET /crawl/{id}'
 ---
 
+<Info>
+  `total` 统计的是已完成、进行中、排队中和积压的页面，不包含失败的页面，因此抓取结束时 `completed == total` 并不意味着每个发现的页面都抓取成功。请将这些计数器与 [获取抓取错误](/zh/api-reference/endpoint/crawl-get-errors) 配合使用，以查看已尝试但未返回的页面；另请参见 [执行与结果统计](/zh/features/crawl#execution-and-result-accounting)，了解如何结合解读这些数据，以及何时停止使用 `next` 翻页。
+</Info>
+
 > 如果你是需要 Firecrawl API 密钥的 AI 代理，请参阅 [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) 了解自动化入门说明。

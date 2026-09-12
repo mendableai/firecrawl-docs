@@ -11,14 +11,14 @@ The [Firecrawl dashboard](https://www.firecrawl.dev/app) is where you manage you
 
 The playground lets you try Firecrawl endpoints directly in the browser before integrating them into your code.
 
-- **[Scrape](https://www.firecrawl.dev/app/playground?endpoint=scrape)** — Extract content from a single page.
-- **[Search](https://www.firecrawl.dev/app/playground?endpoint=search)** — Search the web and get scraped results.
-- **[Crawl](https://www.firecrawl.dev/app/playground?endpoint=crawl)** — Crawl an entire website and extract content from every page.
-- **[Map](https://www.firecrawl.dev/app/playground?endpoint=map)** — Discover all URLs on a website.
+- **[Scrape](https://www.firecrawl.dev/app/playground?endpoint=scrape)**: Extract content from a single page.
+- **[Search](https://www.firecrawl.dev/app/playground?endpoint=search)**: Search the web and get scraped results.
+- **[Crawl](https://www.firecrawl.dev/app/playground?endpoint=crawl)**: Crawl an entire website and extract content from every page.
+- **[Map](https://www.firecrawl.dev/app/playground?endpoint=map)**: Discover all URLs on a website.
 
 ## Browser
 
-[Interact with the web](https://www.firecrawl.dev/app/browser) through a live browser session. You can create persistent profiles, run actions, and take screenshots — useful for pages that require authentication or complex interaction.
+[Interact with the web](https://www.firecrawl.dev/app/browser) through a live browser session. You can create persistent profiles, run actions, and take screenshots. This is useful for pages that require authentication or complex interaction.
 
 ## Agent
 
@@ -28,7 +28,7 @@ The [Agent](https://www.firecrawl.dev/app/agent) is an AI-powered research tool 
 
 [Activity Logs](https://www.firecrawl.dev/app/logs) show a history of your recent API requests, including status, duration, and credits consumed.
 
-Rows that failed or finished with errors carry a sparkles **Debug issue** button in the Actions column. It runs Firecrawl's support agent against that job and returns a diagnosis with a suggested fix you can copy — see [Debug with Ask](/features/ask#debug-from-activity-logs).
+Rows that failed or finished with errors carry a sparkles **Debug issue** button in the Actions column. It runs Firecrawl's support agent against that job and returns a diagnosis with a suggested fix you can copy. See [Debug with Ask](/features/ask#debug-from-activity-logs).
 
 ## Usage
 
@@ -42,9 +42,9 @@ From the [API Keys](https://www.firecrawl.dev/app/api-keys) page you can create,
 
 The [Settings](https://www.firecrawl.dev/app/settings) page has three tabs:
 
-- **Team** — Invite members, assign roles, and manage your team. See [Team management & roles](#team-management--roles) below.
-- **Billing** — View your current plan, invoices, auto-recharge settings, and apply coupons. See also [Billing](/billing).
-- **Advanced** — Webhook signing secret and team deletion.
+- **Team**: Invite members, assign roles, and manage your team. See [Team management & roles](#team-management--roles) below.
+- **Billing**: View your current plan and invoices, set your monthly pay-as-you-go limit, and apply coupons. See also [Billing](/billing).
+- **Advanced**: Webhook signing secret and team deletion.
 
 ---
 
@@ -69,12 +69,12 @@ Every team member is assigned one of two roles: **Admin** or **Member**. You cho
 | Revoke pending invitations | ✓ | ✗ |
 | Edit the team name | ✓ | ✗ |
 | **Billing** | | |
-| View invoices and usage | ✓ | ✓ |
-| Apply credit coupons | ✓ | ✓ |
+| View invoices and usage | ✓ | ✗ |
+| Apply credit coupons | ✓ | ✗ |
 | Manage subscription and billing portal | ✓ | ✗ |
 | **Settings** | | |
 | View the webhook signing secret | ✓ | ✓ |
 | Regenerate the webhook signing secret | ✓ | ✗ |
 | Delete the team | ✓ | ✗ |
 
-In short, **Admins** have full control over team management, billing, and settings, while **Members** can use the team's resources, view usage, and apply coupons but cannot modify the team or subscription.
+In short, **Admins** have full control over team management, billing, and settings, while **Members** can use the team's resources and view usage on the Usage page but cannot access the Billing tab or modify the team.

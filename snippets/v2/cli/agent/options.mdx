@@ -1,9 +1,8 @@
 ```bash CLI
-# Use Spark 2 (not the default - set it explicitly)
+# Spark 2 is the default — every run executes on it
 firecrawl agent "Competitive analysis across multiple domains" --model spark-2 --wait
 
-# Use Spark 1 Pro (the default) for higher accuracy
-firecrawl agent "Competitive analysis across multiple domains" --model spark-1-pro --wait
+# Deprecated: Spark 1 model names are still accepted, but route to spark-2.
 
 # Set max credits to limit costs
 firecrawl agent "Gather contact information from company websites" --max-credits 100 --wait

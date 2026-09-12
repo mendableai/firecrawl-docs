@@ -31,26 +31,62 @@ description: '所有 API 错误代码、成因、处理方法，以及是否应�
   ## 错误
 </div>
 
-| HTTP | `error` (典型消息)                           | 原因                                       | 处理方法                                                                                              | 可重试     |
-| ---- | ---------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------- | ------- |
-| 400  | `Bad Request` / 验证消息                     | 请求体未通过 schema 验证 (字段缺失或无效) 。             | 根据 endpoint 参考文档修正请求 payload。检查 `details` 中的字段。                                                   | 否       |
-| 400  | `Invalid URL`                            | `url` 字段缺失、格式错误，或使用了不受支持的协议。             | 传入绝对 `http(s)://` URL。                                                                            | 否       |
-| 401  | `Unauthorized: Invalid token`            | API 密钥缺失、格式错误或已被撤销。                      | 发送 `Authorization: Bearer fc-...`，并使用 [Dashboard](https://www.firecrawl.dev/app/api-keys) 中的有效密钥。 | 否       |
-| 402  | `Payment Required: Insufficient credits` | 套餐额度已用尽，或尚未配置计费。                         | 充值额度、启用 auto-recharge，或升级你的套餐。                                                                    | 否       |
-| 403  | `Forbidden`                              | 该密钥没有访问此 endpoint 或功能的权限。                | 使用具备所需 scope 的密钥，或升级包含该功能的套餐。                                                                     | 否       |
-| 404  | `Not Found`                              | 任务 ID、资源或 endpoint 路径不存在。                | 核实资源 ID 和 endpoint URL。                                                                           | 否       |
-| 408  | `Request Timeout`                        | 页面加载时间超过了请求 `timeout`。                   | 增加 `timeout`、简化 actions，或使用 `fastMode`。                                                           | 是，需退避重试 |
-| 409  | `Conflict`                               | 资源当前所处状态阻止了该操作 (例如已被删除) 。                | 重试前重新获取状态并完成协调。                                                                                   | 否       |
-| 413  | `Payload Too Large`                      | 请求体超过允许的最大大小。                            | 缩减 payload (例如缩短 schema、减少每个 batch 中的 URL 数量) 。                                                   | 否       |
-| 422  | `Unprocessable Entity` / 提取 schema 错误    | schema 不是有效的 JSON Schema，或模型无法生成符合要求的结果。 | 验证 schema；放宽必填字段；尝试其他 `model`。                                                                    | 有时      |
-| 429  | `Rate limit exceeded`                    | 请求次数超过了你的套餐每分钟限额。                        | 退避，并在 `Retry-After` 指定的秒数后重试。请参见 [限流](/zh/rate-limits)。                                     | 是，需退避重试 |
-| 429  | `Concurrency limit reached`              | 已达到你的套餐并发浏览器数上限。                         | 等待进行中的任务完成、降低并发，或升级你的套餐。                                                                          | 是，需退避重试 |
-| 500  | `Internal Server Error`                  | 服务端发生了未处理的故障。                            | 使用指数退避重试。如果问题持续存在，请附上请求 ID 联系支持团队。                                                                | 是，需退避重试 |
-| 502  | `Bad Gateway`                            | 上游代理或工作进程返回了无效响应。                        | 退避后重试。                                                                                            | 是，需退避重试 |
-| 503  | `Service Unavailable`                    | 服务暂时无法处理该请求。                             | 退避后重试。                                                                                            | 是，需退避重试 |
-| 504  | `Gateway Timeout`                        | 请求超过了网关超时时间 (通常见于长时间爬取) 。                | 改用异步爬取/batch 端点，并改为轮询状态。                                                                   | 是，需退避重试 |
+| HTTP | `error` (典型消息)                           | 原因                                                                         | 处理方法                                                                                                                    | 可重试     |
+| ---- | ---------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------- |
+| 400  | `Bad Request` / 验证消息                     | 请求体未通过 schema 验证 (字段缺失或无效) 。                                               | 根据 端点 参考文档修正请求 payload。检查 `details` 中的字段。                                                                               | 否       |
+| 400  | `Invalid URL`                            | `url` 字段缺失、格式错误，或使用了不受支持的协议。                                               | 传入绝对 `http(s)://` URL。                                                                                                  | 否       |
+| 401  | `Unauthorized: Invalid token`            | API 密钥缺失、格式错误或已被撤销。                                                        | 发送 `Authorization: Bearer fc-...`，并使用 [Dashboard](https://www.firecrawl.dev/app/api-keys) 中的有效密钥。                       | 否       |
+| 402  | `Payment Required: Insufficient credits` | 套餐额度已用尽，或尚未配置计费。                                                           | 启用 pay-as-you-go，或升级你的套餐。                                                                                               | 否       |
+| 403  | `Forbidden`                              | 该密钥没有访问此 端点 或功能的权限。                                                        | 使用具备所需 scope 的密钥，或升级包含该功能的套餐。                                                                                           | 否       |
+| 403  | `SCRAPE_PROMPT_INJECTION_DETECTED`       | 启用 `checkPromptInjection: true` 的 JSON 模式在抓取的页面内容中检测到 prompt 注入尝试，因此中止了提取。 | 手动检查页面内容。如果是误报，请在不使用 `checkPromptInjection` 的情况下重试。请参见 [Prompt 注入检测](/zh/features/llm-extract#prompt-injection-detection)。 | 否       |
+| 404  | `Not Found`                              | 任务 ID、资源或 端点 路径不存在。                                                        | 核实资源 ID 和 端点 URL。                                                                                                       | 否       |
+| 408  | `Request Timeout`                        | 页面加载时间超过了请求 `timeout`。                                                     | 增加 `timeout`、简化 actions，或使用 `fastMode`。                                                                                 | 是，需退避重试 |
+| 409  | `Conflict`                               | 资源当前所处状态阻止了该操作 (例如已被删除) 。                                                  | 重试前重新获取状态并完成协调。                                                                                                         | 否       |
+| 413  | `Payload Too Large`                      | 请求体超过允许的最大大小。                                                              | 缩减 payload (例如缩短 schema、减少每个 batch 中的 URL 数量) 。                                                                         | 否       |
+| 422  | `Unprocessable Entity` / 提取 schema 错误    | schema 不是有效的 JSON Schema，或模型无法生成符合要求的结果。                                   | 验证 schema；放宽必填字段；尝试其他 `model`。                                                                                          | 有时      |
+| 429  | `Rate limit exceeded`                    | 请求次数超过了你的套餐每分钟限额。                                                          | 退避，并在 `Retry-After` 指定的秒数后重试。请参见 [限流](/zh/rate-limits)。                                                                    | 是，需退避重试 |
+| 429  | `Concurrency limit reached`              | 已达到你的套餐并发浏览器数上限。                                                           | 等待进行中的任务完成、降低并发，或升级你的套餐。                                                                                                | 是，需退避重试 |
+| 500  | `Internal Server Error`                  | 服务端发生了未处理的故障。                                                              | 使用指数退避重试。如果问题持续存在，请附上请求 ID 联系支持团队。                                                                                      | 是，需退避重试 |
+| 502  | `Bad Gateway`                            | 上游代理或工作进程返回了无效响应。                                                          | 退避后重试。                                                                                                                  | 是，需退避重试 |
+| 503  | `Service Unavailable`                    | 服务暂时无法处理该请求。                                                               | 退避后重试。                                                                                                                  | 是，需退避重试 |
+| 504  | `Gateway Timeout`                        | 请求超过了网关超时时间 (通常见于长时间爬取) 。                                                  | 改用异步爬取/batch 端点，并改为轮询状态。                                                                                                | 是，需退避重试 |
 
-对于 429 响应，Firecrawl 会在可用时包含 `Retry-After` 响应头 (单位为秒) ——重试前至少等待这么久。
+对于 429 响应，Firecrawl 会在可用时包含 `Retry-After` 响应标头 (单位为秒) ——重试前至少等待这么久。
+
+<div id="agent">
+  ## 代理
+</div>
+
+[`/agent`](/zh/features/agent) 及其状态、执行追踪、快照和取消端点特有的错误。执行追踪和快照端点会原样转发上游错误正文，因此这两个端点返回的正文可能不包含上述 `success` 字段；请根据 HTTP 状态码和 `error` 字符串进行判断。
+
+| HTTP | `error` (典型消息)                                                                 | 原因                                | 解决方法                                                                                            | 可重试      |
+| ---- | ------------------------------------------------------------------------------ | --------------------------------- | ----------------------------------------------------------------------------------------------- | -------- |
+| 400  | `Invalid job ID format. Job ID must be a valid UUID.`                          | `jobId` 路径段不是有效的 UUID。            | 传入 `POST /v2/agent` 返回的 `id`。                                                                   | 否        |
+| 400  | `Invalid snapshot ID`                                                          | `snapshotId` 路径段格式不正确。            | 使用 `artifact.updated` [执行追踪事件](/zh/api-reference/endpoint/agent-trace)中的 `snapshotId`。             | 否        |
+| 400  | `Trace is only available for Spark 2 extracts`                                 | 该任务早于 Spark 2，只有 Spark 2 会记录执行追踪。 | 此任务无需处理。所有新运行都会在 `spark-2` 上执行，并生成执行追踪。                                                         | 否        |
+| 400  | `Snapshots are only available for Spark 2 extracts`                            | 该任务早于 Spark 2，只有 Spark 2 会记录快照。   | 此任务无需处理。所有新运行都会在 `spark-2` 上执行，并生成快照。                                                           | 否        |
+| 400  | `Your team has zero data retention enabled. This is not supported on extract.` | 对于强制启用零数据保留的团队，无法提供代理运行。          | 联系 [support@firecrawl.com](mailto:support@firecrawl.com)，为你的团队解除此功能限制。                          | 否        |
+| 404  | `Agent job not found`                                                          | 该任务 ID 不存在，或属于其他团队。               | 检查任务 ID，并使用启动该运行的团队的密钥。                                                                         | 否        |
+| 404  | `Snapshot not found`                                                           | 此任务没有具有该 ID 的快照。                  | 重新获取执行追踪，并使用 `artifact.updated` [执行追踪事件](/zh/api-reference/endpoint/agent-trace)中当前的 `snapshotId`。 | 否        |
+| 409  | `Agent already finished`                                                       | 对已到达终态的运行调用了取消操作。                 | 请改为轮询 `GET /v2/agent/{jobId}` 获取结果。                                                             | 否        |
+| 409  | `Agent is already cancelled`                                                   | 对已处于取消中的运行调用了取消操作。                | 轮询 `GET /v2/agent/{jobId}`。已取消的运行会报告 `failed`，并附带取消消息。                                          | 否        |
+| 500  | `Failed to passthrough agent request.`                                         | 代理服务在提交时拒绝了该任务。                   | 采用退避策略重试。如果问题持续存在，请携带请求 ID 联系支持团队。                                                              | 是，采用退避策略 |
+
+达到 `maxCredits` 上限的运行不会返回 HTTP 错误，而是会以失败任务结束。轮询状态端点会返回 `status: "failed"`、额度限制错误消息、无 `data`，以及 `creditsUsed: 0`，因为失败的运行不会计费。在执行追踪中，同一结果会显示为 `run.finished` 事件，其中 `outcome: "credit_limit_reached"`。
+
+<div id="trace-error-codes">
+  ### 执行追踪错误代码
+</div>
+
+终止事件和 `error.occurred` 执行追踪事件都会携带一个结构化的 `error` 对象，其 `code` 取值为以下五种之一。每个事件还会携带一个 `retryable` boolean，应按与上方**可重试**列相同的方式处理。
+
+| `code`                 | 含义和处理方法                                                         |
+| ---------------------- | --------------------------------------------------------------- |
+| `cancelled`            | 你取消了此次运行。如需重新完成该工作，请启动新的运行。                                     |
+| `credit_limit_reached` | 此次运行达到了 `maxCredits` 上限。请提高 `maxCredits`，或缩小 prompt 范围以减少所需工作量。 |
+| `parent_finished`      | 子代理停止运行，因为启动它的代理先完成了。请查看父代理自身的终止事件，了解实际原因。                      |
+| `refused`              | 代理拒绝执行该任务。请重新表述 prompt，或将其范围限定为你有权采集内容的 URL。                    |
+| `internal`             | 运行内部发生意外故障。请重试此次运行；若问题仍然存在，请携带任务 ID 联系支持团队。                     |
 
 <div id="retry-guidance">
   ## 重试指南

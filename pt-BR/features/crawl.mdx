@@ -1,7 +1,7 @@
 ---
-title: "Crawlear"
+title: "Rastreamento"
 description: "Rastreie recursivamente um site e obtenha conteúdo de cada página"
-og:title: "Crawlear | Firecrawl"
+og:title: "Rastreamento | Firecrawl"
 og:description: "Rastreie recursivamente um site e obtenha conteúdo de cada página"
 icon: "spider"
 ---
@@ -33,11 +33,13 @@ import StartCrawlCLI from '/snippets/pt-BR/v2/start-crawl/base/cli.mdx';
 import StartCrawlOutput from '/snippets/pt-BR/v2/start-crawl/base/output.mdx';
 import PlaygroundCTA from "/snippets/pt-BR/shared/playground-cta-crawl.mdx";
 
-O Crawlear envia uma URL ao Firecrawl e descobre e extrai, de forma recursiva, todas as subpáginas acessíveis. Ele lida automaticamente com sitemaps, renderização de JavaScript e limites de taxa, retornando markdown limpo ou dados estruturados para cada página.
+O rastreamento envia uma URL ao Firecrawl e descobre e extrai, de forma recursiva, todas as subpáginas acessíveis. Ele lida automaticamente com sitemaps, renderização de JavaScript e limites de taxa, retornando markdown limpo ou dados estruturados para cada página.
 
 * Descobre páginas por meio do sitemap e da navegação recursiva por links
 * Suporta filtragem de caminho, limites de profundidade e controle de subdomínios/links externos
 * Retorna resultados via polling, WebSocket ou webhook
+
+Cada página extraída em um rastreamento passa pelo mesmo pipeline de scraping, ou seja, tudo o que o scraping consegue fazer em uma página, o rastreamento consegue fazer em todas as páginas que alcançar. [Capacidades](/pt-BR/capabilities) lista quais são elas, onde cada capacidade é executada e se ela exige uma API key.
 
 <PlaygroundCTA />
 
@@ -275,6 +277,99 @@ Toda requisição de webhook do Firecrawl inclui um cabeçalho `X-Firecrawl-Sign
 
 Para exemplos completos de implementação em JavaScript e Python, consulte a [documentação de segurança de webhooks](/pt-BR/webhooks/security). Para a documentação completa sobre webhooks, incluindo payloads detalhados de eventos, estrutura de payload, configuração avançada e solução de problemas, consulte a [documentação de Webhooks](/pt-BR/webhooks/overview).
 
+<div id="execution-and-result-accounting">
+  ## Execução e contabilização de resultados
+</div>
+
+Um rastreamento que é concluído não é a mesma coisa que um rastreamento que chegou a todas as páginas. Esta seção descreve o que os endpoints de rastreamento reportam hoje sobre uma execução — os contadores, o contrato de paginação, os registros de falha e os limites de escopo — para que você mesmo possa avaliar se uma execução está completa o suficiente para servir de base a uma ação. Nenhum desses registros garante completude.
+
+<div id="reading-the-status-counters">
+  ### Lendo os contadores de status
+</div>
+
+Toda resposta de [Get Crawl Status](/pt-BR/api-reference/endpoint/crawl-get) (`GET /v2/crawl/{id}`) traz os contadores que descrevem a execução:
+
+| Campo                                    | Significado                                                                                                                                                            |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `status`                                 | Um entre `scraping`, `completed`, `failed` ou `cancelled`                                                                                                              |
+| `total`                                  | `completed` mais as páginas ainda em andamento: ativas, na fila e em backlog. **Páginas que falharam não são contabilizadas.**                                         |
+| `completed`                              | O número de páginas rastreadas com sucesso                                                                                                                             |
+| `creditsUsed`                            | Créditos consumidos pelo rastreamento até o momento                                                                                                                    |
+| `createdAt` / `completedAt` / `duration` | Horário de início, horário de conclusão (apenas em estados terminais) e segundos decorridos                                                                            |
+| `expiresAt`                              | Quando os resultados deixam de poder ser recuperados pela API                                                                                                          |
+| `next`                                   | URL para a próxima página de 10MB de resultados. Também é retornado sempre que `status` não for `completed` — veja [Paginando os resultados](#paging-through-results). |
+
+<Warning>
+  `completed == total` em um rastreamento finalizado **não** significa que todas as páginas descobertas tiveram sucesso. Como `total` soma as páginas concluídas, ativas, na fila e em backlog, e exclui as que falharam, um rastreamento em estado terminal sempre tem `active`, `queued` e `backlog` em zero — ou seja, os dois contadores convergem havendo ou não páginas com falha. Os contadores de status não indicam que algo falhou. Páginas com falha são listadas apenas em [Get Crawl Errors](#failed-and-blocked-pages).
+</Warning>
+
+O array `data` contém apenas as páginas que o Firecrawl extraiu com sucesso. Páginas que foram tentadas, mas nunca produziram resultado, não aparecem em `data` — consulte-as em Get Crawl Errors, abaixo.
+
+<div id="paging-through-results">
+  ### Paginando os resultados
+</div>
+
+As respostas têm limite de 10MB. Quando uma resposta é truncada, `next` traz a URL da próxima página de resultados.
+
+`next` não é apenas um sinal de &quot;ainda há mais dados&quot;: ele também é emitido sempre que `status` não for `completed`, ou seja, um rastreamento em estado terminal `failed` ou `cancelled` pode retornar uma URL em `next` mesmo sem existir nenhum resultado adicional. Não use a ausência de `next` como condição de saída do seu laço — em um rastreamento que falhou ou foi cancelado, ele nunca desaparece.
+
+A condição terminal é o campo de status. Para ler uma execução até o fim:
+
+1. Consulte `GET /v2/crawl/{id}` até que `status` seja `completed`, `failed` ou `cancelled`.
+2. Enquanto `next` estiver presente **e** a última página tiver retornado um array `data` não vazio, siga `next` para coletar os resultados restantes.
+3. Pare quando `next` não estiver presente ou quando uma página não retornar nenhum documento novo.
+
+Os SDKs oficiais cuidam dessa paginação por você e retornam todos os resultados de uma só vez.
+
+<div id="failed-and-blocked-pages">
+  ### Páginas com falha e bloqueadas
+</div>
+
+[Get Crawl Errors](/pt-BR/api-reference/endpoint/crawl-get-errors) (`GET /v2/crawl/{id}/errors`) registra as páginas que não entraram em `data`. Ele retorna dois arrays:
+
+* `errors` — scrape jobs que falharam, cada um com `id`, `url`, `error` (a mensagem de erro) e um `timestamp` da falha. São páginas cujo scraping o próprio Firecrawl não conseguiu realizar: erros de rede, tempos limite e situações semelhantes. Links para a página inicial de um site externo que foram ignorados intencionalmente aparecem aqui com o código de erro `EXTERNAL_LINK`.
+* `robotsBlocked` — URLs que foram tentadas, mas bloqueadas pelo robots.txt do site.
+
+<Note>
+  Não há garantia de que essa lista seja uma enumeração completa de todas as falhas: algumas classes internas de falha são atualmente filtradas de `errors` antes de a resposta ser montada. Trate-a como o registro das falhas que o Firecrawl reporta, e não como prova de que nada mais deu errado. O código de erro mencionado acima (`EXTERNAL_LINK`) já é retornado nos objetos de erro hoje, mas ainda não faz parte do schema publicado de `GET /crawl/{id}/errors`; ele aguarda uma atualização da API Reference.
+</Note>
+
+Uma página em que o site alvo retornou um erro HTTP como 404 *não* é um erro de rastreamento: o Firecrawl fez o scraping dela com sucesso, portanto ela aparece em `data` com o código de status do site em `metadata.statusCode`.
+
+<div id="what-the-crawler-is-scoped-to-reach">
+  ### O alcance do crawler
+</div>
+
+A cobertura é limitada pelos parâmetros de escopo que você define, todos documentados na [referência de configuração](#configuration-reference) e na [referência do endpoint Crawl](/pt-BR/api-reference/endpoint/crawl-post):
+
+* **Apenas filhos, por padrão.** O rastreamento ignora sublinks que não sejam filhos da URL fornecida. Use `crawlEntireDomain` para caminhos irmãos e pais, `allowSubdomains` para subdomínios e `allowExternalLinks` para seguir links fora do domínio.
+* **`includePaths` / `excludePaths` correspondem ao pathname da URL**, como padrões regex — não à URL completa nem aos parâmetros de consulta. Defina `regexOnFullURL: true` para corresponder à URL completa, incluindo as strings de consulta. A URL inicial também é verificada contra `includePaths`: se não houver correspondência, o rastreamento pode retornar 0 páginas.
+* **Os padrões de caminho são regex do Rust (estilo RE2) e são validados de antemão.** Look-around e retrorreferências não são suportados, e um padrão que não compila é rejeitado com um `400` em vez de ser ignorado silenciosamente. Cada campo aceita no máximo 1000 padrões de até 2000 caracteres cada, e `includePaths` e `excludePaths` juntos podem conter no máximo 1000 padrões e 100.000 caracteres. Para filtragem no estilo de palavras-chave, envie um padrão curto por termo (`["pricing", "docs", "blog"]`) em vez de combinar os termos em uma única alternância longa.
+* **Modo sitemap.** Com o padrão `sitemap: "include"`, as URLs vêm do sitemap somadas à descoberta recursiva de links. `"skip"` usa apenas links HTML, portanto páginas presentes somente no sitemap, como PDFs ou páginas muito aninhadas, ficam de fora. `"only"` rastreia o sitemap mais a URL inicial e não descobre links a partir do HTML.
+* **`maxDiscoveryDepth`** limita quantos saltos de descoberta de links a partir da raiz são seguidos. As páginas na profundidade máxima ainda passam por scraping, mas os links encontrados nelas não são seguidos.
+* **`limit`** limita o número de páginas e tem valor padrão `10000`.
+* **`ignoreQueryParameters`** evita repetir o scraping do mesmo caminho com parâmetros de consulta diferentes.
+* **O robots.txt é respeitado**, a menos que `ignoreRobotsTxt` esteja ativado (apenas Enterprise).
+
+`maxConcurrency` assume por padrão o limite de simultaneidade da sua equipe, definido pelo seu plano — consulte [Limites de taxa](/pt-BR/rate-limits).
+
+<div id="when-results-vary-between-runs">
+  ### Quando os resultados variam entre execuções
+</div>
+
+Os resultados do rastreamento podem variar entre execuções com a mesma configuração. As páginas são extraídas de forma concorrente, então a ordem em que os links são descobertos depende do timing da rede e de quais páginas terminam de carregar primeiro. Isso significa que diferentes ramificações de um site podem ser exploradas em extensões diferentes perto do limite de profundidade, especialmente em valores mais altos de `maxDiscoveryDepth`.
+
+Para tornar uma execução mais reproduzível:
+
+* Defina `maxConcurrency` como `1`. Como indica a [referência de configuração](#configuration-reference), `maxConcurrency` é o &quot;número máximo de scrapings concorrentes&quot; — ele limita quantas requisições ficam em andamento ao mesmo tempo. Isso reduz o entrelaçamento dependente de timing, mas não elimina a variação entre execuções: a descoberta de sitemap é enfileirada fora desse limite, sitemaps aninhados são buscados como jobs independentes e o array `data` retornado é ordenado pelo horário de conclusão, não pela ordem de descoberta. Definir `delay` também força a simultaneidade para 1.
+* Use `sitemap: "only"` se o site tiver um sitemap abrangente, para que o conjunto de URLs venha do sitemap em vez da descoberta por links.
+
+<div id="knowing-when-a-crawl-is-done">
+  ### Como saber quando um rastreamento terminou
+</div>
+
+Se você não estiver consultando o status, os [webhook events](#event-types) informam a mesma coisa: `crawl.page` é disparado para cada página extraída com sucesso, e `crawl.completed` (ou `crawl.failed`) é disparado quando a execução termina. Os resultados do job ficam disponíveis na API por 24 horas após a conclusão; depois disso, veja-os nos [activity logs](https://www.firecrawl.dev/app/logs).
+
 <div id="configuration-reference">
   ## Referência de configuração
 </div>
@@ -286,8 +381,8 @@ O conjunto completo de parâmetros disponíveis ao enviar um job de rastreamento
 | `url`                   | `string`   | (obrigatório) | A URL inicial a partir da qual o rastreamento será executado                                                                                                                                                                                                                                                                                                                                                                     |
 | `limit`                 | `integer`  | `10000`       | Número máximo de páginas a rastrear                                                                                                                                                                                                                                                                                                                                                                                              |
 | `maxDiscoveryDepth`     | `integer`  | (nenhum)      | Profundidade máxima a partir da URL raiz com base em saltos de descoberta de links, e não no número de segmentos `/` na URL. Cada vez que uma nova URL é encontrada em uma página, ela recebe uma profundidade um nível acima da página em que foi descoberta. O site raiz e as páginas do sitemap têm profundidade de descoberta 0. As páginas na profundidade máxima ainda são extraídas, mas os links nelas não são seguidos. |
-| `includePaths`          | `string[]` | (nenhum)      | Padrões regex de pathname de URL a incluir. Apenas os caminhos correspondentes são rastreados.                                                                                                                                                                                                                                                                                                                                   |
-| `excludePaths`          | `string[]` | (nenhum)      | Padrões regex de pathname de URL a excluir do rastreamento                                                                                                                                                                                                                                                                                                                                                                       |
+| `includePaths`          | `string[]` | (nenhum)      | Padrões regex de pathname de URL a incluir. Apenas os caminhos correspondentes são rastreados. No máximo 1000 padrões de 2000 caracteres cada; veja [escopo](#what-the-crawler-is-scoped-to-reach) para o limite combinado e a sintaxe de regex.                                                                                                                                                                                 |
+| `excludePaths`          | `string[]` | (nenhum)      | Padrões regex de pathname de URL a excluir do rastreamento. Mesmos limites de `includePaths`.                                                                                                                                                                                                                                                                                                                                    |
 | `regexOnFullURL`        | `boolean`  | `false`       | Faz a correspondência de `includePaths`/`excludePaths` com a URL completa (incluindo parâmetros de consulta), em vez de apenas o pathname                                                                                                                                                                                                                                                                                        |
 | `crawlEntireDomain`     | `boolean`  | `false`       | Segue links internos para URLs irmãs ou pai, não apenas caminhos filhos                                                                                                                                                                                                                                                                                                                                                          |
 | `allowSubdomains`       | `boolean`  | `false`       | Segue links para subdomínios do domínio principal                                                                                                                                                                                                                                                                                                                                                                                |
@@ -297,9 +392,9 @@ O conjunto completo de parâmetros disponíveis ao enviar um job de rastreamento
 | `ignoreRobotsTxt`       | `boolean`  | `false`       | Ignora as regras do robots.txt do site. **Apenas Enterprise** — entre em contato com support@firecrawl.com para habilitar.                                                                                                                                                                                                                                                                                                       |
 | `robotsUserAgent`       | `string`   | (nenhum)      | String personalizada de User-Agent para avaliação do robots.txt. Quando definido, o robots.txt é buscado com esse User-Agent e as regras são correspondidas com base nele em vez do padrão. **Apenas Enterprise** — entre em contato com support@firecrawl.com para habilitar.                                                                                                                                                   |
 | `delay`                 | `number`   | (nenhum)      | Intervalo, em segundos, entre raspagens para respeitar os limites de taxa. Definir isso força a simultaneidade para 1.                                                                                                                                                                                                                                                                                                           |
-| `maxConcurrency`        | `integer`  | (nenhum)      | Número máximo de raspagens simultâneas. O padrão é o limite de simultaneidade da sua equipe.                                                                                                                                                                                                                                                                                                                                     |
-| `scrapeOptions`         | `object`   | (nenhum)      | Opções aplicadas a cada página extraída (formatos, proxy, cache, ações etc.)                                                                                                                                                                                                                                                                                                                                                      |
-| `webhook`               | `object`   | (nenhum)      | Configuração de webhook para notificações em tempo real                                                                                                                                                                                                                                                                                                                                                                          |
+| `maxConcurrency`        | `integer`  | (nenhum)      | Máximo de scraping concorrente. O padrão é o limite de simultaneidade da sua equipe.                                                                                                                                                                                                                                                                                                                                     |
+| `scrapeOptions`         | `object`   | (nenhum)      | Opções aplicadas a cada página extraída (formatos, proxy, cache, ações etc.)                                                                                                                                                                                                                                                                                                                                                     |
+| `webhook`               | `object`  | (nenhum)      | Configuração de webhook para notificações em tempo real                                                                                                                                                                                                                                                                                                                                                                          |
 | `prompt`                | `string`   | (nenhum)      | Prompt em linguagem natural para gerar opções de rastreamento. Parâmetros definidos explicitamente substituem os equivalentes gerados.                                                                                                                                                                                                                                                                                           |
 
 <div id="important-details">
@@ -315,6 +410,6 @@ O conjunto completo de parâmetros disponíveis ao enviar um job de rastreamento
 * **Expiração dos resultados**: Os resultados do job ficam disponíveis via API por 24 horas após a conclusão. Depois disso, consulte os resultados nos [activity logs](https://www.firecrawl.dev/app/logs).
 * **Erros de rastreamento**: O array `data` contém as páginas que o Firecrawl extraiu com sucesso. Use o endpoint [Get Crawl Errors](/pt-BR/api-reference/endpoint/crawl-get-errors) para recuperar as páginas que falharam devido a erros de rede, timeouts ou bloqueios por robots.txt.
 * <a id="external-links" />**Links externos**: Com `allowExternalLinks: true`, o crawler segue links que apontam para fora do seu domínio e extrai cada página vinculada uma vez — ele não rastreia os links encontrados nessas páginas externas. Links para a **página inicial** de um site externo (uma URL raiz sem caminho, por exemplo, `https://example.com/`) são intencionalmente ignorados para evitar incluir um site inteiro não relacionado; eles aparecem em [Get Crawl Errors](/pt-BR/api-reference/endpoint/crawl-get-errors) com o código `EXTERNAL_LINK`. Os redirecionamentos são seguidos até o destino — inclusive quando um link é resolvido para sua URL canônica (por exemplo, `http → https` ou a variante `www`) — portanto, apenas redirecionamentos que chegam a uma página inicial externa são ignorados.
-* **Resultados não determinísticos**: Os resultados do rastreamento podem variar entre execuções com a mesma configuração. As páginas são extraídas de forma concorrente, então a ordem em que os links são descobertos depende do timing da rede e de quais páginas terminam de carregar primeiro. Isso significa que diferentes ramificações de um site podem ser exploradas em extensões diferentes perto do limite de profundidade, especialmente em valores mais altos de `maxDiscoveryDepth`. Para obter resultados mais determinísticos, defina `maxConcurrency` como `1` ou use `sitemap: "only"` se o site tiver um sitemap abrangente.
+* **Resultados não determinísticos**: Os resultados do rastreamento podem variar entre execuções com a mesma configuração, porque as páginas são extraídas de forma concorrente e a ordem de descoberta de links depende do timing da rede. Consulte [Execução e contabilização de resultados](#execution-and-result-accounting) para saber o que varia e como tornar uma execução mais reproduzível.
 
 > Você é um agente de IA que precisa de uma API key do Firecrawl? Consulte [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para ver as instruções de onboarding automatizado.

@@ -142,7 +142,9 @@ description: "使用 Firecrawl 的 branding 格式从任意网站提取设计系
 
     将 `fc-YOUR-API-KEY` 替换为你在 [firecrawl.dev](https://firecrawl.dev) 获取的 Firecrawl API 密钥。
 
-    ### 代码解析
+    <div id="understanding-the-code">
+      ### 代码解析
+    </div>
 
     **关键组件：**
 
@@ -227,7 +229,6 @@ description: "使用 Firecrawl 的 branding 格式从任意网站提取设计系
 }
 ```
 
-
 <div id="key-features">
   ## 核心功能
 </div>
@@ -292,7 +293,6 @@ if (b.components) {
 }
 ```
 
-
 <div id="export-multiple-formats">
   ### 导出多种 formats
 </div>
@@ -303,7 +303,6 @@ if (b.components) {
 // 在 doc.end() 前添加
 fs.writeFileSync("brand-data.json", JSON.stringify(b, null, 2));
 ```
-
 
 <div id="batch-processing">
   ### 批量处理
@@ -324,7 +323,6 @@ for (const site of websites) {
 }
 ```
 
-
 <div id="custom-pdf-themes">
   ### 自定义 PDF 主题
 </div>
@@ -336,7 +334,6 @@ const isDarkMode = b.colorScheme === "dark";
 const headerBg = isDarkMode ? b.colors?.background : b.colors?.primary;
 const textColor = isDarkMode ? "#fff" : "#333";
 ```
-
 
 <div id="best-practices">
   ## 最佳实践

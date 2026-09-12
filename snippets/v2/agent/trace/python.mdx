@@ -1,0 +1,16 @@
+```python Python
+from firecrawl import Firecrawl
+
+app = Firecrawl(api_key="fc-YOUR_API_KEY")
+
+# Execution trace of a run: ordered events (tool calls, reasoning, artifacts)
+trace = app.get_agent_trace("JOB_ID")
+
+for event in trace.events or []:
+    print(event.type)
+
+# Include currently active browser sessions while the run is in flight
+live = app.get_agent_trace("JOB_ID", live_view=True)
+for session in live.active_browser_sessions or []:
+    print(session.live_view_url)
+```

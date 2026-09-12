@@ -116,35 +116,17 @@ Vous pouvez demander plusieurs sources dans un seul appel (par exemple, `sources
   ## Catégories de recherche
 </div>
 
-Filtrez les résultats de recherche par catégorie à l’aide du paramètre `categories` :
+Filtrez les résultats de recherche par catégories spécifiques à l&#39;aide du paramètre `categories` :
 
-* `github` : recherchez dans les dépôts GitHub, le code, les tickets et la documentation
-* `research` : limitez la recherche web aux **sites web** académiques et de recherche (arxiv.org, nature.com, ieee.org, pubmed.ncbi.nlm.nih.gov, biorxiv.org, medrxiv.org et sites similaires). Renvoie des résultats de pages web classiques avec des snippets — et non des fiches d’articles. Pour rechercher les articles eux-mêmes, utilisez le [Research Index](/fr/features/research)
-* `pdf` : recherchez des PDF
-* `developer` : recherchez dans le [Developer Index](/fr/features/developer) — tickets, pull requests fusionnées et README de dépôts de code publics, ainsi que des sites de documentation sélectionnés
+* `research` : limite la recherche web aux sites universitaires et de recherche (arxiv.org, nature.com, pubmed.ncbi.nlm.nih.gov, et similaires). Évolue le 16/11/2026 pour interroger le [Research Index](/fr/features/research) et renvoyer des enregistrements de publications ; voir l&#39;avertissement ci-dessous
+* `pdf` : recherche des PDF
+* `developer` : interroge le [Developer Index](/fr/features/developer) — tickets, pull requests fusionnées et README de dépôts de code publics, ainsi que des sites de documentation sélectionnés
 
-<Note>
-  **`research` est un filtre de sites web, et non l’index d’articles.** Il restreint la recherche web classique à une liste fixe de domaines académiques et renvoie les snippets des pages correspondantes.
+<Warning>
+  **La catégorie `research` évolue le 16/11/2026.** Elle interrogera le [Research Index](/fr/features/research) (PubMed, bioRxiv, medRxiv, arXiv) au lieu de restreindre les résultats web à 14 sites universitaires. Les résultats passeront de `data.web` à `data.research` et seront renvoyés sous forme d&#39;enregistrements de publications : `paperId`, `primaryId`, `ids`, `title`, `abstract`, `score`. D&#39;ici là, chaque réponse qui l&#39;utilise contient une entrée `warnings`.
 
-  Pour rechercher la littérature scientifique — résumés complets, lecture de passages dans les articles et exploration du graphe de citations à partir d’un index d’articles de PubMed, bioRxiv, medRxiv et arXiv — utilisez plutôt le [Research Index](/fr/features/research).
-</Note>
-
-<div id="github-category-search">
-  ### Recherche par catégorie sur GitHub
-</div>
-
-Recherchez spécifiquement dans les dépôts GitHub :
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v2/search \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer fc-VOTRE_CLÉ_API" \
-  -d '{
-    "query": "web scraping python",
-    "categories": ["github"],
-    "limit": 10
-  }'
-```
+  Si vous souhaitez des enregistrements de publications, adaptez votre parsing avant cette date ou appelez dès aujourd&#39;hui [`GET /search/research/papers`](/fr/api-reference/endpoint/research-search-papers). Si vous souhaitez des pages web issues de sites universitaires, utilisez plutôt [`includeDomains`](#domain-filters).
+</Warning>
 
 <div id="research-category-search">
   ### Recherche par catégorie
@@ -197,10 +179,10 @@ Combinez plusieurs catégories dans une seule recherche :
 ```bash cURL
 curl -X POST https://api.firecrawl.dev/v2/search \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer fc-VOTRE_CLE_API" \
+  -H "Authorization: Bearer fc-VOTRE_CLÉ_API" \
   -d '{
     "query": "réseaux de neurones",
-    "categories": ["github", "recherche"],
+    "categories": ["recherche", "pdf"],
     "limit": 15
   }'
 ```
@@ -257,16 +239,16 @@ Chaque résultat de recherche comporte un champ `category` indiquant sa source 
   "data": {
     "web": [
       {
-        "url": "https://github.com/example/neural-network",
-        "title": "Implémentation de réseau de neurones"
-        "description": "Une implémentation PyTorch de réseaux de neurones"
-        "category": "github"
+        "url": "https://arxiv.org/abs/2024.12345",
+        "title": "Avancées dans l’architecture des réseaux de neurones",
+        "description": "Article de recherche sur les améliorations des réseaux de neurones",
+        "category": "research"
       },
       {
-        "url": "https://arxiv.org/abs/2024.12345",
-        "title": "Avancées dans l’architecture des réseaux de neurones"
-        "description": "Article de recherche sur les améliorations des réseaux de neurones"
-        "category": "research"
+        "url": "https://example.com/neural-networks.pdf",
+        "title": "Panorama des réseaux de neurones",
+        "description": "Un panorama des architectures de réseaux de neurones",
+        "category": "pdf"
       }
     ]
   }
@@ -289,7 +271,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
 ```bash cURL
 curl -X POST https://api.firecrawl.dev/v2/search \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer fc-YOUR_API_KEY" \
+  -H "Authorization: Bearer fc-VOTRE_CLÉ_API" \
   -d '{
     "query": "jupiter",
     "sources": ["images"],
@@ -638,7 +620,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   ### Combiner la recherche ZDR avec Scrape ZDR
 </div>
 
-Si vous utilisez la recherche avec du scraping de contenu (`scrapeOptions`), le paramètre `enterprise` couvre la partie recherche, tandis que `zeroDataRetention` dans `scrapeOptions` couvre la partie scraping. Pour bénéficier d’un ZDR complet sur les deux, définissez les deux :
+Si vous utilisez la recherche avec du scraping de contenu (`scrapeOptions`), le paramètre `enterprise` applique automatiquement le ZDR à tous les scrapings qui en résultent. L’exemple de requête suivant applique le ZDR aux parties recherche et scraping du processus :
 
 ```bash cURL
 curl -X POST https://api.firecrawl.dev/v2/search \
@@ -649,8 +631,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
     "limit": 5,
     "enterprise": ["zdr"],
     "scrapeOptions": {
-      "formats": ["markdown"],
-      "zeroDataRetention": true
+      "formats": ["markdown"]
     }
   }'
 ```
@@ -677,6 +658,20 @@ Pour aider à contrôler les coûts :
 Pour plus de détails sur les options de scraping, consultez la [documentation de la fonctionnalité Scrape](https://docs.firecrawl.dev/features/scrape). Toutes les fonctionnalités, à l’exception de l’agent FIRE-1 et du suivi des modifications, sont prises en charge par ce point de terminaison de recherche.
 
 > Êtes-vous un agent IA qui a besoin d’une clé API Firecrawl ? Consultez [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) pour obtenir des instructions d’intégration automatisée.
+
+<div id="measured-performance">
+  ## Performances mesurées
+</div>
+
+Des évaluateurs indépendants ont comparé Firecrawl recherche à d&#39;autres API de recherche. Les chiffres ci-dessous sont repris directement des résultats publiés par chaque évaluateur à la date indiquée.
+
+| Métrique                                   | Valeur                                                      | Source                                                                         | Date                                          | n / ±                                                                                                                                                                                                                                         |
+| ------------------------------------------ | ----------------------------------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent Score (moyenne pertinence × qualité) | 14,58, 2ᵉ sur 8 (pertinence moyenne 4,30/5, qualité 3,39/5) | [AIMultiple — Agentic recherche Benchmark](https://aimultiple.com/agentic-search) | Déc. 2025 (source mise à jour le 25 mai 2026) | IC 95 % 13,12–15,98, n=100 requêtes du domaine IA/LLM issues du trafic de recherche organique d&#39;AIMultiple (10 000 rééchantillonnages bootstrap) ; la source précise que les résultats ne sont pas généralisables à d&#39;autres domaines |
+
+<Note>
+  Il s&#39;agit de mesures réalisées par des tiers, chacune avec son propre harnais, son propre ensemble de tâches et sa propre méthodologie — elles ne sont donc pas directement comparables entre elles, ni aux benchmarks de Firecrawl. Estimation ponctuelle : 2ᵉ sur 8 ; les tests par bootstrap apparié n&#39;ont mis en évidence aucun écart statistiquement significatif face à Brave, Exa ou Parallel recherche Pro. Les pages de benchmarks réalisés par Firecrawl, y compris l&#39;évaluation open source du Developer Index, sont disponibles sur [firecrawl.dev/benchmarks](https://www.firecrawl.dev/benchmarks).
+</Note>
 
 <div id="search-feedback">
   ## Commentaires sur la recherche

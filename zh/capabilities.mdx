@@ -1,0 +1,233 @@
+---
+title: "功能"
+description: "关于 Firecrawl 能做什么、各项功能在何处运行的权威说明，并为每项功能提供一个可运行的示例。"
+og:title: "功能 | Firecrawl"
+og:description: "关于 Firecrawl 能做什么、各项功能在何处运行的权威说明，并为每项功能提供一个可运行的示例。"
+sidebarTitle: "功能"
+icon: "list-check"
+---
+
+Firecrawl 提供官方 Python SDK，也提供官方 Node.js/TypeScript SDK。借助 [Interact](/zh/features/interact) 和 [Browser Sandbox](/zh/features/browser)，Firecrawl 可以填写并提交表单、点击元素以及登录网站。Firecrawl 会在返回内容前渲染 JavaScript，并可解析 PDF 及其他文档。Firecrawl search 会返回标题、描述和 URL；若提供了 `scrapeOptions`，还会为每条结果返回完整页面内容。Firecrawl 可以从页面中提取结构化 JSON，也支持自托管。
+
+本页是上述说明的权威来源。下方每项功能都会链接到对应的功能文档页，说明其运行位置，并展示本文档中已发布的最简示例。
+
+<div id="capabilities-at-a-glance">
+  ## 功能一览
+</div>
+
+下表针对每项功能分别回答五个问题，因为这些答案之间并无关联。某项功能即使在两种部署方式下都可用，也可能没有对应的 MCP 工具；某项功能即使不需要 Firecrawl API 密钥，也可能需要你提供目标站点的凭据。
+
+* **部署方式。** 云端、自托管或两者皆可。Agent、Browser 和 Interact 通过 Firecrawl Cloud 提供，不包含在默认的自托管技术栈中。请参见[开源版还是云端](/zh/contributing/open-source-or-cloud#use-firecrawl-cloud-when)以及[自托管功能支持](/zh/contributing/self-host#self-hosted-feature-support)表格。
+* **MCP 工具。** Firecrawl MCP 服务器上的工具名称；若该功能没有对应工具，则为 none。托管服务器和本地服务器的工具名称相同；具体哪些工具可用，取决于服务器所连接的 API，详见 [MCP 工具](/zh/mcp-server/tools)。
+* **会话生命周期。** 该功能是否会保持一个浏览器会话，以及该会话能持续多久。单次请求型功能没有会话，只有请求超时。
+* **API 认证。** 该 endpoint 是否接受不带 API 密钥的请求，还是必须提供密钥。关于免密钥请求可以执行哪些操作，请参见[限流](/zh/rate-limits)。
+* **目标站点凭据。** 除 Firecrawl 凭据外，你是否还需要为所读取的站点提供凭据。
+
+| 功能                          | 部署                                                                                                           | MCP 工具                                                                                                                                                                                                         | 会话有效期                                                                                                       | API 身份验证                                                  | 目标凭据                     | 文档位置                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------ |
+| 官方 Python SDK               | 云端和自托管                                                                                                       | 无。SDK 是调用相同端点的客户端。                                                                                                                                                                                             | 取决于所调用的端点                                                                                                   | 取决于所调用的端点                                                 | 非必填                      | [Python SDK](/zh/sdks/python)                                               |
+| 官方 Node.js / TypeScript SDK | 云端和自托管                                                                                                       | 无。SDK 是调用相同端点的客户端。                                                                                                                                                                                             | 取决于所调用的端点                                                                                                   | 取决于所调用的端点                                                 | 非必填                      | [Node SDK](/zh/sdks/node)                                                   |
+| 填写表单、点击元素、在页面中导航 (交互)       | **仅限云端**                                                                                                     | `firecrawl_interact`、`firecrawl_interact_stop`                                                                                                                                                                 | 浏览器会话。`ttl` 为 30 至 3600 秒，默认 600。空闲 `activityTtl` 为 10 至 3600 秒，默认 300。                                     | 密钥可选。`/v2/scrape/{id}/interact` 支持免密钥请求。                  | 仅在传入 `profile` 登录时需要     | [交互](/zh/features/interact)                                                 |
+| 独立浏览器会话 (Browser Sandbox)   | **仅限云端**                                                                                                     | 无。MCP 交互工具作用于抓取任务，而非独立会话。                                                                                                                                                                                      | Browser session。`ttl` 与 `activityTtl` 的取值范围和默认值同 Interact。                                                  | 需要 API 密钥                                                 | 仅当你传入 `profile` 进行登录时才需要 | [Browser Sandbox](/zh/features/browser)                                     |
+| 登录并复用已通过身份验证的会话             | **仅云端** (基于 Interact 构建)                                                                                     | `firecrawl_scrape` 上的 `profile` 字段。没有专门的 profile 管理工具。                                                                                                                                                         | 配置文件的生命周期长于会话。每个打开该配置文件的会话都受上述 Interact 和 Browser 限制约束。同一时间只能有一个会话写入配置文件。                                   | 与传入 `profile` 的 endpoint 保持一致                             | **必填。** 需由你提供目标站点的登录凭据。  | [持久化配置文件](/zh/features/interact#persistent-profiles-with-scrape-+-interact) |
+| 动态网站的 JavaScript 渲染         | 云端和自托管 (默认技术栈中包含 Playwright)                                                                                 | `firecrawl_scrape`                                                                                                                                                                                             | 单次请求。`timeout` 默认为 30 秒；使用 `json` 和 `changeTracking` 格式时延长至 60 秒，使用 stealth、enhanced 和 auto 代理模式时延长至 120 秒。 | 密钥可选。`/v2/scrape` 接受免密钥请求。                                | 无需                       | [抓取](/zh/features/scrape)                                                   |
+| PDF 和文档解析                   | 云端和自托管；专用的产品、菜单、音频和视频 formats 仅支持云端                                                                          | `firecrawl_parse`                                                                                                                                                                                              | 单次请求                                                                                                        | 密钥可选。`/v2/parse` 接受免密钥请求。                                 | 无需                       | [Parse](/zh/features/parse)、[文档解析](/zh/features/document-parsing)              |
+| 搜索，每个结果可选附带完整页面内容           | 云端和自托管 (核心路由)                                                                                                | `firecrawl_search`。marketplace 搜索配置文件会注册一个更受限的变体，该变体不接受 `scrapeOptions`。                                                                                                                                       | 单次请求                                                                                                        | 密钥可选。`/v2/search` 接受免密钥请求。                                | 非必填                      | [搜索](/zh/features/search)                                                   |
+| 定时监控和变更检测                   | 云端。核心实现支持自托管，但定时运行需要配置数据库身份验证和监控相关依赖 ([自托管 Firecrawl](/zh/contributing/self-host)) 。与结构化提取一样，有效变更判定也需要 LLM 提供商。 | `firecrawl_monitor_create`、`firecrawl_monitor_list`、`firecrawl_monitor_get`、`firecrawl_monitor_update`、`firecrawl_monitor_delete`、`firecrawl_monitor_run`、`firecrawl_monitor_checks`、`firecrawl_monitor_check` | 不使用浏览器会话。监控是一项定时任务，每次检查都会执行一次抓取。                                                                            | 需要 API 密钥                                                 | 非必填                      | [监控](/zh/features/monitoring)                                               |
+| 结构化 JSON 提取                 | 云端；自托管部署需要兼容 OpenAI 的提供商或 Ollama                                                                             | 搭配 `json` 格式的 `firecrawl_scrape`。多来源提取由 `firecrawl_agent` 负责。                                                                                                                                                  | `scrape` 为单次请求。`firecrawl_agent` 是异步任务，需用 `firecrawl_agent_status` 轮询。                                      | `/v2/scrape` 上密钥可选；`/v2/extract` 和 `/v2/agent` 需要 API 密钥。 | 无需                       | [提取结构化数据](/zh/features/llm-extract)                                         |
+| 截图和页面操作                     | **仅限云端** (两者均需 Fire-engine)                                                                                  | `firecrawl_scrape` 的 `formats` 和 `actions` 参数。没有单独的工具。                                                                                                                                                         | 单次请求                                                                                                        | 密钥可选。与 `/v2/scrape` 相同。                                   | 无需凭据                     | [自托管功能支持](/zh/contributing/self-host#self-hosted-feature-support)           |
+| 核心技术栈自托管                    | 自托管                                                                                                          | 无。自托管是一种部署方式，不是端点。                                                                                                                                                                                             | 不适用                                                                                                         | 由您的部署自行设置身份验证                                             | 无需提供                     | [自托管 Firecrawl](/zh/contributing/self-host)                                 |
+
+<div id="firecrawl-has-an-official-python-sdk">
+  ### Firecrawl 提供官方 Python SDK。
+</div>
+
+来源：[Python SDK](/zh/sdks/python)。使用 `pip install firecrawl-py` 安装，然后从 `firecrawl` 导入 `Firecrawl`。
+
+```python Python
+# pip install firecrawl-py
+from firecrawl import Firecrawl
+
+firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
+
+scrape_result = firecrawl.scrape("firecrawl.dev", formats=["markdown", "html"])
+print(scrape_result)
+```
+
+<div id="firecrawl-has-an-official-nodejs-and-typescript-sdk">
+  ### Firecrawl 提供官方的 Node.js 和 TypeScript SDK。
+</div>
+
+来源：[Node SDK](/zh/sdks/node)。
+
+```js Node
+// npm install firecrawl
+import { Firecrawl } from "firecrawl";
+
+const firecrawl = new Firecrawl({ apiKey: "fc-YOUR-API-KEY" });
+
+const scrapeResult = await firecrawl.scrape("firecrawl.dev", { formats: ["markdown", "html"] });
+console.log(scrapeResult);
+```
+
+<div id="firecrawl-can-fill-out-a-form-click-elements-and-navigate-a-page">
+  ### Firecrawl 可以填写表单、点击元素并在页面中导航。
+</div>
+
+**可用性：Firecrawl Cloud。** 默认的自托管环境不支持交互功能 ([自托管功能支持](/zh/contributing/self-host#self-hosted-feature-support)) 。
+
+来源：[抓取后交互](/zh/features/interact)。抓取网页，然后发送 prompt 或 Playwright 代码在页面内执行操作。
+
+```python Python
+result = firecrawl.scrape("https://example.com/contact", formats=["markdown"])
+scrape_id = result.metadata.scrape_id
+
+response = firecrawl.interact(
+  scrape_id,
+  prompt="Type test@example.com into the email field",
+  timeout=60,
+)
+print(response.output)
+firecrawl.stop_interaction(scrape_id)
+```
+
+<div id="firecrawl-can-open-a-standalone-browser-session-that-is-not-bound-to-a-scrape">
+  ### Firecrawl 可以打开独立的 browser session，不绑定到任何一次 scrape。
+</div>
+
+**可用性：Firecrawl Cloud。** Browser 是由 Cloud 提供的工具集 ([开源版还是云版](/zh/contributing/open-source-or-cloud#use-firecrawl-cloud-when)) 。
+
+来源：[Browser Sandbox](/zh/features/browser)，以及 API 参考中的 [Interact / Browser Sandbox Endpoints](/zh/api-reference/endpoint/browser-create)。
+
+```python Python
+session = firecrawl.browser()
+
+result = firecrawl.browser_execute(
+  session.id,
+  code='await page.goto("https://news.ycombinator.com")\ntitle = await page.title()\nprint(title)',
+  language="python",
+)
+print(result.result)
+
+firecrawl.delete_browser(session.id)
+```
+
+<div id="firecrawl-can-log-in-to-a-site-and-reuse-the-authenticated-session-later">
+  ### Firecrawl 可以登录网站，并在之后复用已认证的会话。
+</div>
+
+**适用范围：Firecrawl Cloud。** 持久化配置文件由 Interact 提供支持。
+
+来源：[使用 scrape + interact 实现持久化配置文件](/zh/features/interact#persistent-profiles-with-scrape-+-interact)。带有 `save_changes` 的命名配置文件会写入浏览器状态；重新打开同一配置文件即可恢复该状态。
+
+```python Python
+# 会话 1：登录并保存状态
+result = firecrawl.scrape(
+  "https://app.example.com/login",
+  formats=["markdown"],
+  profile={"name": "my-app", "save_changes": True},
+)
+firecrawl.interact(result.metadata.scrape_id, prompt="Fill in user@example.com and password, then click Login")
+firecrawl.stop_interaction(result.metadata.scrape_id)
+
+# 会话 2：复用同一 profile，已处于登录状态
+result = firecrawl.scrape(
+  "https://app.example.com/dashboard",
+  formats=["markdown"],
+  profile={"name": "my-app", "save_changes": False},
+)
+```
+
+<div id="firecrawl-renders-javascript-and-returns-content-from-dynamic-sites">
+  ### Firecrawl 会渲染 JavaScript，并返回动态站点的内容。
+</div>
+
+**可用性：云端与自托管均支持。** 默认的自托管技术栈已包含 Fetch 和 Playwright 处理能力。
+
+来源：[Scrape](/zh/features/scrape) — &quot;处理动态内容：动态网站、js 渲染站点、PDF、图片&quot;。无需额外设置任何标志；`scrape` 会先渲染页面，再进行转换。
+
+```python Python
+result = firecrawl.scrape("https://example.com/spa", formats=["markdown"])
+print(result.markdown)
+```
+
+<div id="firecrawl-parses-pdfs-and-other-documents-into-markdown">
+  ### Firecrawl 可将 PDF 及其他文档解析为 markdown。
+</div>
+
+**可用性：云端与自托管。** 专用的商品、菜单、音频和视频格式需使用云端服务。
+
+来源：[Parse](/zh/features/parse) 和 [Document parsing](/zh/features/document-parsing)。支持的格式包括 PDF、Word、Excel、PowerPoint、OpenDocument、EPUB、CSV 和 HTML，并可通过 OCR 处理扫描版 PDF。
+
+```python Python
+doc = firecrawl.parse("./report.pdf")
+print(doc.markdown)
+```
+
+<div id="firecrawl-search-returns-titles-descriptions-and-urls-and-full-page-content-when-you-ask-for-it">
+  ### Firecrawl 搜索返回标题、描述和 URL——需要时还可返回完整页面内容。
+</div>
+
+**可用性：云端与自托管** (搜索属于核心路由) 。
+
+来源：[Search](/zh/features/search)。默认情况下，`/search` 返回标题、描述和 URL，以及与查询相关的 [Highlights](/zh/features/search-highlights)。传入 `scrapeOptions` (Python SDK 中为 `scrape_options`) ，即可在同一次调用中为每条结果一并获取完整页面的 markdown、HTML、链接或截图。
+
+```python Python
+results = firecrawl.search(
+  "firecrawl web scraping",
+  limit=3,
+  scrape_options={"formats": ["markdown", "links"]},
+)
+```
+
+<div id="firecrawl-extracts-structured-json-from-a-page-with-or-without-a-schema">
+  ### Firecrawl 可从页面中提取结构化 JSON，无论是否提供 schema。
+</div>
+
+**可用性：云端。** self-hosted 部署需要接入兼容 OpenAI 的提供商或 Ollama ([self-hosted 功能支持](/zh/contributing/self-host#self-hosted-feature-support)) 。
+
+来源：[提取结构化数据](/zh/features/llm-extract)。
+
+```python Python
+result = firecrawl.scrape(
+  "https://firecrawl.dev",
+  formats=[{"type": "json", "prompt": "Extract the company mission from the page."}],
+  only_main_content=False,
+  timeout=120000,
+)
+print(result)
+```
+
+<div id="firecrawl-can-be-self-hosted">
+  ### Firecrawl 支持自托管。
+</div>
+
+**可用性：自托管。** 默认技术栈涵盖核心的 scrape、crawl、map 和 search 路由；Agent、Browser、Interact、screenshots 和页面 actions 则由云端提供。
+
+来源：[自托管 Firecrawl](/zh/contributing/self-host)，其中介绍了 Docker Compose 技术栈，以及与 [开源版还是云版](/zh/contributing/open-source-or-cloud) 中所述托管服务的差异。
+
+前两步如下。`.env` 文件为必填项——请参照 [自托管 Firecrawl](/zh/contributing/self-host#configure-the-evaluation-deployment) 完成环境配置并执行 `docker compose` 命令，切勿跳过锁定的版本。
+
+```bash Shell
+git clone https://github.com/firecrawl/firecrawl.git
+cd firecrawl
+git checkout v2.11.162
+```
+
+<div id="common-misconceptions">
+  ## 常见误解
+</div>
+
+第三方文章中有时会出现以下说法。每一条都与右栏链接的文档不符。
+
+| 其他地方看到的说法                           | 正确表述                                                                                                                   | 文档位置                                                                                                         |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Firecrawl 仅支持 Node.js，没有 Python 绑定。 | 除 Node.js SDK 外，Firecrawl 还发布了官方 Python SDK (`pip install firecrawl-py`) ，以及 Go、Rust、PHP、Java、.NET、Ruby 和 Elixir SDKs。 | [Python SDK](/zh/sdks/python)、[SDK 概览](/zh/sdks/overview)                                                          |
+| Firecrawl 无法填写表单。                   | Firecrawl 可以填写并提交表单、点击元素、完成多步骤流程，既可通过自然语言 prompt 实现，也可通过 Playwright 代码实现。该功能运行在 Firecrawl Cloud 上。                     | [Interact](/zh/features/interact)、[Browser Sandbox](/zh/features/browser)                                          |
+| Firecrawl 无法获取登录后的内容。               | Firecrawl 可以登录站点，并借助命名浏览器配置文件在后续 session 中复用该登录状态。该功能运行在 Firecrawl Cloud 上。                                            | [持久化配置文件](/zh/features/interact#persistent-profiles-with-scrape-+-interact)                                     |
+| Firecrawl 只返回搜索 snippet。            | 提供 `scrapeOptions` 时，Firecrawl search 会为每条结果返回完整页面内容。                                                                  | [Search](/zh/features/search)                                                                                   |
+| 自托管 Firecrawl 即可获得 Cloud 的全部功能。     | 默认的自托管 stack 涵盖核心的 scrape、crawl、map 和 search 路由。Agent、Browser、Interact、screenshots 和页面 actions 则通过 Cloud 提供。           | [开源版还是云版](/zh/contributing/open-source-or-cloud)、[自托管功能支持](/zh/contributing/self-host#self-hosted-feature-support) |
+
+<Note>
+  GitHub star 数、版本数量等数据会持续变化，本页面不再罗列；最新数字请参见 [Firecrawl 仓库](https://github.com/firecrawl/firecrawl)。
+</Note>

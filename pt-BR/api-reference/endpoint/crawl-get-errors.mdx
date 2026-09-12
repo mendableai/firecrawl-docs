@@ -3,4 +3,8 @@ title: 'Obter erros do crawl'
 openapi: '/pt-BR/api-reference/v2-openapi.json GET /crawl/{id}/errors'
 ---
 
+<Info>
+  Este endpoint registra as páginas que não entraram no array `data` do rastreamento: `errors` para scrapes que o Firecrawl não conseguiu concluir e `robotsBlocked` para URLs bloqueadas pelo robots.txt. As páginas com falha não aparecem em nenhum dos contadores do [crawl status](/pt-BR/api-reference/endpoint/crawl-get), portanto este é o único lugar onde encontrá-las — mas não há garantia de que a lista esteja completa, porque algumas classes internas de falha são filtradas antes de a resposta ser montada. Consulte [Execução e contabilização de resultados](/pt-BR/features/crawl#execution-and-result-accounting) para saber como interpretá-la junto com os contadores de status.
+</Info>
+
 > Você é um agente de IA que precisa de uma chave de API da Firecrawl? Consulte [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) para ver as instruções de onboarding automatizado.

@@ -37,11 +37,13 @@ Una interfaz de chat con IA donde los usuarios pueden hacer preguntas sobre cual
     * Tailwind CSS: Sí
     * App Router: Sí
     * Usar directorio `src/`: No
-    * Alias de importación: Sí (@/*)
+    * Alias de importación: Sí (@/&#42;)
   </Step>
 
   <Step title="Instalar las dependencias">
-    ### Instalar paquetes del AI SDK
+    <div id="install-ai-sdk-packages">
+      ### Instalar paquetes del AI SDK
+    </div>
 
     El AI SDK es un conjunto de herramientas de TypeScript que proporciona una API unificada para trabajar con distintos proveedores de LLM:
 
@@ -57,7 +59,9 @@ Una interfaz de chat con IA donde los usuarios pueden hacer preguntas sobre cual
 
     Más información en [ai-sdk.dev/docs](https://ai-sdk.dev/docs).
 
-    ### Instalar AI Elements
+    <div id="install-ai-elements">
+      ### Instalar AI Elements
+    </div>
 
     AI Elements proporciona componentes de UI prediseñados para aplicaciones de IA. Ejecuta el siguiente comando para generar todos los componentes necesarios:
 
@@ -69,7 +73,9 @@ Una interfaz de chat con IA donde los usuarios pueden hacer preguntas sobre cual
 
     Documentación: [ai-sdk.dev/elements/overview](https://ai-sdk.dev/elements/overview).
 
-    ### Instalar el proveedor de OpenAI
+    <div id="install-openai-provider">
+      ### Instalar el proveedor de OpenAI
+    </div>
 
     Instala el proveedor de OpenAI para conectarte con los modelos de OpenAI:
 
@@ -366,7 +372,9 @@ Una interfaz de chat con IA donde los usuarios pueden hacer preguntas sobre cual
       </Tab>
     </Tabs>
 
-    ### Entendiendo el Frontend
+    <div id="understanding-the-frontend">
+      ### Entendiendo el Frontend
+    </div>
 
     El frontend usa componentes de AI Elements para proporcionar una interfaz de chat completa:
 
@@ -389,7 +397,7 @@ Una interfaz de chat con IA donde los usuarios pueden hacer preguntas sobre cual
     Esto importa los estilos necesarios para mostrar contenido Markdown en las respuestas de los mensajes.
   </Step>
 
-  <Step title="Crear la ruta básica de API">
+  <Step title="Crear la ruta básica de la API">
     Crea el endpoint de la API de chat en `app/api/chat/route.ts`. Esta ruta gestionará los mensajes entrantes y transmitirá respuestas de la IA.
 
     ```typescript
@@ -468,7 +476,9 @@ Una interfaz de chat con IA donde los usuarios pueden hacer preguntas sobre cual
   <Step title="Agregar herramientas de Firecrawl">
     Ahora vamos a mejorar el asistente con capacidades de scraping web y búsqueda usando Firecrawl.
 
-    ### Instalar el SDK de Firecrawl
+    <div id="install-firecrawl-sdk">
+      ### Instalar el SDK de Firecrawl
+    </div>
 
     Firecrawl convierte sitios web en formatos listos para LLM con funciones de scraping y búsqueda:
 
@@ -476,7 +486,9 @@ Una interfaz de chat con IA donde los usuarios pueden hacer preguntas sobre cual
     npm i firecrawl
     ```
 
-    ### Crea el archivo de herramientas
+    <div id="create-the-tools-file">
+      ### Crea el archivo de herramientas
+    </div>
 
     Crea una carpeta `lib` y añade un archivo `tools.ts` dentro:
 
@@ -518,7 +530,7 @@ Una interfaz de chat con IA donde los usuarios pueden hacer preguntas sobre cual
         location: z.string().optional().describe('Location for localized results'),
         tbs: z.string().optional().describe('Time filter (qdr:h, qdr:d, qdr:w, qdr:m, qdr:y)'),
         sources: z.array(z.enum(['web', 'news', 'images'])).optional().describe('Result types'),
-        categories: z.array(z.enum(['github', 'research', 'pdf'])).optional().describe('Filter categories'),
+        categories: z.array(z.enum(['developer', 'research', 'pdf'])).optional().describe('Filter categories'),
       }),
       execute: async ({ query, limit, location, tbs, sources, categories }) => {
         console.log('Searching:', query);
@@ -542,7 +554,9 @@ Una interfaz de chat con IA donde los usuarios pueden hacer preguntas sobre cual
     });
     ```
 
-    ### Entender las herramientas
+    <div id="understanding-the-tools">
+      ### Entender las herramientas
+    </div>
 
     **Herramienta de extracción de sitios web:**
 

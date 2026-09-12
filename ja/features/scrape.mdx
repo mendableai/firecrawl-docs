@@ -60,6 +60,7 @@ import ScrapeHighlightsPython from "/snippets/ja/v2/scrape/highlights/python.mdx
 import ScrapeHighlightsNode from "/snippets/ja/v2/scrape/highlights/js.mdx";
 import ScrapeHighlightsCURL from "/snippets/ja/v2/scrape/highlights/curl.mdx";
 import PlaygroundCTA from "/snippets/ja/shared/playground-cta-scrape.mdx";
+import VideoParseVsScrape from "/snippets/ja/shared/video-parse-vs-scrape.mdx";
 
 Firecrawl は Web ページを Markdown に変換し、LLM アプリケーションに最適な形式にします。
 
@@ -67,9 +68,13 @@ Firecrawl は Web ページを Markdown に変換し、LLM アプリケーショ
 * 動的コンテンツに対応します: 動的な Web サイト、JavaScript でレンダリングされるサイト、PDF、画像
 * クリーンな Markdown、構造化データ、スクリーンショット、または HTML を出力します。
 
-詳細は、[Scrape Endpoint APIリファレンス](https://docs.firecrawl.dev/api-reference/endpoint/scrape)を参照してください。
+詳細は、[スクレイピング Endpoint APIリファレンス](https://docs.firecrawl.dev/api-reference/endpoint/scrape)を参照してください。
 
 <PlaygroundCTA />
+
+URL 上のドキュメントをスクレイピングしたいですか、それともディスク上のドキュメントを解析したいですか? ここでは、スクレイピング を使う場面と [Parse](/ja/features/parse) を使う場面を説明します:
+
+<VideoParseVsScrape />
 
 <Note>リクエストが失敗した場合は、エラーコード、原因、対処法、再試行に関するガイダンスの一覧については[Errors](/ja/api-reference/errors)を参照してください。</Note>
 
@@ -95,7 +100,9 @@ URL をスクレイピングして、その内容を取得するために使用�
   <InstallationCLI />
 </CodeGroup>
 
-### 使い方
+<div id="usage">
+  ### 使い方
+</div>
 
 <CodeGroup>
   <ScrapePython />
@@ -122,11 +129,24 @@ URL をスクレイピングして、その内容を取得するために使用�
   各スクレイピングで1クレジットを消費します。次のオプションには追加クレジットが必要です。JSONモードは1ページあたり追加で4クレジット、questionフォーマットとhighlightsフォーマットは各フォーマットごとに1ページあたり追加で4クレジット、PII マスキングは1ページあたり追加で4クレジット、PDF解析はPDFの1ページあたり1クレジットを消費し、音声または動画抽出は1ページあたり追加で4クレジットかかります。
 </Info>
 
-### レスポンス
+<div id="response">
+  ### レスポンス
+</div>
 
 SDK はデータオブジェクトを直接返します。cURL は以下のとおり、ペイロードをそのまま返します。
 
 <ScrapeResponse />
+
+<div id="response-metadata-and-status-codes">
+  ### レスポンスのメタデータとステータスコード
+</div>
+
+スクレイピングのレスポンスには、2つの異なるステータスレイヤーがあります。両者を区別することが重要です。
+
+* **API リクエストのステータス**: Firecrawl API 呼び出し自体の HTTP ステータスと、レスポンスボディ内の `success` ブール値です。リクエストが受理・処理されると、対象ページが非 2xx コードを返した場合でも、HTTP `200` と `success: true` が返されます。
+* **ページのステータス** (`data.metadata.statusCode`): 対象 Web サイトがそのページに対して返した HTTP ステータスです (例: `200`、`301`、`404`、`403`、`500`) 。これにより、ページ自体の応答を確認できます。
+
+したがって、信頼できる確認手順は次のとおりです。まずリクエストが成功したこと (HTTP `200` + `success: true`) を確認し、次に実際のページの結果として `data.metadata.statusCode` を確認します。Firecrawl では、`statusCode` が 2xx または `304` の場合、ページは正常に読み込まれたと見なします。それ以外の場合は、ページが正常に読み込まれなかったことを意味します。ページがエラーステータスを返した場合、`data.metadata.error` に追加の詳細が含まれることがあります。
 
 <div id="scrape-formats">
   ## スクレイピングのフォーマット
@@ -138,6 +158,9 @@ SDK はデータオブジェクトを直接返します。cURL は以下のと�
 * Summary (`summary`)
 * HTML (`html`) - ページの HTML をクリーンアップしたバージョン
 * Raw HTML (`rawHtml`) - ページから取得した未加工の HTML
+
+- Raw Base64 (`rawBase64`) - Base64 エンコードされた元の HTTP レスポンスボディ。リクエスト内で唯一のフォーマットである必要があります
+
 * Screenshot (`screenshot`、`fullPage`、`quality`、`viewport` などのオプションあり) — スクリーンショットの URL は 24 時間後に期限切れになります
 * Links (`links`)
 * JSON (`json`) - 構造化された出力
@@ -149,6 +172,8 @@ SDK はデータオブジェクトを直接返します。cURL は以下のと�
 * Query (`query`、`prompt` と任意の `mode` を使用) - ページについて自然言語で質問できます。回答は `answer` フィールドで返されます
 
 出力のキーは、選択したフォーマットに対応します。
+
+`rawBase64` フォーマットは、Base64 エンコードされた元の HTTP レスポンスボディを返します。`rawBase64` フィールドにはデータ URI ではなく、Base64 文字列そのものが格納されます。MIME タイプは `metadata.contentType` から取得します。API は他のフォーマットとの併用を拒否するため、`rawBase64` は単独でリクエストしてください。レスポンスには `markdown`、`html`、`rawHtml` フィールドは含まれず、その URL にある単一のファイルのみが含まれます。CSS、画像、その他のサブリソースは含まれません。
 
 <div id="extract-structured-data">
   ## 構造化データの抽出
@@ -221,7 +246,9 @@ SDK はデータオブジェクトを直接返します。cURL は以下のと�
   <ScrapeBrandingCURL />
 </CodeGroup>
 
-### レスポンス
+<div id="response-2">
+  ### レスポンス
+</div>
 
 ブランディングフォーマットは、以下の構造を持つ包括的な `BrandingProfile` オブジェクトを返します。
 
@@ -292,7 +319,9 @@ SDK はデータオブジェクトを直接返します。cURL は以下のと�
   <ScrapeProductCURL />
 </CodeGroup>
 
-### レスポンス
+<div id="response-3">
+  ### レスポンス
+</div>
 
 productフォーマットでは、以下の構造を持つ `product` オブジェクトが返されます。
 
@@ -337,7 +366,9 @@ productフォーマットでは、以下の構造を持つ `product` オブジ�
   **セルフホスティング:** `product` フォーマットは専用の商品抽出サービスによって提供されます。Firecrawl Cloud ではそのまま利用できます。セルフホストする場合は、そのサービスを指すように `PRODUCT_EXTRACTION_SERVICE_URL` を設定してください。未設定の場合、`product` フォーマットをリクエストすると `warning` が返され、商品は返されません (音声/動画フォーマットが各サービスで採用しているのと同じパターンです) 。
 </Note>
 
-### 他のフォーマットと組み合わせる
+<div id="combining-with-other-formats-2">
+  ### 他のフォーマットと組み合わせる
+</div>
 
 productフォーマットは他のフォーマットと組み合わせることで、網羅的なページデータを取得できます。
 
@@ -504,7 +535,7 @@ Firecrawl を使うと、スクレイピングの前に Web ページ上でさ�
 
 ロケーション設定を指定すると、Firecrawl は利用可能な場合は適切なプロキシを使用し、対応する言語とタイムゾーンをエミュレートします。指定がない場合、ロケーションのデフォルトは「US」です。
 
-<div id="usage">
+<div id="usage-2">
   ### 使い方
 </div>
 
@@ -614,7 +645,7 @@ Firecrawl を使うと、スクレイピングの前に Web ページ上でさ�
 
 複数のURLを同時にバッチスクレイピングできるようになりました。開始URLと任意のパラメータを引数として受け取ります。params引数では、出力フォーマットなど、バッチスクレイピングジョブの追加オプションを指定できます。
 
-<div id="how-it-works">
+<div id="how-it-works-2">
   ### 仕組み
 </div>
 
@@ -622,7 +653,7 @@ Firecrawl を使うと、スクレイピングの前に Web ページ上でさ�
 
 SDK は同期型と非同期型の2つのメソッドを提供します。同期型はバッチスクレイプジョブの結果を返し、非同期型はバッチスクレイプのステータス確認に使えるジョブIDを返します。
 
-<div id="usage">
+<div id="usage-3">
   ### 使い方
 </div>
 
@@ -634,7 +665,7 @@ SDK は同期型と非同期型の2つのメソッドを提供します。同期
   <BatchScrapeCURL />
 </CodeGroup>
 
-<div id="response">
+<div id="response-4">
   ### Response
 </div>
 

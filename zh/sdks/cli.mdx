@@ -1,6 +1,6 @@
 ---
 title: "CLI"
-description: "Firecrawl 技能让 Claude Code、Antigravity 和 OpenCode 等 AI 代理能够通过 CLI 轻松使用 Firecrawl。"
+description: "Firecrawl 技能让 Codex、Claude Code、Cursor 和 OpenCode 等 AI 代理能够通过 CLI 轻松使用 Firecrawl。"
 og:title: "CLI | Firecrawl"
 og:description: "Firecrawl 技能让 AI 代理能够通过 CLI 轻松使用 Firecrawl。AI 代理可以通过更优、上下文利用效率更高的界面获取网页数据"
 ---
@@ -24,19 +24,19 @@ import AgentBasic from "/snippets/zh/v2/cli/agent/basic.mdx";
 import AgentOptions from "/snippets/zh/v2/cli/agent/options.mdx";
 import InteractCLI from "/snippets/zh/v2/interact/quickstart/cli.mdx";
 
-直接在终端中执行搜索、抓取、交互、爬取、Map，并运行代理任务。Firecrawl CLI 既可独立使用，也可结合技能；Claude Code、Antigravity 和 OpenCode 等 AI 编码代理可以自动发现并使用这些技能。
+直接在终端中执行搜索、抓取、交互、爬取、Map，并运行代理任务。Firecrawl CLI 既可独立使用，也可结合技能；Codex、Claude Code、Cursor 和 OpenCode 等 AI 编码代理可以自动发现并使用这些技能。
 
 <div id="installation">
   ## 安装
 </div>
 
-如果你正在使用某个 AI 代理，例如 Claude Code，你可以安装下面的 Firecrawl 技能，代理将为你完成设置。
+如果你正在使用某个 AI 代理，例如 Codex、Claude Code、Cursor 或 OpenCode，你可以安装下面的 Firecrawl 技能，代理将为你完成设置。
 
 ```bash
 npx -y firecrawl-cli@latest init --all --browser
 ```
 
-* `--all` 会将每个 Firecrawl 技能分段 (CLI、构建、工作流) 安装到所有检测到的 AI 编码代理中
+* `--all` 会跳过代理选择，并初始化所有检测到的代理
 * `--browser` 会自动打开浏览器以完成 Firecrawl 身份验证
 
 <Note>
@@ -194,7 +194,7 @@ firecrawl --status
 | ---------------------------- | --------------------------------------------------------------------- |
 | `--limit <number>`           | 结果数量上限 (默认：5，最大：100)                                                  |
 | `--sources <sources>`        | 要搜索的数据源：`web`、`images`、`news` (逗号分隔)                                  |
-| `--categories <categories>`  | 按类别过滤：`github`、`research`、`pdf`、`developer` (逗号分隔)                    |
+| `--categories <categories>`  | 按类别过滤：`research`、`pdf`、`developer` (逗号分隔)                             |
 | `--tbs <value>`              | 时间过滤：`qdr:h` (小时) 、`qdr:d` (天) 、`qdr:w` (周) 、`qdr:m` (月) 、`qdr:y` (年) |
 | `--location <location>`      | 地域定向 (例如：&quot;Berlin,Germany&quot;)                                  |
 | `--country <code>`           | ISO 国家代码 (默认：US)                                                      |
@@ -396,21 +396,21 @@ firecrawl monitor delete <monitorId>
 
 **可用选项：**
 
-| 选项                          | 说明                                                                                    |
-| --------------------------- | ------------------------------------------------------------------------------------- |
-| `--urls <urls>`             | 可选的 URL 列表，用于限定代理的处理范围 (用逗号分隔)                                                        |
-| `--model <model>`           | 使用的模型：`spark-1-pro` (默认，准确率更高)、`spark-1-mini` (比 Pro 成本低 60%) 或 `spark-2` (成本最低且速度最快) |
-| `--schema <json>`           | 用于结构化输出的 JSON schema (内联 JSON 字符串)                                                    |
-| `--schema-file <path>`      | 用于结构化输出的 JSON schema 文件路径                                                             |
-| `--max-credits <number>`    | 最多可消耗的额度 (达到上限时任务失败)                                                                  |
-| `--webhook <url-or-json>`   | Webhook URL 或配置                                                                       |
-| `--status`                  | 检查已有代理任务的状态                                                                           |
-| `--cancel`                  | 通过任务 ID 取消正在运行的代理任务                                                                   |
-| `--wait`                    | 等待代理任务完成后再返回结果                                                                        |
-| `--poll-interval <seconds>` | 等待时的轮询间隔 (默认：5)                                                                       |
-| `--timeout <seconds>`       | 等待时的超时时间 (默认：无限制)                                                                     |
-| `--output <path>`           | 将输出保存到文件                                                                              |
-| `--json`                    | 以 JSON 格式输出                                                                           |
+| 选项                          | 说明                                                             |
+| --------------------------- | -------------------------------------------------------------- |
+| `--urls <urls>`             | 可选的 URL 列表，用于限定代理的处理范围 (用逗号分隔)                                 |
+| `--model <model>`           | 要使用的模型。默认值为 `spark-2`，所有运行均使用该模型。Spark 1 模型已弃用，并会路由到 `spark-2` |
+| `--schema <json>`           | 用于结构化输出的 JSON schema (内联 JSON 字符串)                             |
+| `--schema-file <path>`      | 用于结构化输出的 JSON schema 文件路径                                      |
+| `--max-credits <number>`    | 最多可消耗的额度 (达到上限时任务失败)                                           |
+| `--webhook <url-or-json>`   | Webhook URL 或配置                                                |
+| `--status`                  | 检查已有代理任务的状态                                                    |
+| `--cancel`                  | 通过任务 ID 取消正在运行的代理任务                                            |
+| `--wait`                    | 等待代理任务完成后再返回结果                                                 |
+| `--poll-interval <seconds>` | 等待时的轮询间隔 (默认：5)                                                |
+| `--timeout <seconds>`       | 等待时的超时时间 (默认：无限制)                                              |
+| `--output <path>`           | 将输出保存到文件                                                       |
+| `--json`                    | 以 JSON 格式输出                                                    |
 
 ***
 
@@ -448,13 +448,15 @@ firecrawl --version
 
 以下选项适用于所有命令：
 
-| 选项                | 简写   | 说明                          |
-| ----------------- | ---- | --------------------------- |
-| `--status`        |      | 显示版本、认证状态、并发数和额度            |
-| `--api-key <key>` | `-k` | 在此命令中临时覆盖已保存的 API 密钥        |
-| `--api-url <url>` |      | 使用自定义 API URL (用于自托管/本地开发)  |
-| `--help`          | `-h` | 显示命令帮助信息                    |
-| `--version`       | `-V` | 显示 CLI 版本                   |
+| 选项                | 简写   | 说明                         |
+| ----------------- | ---- | -------------------------- |
+| `--status`        |      | 显示版本、认证状态、并发数和额度           |
+| `--api-key <key>` | `-k` | 在此命令中临时覆盖已保存的 API 密钥       |
+| `--api-url <url>` |      | 使用自定义 API URL (用于自托管/本地开发) |
+| `--help`          | `-h` | 显示命令帮助信息                   |
+| `--version`       | `-V` | 显示 CLI 版本                  |
+
+`init` 还接受 `--skip-auth`、`--skip-install`、`--skip-skills` 和 `--agent <name>`。请参见 `firecrawl init --help`。
 
 <div id="output-handling">
   ## 输出处理
@@ -531,7 +533,9 @@ firecrawl map https://example.com --search "blog" -o blog-urls.txt
 firecrawl search "machine learning best practices 2024" --scrape --scrape-formats markdown --pretty
 ```
 
-### 智能体
+<div id="agent-2">
+  ### 智能体
+</div>
 
 ```bash CLI
 # URL 可选

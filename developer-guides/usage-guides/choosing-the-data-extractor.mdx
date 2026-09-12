@@ -41,7 +41,7 @@ The `/agent` endpoint is Firecrawl's most advanced offering—the successor to `
 - **Autonomous Navigation**: The agent searches and navigates deep into sites to find your data
 - **Deep Web Search**: Autonomously discovers information across multiple domains and pages
 - **Parallel Processing**: Processes multiple sources simultaneously for faster results
-- **Models Available**: `spark-1-pro` (default, higher accuracy), `spark-1-mini` (60% cheaper than Pro) and `spark-2` (cheapest and fastest)
+- **Model**: Every run executes on `spark-2` (the default). Spark 1 models are deprecated and route to `spark-2`
 
 ### Example
 
@@ -204,7 +204,7 @@ result = app.agent(
     urls=["https://example.com"],  # Optional - can omit entirely
     prompt="Extract product information from example.com",
     schema=schema,
-    model="spark-2"  # "spark-1-pro" is the default; "spark-1-mini" is also available
+    model="spark-2"  # the default; Spark 1 models are deprecated and route to "spark-2"
 )
 ```
 

@@ -60,6 +60,7 @@ import ScrapeHighlightsPython from "/snippets/v2/scrape/highlights/python.mdx";
 import ScrapeHighlightsNode from "/snippets/v2/scrape/highlights/js.mdx";
 import ScrapeHighlightsCURL from "/snippets/v2/scrape/highlights/curl.mdx";
 import PlaygroundCTA from "/snippets/shared/playground-cta-scrape.mdx";
+import VideoParseVsScrape from "/snippets/shared/video-parse-vs-scrape.mdx";
 
 Firecrawl converts web pages into markdown, ideal for LLM applications.
 
@@ -70,6 +71,10 @@ Firecrawl converts web pages into markdown, ideal for LLM applications.
 For details, see the [Scrape Endpoint API Reference](https://docs.firecrawl.dev/api-reference/endpoint/scrape).
 
 <PlaygroundCTA />
+
+Scraping a document at a URL, or parsing one from disk? This walks through when to use Scrape and when to use [Parse](/features/parse):
+
+<VideoParseVsScrape />
 
 <Note>If a request fails, see [Errors](/api-reference/errors) for the full catalog of error codes, causes, remedies, and retry guidance.</Note>
 
@@ -126,6 +131,15 @@ SDKs will return the data object directly. cURL will return the payload exactly 
 
 <ScrapeResponse />
 
+### Response metadata and status codes
+
+There are two separate status layers in a scrape response, and it helps to keep them apart:
+
+- **API request status**: the HTTP status of the Firecrawl API call itself, alongside the `success` boolean in the response body. An accepted and processed request returns HTTP `200` with `success: true`, even if the target page underneath returned a non-2xx code.
+- **Page status** (`data.metadata.statusCode`): the HTTP status the target website returned for that page (e.g. `200`, `301`, `404`, `403`, `500`). This is what tells you how the page itself responded.
+
+So the reliable pattern is: first confirm the request succeeded (HTTP `200` + `success: true`), then check `data.metadata.statusCode` for the actual page outcome. Firecrawl treats a `statusCode` of 2xx or `304` as a clean page load; anything else means the page did not load cleanly. When a page returns an error status, `data.metadata.error` may carry additional detail.
+
 ## Scrape Formats
 
 You can now choose what formats you want your output in. You can specify multiple output formats. Supported formats are:
@@ -134,6 +148,7 @@ You can now choose what formats you want your output in. You can specify multipl
 - Summary (`summary`)
 - HTML (`html`) - cleaned version of the page's HTML
 - Raw HTML (`rawHtml`) - unmodified HTML as received from the page
+- Raw Base64 (`rawBase64`) - Base64-encoded original HTTP response body; must be the only format in the request
 - Screenshot (`screenshot`, with options like `fullPage`, `quality`, `viewport`) — screenshot URLs expire after 24 hours
 - Links (`links`)
 - JSON (`json`) - structured output
@@ -145,6 +160,8 @@ You can now choose what formats you want your output in. You can specify multipl
 - Query (`query`, with `prompt` and optional `mode`) - ask a natural-language question about the page; the answer is returned in the `answer` field
 
 Output keys will match the format you choose.
+
+The `rawBase64` format returns the original HTTP response body, encoded as Base64. The `rawBase64` field holds a bare Base64 string, not a data URI. Read the MIME type from `metadata.contentType`. Request `rawBase64` alone, because the API rejects it together with any other format. The response has no `markdown`, `html`, or `rawHtml` field, and it holds only the one file at that URL, not CSS, images, or other sub-resources.
 
 ## Extract structured data
 

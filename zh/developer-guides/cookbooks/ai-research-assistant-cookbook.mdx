@@ -37,11 +37,13 @@ description: "构建一款具备网页抓取与搜索能力的完整 AI 驱动�
     * Tailwind CSS：是
     * App Router：是
     * 使用 `src/` 目录：否
-    * 导入别名：是 (@/*)
+    * 导入别名：是 (@/&#42;)
   </Step>
 
   <Step title="安装依赖项">
-    ### 安装 AI SDK 包
+    <div id="install-ai-sdk-packages">
+      ### 安装 AI SDK 包
+    </div>
 
     AI SDK 是一个 TypeScript 工具包，提供统一的 API，便于与不同的 LLM 服务提供商对接：
 
@@ -57,7 +59,9 @@ description: "构建一款具备网页抓取与搜索能力的完整 AI 驱动�
 
     在 [ai-sdk.dev/docs](https://ai-sdk.dev/docs) 了解更多。
 
-    ### 安装 AI Elements
+    <div id="install-ai-elements">
+      ### 安装 AI Elements
+    </div>
 
     AI Elements 提供用于 AI 应用的预构建 UI 组件。运行以下命令以生成所有必需的组件脚手架：
 
@@ -69,7 +73,9 @@ description: "构建一款具备网页抓取与搜索能力的完整 AI 驱动�
 
     文档：[ai-sdk.dev/elements/overview](https://ai-sdk.dev/elements/overview)。
 
-    ### 安装 OpenAI Provider
+    <div id="install-openai-provider">
+      ### 安装 OpenAI Provider
+    </div>
 
     安装 OpenAI Provider 以连接到 OpenAI 的模型：
 
@@ -366,9 +372,11 @@ description: "构建一款具备网页抓取与搜索能力的完整 AI 驱动�
       </Tab>
     </Tabs>
 
-    ### 了解前端
+    <div id="understanding-the-frontend">
+      ### 了解前端
+    </div>
 
-    前端使用 AI Elements 组件提供完整的聊天界面:
+    前端使用 AI Elements 组件提供完整的聊天界面：
 
     **核心功能：**
 
@@ -468,7 +476,9 @@ description: "构建一款具备网页抓取与搜索能力的完整 AI 驱动�
   <Step title="添加 Firecrawl 工具">
     现在，让我们使用 Firecrawl 为助手增强网页抓取和搜索功能。
 
-    ### 安装 Firecrawl SDK
+    <div id="install-firecrawl-sdk">
+      ### 安装 Firecrawl SDK
+    </div>
 
     Firecrawl 通过抓取和搜索，将网站转换为适用于 LLM 的 formats：
 
@@ -476,7 +486,9 @@ description: "构建一款具备网页抓取与搜索能力的完整 AI 驱动�
     npm i firecrawl
     ```
 
-    ### 创建工具文件
+    <div id="create-the-tools-file">
+      ### 创建工具文件
+    </div>
 
     创建一个 `lib` 文件夹，并在其中添加一个 `tools.ts` 文件：
 
@@ -518,7 +530,7 @@ description: "构建一款具备网页抓取与搜索能力的完整 AI 驱动�
         location: z.string().optional().describe('本地化结果的地理位置'),
         tbs: z.string().optional().describe('时间过滤器 (qdr:h, qdr:d, qdr:w, qdr:m, qdr:y)'),
         sources: z.array(z.enum(['web', 'news', 'images'])).optional().describe('结果类型'),
-        categories: z.array(z.enum(['github', 'research', 'pdf'])).optional().describe('筛选类别'),
+        categories: z.array(z.enum(['developer', 'research', 'pdf'])).optional().describe('筛选类别'),
       }),
       execute: async ({ query, limit, location, tbs, sources, categories }) => {
         console.log('正在搜索:', query);
@@ -542,7 +554,9 @@ description: "构建一款具备网页抓取与搜索能力的完整 AI 驱动�
     });
     ```
 
-    ### 了解这些工具
+    <div id="understanding-the-tools">
+      ### 了解这些工具
+    </div>
 
     **Scrape Website 工具：**
 
@@ -615,7 +629,7 @@ description: "构建一款具备网页抓取与搜索能力的完整 AI 驱动�
     * 从 `@/lib/tools` 引入 Firecrawl 工具
     * 添加包含 `scrapeWebsite` 和 `searchWeb` 的 `tools` 对象
     * 添加 `stopWhen: stepCountIs(5)` 以限制执行步数
-    * 启用网页搜索时将 `toolChoice` 设为 “auto”，否则为 “none”
+    * 启用网页搜索时将 `toolChoice` 设为 &quot;auto&quot;，否则为 &quot;none&quot;
 
     了解更多关于 `streamText`：[ai-sdk.dev/docs/reference/ai-sdk-core/stream-text](https://ai-sdk.dev/docs/reference/ai-sdk-core/stream-text)。
   </Step>

@@ -18,6 +18,8 @@ import MapNodeShort from '/snippets/ja/v2/map/short/js.mdx'
 import ExtractNodeShort from '/snippets/v2/extract/short/js.mdx'
 import CrawlWebSocketNodeBase from '/snippets/ja/v2/crawl-websocket/base/js.mdx'
 import PersistentJS from '/snippets/ja/v2/browser/persistent/js.mdx'
+import AgentWithSchemaNode from '/snippets/ja/v2/agent/with-schema/js.mdx'
+import AgentStatusNode from '/snippets/ja/v2/agent/status/js.mdx'
 
 Node.js アプリケーションから、単一ページをスクレイピングし、サイト全体をクロールし、URL をマップできます。SDK がページネーション、リトライ、非同期ジョブのポーリングを処理するため、返されたデータの利用に集中できます。
 
@@ -127,6 +129,20 @@ Web サイト上のすべての URL を検出するには、`map` メソッド�
   エラーハンドリング込みでWeb サイトから構造化データを抽出するには、`extractUrl` メソッドを使用します。開始 URL を引数に取り、抽出したデータをディクショナリとして返します。
 
   <ExtractNodeShort /> */}
+
+<div id="running-an-agent">
+  ### エージェントの実行
+</div>
+
+`agent` メソッドを使用して、調査または抽出タスクをエージェントに渡します。`prompt`、出力形式を指定する任意の `schema`、実行で消費できるクレジットの上限を設定する `maxCredits` を指定します。
+
+<AgentWithSchemaNode />
+
+エージェントの実行は非同期です。`startAgent` を使用するとすぐにジョブ ID が返され、その後 `getAgentStatus` でポーリングできます。
+
+<AgentStatusNode />
+
+各実行では、実行トレースと出力スナップショットも記録されます。これらは `getAgentTrace` と `getAgentSnapshot` で取得できます。イベントスキーマとすべてのパラメータについては、[Agent](/ja/features/agent) を参照してください。
 
 <div id="crawling-a-website-with-websockets">
   ### WebSockets を使って Web サイトをクロールする

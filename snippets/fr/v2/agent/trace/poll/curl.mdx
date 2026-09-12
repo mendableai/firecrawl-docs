@@ -1,0 +1,32 @@
+```bash cURL
+# N'affiche que les événements pas encore vus, et continue d'interroger pendant
+# une courte fenêtre après la fin de l'exécution.
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+: > "$tmp/seen.txt"
+finished=0
+quiet=0
+
+while [ "$quiet" -lt 3 ]; do
+  curl -s "https://api.firecrawl.dev/v2/agent/JOB_ID/trace" \
+    -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  | jq -r '.events | group_by(.agent.id)[] | sort_by(.producerSequence)[]
+           | "\(.eventId) \(.agent.id) \(.producerSequence) \(.type)"' > "$tmp/poll.txt"
+
+  new=$(grep -vxF -f "$tmp/seen.txt" "$tmp/poll.txt")
+  [ -n "$new" ] && echo "$new"
+  cp "$tmp/poll.txt" "$tmp/seen.txt"
+
+  if [ "$finished" = 0 ]; then
+    status=$(curl -s "https://api.firecrawl.dev/v2/agent/JOB_ID" \
+      -H "Authorization: Bearer $FIRECRAWL_API_KEY" | jq -r '.status')
+    [ "$status" = "processing" ] || finished=1
+  elif [ -n "$new" ]; then
+    quiet=0
+  else
+    quiet=$((quiet + 1))
+  fi
+
+  sleep 5
+done
+```

@@ -44,11 +44,11 @@ Isso torna rápido e fácil obter dados da web no formato de que você precisa.
 Usado para extrair dados estruturados de páginas coletadas.
 
 <CodeGroup>
+  <ExtractPython />
 
-<ExtractPython />
-<ExtractNode />
-<ExtractCURL />
+  <ExtractNode />
 
+  <ExtractCURL />
 </CodeGroup>
 
 Saída:
@@ -62,9 +62,7 @@ Saída:
 Agora você pode extrair sem definir um esquema, apenas passando um `prompt` para o endpoint. O LLM escolhe a estrutura dos dados.
 
 <CodeGroup>
-
-<ExtractNoSchemaCURL />
-
+  <ExtractNoSchemaCURL />
 </CodeGroup>
 
 Resultado:
@@ -77,6 +75,7 @@ Resultado:
 
 O objeto `jsonOptions` aceita os seguintes parâmetros:
 
-- `schema`: O esquema a ser usado na extração.
-- `systemPrompt`: O prompt do sistema a ser usado na extração.
-- `prompt`: O prompt a ser usado na extração sem esquema.
+* `schema`: O schema a ser usado na extração.
+* `systemPrompt`: O prompt do sistema a ser usado na extração.
+* `prompt`: O prompt a ser usado na extração sem schema.
+* `checkPromptInjection`: Booleano opcional (o padrão é `false`). Quando ativado, verifica o conteúdo da página extraída em busca de tentativas de injeção de prompt antes de executar a extração. Se uma injeção for detectada, a solicitação falhará com um 403 e o código de erro `SCRAPE_PROMPT_INJECTION_DETECTED`. Adiciona 4 créditos quando a verificação é executada. Veja [Detecção de injeção de prompt](/pt-BR/features/llm-extract#prompt-injection-detection).

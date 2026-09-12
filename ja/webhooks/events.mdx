@@ -79,7 +79,6 @@ Firecrawl はジョブのライフサイクルの各段階で webhook イベン�
 }
 ```
 
-
 <div id="crawlpage">
   ### `crawl.page`
 </div>
@@ -113,7 +112,6 @@ Firecrawl はジョブのライフサイクルの各段階で webhook イベン�
 }
 ```
 
-
 <div id="crawlcompleted">
   ### `crawl.completed`
 </div>
@@ -129,7 +127,6 @@ Firecrawl はジョブのライフサイクルの各段階で webhook イベン�
   "metadata": {}
 }
 ```
-
 
 <div id="batch-scrape-events">
   ## バッチスクレイプイベント
@@ -150,7 +147,6 @@ Firecrawl はジョブのライフサイクルの各段階で webhook イベン�
   "metadata": {}
 }
 ```
-
 
 <div id="batch_scrapepage">
   ### `batch_scrape.page`
@@ -185,7 +181,6 @@ Firecrawl はジョブのライフサイクルの各段階で webhook イベン�
 }
 ```
 
-
 <div id="batch_scrapecompleted">
   ### `batch_scrape.completed`
 </div>
@@ -201,7 +196,6 @@ Firecrawl はジョブのライフサイクルの各段階で webhook イベン�
   "metadata": {}
 }
 ```
-
 
 <div id="monitor-events">
   ## Monitorイベント
@@ -245,7 +239,6 @@ monitor のチェックが完了したときに送信されます。`data` オ�
 }
 ```
 
-
 <div id="extractcompleted">
   ### `extract.completed`
 </div>
@@ -274,7 +267,6 @@ monitor のチェックが完了したときに送信されます。`data` オ�
 }
 ```
 
-
 <div id="extractfailed">
   ### `extract.failed`
 </div>
@@ -292,10 +284,11 @@ monitor のチェックが完了したときに送信されます。`data` オ�
 }
 ```
 
-
 <div id="agent-events">
-  ## エージェントイベント
+  ## エージェント イベント
 </div>
+
+[`/v2/agent`](/ja/features/agent) で `webhook` を指定して開始されたジョブに対して送信されます。
 
 <div id="agentstarted">
   ### `agent.started`
@@ -313,12 +306,11 @@ monitor のチェックが完了したときに送信されます。`data` オ�
 }
 ```
 
-
 <div id="agentaction">
   ### `agent.action`
 </div>
 
-各ツール（scrape、search など）の実行ごとに送信されます。
+各ツール (scrape、search など) の実行ごとに送信されます。
 
 ```json
 {
@@ -341,7 +333,6 @@ monitor のチェックが完了したときに送信されます。`data` オ�
 <Note>
   `action` イベントの `creditsUsed` の値は、これまでに使用されたクレジット総量の**推定値**です。最終的かつ正確なクレジット数は、`completed`、`failed`、`cancelled` イベントでのみ取得できます。
 </Note>
-
 
 <div id="agentcompleted">
   ### `agent.completed`
@@ -368,7 +359,6 @@ monitor のチェックが完了したときに送信されます。`data` オ�
 }
 ```
 
-
 <div id="agentfailed">
   ### `agent.failed`
 </div>
@@ -390,7 +380,6 @@ monitor のチェックが完了したときに送信されます。`data` オ�
 }
 ```
 
-
 <div id="agentcancelled">
   ### `agent.cancelled`
 </div>
@@ -410,7 +399,6 @@ monitor のチェックが完了したときに送信されます。`data` オ�
   "metadata": {}
 }
 ```
-
 
 <div id="event-filtering">
   ## イベントのフィルタリング

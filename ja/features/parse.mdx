@@ -22,6 +22,7 @@ import ParseJsonNode from "/snippets/ja/v2/parse/json/js.mdx";
 import ParseJsonCURL from "/snippets/ja/v2/parse/json/curl.mdx";
 import ParseGroundingPython from "/snippets/ja/v2/parse/grounding/python.mdx";
 import ParseGroundingNode from "/snippets/ja/v2/parse/grounding/js.mdx";
+import VideoParseVsScrape from "/snippets/ja/shared/video-parse-vs-scrape.mdx";
 
 解析はドキュメントをクリーンで LLM 対応のデータに変換します。ファイルを
 [`/parse`](/ja/api-reference/endpoint/parse) にアップロードするか、公開ドキュメントの URL を [`/scrape`](/ja/features/scrape)
@@ -32,6 +33,10 @@ import ParseGroundingNode from "/snippets/ja/v2/parse/grounding/js.mdx";
 * **根拠に基づく構造**: バウンディングボックスと Markdown 内の文字範囲へのリンクを持つ型付きレイアウトブロック (PDF)
 * **主要な形式に対応**: PDF、Word、Excel、PowerPoint、OpenDocument、EPUB、CSV、HTML
 * **ゼロデータ保持**をサポート
+
+解析と [Scrape](/ja/features/scrape) のどちらを使うべきか迷っていますか？以下でその違いを説明します:
+
+<VideoParseVsScrape />
 
 <div id="quickstart">
   ## クイックスタート

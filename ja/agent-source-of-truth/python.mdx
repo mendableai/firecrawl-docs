@@ -39,7 +39,9 @@ client = Firecrawl(api_key=os.environ.get("FIRECRAWL_API_KEY"))
   ## 検索
 </div>
 
-### 使用する理由
+<div id="why-use-it">
+  ### 使用する理由
+</div>
 
 クエリから関連ページを見つけ、スクレイピングまたは Interact の対象にするURLを選ぶには、検索を使用します。`site:` で結果を特定のサイトに絞り込むことができます (例：`site:docs.firecrawl.dev crawl webhooks`) 。
 
@@ -130,10 +132,10 @@ results = client.search(
   * 型: カテゴリ名または `Category` オブジェクトのリスト
   * 使用する場面: カテゴリで結果を絞り込みたい場合。
   * 確認済みの値:
-    * `"github"`: GitHub に特化した結果
+    * `"developer"`: Developer Index の結果
     * `"research"`: 研究・学術関連の結果
     * `"pdf"`: PDF に特化した結果
-    * `Category(type="github" | "research" | "pdf")`: 型付きカテゴリオブジェクト形式
+    * `Category(type="developer" | "research" | "pdf")`: 型付きカテゴリオブジェクト形式
 
 * `limit`
   * 型: int
@@ -165,23 +167,27 @@ results = client.search(
   ## スクレイピング
 </div>
 
-### 使用する理由
+<div id="why-use-it-2">
+  ### 使用する理由
+</div>
 
 URLがすでに分かっていて、1つ以上のフォーマットで構造化されたコンテンツを取得したい場合は、スクレイピングを使用します。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-2">
   ### 推奨SDKメソッド
 </div>
 
 `client.scrape(url, **options)` → `Document` (`firecrawl.v2.types`)
 
-### 簡単な例
+<div id="simple-example-2">
+  ### 簡単な例
+</div>
 
 ```py
 doc = client.scrape("https://docs.firecrawl.dev", formats=["markdown"])
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### 複雑な例
 </div>
 
@@ -216,7 +222,7 @@ doc = client.scrape(
 )
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### パラメータ
 </div>
 
@@ -350,11 +356,13 @@ doc = client.scrape(
   ## Interact
 </div>
 
-### なぜ使うのか
+<div id="why-use-it-3">
+  ### なぜ使うのか
+</div>
 
 ページで、スクレイピング開始後にブラウザのアクションやコード実行が必要な場合は、interact を使用します。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-3">
   ### 推奨SDKメソッド
 </div>
 
@@ -362,7 +370,7 @@ doc = client.scrape(
 
 `prompt` はキーワード引数専用です。`client.interact(job_id, prompt="...")` または `client.interact(job_id, code="...")` のように呼び出してください。`code` または `prompt` の少なくとも一方には、空でない値を指定する必要があります (`firecrawl/v2/methods/scrape.py` で検証されます) 。
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### シンプルな例
 </div>
 
@@ -375,7 +383,7 @@ if not job_id:
 result = client.interact(job_id, prompt="Click the pricing tab and summarize the plans.")
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### 複雑な例
 </div>
 
@@ -394,7 +402,7 @@ result = client.interact(
 
 `client.stop_interaction(job_id)` は、スクレイピングに関連付けられたブラウザセッションを終了します。戻り値は `BrowserDeleteResponse` (`success`、任意の `session_duration_ms`、`credits_billed`、`error`) です。
 
-<div id="parameters">
+<div id="parameters-3">
   ### パラメータ
 </div>
 
@@ -420,7 +428,7 @@ result = client.interact(
   * 型: int
   * 使用する場合: 秒単位の実行タイムアウトが必要な場合。
 
-<div id="return-value">
+<div id="return-value-2">
   ### 戻り値
 </div>
 
@@ -430,17 +438,21 @@ result = client.interact(
   ## Ask (エージェントによるデバッグ)
 </div>
 
-### 使用する理由
+<div id="why-use-it-4">
+  ### 使用する理由
+</div>
 
 Firecrawl API の呼び出しが失敗した場合や、想定外の結果が返ってきた場合は、`ask` を使用します。AI サポートエージェントが問題を診断し、修正に必要なパラメータを提案し、必要に応じて実際の API に対して修正内容を検証します。通常の応答時間は 15〜30 秒です。
 
-<div id="preferred-sdk-method">
+<div id="preferred-sdk-method-4">
   ### 推奨SDKメソッド
 </div>
 
 Python SDKではまだ利用できません。`requests`または`httpx`を直接使ってください。
 
-### 基本的な例
+<div id="simple-example-4">
+  ### 基本的な例
+</div>
 
 ```py
 import requests
@@ -458,7 +470,7 @@ print(result["answer"])
 print(result["fixParameters"])
 ```
 
-<div id="complex-example">
+<div id="complex-example-4">
   ### 複雑な例
 </div>
 
@@ -512,7 +524,7 @@ if not doc.markdown or len(doc.markdown) < 100:
         )
 ```
 
-<div id="parameters">
+<div id="parameters-4">
   ### パラメータ
 </div>
 
@@ -532,13 +544,15 @@ if not doc.markdown or len(doc.markdown) < 100:
   ## ドキュメント検索
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-5">
   ### これを使う理由
 </div>
 
 docs-search を使って Firecrawl のドキュメントを検索します。
 
-### 基本的な例
+<div id="simple-example-5">
+  ### 基本的な例
+</div>
 
 ```py
 import requests
@@ -553,7 +567,7 @@ response = requests.post(
 print(response.json()["answer"])
 ```
 
-<div id="parameters">
+<div id="parameters-5">
   ### パラメータ
 </div>
 

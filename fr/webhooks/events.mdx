@@ -79,7 +79,6 @@ Envoyé lorsque la tâche de crawl commence son traitement.
 }
 ```
 
-
 <div id="crawlpage">
   ### `crawl.page`
 </div>
@@ -113,7 +112,6 @@ Envoyé pour chaque page extraite. Le tableau `data` contient le contenu de la p
 }
 ```
 
-
 <div id="crawlcompleted">
   ### `crawl.completed`
 </div>
@@ -129,7 +127,6 @@ Envoyé lorsque la tâche de crawl est terminée et que toutes les pages ont ét
   "metadata": {}
 }
 ```
-
 
 <div id="batch-scrape-events">
   ## Événements de scraping par lot
@@ -150,7 +147,6 @@ Envoyé lorsque la tâche d’extraction par lots commence son traitement.
   "metadata": {}
 }
 ```
-
 
 <div id="batch_scrapepage">
   ### `batch_scrape.page`
@@ -185,7 +181,6 @@ Envoyé pour chaque URL individuelle extraite. Le tableau `data` contient le con
 }
 ```
 
-
 <div id="batch_scrapecompleted">
   ### `batch_scrape.completed`
 </div>
@@ -201,7 +196,6 @@ Envoyé lorsque toutes les URL du lot ont été traitées.
   "metadata": {}
 }
 ```
-
 
 <div id="monitor-events">
   ## Événements de Monitor
@@ -245,7 +239,6 @@ Envoyé lorsque la tâche d’extraction commence à être traitée.
 }
 ```
 
-
 <div id="extractcompleted">
   ### `extract.completed`
 </div>
@@ -274,7 +267,6 @@ Envoyé lorsqu’une opération d’extraction s’achève avec succès. Le tabl
 }
 ```
 
-
 <div id="extractfailed">
   ### `extract.failed`
 </div>
@@ -292,10 +284,11 @@ Envoyé lorsqu’une extraction échoue. Le champ `error` contient la raison de 
 }
 ```
 
-
 <div id="agent-events">
-  ## Événements de l’agent
+  ## Événements des agents
 </div>
+
+Envoyés pour les tâches démarrées avec un `webhook` sur [`/v2/agent`](/fr/features/agent).
 
 <div id="agentstarted">
   ### `agent.started`
@@ -312,7 +305,6 @@ Envoyé lorsque la tâche de l’agent commence à être traitée.
   "metadata": {}
 }
 ```
-
 
 <div id="agentaction">
   ### `agent.action`
@@ -345,7 +337,6 @@ Envoyé après chaque exécution d’un outil (scrape, search, etc.).
   ou `cancelled`.
 </Note>
 
-
 <div id="agentcompleted">
   ### `agent.completed`
 </div>
@@ -371,7 +362,6 @@ Envoyé lorsque l&#39;agent a terminé avec succès. Le tableau `data` contient 
 }
 ```
 
-
 <div id="agentfailed">
   ### `agent.failed`
 </div>
@@ -393,7 +383,6 @@ Envoyé lorsque l’agent rencontre une erreur. Le champ `error` contient le mot
 }
 ```
 
-
 <div id="agentcancelled">
   ### `agent.cancelled`
 </div>
@@ -413,7 +402,6 @@ Envoyé lorsque la tâche de l’agent est annulée par l’utilisateur.
   "metadata": {}
 }
 ```
-
 
 <div id="event-filtering">
   ## Filtrage des événements

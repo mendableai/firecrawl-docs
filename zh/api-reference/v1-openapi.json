@@ -272,6 +272,11 @@
           "jsonOptions": {
             "description": "JSON 配置对象",
             "properties": {
+              "checkPromptInjection": {
+                "default": false,
+                "description": "启用后，会在执行提取前扫描已抓取的页面内容，以检测 prompt 注入尝试。如果检测到注入，请求将失败，并返回 403 状态码和错误代码 SCRAPE_PROMPT_INJECTION_DETECTED。执行此检查会增加 4 个额度。默认值为 false。",
+                "type": "boolean"
+              },
               "prompt": {
                 "description": "在无 schema 情况下用于抽取的数据提示词（可选）",
                 "type": "string"
@@ -1606,10 +1611,12 @@
                     "type": "number"
                   },
                   "excludePaths": {
-                    "description": "根据 URL pathname 的正则表达式模式，将匹配的 URL 排除在抓取之外。例如，如果你在基础 URL firecrawl.dev 上设置 `\"excludePaths\": [\"blog/.*\"]`，那么所有匹配该模式的结果都会被排除，例如：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。",
+                    "description": "将匹配的 URL 排除在抓取之外的 URL 路径名正则表达式模式。例如，如果你为基础 URL firecrawl.dev 设置 `\"excludePaths\": [\"blog/.*\"]`，则所有匹配该模式的结果都会被排除，例如：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。模式使用 Rust 正则表达式（RE2 风格）语法：不支持环视和反向引用，无法编译的模式会被拒绝并返回 400。每个字段最多接受 1000 个模式，每个模式最多 2000 个字符；includePaths 和 excludePaths 合计最多可包含 1000 个模式和 100,000 个字符。对于关键词式过滤，请为每个术语发送一个简短模式，而不是将多个术语合并为一个很长的交替模式。",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "ignoreQueryParameters": {
@@ -1623,10 +1630,12 @@
                     "type": "boolean"
                   },
                   "includePaths": {
-                    "description": "用于在抓取中指定要包含哪些 URL 的 URL 路径名正则表达式模式。只有与指定模式匹配的路径才会包含在响应中。例如，如果你为基础 URL firecrawl.dev 设置 `\"includePaths\": [\"blog/.*\"]`，则只有与该模式匹配的结果会被包含，例如：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。",
+                    "description": "用于在抓取中包含匹配 URL 的 URL 路径名正则表达式模式。只有与指定模式匹配的路径才会包含在响应中。例如，如果你为基础 URL firecrawl.dev 设置 `\"includePaths\": [\"blog/.*\"]`，则只有与该模式匹配的结果会被包含，例如：https://www.firecrawl.dev/blog/firecrawl-launch-week-1-recap。模式使用 Rust 正则表达式（RE2 风格）语法：不支持环视和反向引用，无法编译的模式会被拒绝并返回 400。每个字段最多接受 1000 个模式，每个模式最多 2000 个字符；includePaths 和 excludePaths 合计最多可包含 1000 个模式和 100,000 个字符。对于关键词式过滤，请为每个术语发送一个简短模式，而不是将多个术语合并为一个很长的交替模式。",
                     "items": {
+                      "maxLength": 2000,
                       "type": "string"
                     },
+                    "maxItems": 1000,
                     "type": "array"
                   },
                   "limit": {
@@ -3330,7 +3339,7 @@
                           "type": "string"
                         },
                         "plan_credits": {
-                          "description": "当前套餐内的基础积分数量。本数值不包括优惠券积分、积分包或自动充值获得的积分。",
+                          "description": "当前套餐内的基础积分数量。本数值不包括优惠券积分或通过按量付费添加的积分。",
                           "example": 500000,
                           "type": "number"
                         },

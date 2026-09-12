@@ -113,38 +113,20 @@ SDKs は data オブジェクトを直接返します。cURL は完全なペイ�
 1 回の呼び出しで複数のソースを指定できます (例: `sources: ["web", "news"]`) 。この場合、`limit` パラメータは**ソースタイプごと**に適用されます。そのため、`limit: 5` かつ `sources: ["web", "news"]` の場合、最大 5 件の web 結果と最大 5 件の news 結果 (合計 10 件) が返されます。ソースごとに異なるパラメータ (たとえば、異なる `limit` 値や異なる `scrapeOptions`) が必要な場合は、別々の呼び出しを行ってください。
 
 <div id="search-categories">
-  ## 検索カテゴリ
+  ## Search Categories
 </div>
 
-`categories` パラメータを使用して、検索結果を特定のカテゴリに絞り込めます。
+`categories` パラメータを使って、特定のカテゴリで検索結果を絞り込みます:
 
-* `github`: GitHub リポジトリ、コード、Issue、ドキュメントを検索
-* `research`: Web 検索を学術・研究 **Web サイト** (arxiv.org、nature.com、ieee.org、pubmed.ncbi.nlm.nih.gov、biorxiv.org、medrxiv.org など) に限定します。論文レコードではなく、スニペット付きの通常の Web ページ結果を返します。論文自体を検索するには、[Research Index](/ja/features/research) を使用してください
-* `pdf`: PDF を検索
-* `developer`: [Developer Index](/ja/features/developer) を検索 — 公開コードリポジトリの Issue、マージ済みのプルリクエスト、README と、厳選されたドキュメントサイトが対象です
+* `research`: web search を学術・研究 Web サイト (arxiv.org、nature.com、pubmed.ncbi.nlm.nih.gov など) に限定します。2026-11-16 に [Research Index](/ja/features/research) を検索して paper レコードを返す仕様に変更されます。下記の警告を参照してください
+* `pdf`: PDF を検索します
+* `developer`: [Developer Index](/ja/features/developer) を検索します — 公開コードリポジトリの issues、マージ済みのプルリクエスト、README に加えて、厳選されたドキュメントサイトが対象です
 
-<Note>
-  **`research` は論文インデックスではなく、Web サイトのフィルターです。** 通常の Web 検索を固定の学術ドメイン一覧に限定し、それらのページのスニペットを返します。
+<Warning>
+  **`research` カテゴリは 2026-11-16 に変更されます。** web の結果を 14 の学術 Web サイトに絞り込むのではなく、[Research Index](/ja/features/research) (PubMed、bioRxiv、medRxiv、arXiv) を検索するようになります。結果は `data.web` から `data.research` に移り、paper レコード (`paperId`、`primaryId`、`ids`、`title`、`abstract`、`score`) として返されます。それまでの間、このカテゴリを使用したレスポンスにはすべて `warnings` エントリが含まれます。
 
-  PubMed、bioRxiv、medRxiv、arXiv の論文インデックスで、完全な要旨、論文内のパッセージ、citation グラフの拡張を含む科学文献を検索するには、[Research Index](/ja/features/research) を使用してください。
-</Note>
-
-<div id="github-category-search">
-  ### GitHubカテゴリ検索
-</div>
-
-GitHub のリポジトリ内を対象に絞り込んで検索します：
-
-```bash cURL
-curl -X POST https://api.firecrawl.dev/v2/search \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer fc-YOUR_API_KEY" \
-  -d '{
-    "query": "web scraping python",
-    "categories": ["github"],
-    "limit": 10
-  }'
-```
+  paper レコードが必要な場合は、その日付までに parsing を更新するか、今すぐ [`GET /search/research/papers`](/ja/api-reference/endpoint/research-search-papers) を呼び出してください。学術サイトの web ページが必要な場合は、[`includeDomains`](#domain-filters) に切り替えてください。
+</Warning>
 
 <div id="research-category-search">
   ### 研究カテゴリ検索
@@ -200,7 +182,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   -H "Authorization: Bearer fc-YOUR_API_KEY" \
   -d '{
     "query": "ニューラルネットワーク",
-    "categories": ["github", "research"],
+    "categories": ["research", "pdf"],
     "limit": 15
   }'
 ```
@@ -249,7 +231,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   ### カテゴリのレスポンス形式
 </div>
 
-各検索結果には、出所を示す `category` フィールドが含まれます。
+各検索結果には、ソースを示す `category` フィールドが含まれます。
 
 ```json
 {
@@ -257,16 +239,16 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   "data": {
     "web": [
       {
-        "url": "https://github.com/example/neural-network",
-        "title": "ニューラルネットワーク実装",
-        "description": "PyTorch によるニューラルネットワークの実装",
-        "category": "github"
-      },
-      {
         "url": "https://arxiv.org/abs/2024.12345",
         "title": "ニューラルネットワークアーキテクチャの進展",
-        "description": "ニューラルネットワークの改良に関する研究論文"
+        "description": "ニューラルネットワークの改良に関する研究論文",
         "category": "research"
+      },
+      {
+        "url": "https://example.com/neural-networks.pdf",
+        "title": "ニューラルネットワークのサーベイ",
+        "description": "ニューラルネットワークアーキテクチャのサーベイ",
+        "category": "pdf"
       }
     ]
   }
@@ -638,7 +620,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
   ### 検索 ZDR と Scrape ZDR の組み合わせ
 </div>
 
-コンテンツのスクレイピング (`scrapeOptions`) とあわせて検索を使用している場合、`enterprise` パラメータは検索部分を対象とし、`scrapeOptions` の `zeroDataRetention` はスクレイピング部分を対象とします。両方にわたって完全な ZDR を実現するには、両方を設定してください。
+コンテンツのスクレイピング (`scrapeOptions`) とあわせて検索を使用している場合、`enterprise` パラメータは、結果として得られるすべてのスクレイピングに対して自動的に ZDR を適用します。以下のリクエスト例では、プロセスの検索部分とスクレイピング部分の両方に ZDR を適用します。
 
 ```bash cURL
 curl -X POST https://api.firecrawl.dev/v2/search \
@@ -649,8 +631,7 @@ curl -X POST https://api.firecrawl.dev/v2/search \
     "limit": 5,
     "enterprise": ["zdr"],
     "scrapeOptions": {
-      "formats": ["markdown"],
-      "zeroDataRetention": true
+      "formats": ["markdown"]
     }
   }'
 ```
@@ -677,6 +658,20 @@ curl -X POST https://api.firecrawl.dev/v2/search \
 スクレイピングオプションの詳細については、[Scrape 機能のドキュメント](https://docs.firecrawl.dev/features/scrape)を参照してください。FIRE-1 エージェント機能と変更追跡機能を除き、これらはすべてこの Search エンドポイントでサポートされています。
 
 > Firecrawl API キーが必要な AI エージェントですか？ 自動オンボーディング手順については、[firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) を参照してください。
+
+<div id="measured-performance">
+  ## 計測されたパフォーマンス
+</div>
+
+第三者の評価機関が、Firecrawl Search と他の検索 API を比較するベンチマークを実施しています。以下の数値は、各評価機関が公表した結果から、記載の日付時点のものをそのまま引用しています。
+
+| 指標                                     | 値                                                     | ソース                                                                            | 日付                            | n / ±                                                                                                                                         |
+| -------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent Score (Mean Relevant × Quality)  | 14.58、8 件中 2 位 (Mean Relevant 4.30/5、Quality 3.39/5)  | [AIMultiple — Agentic Search Benchmark](https://aimultiple.com/agentic-search) | 2025年12月 (ソースは2026年5月25日に更新)  | 95% 信頼区間 13.12–15.98、n=100 (AIMultiple 自身のオーガニック検索トラフィックから抽出した AI/LLM ドメインのクエリ、ブートストラップ再標本抽出 10,000 回) 。なお、この結果は他のドメインには一般化できないとソース側で注記されています |
+
+<Note>
+  これらは第三者による計測であり、それぞれ独自の harness、タスクセット、方法論に基づいています。そのため、相互の直接比較はできず、Firecrawl 自身のベンチマークとも比較できません。点推定でのランクは 8 件中 2 位ですが、ペアードブートストラップ検定では Brave、Exa、Parallel Search Pro との間に統計的に有意な差は見られませんでした。オープンソースの Developer Index 評価を含む Firecrawl 自身のファーストパーティベンチマークのページは [firecrawl.dev/benchmarks](https://www.firecrawl.dev/benchmarks) をご覧ください。
+</Note>
 
 <div id="search-feedback">
   ## 検索フィードバック

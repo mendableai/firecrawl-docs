@@ -342,6 +342,8 @@ Every session exposes a CDP WebSocket URL. The execute API and `--bash` flag cov
 
 ```bash agent-browser
 # Use the cdpUrl from the session response
+CDP_URL=YOUR_SESSION_CDP_URL
+
 agent-browser open https://example.com --cdp "$CDP_URL"
 agent-browser snapshot --cdp "$CDP_URL"
 ```
@@ -367,7 +369,7 @@ agent-browser snapshot --cdp "$CDP_URL"
 
 ## Pricing
 
-Pricing depends on how you drive the session: 7 credits per browser minute if the session uses a `prompt`, or 2 credits per browser minute if it does not (Playwright `code` only). Billing is per browser minute with a one-minute minimum. Free users get 5 hours of free usage.
+Pricing depends on how you drive the session: 7 credits per browser minute if the session uses a `prompt`, or 2 credits per browser minute if it does not (Playwright `code` only). Billing is per browser minute with a one-minute minimum.
 
 
 ## Rate limits

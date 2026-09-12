@@ -18,6 +18,8 @@ import MapNodeShort from '/snippets/fr/v2/map/short/js.mdx'
 import ExtractNodeShort from '/snippets/v2/extract/short/js.mdx'
 import CrawlWebSocketNodeBase from '/snippets/fr/v2/crawl-websocket/base/js.mdx'
 import PersistentJS from '/snippets/fr/v2/browser/persistent/js.mdx'
+import AgentWithSchemaNode from '/snippets/fr/v2/agent/with-schema/js.mdx'
+import AgentStatusNode from '/snippets/fr/v2/agent/status/js.mdx'
 
 Scrapez des pages individuelles, lancez un crawl sur des sites entiers et cartographiez les URL depuis votre application Node.js. Le SDK gère la pagination, les nouvelles tentatives et l’interrogation asynchrone des tâches pour que vous puissiez vous concentrer sur l’exploitation des données retournées.
 
@@ -127,6 +129,20 @@ Découvrez toutes les URL d’un site web avec la méthode `map`. Fournissez une
   Pour extraire des données structurées à partir de sites web avec gestion des erreurs, utilisez la méthode `extractUrl`. Elle prend l’URL de départ en paramètre et renvoie les données extraites sous forme de dictionnaire.
 
   <ExtractNodeShort /> */}
+
+<div id="running-an-agent">
+  ### Exécuter un agent
+</div>
+
+Confiez une tâche de recherche ou d’extraction à un agent à l’aide de la méthode `agent`. Fournissez un `prompt`, un `schema` facultatif pour structurer la sortie et `maxCredits` pour plafonner les crédits que l’exécution peut consommer.
+
+<AgentWithSchemaNode />
+
+Les exécutions d’agent sont asynchrones. Utilisez `startAgent` pour obtenir immédiatement un ID de tâche, puis interrogez son état avec `getAgentStatus`.
+
+<AgentStatusNode />
+
+Chaque exécution enregistre également une trace d’exécution et des instantanés de sortie, que vous pouvez consulter avec `getAgentTrace` et `getAgentSnapshot`. Consultez [Agent](/fr/features/agent) pour le schéma des événements et la liste complète des paramètres.
 
 <div id="crawling-a-website-with-websockets">
   ### Crawler un site web avec WebSockets

@@ -1,0 +1,27 @@
+---
+title: 'Get Agent Trace'
+openapi: '/api-reference/v2-openapi.json GET /agent/{jobId}/trace'
+noindex: true
+
+---
+
+Every agent run records a canonical **execution trace**: an ordered stream of events describing everything the run did — which tools it called and what they returned, reasoning summaries, progress updates, browser sessions, and changes to its output artifacts. This is the same event stream that powers the live Activity view in the [Agent playground](https://www.firecrawl.dev/app/agent).
+
+## What it's for
+
+- **Debugging runs** — see the exact searches, scrapes, and extractions the agent performed, each tool's input (`tool_call.started`) and result (`tool_call.finished`), and where a run went wrong (`error.occurred`, and the terminal `run.finished` event's `outcome` and structured `error`).
+- **Live progress UIs** — poll the trace while a job is `processing` to show what the agent is doing in real time. `progress.reported` events carry the run's phase (`planning`, `working`, `finalizing`) with a human-readable message, and `reasoning.summary` events narrate the agent's thinking.
+- **Live browser view** — pass `?liveView=true` while a run is in flight to get `activeBrowserSessions`: the run's active browser sessions, each with a `liveViewUrl` you can embed to watch (or demo) the agent browsing.
+- **Cost tracking** — `creditsUsed` reports credits consumed so far, capped at the run's `maxCredits` if one was set.
+
+## How it works
+
+Events are emitted by the run's agents — the `orchestrator` and its `subagent`s — and each event identifies its emitter in the `agent` field. Browser work happens inside an agent's own browser session and is reported through `browser.session.*` events, not by separate browser agents. Order events by `producerSequence` (per emitting agent). The `type` field discriminates the 13 event variants; see the response schema below for the full list and each variant's fields.
+
+`artifact.updated` events don't carry the artifact content itself — they reference it by `snapshotId`, which you fetch with the [snapshot endpoint](/api-reference/endpoint/agent-snapshot).
+
+Events can continue to land for a moment after `run.finished` arrives, so if you're polling a live run, keep a short tail window open before rendering the final state.
+
+<Note>Traces are recorded on Spark 2 runs — which is every new run. Jobs started on Spark 1 models before their retirement have no trace and return `400`.</Note>
+
+> Are you an AI agent that needs a Firecrawl API key? See [firecrawl.dev/agent-onboarding/SKILL.md](https://www.firecrawl.dev/agent-onboarding/SKILL.md) for automated onboarding instructions.

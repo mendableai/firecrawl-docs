@@ -23,11 +23,26 @@ import AgentWithURLsCURL from "/snippets/ja/v2/agent/with-urls/curl.mdx";
 import AgentStatusPython from "/snippets/ja/v2/agent/status/python.mdx";
 import AgentStatusJS from "/snippets/ja/v2/agent/status/js.mdx";
 import AgentStatusCURL from "/snippets/ja/v2/agent/status/curl.mdx";
+import AgentListPython from "/snippets/ja/v2/agent/list/python.mdx";
+import AgentListJS from "/snippets/ja/v2/agent/list/js.mdx";
+import AgentListCURL from "/snippets/ja/v2/agent/list/curl.mdx";
 import AgentStatusPending from "/snippets/ja/v2/agent/status/pending.mdx";
 import AgentStatusCompleted from "/snippets/ja/v2/agent/status/completed.mdx";
 import AgentWithModelPython from "/snippets/ja/v2/agent/with-model/python.mdx";
 import AgentWithModelJS from "/snippets/ja/v2/agent/with-model/js.mdx";
 import AgentWithModelCURL from "/snippets/ja/v2/agent/with-model/curl.mdx";
+import AgentTracePython from "/snippets/ja/v2/agent/trace/python.mdx";
+import AgentTraceJS from "/snippets/ja/v2/agent/trace/js.mdx";
+import AgentTraceCURL from "/snippets/ja/v2/agent/trace/curl.mdx";
+import AgentSnapshotPython from "/snippets/ja/v2/agent/snapshot/python.mdx";
+import AgentSnapshotJS from "/snippets/ja/v2/agent/snapshot/js.mdx";
+import AgentSnapshotCURL from "/snippets/ja/v2/agent/snapshot/curl.mdx";
+import AgentTracePollPython from "/snippets/ja/v2/agent/trace/poll/python.mdx";
+import AgentTracePollJS from "/snippets/ja/v2/agent/trace/poll/js.mdx";
+import AgentTracePollCURL from "/snippets/ja/v2/agent/trace/poll/curl.mdx";
+import AgentArtifactsPython from "/snippets/ja/v2/agent/artifacts/python.mdx";
+import AgentArtifactsJS from "/snippets/ja/v2/agent/artifacts/js.mdx";
+import AgentArtifactsCURL from "/snippets/ja/v2/agent/artifacts/curl.mdx";
 import PlaygroundCTA from "/snippets/ja/shared/playground-cta-agent.mdx";
 import ChooseDataExtractor from "/snippets/ja/shared/choose-data-extractor/from-agent.mdx";
 import AgentFeedbackCTA from "/snippets/ja/agent-feedback-cta.mdx";
@@ -77,7 +92,7 @@ Agent は `/extract` の優れた点をすべて引き継ぎつつ、さらに�
 <AgentWithSchemaOutput />
 
 <div id="providing-urls-optional">
-  ## URL を指定する場合 (任意)
+  ## URL を指定する場合 (任意) 
 </div>
 
 エージェントの対象を特定のページに絞り込むために、任意で URL を指定できます。
@@ -98,6 +113,7 @@ Agent ジョブは非同期で実行されます。ジョブの実行を開始�
 
 * **デフォルトの方法**: `agent()` が完了まで待機し、最終結果を返します
 * **開始してポーリング**: `start_agent` (Python) または `startAgent` (Node) で即座に Job ID を取得し、その後 `get_agent_status` / `getAgentStatus` でポーリングします
+* **ポーリングの代わりにプッシュ**: ジョブの開始時に `webhook` を渡すと、実行の進行中から完了まで [agent events](/ja/webhooks/events#agent-events) を受信できます
 
 <Note>ジョブ結果は完了後 24 時間のあいだ API 経由で取得できます。この期間を過ぎても、[activity logs](https://www.firecrawl.dev/app/logs) から Agent の履歴と結果を参照できます。</Note>
 
@@ -113,15 +129,14 @@ Agent ジョブは非同期で実行されます。ジョブの実行を開始�
   ### 考えられるステータス
 </div>
 
-| ステータス        | 説明                     |
-| ------------ | ---------------------- |
-| `processing` | エージェントがリクエストを処理中です     |
-| `completed`  | 抽出が正常に完了しました           |
-| `failed`     | 抽出中にエラーが発生しました         |
-| `cancelled`  | ジョブはユーザーによってキャンセルされました |
+| ステータス        | 説明                                                                             |
+| ------------ | ------------------------------------------------------------------------------ |
+| `processing` | エージェントがリクエストを処理中です                                                             |
+| `completed`  | 抽出が正常に完了しました                                                                   |
+| `failed`     | 抽出中にエラーが発生したか、ジョブがキャンセルされました (キャンセルされたジョブは、キャンセルのエラーメッセージとともに `failed` を報告します) |
 
 <Note>
-  **キャンセルは協調的に処理されます。** cancel エンドポイントを呼び出すと、リクエストはただちに受け付けられますが、すでに進行中のステップ (LLM の推論ステップ、ツール呼び出し、またはブラウザ操作) は、ジョブが `cancelled` に移行する前に、正常に停止できる区切りまで実行されます。その短い間もクレジットが引き続き加算される可能性があるため、最終的な `creditsUsed` は、キャンセルをクリックした時点で表示されていた値より大きくなる場合があります。
+  **キャンセルは協調的に処理されます。** cancel エンドポイントを呼び出すと、リクエストはただちに受け付けられますが、すでに進行中のステップ (LLM の推論ステップ、ツール呼び出し、またはブラウザ操作) は、ジョブが停止する前に、正常に停止できる区切りまで実行されます。その短い間もクレジットが引き続き加算される可能性があるため、最終的な `creditsUsed` は、キャンセルをクリックした時点で表示されていた値より大きくなる場合があります。キャンセルされたジョブは、ポーリング時にステータス `failed` を報告し、`agent.cancelled` webhook イベントを発行します。
 </Note>
 
 <div id="pending-example">
@@ -136,6 +151,91 @@ Agent ジョブは非同期で実行されます。ジョブの実行を開始�
 
 <AgentStatusCompleted />
 
+<div id="listing-agent-runs">
+  ## エージェント実行の一覧取得
+</div>
+
+`GET /agent` は、Playground または API から開始されたものを含む、チームのすべてのエージェント実行を新しい順に一覧表示します。各エントリには、実行 ID、作成時刻、ステータス、対象を示す簡単なヒント、開始時に指定されたオプションが含まれます。
+
+結果は 20 件ずつ固定サイズでページネーションされます。次のページがある場合、レスポンスには `next` URL が含まれます。その `before` タイムスタンプを渡すと、次のページを取得できます。SDK メソッドは自動ページネーションを行わないため、どこまで遡るかを制御できます。
+
+<CodeGroup>
+  <AgentListPython />
+
+  <AgentListJS />
+
+  <AgentListCURL />
+</CodeGroup>
+
+<div id="following-a-run-in-progress">
+  ## 実行中の 実行 を追跡する
+</div>
+
+Agent はストリーミング接続を維持しません。Server-Sent Events のストリームも WebSocket もないため、トレースをポーリングするか、webhook を受信して 実行 を追跡します。
+
+| サーフェス      | 得られるもの                                                                                                                                                            | 最適な用途                              |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| トレースのポーリング | 詳細情報: ツール呼び出し、推論の要約、進行フェーズ、artifact の変更など、実行 がこれまでに出力したすべてのイベント                                                                                                  | 独自の進行状況 UI の構築や、実行 が実際に何をしたかのデバッグ |
+| webhook    | プッシュ配信 (大まかな粒度) : 5 種類のエージェントライフサイクルイベント (`agent.started`、`agent.action`、`agent.completed`、`agent.failed`、`agent.cancelled`) 。[webhook イベント](/ja/webhooks/events)を参照 | ポーリングループを維持せずに、実行 の完了に対応する        |
+| ライブビュー     | 人間が確認できるエージェントのブラウザビュー。`?liveView=true` を指定してトレースをリクエストすると、`activeBrowserSessions` の各エントリに `liveViewUrl` が含まれます                                                   | 実行 のナビゲーションをリアルタイムで確認する           |
+
+トレースイベントを独自に並べ替える場合は、まず `agent.id` ごとにグループ化してください。`producerSequence` はイベントを出力するエージェントごとに単調増加するため、単一のグローバルソートではオーケストレーターのイベントとサブエージェントのイベントが誤って交互に並びます。また、終了イベント `run.finished` の後もしばらくイベントが到着することがあるため、最終状態を表示する前に短いテールウィンドウの間はポーリングを続けてください。
+
+<CodeGroup>
+  <AgentTracePollPython />
+
+  <AgentTracePollJS />
+
+  <AgentTracePollCURL />
+</CodeGroup>
+
+<div id="execution-traces-and-snapshots">
+  ## 実行トレースとスナップショット
+</div>
+
+各実行では、ツール呼び出し、推論の要約、進行状況のアップデート、ブラウザセッション、出力アーティファクトの変更を含む、時系列順の正規実行トレースが記録されます。実行のデバッグや、ライブ進行状況UIの構築に利用できます。
+
+<CodeGroup>
+  <AgentTracePython />
+
+  <AgentTraceJS />
+
+  <AgentTraceCURL />
+</CodeGroup>
+
+`artifact.updated` トレースイベントは、`snapshotId` を通じてエージェントの作業中の出力を参照します。スナップショットの完全な内容は、snapshotsエンドポイントで取得できます。
+
+<CodeGroup>
+  <AgentSnapshotPython />
+
+  <AgentSnapshotJS />
+
+  <AgentSnapshotCURL />
+</CodeGroup>
+
+<Note>トレースとスナップショットは、すべての新規実行で使用されるSpark 2で記録されます。廃止前にSpark 1モデルで開始されたジョブには、これらはありません。完全なイベントスキーマについては、[trace](/ja/api-reference/endpoint/agent-trace) および [snapshot](/ja/api-reference/endpoint/agent-snapshot) のAPIリファレンスを参照し、これらのエンドポイントが返す失敗については [Agent errors](/ja/api-reference/errors#agent) カタログを参照してください。</Note>
+
+<div id="getting-the-agents-source-data">
+  ## agent のソースデータを取得する
+</div>
+
+実行 は処理の進行に応じて作業中の出力を アーティファクト に書き込みます。実行 の トレース を取得すれば、これらを取得できます。各 `artifact.updated` イベントは、1 つの アーティファクト に対する 1 つの変更を表します。`artifact.kind` は `json`、`markdown`、`html`、`screenshot`、または `text`、`artifact.path` は 実行 が保存した場所、`artifact.snapshotId` は `GET /agent/{jobId}/snapshots/{snapshotId}` でコンテンツを取得する際に使用するハンドルです。スナップショット endpoint は、そのコンテンツを string 型の `snapshot` フィールドで返します。`json` アーティファクト の場合、この string は JSON エンコードされているためデコードが必要です。一方、`markdown`、`html`、`text` アーティファクト の場合はコンテンツそのものです。
+
+実行 が生成したページコンテンツを取得するには、トレース を取得し、必要な `kind` の `artifact.updated` イベントを抽出してから、各 スナップショット を取得します。
+
+<CodeGroup>
+  <AgentArtifactsPython />
+
+  <AgentArtifactsJS />
+
+  <AgentArtifactsCURL />
+</CodeGroup>
+
+これを基に構築する前に、次の 2 点を押さえておいてください。
+
+* **アーティファクト は 実行 の出力であり、ページごとのアーカイブではありません。** 実行 が アーティファクト に書き込む内容は、prompt をどのように処理するかによって異なります。そのため、アーティファクト セットは、開いたすべてのページの記録として保証されるものではなく、その特定の 実行 が生成した出力として扱ってください。
+* **残りの情報は tool result に含まれます。** 各 `tool_call.finished` イベントには、その tool が返した内容を保持する `result` フィールドが含まれます。アーティファクト にならなかったコンテンツはここに含まれます。
+
 <div id="share-agent-runs">
   ## エージェントの実行を共有する
 </div>
@@ -146,61 +246,30 @@ Agent playground から、エージェントの実行を直接共有できます
   ## モデルの選択
 </div>
 
-Firecrawl Agent には 3 つのモデルがあります。**Spark 1 Pro** がデフォルトです。**Spark 2** は Spark 1 のいずれのモデルよりも低コストかつ高速で、精度も同等です。使用するには、`model` を `spark-2` に設定します。
+Firecrawl Agent は **Spark 2** で動作します。Spark 2 は、同等の精度を保ちながら、従来の Spark 1 モデルよりも低コストで高速です。これがデフォルトのモデルであり、`model` パラメータを設定したかどうかにかかわらず、すべての実行で `spark-2` が使用されます。
 
-| モデル            | コスト                 | 精度     | 最適な用途                 |
-| -------------- | ------------------- | ------ | --------------------- |
-| `spark-2`      | 最低                  | Pro 相当 | 低コストで短い実行時間           |
-| `spark-1-mini` | Pro より **60% 低コスト** | 標準     | コスト重視の Spark 1 ワークロード |
-| `spark-1-pro`  | 標準                  | 高い     | 複雑な調査、重要な抽出 (デフォルト)   |
-
-<Tip>
-  **Spark 1 Pro がデフォルト**のため、`model` パラメータを指定しないリクエストでは `spark-1-pro` が使用されます。同等の精度で低コストかつ短い実行時間にするには、`model` を `spark-2` に設定します。単純な Spark 1 タスクのコストを 60% 削減するには、`model` を `spark-1-mini` に設定します。
-</Tip>
+<Note>
+  **Spark 1 モデルは非推奨です。** Spark 1 のモデル名は後方互換性のため引き続き使用できますが、これらを指定したリクエストは `spark-2` にルーティングされます。
+</Note>
 
 <div id="spark-2">
   ### Spark 2
 </div>
 
-`spark-2` は最新のエージェントモデルです。従来は Mini と Pro の選択が必要だった幅広いタスクに対応するため、精度とコストのトレードオフを考える必要はありません。使用するには `model` を `spark-2` に設定してください。
+`spark-2` は、従来は Mini と Pro の選択が必要だった幅広いタスクに対応するため、精度とコストのトレードオフを考える必要はありません。
 
-**次の場合は Spark 2 を使用してください。**
+**ハイライト:**
 
-* 実行あたりのコストを最小限に抑えたい
-* 実行時間が重要
-* Spark 1 Pro の精度が必要になる場合
-
-<div id="spark-1-mini">
-  ### Spark 1 Mini
-</div>
-
-`spark-1-mini` は効率的なモデルで、シンプルなデータ抽出タスクに最適です。
-
-**Mini を使うのに適したケース:**
-
-* 単純なデータポイント (連絡先情報、価格情報など) を抽出するとき
-* 構造が整理された Web サイトを扱うとき
-* コスト効率を重視するとき
-* 大量の抽出ジョブを実行するとき
-
-<div id="spark-1-pro-default">
-  ### Spark 1 Pro (デフォルト)
-</div>
-
-`spark-1-pro` は、複雑な抽出タスクで最大限の精度を発揮するよう設計された、当社のフラッグシップモデルです。デフォルトモデルのため、`model` を設定しないリクエストでは `spark-1-pro` が使用されます。
-
-**次のような場合は Pro を使用してください:**
-
-* 複雑な競合分析を行う場合
-* 深い推論が必要なデータを抽出する場合
-* 精度がユースケースにおいて極めて重要な場合
-* あいまい、または取得が難しいデータを扱う場合
+* 実行あたりのコストを最小限に抑える
+* 最速の実行時間
+* 旧 Spark 1 フラッグシップに匹敵する精度
+* 推論予算を備えた唯一のモデル: `effort` (`low`、`medium`、または `high`) を渡して、どの程度深く考えるかを制御できます
 
 <div id="specifying-a-model">
   ### モデルの指定
 </div>
 
-`spark-1-pro` がデフォルトのため、`model` パラメータは任意です。別のモデルを使用する場合は、`model` パラメータで指定します。
+`model` パラメータは任意です。すべてのリクエストで `spark-2` が実行されます。
 
 <CodeGroup>
   <AgentWithModelPython />
@@ -214,13 +283,16 @@ Firecrawl Agent には 3 つのモデルがあります。**Spark 1 Pro** がデ
   ## パラメータ
 </div>
 
-| パラメータ    | Type   | Required | Description                                                                                                                                                                                                                                                                                                                                            |
-| ------------ | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `prompt`     | string | **Yes**  | 抽出したいデータを自然言語で記述した文字列 (最大 10,000 文字)                                                                                                                                                                                                                                                                                                                   |
-| `model`      | string | No       | 使用するモデル: `spark-1-pro` (デフォルト)、`spark-1-mini`、または `spark-2`                                                                                                                                                                                                                                                                                            |
-| `urls`       | array  | No       | 抽出対象を絞り込むための任意の URL リスト                                                                                                                                                                                                                                                                                                                                |
-| `schema`     | object | No       | 構造化された出力のための任意の JSON スキーマ                                                                                                                                                                                                                                                                                                                              |
-| `maxCredits` | number | No       | このエージェントタスクで使用するクレジットの最大数。設定しない場合、デフォルトは **2,500** です。ダッシュボードでは **2,500** までの値をサポートしています。これを超える上限を設定するには、API 経由で `maxCredits` を指定してください (2,500 を超える値は常に有料リクエストとして扱われます)。上限に達するとジョブは失敗し、**データは一切返されません**。失敗した実行には課金されません。AI の推論に使用されたクレジットは失敗時には請求されず、実行中のツール呼び出し (`scraping`、`search`、`mapping` など) に使用されたクレジットは返還され、レスポンスには `creditsUsed: 0` が記録されます。 |
+| パラメータ                   | Type    | Required | Description                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `prompt`                | string  | **Yes**  | 抽出したいデータを自然言語で記述した文字列 (最大 10,000 文字)                                                                                                                                                                                                                                                                                                                   |
+| `model`                 | string  | No       | すべての実行で使用されるモデル `spark-2` がデフォルトです。Spark 1 モデルは非推奨であり、`spark-2` にルーティングされます                                                                                                                                                                                                                                                                            |
+| `effort`                | string  | No       | 推論予算: `low`、`medium`、または `high`。すべての実行は `spark-2` で行われるため、`effort` は `model` の有無にかかわらず送信できます                                                                                                                                                                                                                                                        |
+| `urls`                  | array   | No       | 抽出対象を絞り込むための任意の URL リスト                                                                                                                                                                                                                                                                                                                                |
+| `schema`                | object  | No       | 構造化された出力のための任意の JSON スキーマ                                                                                                                                                                                                                                                                                                                              |
+| `strictConstrainToURLs` | boolean | No       | `true` の場合、エージェントは `urls` 配列で指定された URL のみを訪問します                                                                                                                                                                                                                                                                                                        |
+| `webhook`               | object  | No       | エージェントのライフサイクルイベント (`agent.started`、`agent.action`、`agent.completed`、`agent.failed`、`agent.cancelled`) を受信する webhook。[webhook ペイロード](/ja/api-reference/endpoint/webhook-agent-started)を参照してください                                                                                                                                                           |
+| `maxCredits`            | number  | No       | このエージェントタスクで使用するクレジットの最大数。設定しない場合、デフォルトは **2,500** です。ダッシュボードでは **2,500** までの値をサポートしています。これを超える上限を設定するには、API 経由で `maxCredits` を指定してください (2,500 を超える値は常に有料リクエストとして扱われます)。上限に達するとジョブは失敗し、**データは一切返されません**。失敗した実行には課金されません。AI の推論に使用されたクレジットは失敗時には請求されず、実行中のツール呼び出し (`scraping`、`search`、`mapping` など) に使用されたクレジットは返還され、レスポンスには `creditsUsed: 0` が記録されます。 |
 
 <div id="agent-vs-extract-whats-improved">
   ## Agent と Extract：何が改善されたか
@@ -320,7 +392,7 @@ Spark-1 Fast で複数のエージェントを並列実行する場合、料金�
 * **無料実行から始める**: 毎日 5 回の無料リクエストを使って料金感をつかむ
 * **`maxCredits` パラメータを設定する**: 消費してもよいクレジットの最大数を設定して支出を制限します。ダッシュボードでは上限は 2,500 クレジットです。より高い上限を設定するには、API 経由で `maxCredits` パラメータを直接使用してください (注: 2,500 を超える値は常に有料リクエストとして課金されます)
 * **プロンプトを最適化する**: より具体的なプロンプトほど、使用するクレジットが少なくなることが多い
-* **大きなタスクを小さな実行に分割する**: 1 回の エージェント 実行には、基盤となるモデルの生成能力に基づく出力上限があります (構造化データで約 150〜200 行)。大規模な抽出ジョブでは、カテゴリ、地域、または URL バッチ (1 回の実行あたり 3〜5 URL) ごとに分割し、結果を結合してください。これにより、各実行を `maxCredits` の上限より十分低く保つこともできます。
+* **大きなタスクを小さな実行に分割する**: 1 回の エージェント 実行では、構造化データが約 150〜200 行返されます。大規模な抽出ジョブでは、カテゴリ、地域、または URL バッチ (1 回の実行あたり 3〜5 URL) ごとに分割し、結果を結合してください。これにより、各実行を `maxCredits` の上限より十分低く保つこともできます。
 * **利用状況を監視する**: ダッシュボードを通じて消費量を追跡する
 * **期待値を設定する**: 複数ドメインにわたる複雑なリサーチは、単純な単一ページの抽出よりも多くのクレジットを使用します
 

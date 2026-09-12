@@ -42,7 +42,9 @@ let client = Client::new("fc-your-api-key")?;
   ## 搜索
 </div>
 
-### 为什么使用它
+<div id="why-use-it">
+  ### 为什么使用它
+</div>
 
 使用 search 根据查询发现相关页面，然后选择要抓取或交互的 URL。你可以使用 `site:` 将结果限制在某个站点下，例如 `site:docs.firecrawl.dev crawl webhooks`。
 
@@ -130,7 +132,7 @@ let results = client
 * `options.categories`
   * 类型：`Vec<SearchCategory>`
   * 使用场景：想要按类别筛选结果时。
-  * 确认可用的值：`Github`、`Research`、`Pdf`
+  * 确认可用的值：`Research`、`Pdf`
 
 * `options.limit`
   * 类型：u32
@@ -165,17 +167,19 @@ let results = client
   ## 抓取
 </div>
 
-<div id="why-use-it">
+<div id="why-use-it-2">
   ### 为什么使用 抓取
 </div>
 
 当你已经有 URL，并希望获取一种或多种 formats 的结构化内容时，请使用 抓取。
 
-### 推荐的 SDK 方法
+<div id="preferred-sdk-method-2">
+  ### 推荐的 SDK 方法
+</div>
 
 `client.scrape(url, options)` → `Result<Document, FirecrawlError>` (SDK 会直接返回 HTTP 响应中的 `data` 字段) 。
 
-<div id="simple-example">
+<div id="simple-example-2">
   ### 简单示例
 </div>
 
@@ -190,7 +194,7 @@ let doc = client
     .await?;
 ```
 
-<div id="complex-example">
+<div id="complex-example-2">
   ### 复杂示例
 </div>
 
@@ -243,7 +247,7 @@ let doc = client
     .await?;
 ```
 
-<div id="parameters">
+<div id="parameters-2">
   ### 参数
 </div>
 
@@ -377,17 +381,21 @@ let doc = client
   ## 交互
 </div>
 
-### 为什么使用它
+<div id="why-use-it-3">
+  ### 为什么使用它
+</div>
 
 当页面需要在抓取开始后执行浏览器 actions 或运行代码时，请使用交互。
 
-### 推荐的 SDK 方法
+<div id="preferred-sdk-method-3">
+  ### 推荐的 SDK 方法
+</div>
 
 `client.interact(job_id, options)`
 
 如需结束浏览器会话，请使用 `client.stop_interaction(job_id)` (对 `/v2/scrape/{jobId}/interact` 发起 HTTP `DELETE` 请求) 。
 
-<div id="simple-example">
+<div id="simple-example-3">
   ### 简单示例
 </div>
 
@@ -405,7 +413,7 @@ let result = client
     .await?;
 ```
 
-<div id="complex-example">
+<div id="complex-example-3">
   ### 复杂示例
 </div>
 
@@ -434,7 +442,7 @@ let stopped = client.stop_interaction("<scrapeJobId>").await?;
 // stopped: ScrapeBrowserDeleteResponse { success, session_duration_ms, credits_billed, error, ... }
 ```
 
-<div id="parameters">
+<div id="parameters-3">
   ### 参数
 </div>
 

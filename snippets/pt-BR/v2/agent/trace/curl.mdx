@@ -1,0 +1,8 @@
+```bash cURL
+curl "https://api.firecrawl.dev/v2/agent/JOB_ID/trace" \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY"
+
+# Inclui as sessões de navegador ativas enquanto a execução está em andamento
+curl "https://api.firecrawl.dev/v2/agent/JOB_ID/trace?liveView=true" \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY"
+```
