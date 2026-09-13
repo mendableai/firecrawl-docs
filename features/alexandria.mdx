@@ -10,7 +10,66 @@ import AlexandriaJourney from "/snippets/alexandria-journey.mdx";
 
 <AlexandriaJourney />
 
-Use Alexandria through the Firecrawl MCP server, CLI, SDKs, or API. Discover tools, inspect their inputs, and retrieve data with the same workflow.
+Alexandria is a catalogue of data tools your agent can call through Firecrawl: market data, filings, government records, podcasts, jobs, reviews, and more, each with a published contract and price. Finding a tool is free. Running one costs the credits shown on it.
+
+<CardGroup cols={3}>
+  <Card title="What Alexandria is" icon="books" href="https://www.firecrawl.dev/alexandria">
+    Providers, pricing, and how it fits with web search.
+  </Card>
+  <Card title="Browse the catalogue" icon="compass" href="https://www.firecrawl.dev/app/alexandria">
+    Every provider and tool in the dashboard, with copyable requests.
+  </Card>
+  <Card title="Provider terms" icon="file-signature" href="https://www.firecrawl.dev/app/settings?tab=data-sources">
+    Some providers need an admin to accept their terms once. Manage that here.
+  </Card>
+</CardGroup>
+
+## Built for agents
+
+The fastest way in is the Firecrawl CLI or the MCP server. Both give an agent three moves: search for a tool, read its contract, run it.
+
+<Tabs>
+  <Tab title="Firecrawl CLI">
+```bash
+# 1. Find tools for a question, alongside web results. Free.
+firecrawl search "podcast conversations about AI agents" --sources web,alexandria --domain-tools --limit 2
+
+# 2. Walk the catalogue and read a contract before spending anything. Free.
+firecrawl find-tools --providers particle --level tools --expand options,response
+
+# 3. Run the tool. Costs its listed credits; reuse --request-id to retry safely.
+firecrawl alexandria retrieve particle/podcasts/episodes/search --options '{"keyword_search":"AI agents","limit":2}'
+```
+    Install with `npm install -g firecrawl-cli` and sign in with `firecrawl login`. The `firecrawl` skill teaches coding agents these commands, so Claude Code and Cursor can use Alexandria without extra setup.
+  </Tab>
+  <Tab title="MCP">
+    Connect the [Firecrawl MCP server](/mcp-server) and the agent gets the same three moves as tools: `firecrawl_search` with `sources: ["alexandria"]` for finding, `firecrawl_find_tools` for walking the catalogue and reading contracts, and `firecrawl_scrape` with an `alexandria` body for running.
+
+    Try asking: "Find Particle's podcast tools, show me the episode-search inputs and price, then run it for conversations about AI agents."
+
+    When a provider needs its terms accepted, the tool result says so and links the admin to the page; the agent never accepts terms itself.
+  </Tab>
+</Tabs>
+
+### Find Tools, the meta tool
+
+Alexandria ships one tool that is about the other tools. **Find Tools** walks the catalogue a step at a time so an agent reads only what it needs: providers, then a provider's groups, then the tools in a group, then one tool's inputs, response shape, and examples. It can also start from a page URL and return the tools that cover that site. Every step is free and every item comes back with a ready-made `next` request, so the agent follows a path instead of guessing parameters.
+
+In the CLI it is `firecrawl find-tools`; in MCP it is `firecrawl_find_tools`; in the SDKs it is `findTools` / `find_tools`; over HTTP it is the `firecrawl` provider's `find-tools` capability. Details and examples are in [Find Tools](#find-tools) below.
+
+## Discovery is free, three ways
+
+Your agent never pays to learn what exists. Tools show up in three places, and each one is off by default unless you ask for it:
+
+1. **Tool search.** `sources: ["alexandria"]` on `/v2/search` returns tool contracts ranked against the question, with no web results and no charge.
+2. **Alongside web results.** `sources: ["web", "alexandria"]` returns both, and `domainTools: true` also matches tools to the sites in the web results and to any URL in the query. You pay for the web results only.
+3. **Next to a scraped page.** `domainTools: true` on an ordinary `/v2/scrape` adds the tools that cover the page's domain beside its markdown and metadata. You pay for the page only.
+
+Running a tool is the only paid step, at the price on its contract. Send an `x-request-id` header if you want to choose the retry key yourself; otherwise the API generates one and returns it, and repeating the identical request with that id returns the stored result without running or charging again.
+
+## Use it from the SDKs and API
+
+Discover tools, inspect their inputs, and retrieve data with the same workflow in JavaScript, Python, Go, Rust, or plain HTTP.
 
 <Steps>
   <Step title="Find the right tool">
@@ -285,34 +344,6 @@ Tool discovery is free. Web search, scraping, and tool execution have their own 
 
 The SDK generates an execution request ID and keeps it across automatic retries. To retry later, reuse `requestId` in JavaScript or `request_id` in Python with the identical request. For cURL, keep the same `$REQUEST_ID`.
 
-<Card title="Explore Alexandria" icon="books" href="https://www.firecrawl.dev/app/alexandria">
-  Browse tools and copy a request in the dashboard.
-</Card>
-
-## Use Alexandria from the CLI or MCP
-
-Agents can discover tools, read their contracts, and retrieve data from the terminal or an MCP client. The examples below describe the preview integrations and require the matching release and team access.
-
-<Tabs>
-  <Tab title="Firecrawl CLI">
-```bash
-firecrawl search "podcast conversations about AI agents" --sources web,alexandria --limit 2
-
-firecrawl find-tools --providers particle --capabilities podcasts/episodes/search --expand options,response
-
-firecrawl find-tools https://podcasts.apple.com --limit 2
-```
-    Use `search` for semantic discovery and `find-tools` for contextual lookup or progressive disclosure. Pass a returned `next` request to `firecrawl find-tools --request '<json>'` to continue. Execution uses `firecrawl scrape --alexandria <provider/capability> --options '<json>'`.
-  </Tab>
-  <Tab title="MCP">
-    Connect the [Firecrawl MCP server](/mcp-server) to your agent. With Alexandria support enabled, the agent can discover relevant tools, inspect their inputs and price, and retrieve data through the same workflow.
-
-    Try asking: “Find Particle's podcast tools, inspect the episode-search inputs and price, and show me the request before executing it.”
-
-    `firecrawl_search` returns contracts in `data.tools`. `firecrawl_find_tools` provides the free contextual lookup: start from a URL or provider, then follow the returned requests to reveal groups, tools, and contracts.
-  </Tab>
-</Tabs>
-
 ## Find Tools
 
 **Find Tools** is a free discovery tool that lets agents explore the catalogue step by step. Start with a page URL or a provider, then follow the returned `next` requests:
@@ -393,4 +424,3 @@ Other Alexandria refusals are relayed as-is, with the provider's status and `cod
 
 A 403 with `code: "THIRD_PARTY_DATA_TERMS_REQUIRED"` includes `requiresAction.url`: an org admin must accept the provider's terms at that URL before the request can proceed.
 
-`/exchange/retrieve` single-call requests return errors the same way, relaying the Exchange's status with `{ "success": false, "code": "...", "error": "..." }`.
