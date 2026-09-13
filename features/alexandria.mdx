@@ -1,0 +1,426 @@
+---
+title: "Alexandria"
+description: "The knowledge library for superintelligence"
+og:title: "Alexandria | Firecrawl"
+og:description: "Discover and use data tools through Firecrawl, with just the context your agent needs."
+icon: "books"
+---
+
+import AlexandriaJourney from "/snippets/alexandria-journey.mdx";
+
+<AlexandriaJourney />
+
+Alexandria is a catalogue of data tools your agent can call through Firecrawl: market data, filings, government records, podcasts, jobs, reviews, and more, each with a published contract and price. Finding a tool is free. Running one costs the credits shown on it.
+
+<CardGroup cols={3}>
+  <Card title="What Alexandria is" icon="books" href="https://www.firecrawl.dev/alexandria">
+    Providers, pricing, and how it fits with web search.
+  </Card>
+  <Card title="Browse the catalogue" icon="compass" href="https://www.firecrawl.dev/app/alexandria">
+    Every provider and tool in the dashboard, with copyable requests.
+  </Card>
+  <Card title="Provider terms" icon="file-signature" href="https://www.firecrawl.dev/app/settings?tab=data-sources">
+    Some providers need an admin to accept their terms once. Manage that here.
+  </Card>
+</CardGroup>
+
+## Built for agents
+
+The fastest way in is the Firecrawl CLI or the MCP server. Both give an agent three moves: search for a tool, read its contract, run it.
+
+<Tabs>
+  <Tab title="Firecrawl CLI">
+```bash
+# 1. Find tools for a question, alongside web results. Free.
+firecrawl search "podcast conversations about AI agents" --sources web,alexandria --domain-tools --limit 2
+
+# 2. Walk the catalogue and read a contract before spending anything. Free.
+firecrawl find-tools --providers particle --level tools --expand options,response
+
+# 3. Run the tool. Costs its listed credits; reuse --request-id to retry safely.
+firecrawl alexandria retrieve particle/podcasts/episodes/search --options '{"keyword_search":"AI agents","limit":2}'
+```
+    Install with `npm install -g firecrawl-cli` and sign in with `firecrawl login`. The `firecrawl` skill teaches coding agents these commands, so Claude Code and Cursor can use Alexandria without extra setup.
+  </Tab>
+  <Tab title="MCP">
+    Connect the [Firecrawl MCP server](/mcp-server) and the agent gets the same three moves as tools: `firecrawl_search` with `sources: ["alexandria"]` for finding, `firecrawl_find_tools` for walking the catalogue and reading contracts, and `firecrawl_scrape` with an `alexandria` body for running.
+
+    Try asking: "Find Particle's podcast tools, show me the episode-search inputs and price, then run it for conversations about AI agents."
+
+    When a provider needs its terms accepted, the tool result says so and links the admin to the page; the agent never accepts terms itself.
+  </Tab>
+</Tabs>
+
+### Find Tools, the meta tool
+
+Alexandria ships one tool that is about the other tools. **Find Tools** walks the catalogue a step at a time so an agent reads only what it needs: providers, then a provider's groups, then the tools in a group, then one tool's inputs, response shape, and examples. It can also start from a page URL and return the tools that cover that site. Every step is free and every item comes back with a ready-made `next` request, so the agent follows a path instead of guessing parameters.
+
+In the CLI it is `firecrawl find-tools`; in MCP it is `firecrawl_find_tools`; in the SDKs it is `findTools` / `find_tools`; over HTTP it is the `firecrawl` provider's `find-tools` capability. Details and examples are in [Find Tools](#find-tools) below.
+
+## Discovery is free, three ways
+
+Your agent never pays to learn what exists. Tools show up in three places, and each one is off by default unless you ask for it:
+
+1. **Tool search.** `sources: ["alexandria"]` on `/v2/search` returns tool contracts ranked against the question, with no web results and no charge.
+2. **Alongside web results.** `sources: ["web", "alexandria"]` returns both, and `domainTools: true` also matches tools to the sites in the web results and to any URL in the query. You pay for the web results only.
+3. **Next to a scraped page.** `domainTools: true` on an ordinary `/v2/scrape` adds the tools that cover the page's domain beside its markdown and metadata. You pay for the page only.
+
+Running a tool is the only paid step, at the price on its contract. Send an `x-request-id` header if you want to choose the retry key yourself; otherwise the API generates one and returns it, and repeating the identical request with that id returns the stored result without running or charging again.
+
+## Use it from the SDKs and API
+
+Discover tools, inspect their inputs, and retrieve data with the same workflow in JavaScript, Python, Go, Rust, or plain HTTP.
+
+<Steps>
+  <Step title="Find the right tool">
+    Describe what you need. Alexandria returns relevant tools alongside your web results.
+
+<CodeGroup>
+```javascript JavaScript
+const result = await firecrawl.search(
+  "podcast conversations about AI agents",
+  {
+    sources: ["web", "alexandria"],
+    limit: 2,
+  },
+);
+```
+
+```python Python
+result = firecrawl.search(
+    "podcast conversations about AI agents",
+    sources=["web", "alexandria"],
+    limit=2,
+)
+```
+
+```bash cURL
+curl https://api.firecrawl.dev/v2/search \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "query": "podcast conversations about AI agents",
+  "sources": [
+    "web",
+    "alexandria"
+  ],
+  "limit": 2
+}'
+```
+</CodeGroup>
+
+    <Accordion title="Response: web pages and tools">
+      Web pages are in `result.web`. Tools are in `result.tools`, ranked by relevance and returned with their input and response contracts. This shows one complete Particle tool item using its live contract and the billing branch’s generated request examples. The web result is illustrative; `limit: 2` allows up to two results. No recorded `example` is included because this tool does not publish one.
+
+```json Complete tool item (illustrative search response)
+{
+  "web": [
+    {
+      "title": "A conversation about AI agents",
+      "url": "https://example.com/podcasts/ai-agents"
+    }
+  ],
+  "tools": [
+    {
+      "id": "particle/podcasts/episodes/search",
+      "provider": "particle",
+      "capability": "podcasts/episodes/search",
+      "name": "Episode search",
+      "description": "Use to find episodes that discussed something. This is the entry point: it returns ids the other podcast capabilities take.",
+      "creditsCost": 15,
+      "perRecord": false,
+      "options": [
+        {
+          "name": "semantic_search",
+          "type": "string",
+          "about": "What was talked about, in your own words. Paraphrase-tolerant, so it finds dialogue that means this without containing these exact words."
+        },
+        {
+          "name": "keyword_search",
+          "type": "string",
+          "about": "Exact tokens or phrases to match in the transcript, ranked BM25. Use when the wording itself matters."
+        },
+        {
+          "name": "entity_id",
+          "type": "string",
+          "about": "Restrict to dialogue about one person or company, by entity id. Combines with either search."
+        },
+        {
+          "name": "podcast_id",
+          "type": "string",
+          "about": "Restrict to one show, by podcast id."
+        },
+        {
+          "name": "published_after",
+          "type": "string",
+          "about": "Earliest publication date, as YYYY-MM-DD."
+        },
+        {
+          "name": "limit",
+          "type": "number",
+          "default": 25,
+          "about": "Maximum records to return.",
+          "max": 100
+        },
+        {
+          "name": "cursor",
+          "type": "string",
+          "about": "Opaque cursor from a previous page. Omit for the first page."
+        }
+      ],
+      "requiresOneOf": [
+        [
+          "semantic_search",
+          "keyword_search"
+        ]
+      ],
+      "response": {
+        "about": "Matching episodes, each with the show it belongs to and the passage that matched. Several matching segments of one episode collapse to a single result, so a page can return fewer than the limit.",
+        "key": "data",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string",
+            "about": "Episode id, the input to podcasts/episodes."
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "about": "Episode title."
+          },
+          {
+            "name": "podcast",
+            "type": "object",
+            "about": "The show this episode belongs to."
+          },
+          {
+            "name": "published_at",
+            "type": "string",
+            "about": "Publication date."
+          },
+          {
+            "name": "excerpt",
+            "type": "string",
+            "about": "The passage that matched the query."
+          }
+        ],
+        "paginated": true
+      },
+      "examples": {
+        "javascript": "const requestId = \"<unique-request-id>\";\nconst response = await fetch(\"https://api.firecrawl.dev/v2/scrape\", {\n  method: \"POST\",\n  headers: {\n    \"Authorization\": \"Bearer \" + process.env.FIRECRAWL_API_KEY,\n    \"Content-Type\": \"application/json\",\n    \"x-request-id\": requestId\n  },\n  body: JSON.stringify({\n  \"alexandria\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n})\n});\nconst result = await response.json();\nif (!response.ok) throw new Error(result.error ?? \"Request failed\");",
+        "python": "import os\nimport requests\n\nrequest_id = \"<unique-request-id>\"\nresponse = requests.post(\n  \"https://api.firecrawl.dev/v2/scrape\",\n  headers={\n    \"Authorization\": \"Bearer \" + os.environ[\"FIRECRAWL_API_KEY\"],\n    \"x-request-id\": request_id\n  },\n  json={\n  \"alexandria\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n},\n  timeout=120\n)\nresponse.raise_for_status()\nresult = response.json()",
+        "curl": "curl https://api.firecrawl.dev/v2/scrape \\\n  -H \"Authorization: Bearer $FIRECRAWL_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"x-request-id: <unique-request-id>\" \\\n  --data '{\n  \"alexandria\": {\n    \"provider\": \"particle\",\n    \"capability\": \"podcasts/episodes/search\",\n    \"options\": {\n      \"limit\": 25,\n      \"semantic_search\": \"<semantic_search>\"\n    }\n  }\n}'"
+      },
+      "concept": "podcasts",
+      "cohorts": [
+        "podcasts"
+      ],
+      "matchedBy": [
+        "semantic"
+      ],
+      "matchedUrls": []
+    }
+  ]
+}
+```
+    </Accordion>
+  </Step>
+
+  <Step title="Check what it needs">
+    Open the top-ranked tool to see what inputs it accepts, what data it returns, and how to call it. These details are already included in the search result.
+
+<CodeGroup>
+```javascript JavaScript
+const tool = result.tools[0];
+
+console.log("Accepted inputs:", tool.options);
+console.log("Response structure:", tool.response);
+console.log("JavaScript request example:", tool.examples.javascript);
+```
+
+```python Python
+tool = result.tools[0]
+
+print("Accepted inputs:", tool.options)
+print("Response structure:", tool.response)
+print("Python request example:", tool.examples["python"])
+```
+</CodeGroup>
+
+    `options` describes the inputs you can send. `response` describes the output structure, rather than actual provider data. `examples.javascript` is a request example you can adapt and run in the next step.
+
+    `semantic_search` is an input specific to Particle's episode-search tool. It searches podcast content; Alexandria's earlier search finds which tool to use. Particle also accepts `keyword_search` for exact wording.
+  </Step>
+
+  <Step title="Get the data">
+    Use `scrape` to call the tool with the inputs from its contract. Supply the provider and capability under `alexandria`; no page URL is needed.
+
+<CodeGroup>
+```javascript JavaScript
+const episodes = await firecrawl.scrape({
+  alexandria: {
+    provider: "particle",
+    capability: "podcasts/episodes/search",
+    options: {
+      semantic_search: "AI agents",
+      limit: 2,
+    },
+  },
+});
+
+console.log(episodes.alexandria[0].data);
+```
+
+```python Python
+episodes = firecrawl.scrape(
+    alexandria={
+        "provider": "particle",
+        "capability": "podcasts/episodes/search",
+        "options": {
+            "semantic_search": "AI agents",
+            "limit": 2,
+        },
+    },
+)
+
+print(episodes.alexandria[0].data)
+```
+
+```bash cURL
+REQUEST_ID="$(uuidgen)"
+
+curl https://api.firecrawl.dev/v2/scrape \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "x-request-id: $REQUEST_ID" \
+  -d '{
+  "alexandria": {
+    "provider": "particle",
+    "capability": "podcasts/episodes/search",
+    "options": {
+      "semantic_search": "AI agents",
+      "limit": 2
+    }
+  }
+}'
+```
+</CodeGroup>
+
+    <Accordion title="Response: matching episodes">
+```json SDK result (shortened, illustrative)
+{
+  "alexandria": [
+    {
+      "provider": "particle",
+      "capability": "podcasts/episodes/search",
+      "creditsCost": 15,
+      "data": {
+        "data": [
+          {
+            "id": "example-episode-001",
+            "title": "Building reliable AI agents",
+            "podcast": {
+              "id": "example-show-001",
+              "title": "The Agent Workshop"
+            },
+            "published_at": "2026-09-01",
+            "excerpt": "We let the agent discover the tools it needs, then read their contracts."
+          }
+        ]
+      }
+    }
+  ],
+  "creditsCost": 15
+}
+```
+      `episodes.alexandria[0]` contains the first tool result and its execution price. Its `data` follows Particle's response contract. Raw `/v2/scrape` responses wrap this SDK result in `data`.
+    </Accordion>
+  </Step>
+</Steps>
+
+
+
+Tool discovery is free. Web search, scraping, and tool execution have their own charges; each tool shows its execution price. A batch can contain per-tool errors, so check each result before using its `data`.
+
+The SDK generates an execution request ID and keeps it across automatic retries. To retry later, reuse `requestId` in JavaScript or `request_id` in Python with the identical request. For cURL, keep the same `$REQUEST_ID`.
+
+## Find Tools
+
+**Find Tools** is a free discovery tool that lets agents explore the catalogue step by step. Start with a page URL or a provider, then follow the returned `next` requests:
+
+**Particle → Podcasts → Episode search → inputs and response**
+
+Each step reveals just the detail the agent needs. Once it has the contract, it can call the selected tool through `scrape`. Find Tools costs 0 credits; executing the selected tool uses that tool's published price.
+
+<CodeGroup>
+```javascript JavaScript
+const catalogue = await firecrawl.findTools({
+  providers: ["particle"],
+  limit: 2,
+});
+
+// Each next request reveals another part of the catalogue.
+const next = catalogue.items[0]?.next;
+if (next) {
+  const details = await firecrawl.scrape({ alexandria: next });
+  console.log(details.alexandria[0].data);
+}
+```
+
+```python Python
+catalogue = firecrawl.find_tools(providers=["particle"], limit=2)
+
+if catalogue.items and catalogue.items[0].get("next"):
+    details = firecrawl.scrape(alexandria=catalogue.items[0]["next"])
+    print(details.alexandria[0].data)
+```
+</CodeGroup>
+
+An item's `next` reveals more detail. The catalogue's top-level `next` advances to the next page while preserving the filters. Supply `categories`, `groups`, or `capabilities` when you already know what to look for; `level` is inferred from those selectors.
+
+For contextual matches beside web results, add `domainTools: true` to a Search request. When `sources` includes `alexandria`, URL-based matching runs by default — set `domainTools: false` to turn it off. Without an `alexandria` source, `domainTools: true` on its own adds domain-matched tools alongside ordinary web results. Semantic and domain matches share the `tools` array in `data.tools`, up to `limit` results per discovery source (semantic and domain); each item includes `matchedBy` and `matchedUrls` explaining why it appeared. Search still requires a query. Tool discovery is free and is never counted in `creditsUsed`. After scraping a page, pass its URL to Find Tools to discover relevant tools.
+
+## Domain tools on scrape
+
+An ordinary scrape can also request domain-matched tools. Add `domainTools: true` (default off) to a `/v2/scrape` request; if the team has Alexandria access, the response includes `data.tools` — tools matched to the scraped page's domain, in the same shape as the tools returned by search.
+
+```bash cURL
+curl https://api.firecrawl.dev/v2/scrape \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+  "url": "https://podcasts.apple.com",
+  "domainTools": true
+}'
+```
+
+`data.tools` lists the matched tools, each with `matchedBy` and `matchedUrls`, the same as the `tools` array returned from search.
+
+## Execution idempotency and errors
+
+Executing a tool through `POST /v2/scrape` with `alexandria` is idempotent per request ID. Send `x-request-id` as the idempotency key — 1 to 128 characters of letters, digits, `.`, `_`, `:`, or `-` — and the response echoes it back. Replaying the same id for a request that already completed returns the original response and the same `scrape_id`, without re-executing the tool.
+
+Errors use a consistent envelope:
+
+```json
+{
+  "success": false,
+  "error": "string",
+  "code": "string (optional)",
+  "chargeId": "string (optional)"
+}
+```
+
+| Status | `code` | Meaning | Retry |
+| --- | --- | --- | --- |
+| 409 | `duplicate_request` | This request ID already belongs to a different payload. | Use a new request ID for the new payload. |
+| 409 | `request_in_flight` | A request with this ID is still running. | Retry with the same ID once it finishes. |
+| 503 | `request_unresolved` | The outcome is uncertain. | Keep the same ID for reconciliation; never start a new request for the same work. |
+| 404 | `unknown_provider` | Nothing was executed. | Safe to retry with the same ID once the cause is fixed. |
+| 402 | `insufficient_credits` | Nothing was executed. | Safe to retry with the same ID once the cause is fixed. |
+| 503 | `billing_unavailable` | Nothing was executed. | Safe to retry with the same ID once the cause is fixed. |
+
+Other Alexandria refusals are relayed as-is, with the provider's status and `code` (for example, 402 `credit_budget_exceeded`), and nothing was executed.
+
+A 403 with `code: "THIRD_PARTY_DATA_TERMS_REQUIRED"` includes `requiresAction.url`: an org admin must accept the provider's terms at that URL before the request can proceed.
+

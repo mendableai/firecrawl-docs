@@ -493,6 +493,32 @@
                         "description": "If true, this will enable zero data retention for this scrape. To enable this feature, please contact help@firecrawl.dev"
                       }
                     }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "alexandria": {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/AlexandriaCall"
+                          },
+                          {
+                            "type": "array",
+                            "minItems": 1,
+                            "maxItems": 10,
+                            "items": {
+                              "$ref": "#/components/schemas/AlexandriaCall"
+                            }
+                          }
+                        ],
+                        "description": "Execute one or more catalogued provider tools instead of scraping a URL. Cannot be combined with `url`, `formats`, or other scrape options (400); the only allowed sibling keys are `timeout`, `origin`, and `integration`. Use the `x-request-id` request header as a client-chosen idempotency key (1 to 128 characters of letters, digits, `.`, `_`, `:`, `-`) — it is echoed back, and a completed request with the same key replays its original response and `scrape_id` instead of re-executing."
+                      },
+                      "domainTools": {
+                        "type": "boolean",
+                        "default": false,
+                        "description": "When true on an ordinary URL scrape, `data.tools` lists tool contracts matched to the scraped page's domain (same `DiscoveredTool` shape as search). Requires the team's Alexandria access to be enabled and no zero data retention (403 otherwise). Free."
+                      }
+                    }
                   }
                 ]
               }
@@ -505,21 +531,148 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ScrapeResponse"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ScrapeResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/AlexandriaScrapeResponse"
+                    }
+                  ]
                 }
               }
             }
           },
-          "402": {
-            "description": "Payment required",
+          "400": {
+            "description": "Bad request",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Bad request. `alexandria` cannot be combined with `url`, `formats`, or other scrape options, and only recognizes `provider`, `capability`, and `options`."
+                    },
+                    "code": {
+                      "type": "string"
+                    },
+                    "chargeId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Payment required. Also returned as `insufficient_credits` when the team lacks the credits to execute an `alexandria` request; in that case nothing is executed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
                     "error": {
                       "type": "string",
                       "example": "Payment required to access this resource."
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "insufficient_credits"
+                    },
+                    "chargeId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden. Returned when `alexandria` execution or `domainTools` is not enabled for the team, when zero data retention is active, or when third-party data terms have not been accepted (`THIRD_PARTY_DATA_TERMS_REQUIRED`, which includes `requiresAction`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "THIRD_PARTY_DATA_TERMS_REQUIRED"
+                    },
+                    "requiresAction": {
+                      "type": "boolean",
+                      "description": "Present when the team must take action (e.g. accept third-party data terms) before this request can be retried."
+                    },
+                    "chargeId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found. Returned as `unknown_provider` when an `alexandria` call references a provider or capability that does not exist; nothing is executed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "unknown_provider"
+                    },
+                    "chargeId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict. Returned as `duplicate_request` or `request_in_flight` when the same `x-request-id` is reused while the original request is still being processed or was already completed with different parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "duplicate_request"
+                    },
+                    "chargeId": {
+                      "type": "string",
+                      "description": "The charge ID of the in-flight or original request."
                     }
                   }
                 }
@@ -560,6 +713,33 @@
                     "error": {
                       "type": "string",
                       "example": "An unexpected error occurred on the server."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service unavailable. Returned as `request_unresolved` when the outcome of an in-flight `alexandria` request with this `x-request-id` could not be determined — keep the same `x-request-id` and retry rather than issuing a new request. Also returned as `billing_unavailable` when credits could not be charged.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "request_unresolved"
+                    },
+                    "chargeId": {
+                      "type": "string",
+                      "description": "The charge ID of the unresolved request. Reuse the same `x-request-id` to retry; do not create a new request."
                     }
                   }
                 }
@@ -4063,13 +4243,33 @@
                           "required": [
                             "type"
                           ]
+                        },
+                        {
+                          "type": "object",
+                          "title": "Alexandria",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "alexandria"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type"
+                          ],
+                          "additionalProperties": false
                         }
                       ]
                     },
-                    "description": "Sources to search. Will determine the arrays available in the response. Defaults to ['web'].",
+                    "description": "Sources to search. Will determine the arrays available in the response. Defaults to ['web']. The plain string form (e.g. `[\"web\", \"alexandria\"]`) is also accepted. The `alexandria` source returns tool contracts discovered from the Alexandria catalogue in `data.tools` instead of search results; it is free and is never counted in `creditsUsed`. Requires the team's Alexandria access to be enabled (403 otherwise).",
                     "default": [
                       "web"
                     ]
+                  },
+                  "domainTools": {
+                    "type": "boolean",
+                    "description": "Include tool contracts whose provider matches the domains of the returned web results. Defaults to on when `alexandria` is among the sources; set `false` to disable, or `true` alone to add domain-matched tools beside ordinary web results. Free."
                   },
                   "categories": {
                     "type": "array",
@@ -4442,6 +4642,13 @@
                               }
                             }
                           }
+                        },
+                        "tools": {
+                          "type": "array",
+                          "description": "Tool contracts discovered from the Alexandria catalogue. Present when `alexandria` is among the sources or when `domainTools` was requested; up to `limit` results per discovery source (semantic matches from the `alexandria` source, domain matches from `domainTools`).",
+                          "items": {
+                            "$ref": "#/components/schemas/DiscoveredTool"
+                          }
                         }
                       },
                       "description": "The search results. The arrays available will depend on the sources you specified in the request. By default, the `web` array will be returned."
@@ -4449,7 +4656,7 @@
                     "warning": {
                       "type": "string",
                       "nullable": true,
-                      "description": "Warning message if any issues occurred"
+                      "description": "Warning message if any issues occurred. Includes `Some tool discovery results are unavailable.` when Alexandria or domain tool discovery partially failed."
                     },
                     "id": {
                       "type": "string",
@@ -10158,10 +10365,273 @@
                   "isMenu",
                   "sections"
                 ]
+              },
+              "tools": {
+                "type": "array",
+                "nullable": true,
+                "description": "Tool contracts matched to the scraped page's domain. Present only when `domainTools` is `true` on the request. Requires Alexandria access and no zero data retention (403 otherwise); free.",
+                "items": {
+                  "$ref": "#/components/schemas/DiscoveredTool"
+                }
               }
             }
           }
         }
+      },
+      "AlexandriaCall": {
+        "type": "object",
+        "description": "A single provider tool to execute from the Alexandria catalogue.",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The catalogued provider to call, e.g. `fred`."
+          },
+          "capability": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The provider-relative capability to invoke, e.g. `series/observations`."
+          },
+          "options": {
+            "type": "object",
+            "default": {},
+            "description": "Capability-specific options passed through to the provider tool."
+          }
+        },
+        "required": [
+          "provider",
+          "capability"
+        ]
+      },
+      "AlexandriaResult": {
+        "type": "object",
+        "description": "The outcome of one executed Alexandria call, returned in the same order as the request.",
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "Success",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "description": "The provider that was called."
+              },
+              "capability": {
+                "type": "string",
+                "description": "The capability that was invoked."
+              },
+              "creditsCost": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Credits charged for this call."
+              },
+              "data": {
+                "description": "The provider's response payload."
+              },
+              "records": {
+                "type": "integer",
+                "description": "Number of records returned, when applicable."
+              },
+              "upstreamStatus": {
+                "type": "integer",
+                "description": "HTTP status code returned by the upstream provider, when applicable."
+              }
+            },
+            "required": [
+              "provider",
+              "capability",
+              "creditsCost",
+              "data"
+            ]
+          },
+          {
+            "type": "object",
+            "title": "Error",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "description": "The provider that was called."
+              },
+              "capability": {
+                "type": "string",
+                "description": "The capability that was invoked."
+              },
+              "creditsCost": {
+                "type": "integer",
+                "default": 0,
+                "description": "Always 0 for a failed call."
+              },
+              "error": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "Machine-readable error code for this call."
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "Human-readable error message for this call."
+                  },
+                  "status": {
+                    "type": "integer",
+                    "description": "HTTP status code returned by the upstream provider, when applicable."
+                  }
+                },
+                "required": [
+                  "code",
+                  "message"
+                ]
+              }
+            },
+            "required": [
+              "error"
+            ]
+          }
+        ]
+      },
+      "DiscoveredTool": {
+        "type": "object",
+        "description": "A catalogued provider tool discovered via Alexandria, semantic search, or domain matching.",
+        "additionalProperties": true,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The tool's identifier, formatted as `provider/capability`."
+          },
+          "provider": {
+            "type": "string",
+            "description": "The catalogued provider."
+          },
+          "capability": {
+            "type": "string",
+            "description": "The provider-relative capability."
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable name of the tool."
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of what the tool does."
+          },
+          "creditsCost": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Credits charged per execution of this tool."
+          },
+          "perRecord": {
+            "type": "boolean",
+            "description": "Whether `creditsCost` is charged per record returned rather than per call."
+          },
+          "options": {
+            "type": "array",
+            "description": "The capability's accepted options.",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The option name."
+                },
+                "type": {
+                  "type": "string",
+                  "description": "The option's data type."
+                }
+              }
+            }
+          },
+          "response": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Description of the shape of a successful response's `data`.",
+            "properties": {
+              "about": {
+                "type": "string",
+                "description": "Human-readable description of the response payload."
+              },
+              "key": {
+                "type": "string",
+                "description": "The key under which the primary payload is returned, when applicable."
+              },
+              "fields": {
+                "type": "array",
+                "description": "The response's documented fields.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "matchedBy": {
+            "type": "array",
+            "description": "Why this tool was surfaced.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "semantic",
+                "domain"
+              ]
+            }
+          },
+          "matchedUrls": {
+            "type": "array",
+            "description": "URLs whose domain matched this tool, when matched by domain.",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "provider",
+          "capability",
+          "name",
+          "description",
+          "creditsCost",
+          "perRecord"
+        ]
+      },
+      "AlexandriaScrapeResponse": {
+        "type": "object",
+        "description": "Response returned when the request executed Alexandria provider tools instead of scraping a URL.",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "scrape_id": {
+            "type": "string",
+            "description": "Identifier for this request. A completed request replays the same response and `scrape_id` when retried with the same `x-request-id`."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "alexandria": {
+                "type": "array",
+                "description": "Results for each requested Alexandria call, in the same order as the request.",
+                "items": {
+                  "$ref": "#/components/schemas/AlexandriaResult"
+                }
+              },
+              "creditsCost": {
+                "type": "integer",
+                "description": "Sum of `creditsCost` across successful items."
+              }
+            },
+            "required": [
+              "alexandria",
+              "creditsCost"
+            ]
+          }
+        },
+        "required": [
+          "success",
+          "scrape_id",
+          "data"
+        ]
       },
       "CrawlStatusResponseObj": {
         "type": "object",
